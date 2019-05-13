@@ -1,0 +1,3 @@
+*.iml
+SourceCode/WebServer/.gradle/
+SourceCode/WebServer/.idea/
