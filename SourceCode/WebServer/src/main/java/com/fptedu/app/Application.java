@@ -1,6 +1,7 @@
 package com.fptedu.app;
 
 import com.fptedu.web.auth.EnableAuthModule;
+import com.fptedu.web.auth.api.EnableApiCaller;
 import org.apache.catalina.connector.Connector;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
