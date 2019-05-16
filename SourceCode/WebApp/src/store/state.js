@@ -1,4 +1,4 @@
-import navbarSearchAndPinList from "@/layouts/components/navbarSearchAndPinList";
+import navbarSearchAndPinList from "@/views/layouts/components/navbarSearchAndPinList";
 import themeConfig, { colors } from "@/../themeConfig.js";
 
 const state = {

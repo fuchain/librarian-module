@@ -13,11 +13,13 @@ module.exports = {
     resolve: {
       extensions: [".vue", ".js", ".jsx", ".json"],
       alias: {
-        "@utils": require("path").resolve(__dirname, "src/utils"),
-        "@localstorage": require("path").resolve(__dirname, "src/utils/local-storage"),
-        "@http": require("path").resolve(__dirname, "src/utils/http"),
-        "@auth": require("path").resolve(__dirname, "src/utils/auth"),
-        "@mock": require("path").resolve(__dirname, "src/mock")
+        "@core": require("path").resolve(__dirname, "src/core"),
+        "@localstorage": require("path").resolve(
+          __dirname,
+          "src/core/local-storage"
+        ),
+        "@http": require("path").resolve(__dirname, "src/core/http"),
+        "@auth": require("path").resolve(__dirname, "src/core/auth")
       }
     }
   }

@@ -94,11 +94,11 @@
 </template>
 
 <script>
-import VxSidebar from "@/layouts/components/vx-sidebar/VxSidebar.vue";
+import VxSidebar from "@/views/layouts/components/vx-sidebar/VxSidebar.vue";
 import TheNavbar from "../components/TheNavbar.vue";
 import TheFooter from "../components/TheFooter.vue";
 import themeConfig from "@/../themeConfig.js";
-import sidebarItems from "@/layouts/components/vx-sidebar/sidebarItems.js";
+import sidebarItems from "@/views/layouts/components/vx-sidebar/sidebarItems.js";
 
 export default {
   data() {

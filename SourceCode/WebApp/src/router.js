@@ -17,14 +17,14 @@ const router = new Router({
       // MAIN LAYOUT ROUTES
       // =============================================================================
       path: "",
-      component: () => import("./layouts/main/Main.vue"),
+      component: () => import("@/views/layouts/main/Main.vue"),
       children: [
         // =============================================================================
         // Theme Routes
         // =============================================================================
         {
           path: "/",
-          component: () => import("./views/Home.vue")
+          component: () => import("@/views/Home.vue")
         }
       ]
     },
@@ -33,7 +33,7 @@ const router = new Router({
     // =============================================================================
     {
       path: "",
-      component: () => import("@/layouts/full-page/FullPage.vue"),
+      component: () => import("@/views/layouts/full-page/FullPage.vue"),
       children: [
         // =============================================================================
         // PAGES
@@ -47,7 +47,7 @@ const router = new Router({
     // Redirect to 404 page, if no match found
     {
       path: "*",
-      component: () => import("./layouts/main/Main.vue"),
+      component: () => import("@/views/layouts/main/Main.vue"),
       children: [
         {
           path: "",

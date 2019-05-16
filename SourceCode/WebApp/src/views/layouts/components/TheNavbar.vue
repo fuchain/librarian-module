@@ -207,7 +207,7 @@
 </template>
 
 <script>
-import VxAutoSuggest from "@/components/vx-auto-suggest/VxAutoSuggest.vue";
+import VxAutoSuggest from "@/views/components/vx-auto-suggest/VxAutoSuggest.vue";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import draggable from "vuedraggable";
 

@@ -56,5 +56,5 @@ export default {
 </script>
 
 <style>
-@import "../assets/scss/vuesax/components/featherIcon.scss";
+@import "../../assets/scss/vuesax/components/featherIcon.scss";
 </style>
