@@ -28,27 +28,6 @@ const router = new Router({
         }
       ]
     },
-    {
-      // =============================================================================
-      // ADMIN LAYOUT ROUTES
-      // =============================================================================
-      path: "/admin",
-      component: () => import("./layouts/main/Main.vue"),
-      children: [
-        {
-          path: "users",
-          component: () => import("./modules/admin/users/Users.vue")
-        },
-        {
-          path: "roles",
-          component: () => import("./modules/admin/roles/Roles.vue")
-        },
-        {
-          path: "activities",
-          component: () => import("./modules/admin/activities/Activities.vue")
-        }
-      ]
-    },
     // =============================================================================
     // FULL PAGE LAYOUTS
     // =============================================================================
