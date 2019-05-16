@@ -47,3 +47,4 @@ target/
 pom.properies
 *.MF
 >>>>>>> b6cf20c... [PHONDV] add git ignre file
+SourceCode/WebServer/out/
