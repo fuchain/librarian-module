@@ -11,6 +11,6 @@
     <context:component-scan base-package="com.fptedu.web.service" />
     <context:property-placeholder location="classpath:authmodule.properties"/>
 
-    <bean name="jsonHelper" class="com.fptedu.common.helper.json.JsonHelper"/>
+    <!--<bean name="jsonHelper" class="com.fptedu.common.helper.json.JsonHelper"/>-->
 
 </beans>
