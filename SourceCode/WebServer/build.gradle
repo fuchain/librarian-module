@@ -1,25 +1,52 @@
-plugins {
-	id 'org.springframework.boot' version '2.1.5.RELEASE'
-	id 'java'
-}
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+// apply plugin: 'war'
 
-apply plugin: 'io.spring.dependency-management'
-
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    jcenter()
 }
 
+ext.deps = [
+        spring : '5.0.2.RELEASE',
+        hibernate : '5.2.12.Final'
+]
+
 dependencies {
-	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.1.4.RELEASE'
-	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.4.RELEASE'
-	// https://mvnrepository.com/artifact/org.postgresql/postgresql
-	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
-	implementation 'org.springframework.boot:spring-boot-starter'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compile("org.springframework.boot:spring-boot-starter-web")
+    //compile("org.springframework.boot:spring-boot-starter-aop")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    //compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    //compile group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.9.RELEASE'
+    //compile group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.9.RELEASE'
+    //compile group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '2.3.0'
+
+    implementation('org.postgresql:postgresql')
+    
+    // JSON handling
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.2'
+    compile group: 'com.google.guava', name: 'guava', version: '23.0'
+    // compile group: 'org.hibernate', name: 'hibernate-core', version: deps.hibernate
+
+    // Tomcat
+    // providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    // excel
+    compile "org.apache.poi:poi:3.17"
+    compile "org.apache.poi:poi-ooxml:3.17"
+    
+    compile fileTree(dir: 'libs', include: '*.jar')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE")
+    }
 }

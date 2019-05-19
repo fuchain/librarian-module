@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{master.html}" lang="en">
+<head>
+    <title>Error</title>
+</head>
+<body class="sidebar-mini skin-blue-light fixed">
+<div class="section" layout:fragment="custom-content">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Error
+        </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="error-page">
+            <h2 class="headline text-yellow">Error</h2>
+            <div class="error-content">
+                <h3><i class="fas fa-exclamation-triangle text-yellow"></i> Oops! We got an unexpected error.</h3>
+                <p></p>
+            </div><!-- /.error-content -->
+        </div><!-- /.error-page -->
+    </section><!-- /.content -->
+</div>
+</body>
+</html>
