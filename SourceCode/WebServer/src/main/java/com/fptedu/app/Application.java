@@ -12,14 +12,13 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ImportResource({"classpath:META-INF/application-config.xml"})
 @EntityScan("com.fptedu.model")
-@EnableJpaRepositories("com.fpt.edu.entities")
+@EnableJpaRepositories("com.fptedu.web.repository")
 //@EnableAsync
 //@EnableAuthModule
 //@EnableApiCaller
-// scan for controller, services repository
-@ComponentScan(basePackages= {"com.fptedu.controller","com.fptedu.services","com.fpt.edu.entities"})
+@ImportResource({"classpath:META-INF/application-config.xml"})
+// scan for controller, services repository is from
 public class Application {
 
     private static int AJP_PORT = 8609;
