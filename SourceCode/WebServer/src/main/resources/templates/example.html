@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{master.html}" lang="en">
+<head>
+    <title>STPM | Khung chương trình đào tạo</title>
+    <link rel="stylesheet" href="http://cd.capstone-hcm.club/stpm.phase.detail.css">
+</head>
+<body>
+    <div class="section" layout:fragment="custom-content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 class="text-center">
+                Khung chương trình của tôi
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- statistic box -->
+            <div class="box">
+                <div class="box-header">
+                    <i class="fa fa-table"></i>
+                    <h3 class="box-title phase-code">Khung chương trình <b><span th:utext="${myCurr.getCurrName()}"></span></b></h3>
+                </div>
+                <div class="box-body .phase-editor">
+                    <div class="col-md-3">
+                        <a href="/student/api/iat/export" class="btn btn-primary btn-block margin-bottom">
+                            Xuất bảng điểm
+                            <i class="fas fa-file-download"></i>
+                        </a>
+                        <div class="statistic">
+                            <ul>
+                                <li class="indeb-credit" th:utext="${myCurr.getDebtCredit()}"></li>
+                                <li class="studied-credit" th:utext="${myCurr.getPassCredit()}"></li>
+                                <li class="gpa" th:utext="${myCurr.getAvgMark()}"></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group-vertical subject-filter">
+                            <button class="btn btn-flat bgm-amber c-white text-bold">
+                                Môn đang học <span class="badge bgm-white c-deeporange m-l-5"></span>
+                            </button>
+                            <button class="btn btn-flat bgm-green c-white text-bold">
+                                Môn đã pass <span class="badge bgm-white c-deeporange m-l-5"></span>
+                            </button>
+                            <button class="btn btn-flat bgm-red c-white text-bold">
+                                Môn đã fail <span class="badge bgm-white c-deeporange m-l-5"></span>
+                            </button>
+                            <button class="btn btn-flat bgm-blue c-white text-bold">
+                                Môn chưa học <span class="badge bgm-white c-deeporange m-l-5"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-offset-0 col-md-8 col-sm-offset-1 col-md-10">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Mã môn</th>
+                                <th>Tên môn</th>
+                                <th>Tín chỉ</th>
+                                <th>Điểm</th>
+                                <th>Kết quả</th>
+                                <th>Kỳ học</th>
+                            </tr>
+                            </thead>
+                            <tbody th:each="pair: ${myCurr.getMarkRecords()}">
+                                <!-- Mỗi term -->
+                                <th:block th:with="term=${pair.getLeft()},totalSubj=${pair.getRight().size()},records=${pair.getRight()}">
+                                    <!-- Mỗi subject index -->
+                                    <th:block th:each="i:${#numbers.sequence(0, totalSubj - 1)}">
+                                        <!-- Mỗi subject -->
+                                        <th:block th:with="record=${records.get(i)}">
+                                            <tr th:attr="data-term=${term},data-subject=${record.getSubjectCode()},data-status=${record.getStatus()},data-mark=${record.getAvgMark()}">
+                                                <td th:if="${i == 0}" th:rowspan="${totalSubj}" class="text-side-content term">
+                                                    <div class="side-content center">
+                                                        Học kỳ
+                                                        <span th:utext="${term}"></span>
+                                                    </div>
+                                                </td>
+                                                <td th:utext="${record.getSubjectCode()}"></td>
+                                                <td th:utext="${record.getSubjectName()}"></td>
+                                                <td th:utext="${record.getCredit()}"></td>
+                                                <td align="center" th:utext="${record.getAvgMark() != null ? record.getAvgMark() : '-'}"></td>
+                                                <td>
+                                                    <span th:if="${record.getStatus().equals('Passed')}" class="badge bgm-green">Passed</span>
+                                                    <span th:if="${record.getStatus().equals('Fail')}" class="badge bgm-red">Fail</span>
+                                                    <span th:if="${record.getStatus().equals('Studying')}" class="badge bgm-amber">Studying</span>
+                                                    <span th:if="${record.getStatus().equals('NotStart')}" class="badge bgm-blue">NotStart</span>
+                                                </td>
+                                                <td th:utext="${record.getSemester()}"></td>
+                                            </tr>
+                                        </th:block>
+                                    </th:block>
+                                </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- /.box -->
+
+        </section><!-- /.content -->
+    </div>
+    <th:block layout:fragment="scripts">
+        <script src="http://cd.capstone-hcm.club/stpm.phase.detail.js"></script>
+    </th:block>
+</body>
+</html>
