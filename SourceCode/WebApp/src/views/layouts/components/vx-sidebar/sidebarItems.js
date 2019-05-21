@@ -7,7 +7,7 @@ export default [
   },
   {
     url: null,
-    name: "Kho sách",
+    name: "Sách của tôi",
     slug: "books",
     icon: "BookIcon",
     submenu: [

@@ -16,7 +16,9 @@
               >
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2">LIÊN LẠC</span>
+                <a href="tel:0796870446">
+                  <span class="text-sm font-semibold ml-2">LIÊN LẠC</span>
+                </a>
               </div>
 
               <div
