@@ -34,62 +34,62 @@
 
 <script>
 export default {
-  name: "VxSidebarItem",
-  props: {
-    icon: {
-      default: "",
-      type: String
+    name: "VxSidebarItem",
+    props: {
+        icon: {
+            default: "",
+            type: String
+        },
+        iconSmall: {
+            default: false,
+            type: Boolean
+        },
+        iconPack: {
+            default: "material-icons",
+            type: String
+        },
+        href: {
+            default: "#",
+            type: String
+        },
+        to: {
+            default: null,
+            type: String
+        },
+        index: {
+            default: null,
+            type: [String, Number]
+        },
+        featherIcon: {
+            default: true,
+            type: Boolean
+        },
+        target: {
+            default: "_self",
+            type: String
+        },
+        isDisabled: {
+            default: false,
+            type: Boolean
+        }
     },
-    iconSmall: {
-      default: false,
-      type: Boolean
+    data() {
+        return {
+            activeLink: false
+        };
     },
-    iconPack: {
-      default: "material-icons",
-      type: String
+    watch: {
+        $route() {
+            this.CheckIsActive();
+        }
     },
-    href: {
-      default: "#",
-      type: String
+    methods: {
+        CheckIsActive() {
+            // No duplicate menu
+        }
     },
-    to: {
-      default: null,
-      type: String
-    },
-    index: {
-      default: null,
-      type: [String, Number]
-    },
-    featherIcon: {
-      default: true,
-      type: Boolean
-    },
-    target: {
-      default: "_self",
-      type: String
-    },
-    isDisabled: {
-      default: false,
-      type: Boolean
+    updated() {
+        this.CheckIsActive();
     }
-  },
-  data() {
-    return {
-      activeLink: false
-    };
-  },
-  watch: {
-    $route() {
-      this.CheckIsActive();
-    }
-  },
-  methods: {
-    CheckIsActive() {
-      // No duplicate menu
-    }
-  },
-  updated() {
-    this.CheckIsActive();
-  }
 };
 </script>

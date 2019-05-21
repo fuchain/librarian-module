@@ -1,5 +1,5 @@
 import tokenExpiresIn from "./tokenExpiresIn";
 
 export default function() {
-  return tokenExpiresIn() <= 1;
+    return tokenExpiresIn() <= 1;
 }

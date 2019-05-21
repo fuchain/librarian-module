@@ -42,3 +42,10 @@ target/
 pom.properies
 *.MF
 SourceCode/WebServer/out/
+
+logs
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+build
