@@ -15,6 +15,12 @@
           <h6 class="font-bold">{{ item.code }}</h6>
         </div>
 
+        <vs-progress
+          :indeterminate="!item.user"
+          :percent="item.user ? 100 : 0"
+          color="primary"
+        >primary</vs-progress>
+
         <!-- TITLE & DESCRIPTION -->
         <div class="my-4">
           <h6 class="truncate font-semibold mb-1">{{ item.name }}</h6>

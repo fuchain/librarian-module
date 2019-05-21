@@ -25,7 +25,10 @@
                 <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4" v-if="!item.user"/>
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4" v-if="item.user"/>
 
-                <span class="text-sm font-semibold ml-2">{{ item.user ? "LIÊN LẠC" : "CHI TIẾT" }}</span>
+                <span
+                  class="text-sm font-semibold ml-2"
+                  @click="triggerCall(item.user ? true : false)"
+                >{{ item.user ? "LIÊN LẠC" : "CHI TIẾT" }}</span>
               </div>
             </div>
           </template>
@@ -70,11 +73,15 @@ export default {
     }
   },
   methods: {
+    triggerCall(check) {
+      if (!check) return;
+      window.location.href = "tel:0796870446";
+    },
     openConfirm() {
       this.$vs.dialog({
         type: "confirm",
         color: "primary",
-        title: `Xác nhận`,
+        title: "Xác nhận",
         text:
           "Bạn có chắc là bạn đã nhận được sách, bạn đã kiểm tra tình trạng quyển sách chưa?",
         accept: this.acceptAlert

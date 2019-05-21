@@ -1,6 +1,6 @@
 <template>
   <div id="ecommerce-wishlist-demo">
-    <h2 class="mb-6">Sách đang giữ</h2>
+    <h2 class="mb-6">Sách đang mượn</h2>
     <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
       <div
         class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"

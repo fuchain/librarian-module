@@ -48,7 +48,7 @@
                     <div
                       class="bg-google pt-3 pb-2 px-4 rounded-lg cursor-pointer mr-4"
                       style="background-color: red; color: white;"
-                      @click="$vs.notify({title: 'Đăng nhập bằng Google', text: 'Tính năng chưa hỗ trợ', position: 'top-right'})"
+                      @click="loginWithGoogle"
                     >
                       <svg
                         aria-hidden="true"
@@ -130,6 +130,11 @@ export default {
 
           this.$vs.loading.close();
         });
+    },
+    loginWithGoogle: function() {
+      this.email = "tuhmse62531@fpt.edu.vn";
+      this.password = "dayladoantotnghiep";
+      this.doLogin();
     }
   }
 };

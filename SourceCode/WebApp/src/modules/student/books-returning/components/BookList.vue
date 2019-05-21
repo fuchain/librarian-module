@@ -16,9 +16,7 @@
               >
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
 
-                <a href="tel:0796870446">
-                  <span class="text-sm font-semibold ml-2">LIÊN LẠC</span>
-                </a>
+                <span class="text-sm font-semibold ml-2" @click="triggerCall()">LIÊN LẠC</span>
               </div>
 
               <div
@@ -72,7 +70,11 @@ export default {
       ];
     }
   },
-  methods: {}
+  methods: {
+    triggerCall() {
+      window.location.href = "tel:0796870446";
+    }
+  }
 };
 </script>
 
