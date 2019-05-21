@@ -7,7 +7,6 @@
     Author URL: http://www.themeforest.net/user/pixinvent
 ========================================================================================== -->
 
-
 <template>
   <div id="faq-page">
     <!-- JUMBOTRON -->
@@ -110,14 +109,14 @@ export default {
         {
           id: 2,
           categoryId: 2,
-          question: "Quy trình mượn sấch",
+          question: "Quy trình mượn sách",
           ans:
             "Lorem ipsum dolor sit amet, sed paulo libris ex, at usu zril minimum, intellegat interesset at cum. Eum porro tempor facilis ei, latine ornatus noluisse sit ad. Nam in inermis inimicus. Vel alia inciderint ad, duo denique explicari deterruisset ex."
         },
         {
           id: 3,
           categoryId: 2,
-          question: "Quy trình trả sấch",
+          question: "Quy trình trả sách",
           ans:
             "Lorem ipsum dolor sit amet, sed paulo libris ex, at usu zril minimum, intellegat interesset at cum. Eum porro tempor facilis ei, latine ornatus noluisse sit ad. Nam in inermis inimicus. Vel alia inciderint ad, duo denique explicari deterruisset ex."
         },
@@ -141,45 +140,46 @@ export default {
   computed: {
     filteredFaq() {
       return this.faqs.filter(faq => {
-        if (this.faqFilter == 1)
+        if (this.faqFilter === 1) {
           return (
             faq.question
               .toLowerCase()
               .includes(this.faqSearchQuery.toLowerCase()) ||
             faq.ans.toLowerCase().includes(this.faqSearchQuery.toLowerCase())
           );
-        else if (this.faqFilter == 2)
+        } else if (this.faqFilter === 2) {
           return (
-            faq.categoryId == 2 &&
+            faq.categoryId === 2 &&
             (faq.question
               .toLowerCase()
               .includes(this.faqSearchQuery.toLowerCase()) ||
               faq.ans.toLowerCase().includes(this.faqSearchQuery.toLowerCase()))
           );
-        else if (this.faqFilter == 3)
+        } else if (this.faqFilter === 3) {
           return (
-            faq.categoryId == 3 &&
+            faq.categoryId === 3 &&
             (faq.question
               .toLowerCase()
               .includes(this.faqSearchQuery.toLowerCase()) ||
               faq.ans.toLowerCase().includes(this.faqSearchQuery.toLowerCase()))
           );
-        else if (this.faqFilter == 4)
+        } else if (this.faqFilter === 4) {
           return (
-            faq.categoryId == 4 &&
+            faq.categoryId === 4 &&
             (faq.question
               .toLowerCase()
               .includes(this.faqSearchQuery.toLowerCase()) ||
               faq.ans.toLowerCase().includes(this.faqSearchQuery.toLowerCase()))
           );
-        else if (this.faqFilter == 5)
+        } else if (this.faqFilter === 5) {
           return (
-            faq.categoryId == 5 &&
+            faq.categoryId === 5 &&
             (faq.question
               .toLowerCase()
               .includes(this.faqSearchQuery.toLowerCase()) ||
               faq.ans.toLowerCase().includes(this.faqSearchQuery.toLowerCase()))
           );
+        }
       });
     }
   },

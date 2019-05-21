@@ -50,8 +50,8 @@ Vue.use(VueTimeago, {
   // We use `date-fns` under the hood
   // So you can use all locales from it
   locales: {
-    "zh-CN": require("date-fns/locale/zh_cn"),
-    ja: require("date-fns/locale/ja")
+    // "zh-CN": require("date-fns/locale/zh_cn"),
+    // ja: require("date-fns/locale/ja")
   }
 });
 
