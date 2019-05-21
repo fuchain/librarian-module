@@ -57,7 +57,7 @@ Vue.use(VueTimeago, {
 
 Vue.config.productionTip = false;
 
-new Vue({
+window.vue = new Vue({
   router,
   store,
   render: h => h(App)
