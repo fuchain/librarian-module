@@ -67,7 +67,7 @@ export default {
           description:
             "Jack Welch knows how to win. During his 40-year career at General Electric, he led the company to year-after-year success around the globe, in multiple markets, against brutal competition. His honest, be-the-best style of management became the gold standard in business, with his relentless focus on people, teamwork and profits.",
           image: "https://i.imgur.com/2j6B1n5.jpg",
-          code: "PRJ321"
+          code: "SWM301"
         }
       ];
     }
