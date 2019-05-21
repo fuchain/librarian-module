@@ -22,9 +22,10 @@
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               >
-                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4" v-if="!item.user"/>
+                <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4" v-if="item.user"/>
 
-                <span class="text-sm font-semibold ml-2">CHI TIẾT</span>
+                <span class="text-sm font-semibold ml-2">{{ item.user ? "LIÊN LẠC" : "CHI TIẾT" }}</span>
               </div>
             </div>
           </template>
