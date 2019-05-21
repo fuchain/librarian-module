@@ -24,7 +24,7 @@
         <vs-input class="w-full" v-model="subjectCode"/>
       </div>
       <div class="vx-col sm:w-1/3 w-full">
-        <vs-button type="border" class="mr-3 mb-2" @click="searchSubject">Tìm sách</vs-button>
+        <vs-button type="border" class="w-full" @click="searchSubject">Tìm sách</vs-button>
       </div>
     </div>
     <div class="vx-row mb-6">

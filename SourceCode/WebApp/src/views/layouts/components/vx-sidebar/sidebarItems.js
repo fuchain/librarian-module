@@ -1,7 +1,7 @@
 export default [
   {
     url: "/",
-    name: "Thư viện",
+    name: "Trang chính",
     slug: "home",
     icon: "HomeIcon"
   },
