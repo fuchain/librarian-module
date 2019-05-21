@@ -58,6 +58,12 @@
             v-model="receiveStudentID"
             class="w-full mt-5"
           />
+          <vs-button
+            class="w-full mt-5"
+            type="relief"
+            color="primary"
+            @click="loadStudentName"
+          >Xác nhận tên sinh viên nhận</vs-button>
           <vs-input
             size="large"
             label="Họ tên"
@@ -91,12 +97,13 @@ export default {
       studentID: "SE62532",
       fullName: "Huỳnh Minh Tú",
       bookID: "FULIBHCM29384",
-      bookName: "Introduce to Software Engineering"
+      bookName: "Introduce to Software Engineering",
+      receiveStudentName: ""
     };
   },
   methods: {
     formSubmitted() {
-      this.$router.push("/books");
+      this.$router.push("/books/returning");
     },
     handleStepChange(id1, id2) {
       console.log(id1);
@@ -117,6 +124,11 @@ export default {
     async loading() {
       await this.fakeLoad();
       return true;
+    },
+    async loadStudentName() {
+      await this.fakeLoad();
+
+      this.receiveStudentName = "Đoàn Vũ Phong";
     }
   },
   components: {

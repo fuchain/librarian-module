@@ -49,15 +49,6 @@ export default {
     wishListitems() {
       return [
         {
-          objectID: 4,
-          name: "Introduce to Software Engineering",
-          description:
-            "Introduce to Software Engineering for Introduce to Software Engineering in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "4 ngày",
-          code: "SWE101"
-        },
-        {
           objectID: 5,
           name: "Advance Database",
           description:
@@ -66,6 +57,15 @@ export default {
           time: "4 ngày",
           code: "DBI201",
           user: "SE62535"
+        },
+        {
+          objectID: 4,
+          name: "Introduce to Software Engineering",
+          description:
+            "Introduce to Software Engineering for Introduce to Software Engineering in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          time: "4 ngày",
+          code: "SWE101"
         }
       ];
     }
