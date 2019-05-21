@@ -41,6 +41,11 @@ const router = new Router({
             import("@/modules/student/books-returning/BooksReturning.vue")
         },
         {
+          path: "books/request",
+          component: () =>
+            import("@/modules/student/books-request/BooksRequest.vue")
+        },
+        {
           path: "books/requesting",
           component: () =>
             import("@/modules/student/books-requesting/BooksRequesting.vue")

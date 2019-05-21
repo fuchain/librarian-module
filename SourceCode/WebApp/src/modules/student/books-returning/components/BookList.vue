@@ -12,14 +12,11 @@
             <div class="flex flex-wrap">
               <div
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
+                v-if="item.user"
               >
-                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" v-if="item.user"/>
+                <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
 
-                <span
-                  class="text-sm font-semibold ml-2"
-                  @click="$router.push('/books/confirm')"
-                  :hidden="!item.user"
-                >ĐÃ TRẢ</span>
+                <span class="text-sm font-semibold ml-2">LIÊN LẠC</span>
               </div>
 
               <div

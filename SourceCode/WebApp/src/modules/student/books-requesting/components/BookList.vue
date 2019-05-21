@@ -12,13 +12,11 @@
             <div class="flex flex-wrap">
               <div
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
+                v-if="item.user"
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
 
-                <span
-                  class="text-sm font-semibold ml-2"
-                  @click="$router.push('/books/confirm')"
-                >XÁC NHẬN</span>
+                <span class="text-sm font-semibold ml-2" @click="openConfirm">ĐÃ NHẬN SÁCH</span>
               </div>
 
               <div
@@ -49,10 +47,49 @@ export default {
   },
   computed: {
     wishListitems() {
-      return [];
+      return [
+        {
+          objectID: 4,
+          name: "Advance Java (Java Web)",
+          description:
+            "Best subject in FU. Goodluck with this subject, hope you can pass it!",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          user: "SE62533",
+          code: "PRJ321"
+        },
+        {
+          objectID: 7,
+          name: "Software Project Management",
+          description:
+            "Jack Welch knows how to win. During his 40-year career at General Electric, he led the company to year-after-year success around the globe, in multiple markets, against brutal competition. His honest, be-the-best style of management became the gold standard in business, with his relentless focus on people, teamwork and profits.",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          code: "PRJ321"
+        }
+      ];
     }
   },
-  methods: {}
+  methods: {
+    openConfirm() {
+      this.$vs.dialog({
+        type: "confirm",
+        color: "primary",
+        title: `Xác nhận`,
+        text:
+          "Bạn có chắc là bạn đã nhận được sách, bạn đã kiểm tra tình trạng quyển sách chưa?",
+        accept: this.acceptAlert
+      });
+    },
+    acceptAlert(color) {
+      this.$router.push("/books");
+
+      this.$vs.notify({
+        color: "primary",
+        title: "Thành công",
+        text: "Đã xác nhận mượn thành công sách",
+        position: "top-center"
+      });
+    }
+  }
 };
 </script>
 
