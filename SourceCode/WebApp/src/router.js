@@ -29,6 +29,11 @@ const router = new Router({
         {
           path: "books",
           component: () => import("@/modules/student/books/Books.vue")
+        },
+        {
+          path: "book-return",
+          component: () =>
+            import("@/modules/student/book-return/BookReturn.vue")
         }
       ]
     },

@@ -1,6 +1,4 @@
 <template>
-  <!-- <div class="item-grid-view vx-row match-height">
-  <div class="vx-col" :class="gridColumnWidth" v-for="item in items" :key="item.objectID">-->
   <vx-card class="grid-view-item mb-base overflow-hidden">
     <template slot="no-body">
       <!-- ITEM IMAGE -->
