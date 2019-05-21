@@ -6,10 +6,27 @@ export default [
     icon: "HomeIcon"
   },
   {
-    url: "/books",
-    name: "Sách đang mượn",
+    url: null,
+    name: "Kho sách",
     slug: "books",
-    icon: "BookIcon"
+    icon: "BookIcon",
+    submenu: [
+      {
+        url: "/books",
+        name: "Sách đang mượn",
+        slug: "books"
+      },
+      {
+        url: "/books/returning",
+        name: "Sách đang trả",
+        slug: "returning-books"
+      },
+      {
+        url: "/books/requesting",
+        name: "Sách đang yêu cầu",
+        slug: "requesting-books"
+      }
+    ]
   },
   {
     url: "/request",

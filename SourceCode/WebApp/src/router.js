@@ -31,9 +31,19 @@ const router = new Router({
           component: () => import("@/modules/student/books/Books.vue")
         },
         {
-          path: "book-return",
+          path: "books/return",
           component: () =>
-            import("@/modules/student/book-return/BookReturn.vue")
+            import("@/modules/student/books-return/BooksReturn.vue")
+        },
+        {
+          path: "books/returning",
+          component: () =>
+            import("@/modules/student/books-returning/BooksReturning.vue")
+        },
+        {
+          path: "books/requesting",
+          component: () =>
+            import("@/modules/student/books-requesting/BooksRequesting.vue")
         }
       ]
     },

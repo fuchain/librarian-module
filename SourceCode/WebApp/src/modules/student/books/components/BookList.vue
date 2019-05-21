@@ -17,7 +17,7 @@
 
                 <span
                   class="text-sm font-semibold ml-2"
-                  @click="$router.push('/book-return')"
+                  @click="$router.push('/books/return')"
                 >TRẢ SÁCH</span>
               </div>
 
@@ -35,7 +35,7 @@
     </div>
 
     <vx-card title="Bạn đang không giữ sách nào." v-else>
-      <vs-button @click="$router.push('/request')">Mượn sách</vs-button>
+      <vs-button @click="$router.push('/books/request')">Mượn sách</vs-button>
     </vx-card>
   </div>
 </template>
