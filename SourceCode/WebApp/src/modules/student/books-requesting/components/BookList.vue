@@ -87,7 +87,9 @@ export default {
         accept: this.acceptAlert
       });
     },
-    acceptAlert(color) {
+    async acceptAlert(color) {
+      await this.fakeLoad();
+
       this.$router.push("/books");
 
       this.$vs.notify({
@@ -95,6 +97,18 @@ export default {
         title: "Thành công",
         text: "Đã xác nhận mượn thành công sách",
         position: "top-center"
+      });
+    },
+    async fakeLoad() {
+      return new Promise((resolve, reject) => {
+        this.$vs.loading();
+        setTimeout(
+          function() {
+            this.$vs.loading.close();
+            resolve();
+          }.bind(this),
+          3000
+        );
       });
     }
   }

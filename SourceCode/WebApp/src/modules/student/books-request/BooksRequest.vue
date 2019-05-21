@@ -18,7 +18,7 @@
     </div>
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
-        <span>Mã môn</span>
+        <span>Mã môn hoặc Tên môn</span>
       </div>
       <div class="vx-col sm:w-1/3 w-full">
         <vs-input class="w-full" v-model="subjectCode"/>
@@ -44,7 +44,11 @@
     </div>
     <div class="vx-row">
       <div class="vx-col sm:w-2/3 w-full ml-auto">
-        <vs-button class="mr-3 mb-2" @click="submit">Đăng kí</vs-button>
+        <vs-button
+          class="mr-3 mb-2"
+          @click="submit"
+          :disabled="!subjectCode.trim() || !bookCode.trim()"
+        >Đăng kí</vs-button>
       </div>
     </div>
   </vx-card>
