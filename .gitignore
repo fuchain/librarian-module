@@ -49,3 +49,4 @@ logs
 .gradle
 
 build
+SourceCode/WebServer/.idea/
