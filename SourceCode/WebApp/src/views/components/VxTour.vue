@@ -80,16 +80,16 @@
 
 <script>
 export default {
-  name: "vx-tour",
-  props: {
-    steps: {
-      required: true,
-      type: Array
+    name: "vx-tour",
+    props: {
+        steps: {
+            required: true,
+            type: Array
+        }
+    },
+    mounted() {
+        this.$tours["vuesaxTour"].start();
     }
-  },
-  mounted() {
-    this.$tours["vuesaxTour"].start();
-  }
 };
 </script>
 

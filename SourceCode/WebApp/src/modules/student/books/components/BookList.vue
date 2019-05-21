@@ -109,91 +109,91 @@
 
 <script>
 export default {
-  data() {
-    return {
-      selected: [],
-      books: [
-        {
-          id: "FUB123001",
-          name: "Introduce to Software Engineering",
-          subject: "SWE101",
-          category: "Software Engineering",
-          status: "đang giữ"
-        },
-        {
-          id: "FUB123002",
-          name: "Basic Mathematic for Engineering",
-          subject: "MAE101",
-          category: "Software Engineering",
-          status: "đang giữ"
-        },
-        {
-          id: "FUB123003",
-          name: "Advanced Mathematic for Engineering",
-          subject: "MAE102",
-          category: "Software Engineering",
-          status: "hư hỏng"
-        },
-        {
-          id: "FUB123004",
-          name: "Computer Networking",
-          subject: "NWC101",
-          category: "Software Engineering",
-          status: "đang giữ"
-        },
-        {
-          id: "FUB123005",
-          name: "Java Web for Dummies",
-          subject: "PRJ321",
-          category: "Software Engineering",
-          status: "đang giữ"
+    data() {
+        return {
+            selected: [],
+            books: [
+                {
+                    id: "FUB123001",
+                    name: "Introduce to Software Engineering",
+                    subject: "SWE101",
+                    category: "Software Engineering",
+                    status: "đang giữ"
+                },
+                {
+                    id: "FUB123002",
+                    name: "Basic Mathematic for Engineering",
+                    subject: "MAE101",
+                    category: "Software Engineering",
+                    status: "đang giữ"
+                },
+                {
+                    id: "FUB123003",
+                    name: "Advanced Mathematic for Engineering",
+                    subject: "MAE102",
+                    category: "Software Engineering",
+                    status: "hư hỏng"
+                },
+                {
+                    id: "FUB123004",
+                    name: "Computer Networking",
+                    subject: "NWC101",
+                    category: "Software Engineering",
+                    status: "đang giữ"
+                },
+                {
+                    id: "FUB123005",
+                    name: "Java Web for Dummies",
+                    subject: "PRJ321",
+                    category: "Software Engineering",
+                    status: "đang giữ"
+                }
+            ],
+            itemsPerPage: 4,
+            isMounted: false
+        };
+    },
+    computed: {
+        currentPage() {
+            if (this.isMounted) {
+                return this.$refs.table.currentx;
+            }
+            return 0;
         }
-      ],
-      itemsPerPage: 4,
-      isMounted: false
-    };
-  },
-  computed: {
-    currentPage() {
-      if (this.isMounted) {
-        return this.$refs.table.currentx;
-      }
-      return 0;
-    }
-  },
-  methods: {
-    getOrderStatusColor(status) {
-      if (status === "đang giữ") return "success";
-      if (status === "hư hỏng") return "warning";
-      if (status === "đang chuyển") return "info";
-      return "primary";
     },
-    getPopularityColor(num) {
-      if (num > 90) return "success";
-      if (num > 70) return "primary";
-      if (num >= 50) return "warning";
-      if (num < 50) return "danger";
-      return "primary";
-    },
-    formatData(data) {
-      // formats data received from API
-      let formattedData = data.map(item => {
-        const fields = item.fields;
-        let obj = {};
-        for (const key of Object.keys(fields)) {
-          obj[key] =
+    methods: {
+        getOrderStatusColor(status) {
+            if (status === "đang giữ") return "success";
+            if (status === "hư hỏng") return "warning";
+            if (status === "đang chuyển") return "info";
+            return "primary";
+        },
+        getPopularityColor(num) {
+            if (num > 90) return "success";
+            if (num > 70) return "primary";
+            if (num >= 50) return "warning";
+            if (num < 50) return "danger";
+            return "primary";
+        },
+        formatData(data) {
+            // formats data received from API
+            let formattedData = data.map(item => {
+                const fields = item.fields;
+                let obj = {};
+                for (const key of Object.keys(fields)) {
+                    obj[key] =
             fields[key].stringValue ||
             fields[key].integerValue ||
             fields[key].doubleValue;
+                }
+                return obj;
+            });
+            return formattedData;
         }
-        return obj;
-      });
-      return formattedData;
+    },
+    mounted() {
+        this.isMounted = true;
     }
-  },
-  mounted() {
-    this.isMounted = true;
-  }
 };
 </script>
 

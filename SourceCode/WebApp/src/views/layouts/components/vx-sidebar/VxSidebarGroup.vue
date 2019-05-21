@@ -69,153 +69,153 @@
 import VxSidebarItem from "./VxSidebarItem.vue";
 
 export default {
-  name: "vx-sidebar-group",
-  props: {
-    openHover: {
-      default: false,
-      type: Boolean
-    },
-    open: {
-      default: false,
-      type: Boolean
-    },
-    group: {
-      type: Object
-    },
-    groupIndex: {
-      type: Number
-    }
-  },
-  data: () => ({
-    maxHeight: "0px",
-    openItems: false
-  }),
-  computed: {
-    sidebarItemsMin() {
-      return this.$store.state.sidebarItemsMin;
-    },
-    styleItems() {
-      return {
-        maxHeight: this.maxHeight
-      };
-    },
-    itemIcon() {
-      return index => {
-        if (!((index.match(/\./g) || []).length > 1)) return "CircleIcon";
-      };
-    },
-    isGroupActive() {
-      return sidebarItem => {
-        const path = this.$route.fullPath;
-        let open = false;
-        let func = function(sidebarItem) {
-          if (sidebarItem.submenu) {
-            sidebarItem.submenu.forEach(item => {
-              if (path === item.url) {
-                open = true;
-              } else if (item.submenu) {
-                func(item);
-              }
-            });
-          }
-        };
-
-        func(sidebarItem);
-        return open;
-      };
-    }
-  },
-  watch: {
-    // OPEN & CLOSES DROPDOWN ON ROUTE CHANGE
-    $route() {
-      if (this.sidebarItemsMin) return;
-      let scrollHeight = this.scrollHeight;
-      if (this.openItems && !this.open) {
-        this.maxHeight = `${scrollHeight}px`;
-        setTimeout(() => {
-          this.maxHeight = `${0}px`;
-        }, 50);
-      } else if (this.open) {
-        this.maxHeight = `${scrollHeight}px`;
-        setTimeout(() => {
-          this.maxHeight = "none";
-        }, 300);
-      }
-    },
-    maxHeight() {
-      this.openItems = this.maxHeight !== "0px";
-    },
-    // OPEN AND CLOSES DROPDOWN MENU ON SIDEBAR COLLAPSE AND DEFAULT VIEW
-    "$store.state.sidebarItemsMin"(val) {
-      let scrollHeight = this.$refs.items.scrollHeight;
-      if (!val && this.open) {
-        this.maxHeight = `${scrollHeight}px`;
-        setTimeout(() => {
-          this.maxHeight = "none";
-        }, 300);
-      } else {
-        this.maxHeight = `${scrollHeight}px`;
-        setTimeout(() => {
-          this.maxHeight = "0px";
-        }, 50);
-      }
-      if (val && this.open) {
-        this.maxHeight = `${scrollHeight}px`;
-        setTimeout(() => {
-          this.maxHeight = "0px";
-        }, 250);
-      }
-    }
-  },
-  methods: {
-    clickGroup() {
-      if (!this.openHover) {
-        let thisScrollHeight = this.$refs.items.scrollHeight;
-        if (this.maxHeight === "0px") {
-          this.maxHeight = `${thisScrollHeight}px`;
-          setTimeout(() => {
-            this.maxHeight = "none";
-          }, 300);
-        } else {
-          this.maxHeight = `${thisScrollHeight}px`;
-          setTimeout(() => {
-            this.maxHeight = `${0}px`;
-          }, 50);
+    name: "vx-sidebar-group",
+    props: {
+        openHover: {
+            default: false,
+            type: Boolean
+        },
+        open: {
+            default: false,
+            type: Boolean
+        },
+        group: {
+            type: Object
+        },
+        groupIndex: {
+            type: Number
         }
+    },
+    data: () => ({
+        maxHeight: "0px",
+        openItems: false
+    }),
+    computed: {
+        sidebarItemsMin() {
+            return this.$store.state.sidebarItemsMin;
+        },
+        styleItems() {
+            return {
+                maxHeight: this.maxHeight
+            };
+        },
+        itemIcon() {
+            return index => {
+                if (!((index.match(/\./g) || []).length > 1)) return "CircleIcon";
+            };
+        },
+        isGroupActive() {
+            return sidebarItem => {
+                const path = this.$route.fullPath;
+                let open = false;
+                let func = function(sidebarItem) {
+                    if (sidebarItem.submenu) {
+                        sidebarItem.submenu.forEach(item => {
+                            if (path === item.url) {
+                                open = true;
+                            } else if (item.submenu) {
+                                func(item);
+                            }
+                        });
+                    }
+                };
 
-        this.$parent.$children.map(child => {
-          if (child.isGroupActive) {
-            if (child !== this && !child.open && child.maxHeight !== "0px") {
-              setTimeout(() => {
-                child.maxHeight = `${0}px`;
-              }, 50);
+                func(sidebarItem);
+                return open;
+            };
+        }
+    },
+    watch: {
+    // OPEN & CLOSES DROPDOWN ON ROUTE CHANGE
+        $route() {
+            if (this.sidebarItemsMin) return;
+            let scrollHeight = this.scrollHeight;
+            if (this.openItems && !this.open) {
+                this.maxHeight = `${scrollHeight}px`;
+                setTimeout(() => {
+                    this.maxHeight = `${0}px`;
+                }, 50);
+            } else if (this.open) {
+                this.maxHeight = `${scrollHeight}px`;
+                setTimeout(() => {
+                    this.maxHeight = "none";
+                }, 300);
             }
-          }
-        });
-      }
+        },
+        maxHeight() {
+            this.openItems = this.maxHeight !== "0px";
+        },
+        // OPEN AND CLOSES DROPDOWN MENU ON SIDEBAR COLLAPSE AND DEFAULT VIEW
+        "$store.state.sidebarItemsMin"(val) {
+            let scrollHeight = this.$refs.items.scrollHeight;
+            if (!val && this.open) {
+                this.maxHeight = `${scrollHeight}px`;
+                setTimeout(() => {
+                    this.maxHeight = "none";
+                }, 300);
+            } else {
+                this.maxHeight = `${scrollHeight}px`;
+                setTimeout(() => {
+                    this.maxHeight = "0px";
+                }, 50);
+            }
+            if (val && this.open) {
+                this.maxHeight = `${scrollHeight}px`;
+                setTimeout(() => {
+                    this.maxHeight = "0px";
+                }, 250);
+            }
+        }
     },
-    mouseover() {
-      if (this.openHover) {
-        let scrollHeight = this.$refs.items.scrollHeight;
-        this.maxHeight = `${scrollHeight}px`;
-      }
+    methods: {
+        clickGroup() {
+            if (!this.openHover) {
+                let thisScrollHeight = this.$refs.items.scrollHeight;
+                if (this.maxHeight === "0px") {
+                    this.maxHeight = `${thisScrollHeight}px`;
+                    setTimeout(() => {
+                        this.maxHeight = "none";
+                    }, 300);
+                } else {
+                    this.maxHeight = `${thisScrollHeight}px`;
+                    setTimeout(() => {
+                        this.maxHeight = `${0}px`;
+                    }, 50);
+                }
+
+                this.$parent.$children.map(child => {
+                    if (child.isGroupActive) {
+                        if (child !== this && !child.open && child.maxHeight !== "0px") {
+                            setTimeout(() => {
+                                child.maxHeight = `${0}px`;
+                            }, 50);
+                        }
+                    }
+                });
+            }
+        },
+        mouseover() {
+            if (this.openHover) {
+                let scrollHeight = this.$refs.items.scrollHeight;
+                this.maxHeight = `${scrollHeight}px`;
+            }
+        },
+        mouseout() {
+            if (this.openHover) {
+                let scrollHeight = 0;
+                this.maxHeight = `${scrollHeight}px`;
+            }
+        }
     },
-    mouseout() {
-      if (this.openHover) {
-        let scrollHeight = 0;
-        this.maxHeight = `${scrollHeight}px`;
-      }
+    components: {
+        VxSidebarItem
+    },
+    mounted() {
+        this.openItems = this.open;
+        if (this.open) {
+            this.maxHeight = "none";
+        }
     }
-  },
-  components: {
-    VxSidebarItem
-  },
-  mounted() {
-    this.openItems = this.open;
-    if (this.open) {
-      this.maxHeight = "none";
-    }
-  }
 };
 </script>
 
