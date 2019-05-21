@@ -9,8 +9,8 @@
         <!-- RATING & PRICE -->
         <div class="flex justify-between items-center">
           <div class="bg-primary flex text-white py-1 px-2 rounded">
-            <span class="text-sm mr-2">{{ item.time }}</span>
-            <feather-icon icon="ClockIcon" svgClasses="h-4 w-4"/>
+            <span class="text-sm mr-2">{{ item.user || "Đang tìm" }}</span>
+            <feather-icon icon="UserIcon" svgClasses="h-4 w-4"/>
           </div>
           <h6 class="font-bold">{{ item.code }}</h6>
         </div>

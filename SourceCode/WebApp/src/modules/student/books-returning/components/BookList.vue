@@ -13,12 +13,13 @@
               <div
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
               >
-                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" v-if="item.user"/>
 
                 <span
                   class="text-sm font-semibold ml-2"
                   @click="$router.push('/books/confirm')"
-                >XÁC NHẬN</span>
+                  :hidden="!item.user"
+                >ĐÃ TRẢ</span>
               </div>
 
               <div
@@ -58,6 +59,16 @@ export default {
           image: "https://i.imgur.com/2j6B1n5.jpg",
           time: "4 ngày",
           code: "SWE101"
+        },
+        {
+          objectID: 5,
+          name: "Advance Database",
+          description:
+            "Advance Database for Advance Database in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          time: "4 ngày",
+          code: "DBI201",
+          user: "SE62535"
         }
       ];
     }
