@@ -29,7 +29,7 @@ export default [
     ]
   },
   {
-    url: "/request",
+    url: "/books/request",
     name: "Yêu cầu mượn sách",
     slug: "request",
     icon: "BookOpenIcon"
