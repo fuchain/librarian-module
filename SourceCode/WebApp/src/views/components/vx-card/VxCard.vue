@@ -106,145 +106,145 @@
 import Prism from "vue-prism-component";
 
 export default {
-    name: "vx-card",
-    props: {
-        title: String,
-        subtitle: String,
-        actionButtons: {
-            type: Boolean,
-            default: false
-        },
-        actionButtonsColor: {
-            type: String,
-            default: "success"
-        },
-        codeToggler: {
-            type: Boolean,
-            default: false
-        },
-        noShadow: {
-            default: false,
-            type: Boolean
-        },
-        noRadius: {
-            default: false,
-            type: Boolean
-        },
-        cardBorder: {
-            default: false,
-            type: Boolean
-        },
-        codeLanguage: {
-            default: "markup",
-            type: String
-        },
-        collapseAction: {
-            default: false,
-            type: Boolean
-        },
-        refreshContentAction: {
-            default: false,
-            type: Boolean
-        },
-        removeCardAction: {
-            default: false,
-            type: Boolean
-        }
+  name: "vx-card",
+  props: {
+    title: String,
+    subtitle: String,
+    actionButtons: {
+      type: Boolean,
+      default: false
     },
-    data() {
-        return {
-            isContentCollapsed: false,
-            showCode: false,
-            maxHeight: null,
-            cardMaxHeight: null,
-            codeContainerMaxHeight: "0px",
-            tempHidden: false
-        };
+    actionButtonsColor: {
+      type: String,
+      default: "success"
     },
-    computed: {
-        hasAction() {
-            return (
-                this.$slots.actions ||
+    codeToggler: {
+      type: Boolean,
+      default: false
+    },
+    noShadow: {
+      default: false,
+      type: Boolean
+    },
+    noRadius: {
+      default: false,
+      type: Boolean
+    },
+    cardBorder: {
+      default: false,
+      type: Boolean
+    },
+    codeLanguage: {
+      default: "markup",
+      type: String
+    },
+    collapseAction: {
+      default: false,
+      type: Boolean
+    },
+    refreshContentAction: {
+      default: false,
+      type: Boolean
+    },
+    removeCardAction: {
+      default: false,
+      type: Boolean
+    }
+  },
+  data() {
+    return {
+      isContentCollapsed: false,
+      showCode: false,
+      maxHeight: null,
+      cardMaxHeight: null,
+      codeContainerMaxHeight: "0px",
+      tempHidden: false
+    };
+  },
+  computed: {
+    hasAction() {
+      return (
+        this.$slots.actions ||
         (this.actionButtons ||
           this.collapseAction ||
           this.refreshContentAction ||
           this.removeCardAction ||
           this.codeToggler)
-            );
-        },
-        hasHeader() {
-            return this.hasAction || (this.title || this.subtitle);
-        },
-        StyleItems() {
-            return { maxHeight: this.maxHeight };
-        },
-        cardStyles() {
-            return { maxHeight: this.cardMaxHeight };
-        },
-        codeContainerStyles() {
-            return { maxHeight: this.codeContainerMaxHeight };
-        }
+      );
     },
-    methods: {
-        toggleContent() {
-            this.$refs.content.style.overflow = "hidden";
-            let scrollHeight = this.$refs.content.scrollHeight;
-            if (this.maxHeight === "1.5rem") {
-                this.maxHeight = `${scrollHeight}px`;
-                setTimeout(() => {
-                    this.maxHeight = "none";
-                    this.$refs.content.style.overflow = "hidden";
-                }, 300);
-            } else {
-                this.maxHeight = `${scrollHeight}px`;
-                setTimeout(() => {
-                    this.maxHeight = "1.5rem";
-                    this.$refs.content.style.overflow = "hidden";
-                }, 50);
-            }
-            this.isContentCollapsed = !this.isContentCollapsed;
-        },
-        refreshcard() {
-            this.tempHidden = true;
-            this.$vs.loading({
-                container: this.$refs.content,
-                scale: 0.5
-            });
-            setTimeout(() => {
-                this.$vs.loading.close(this.$refs.content);
-                this.tempHidden = false;
-            }, 3000);
-        },
-        removeCard() {
-            let scrollHeight = this.$refs.card.scrollHeight;
-            this.cardMaxHeight = `${scrollHeight}px`;
-            this.$el.style.overflow = "hidden";
-            setTimeout(() => {
-                this.cardMaxHeight = "0px";
-            }, 50);
-        },
-        toggleCode() {
-            this.tempHidden = true;
-            this.showCode = !this.showCode;
-            let scrollHeight = this.$refs.codeContainer.scrollHeight;
-            if (this.codeContainerMaxHeight === "0px") {
-                this.codeContainerMaxHeight = `${scrollHeight}px`;
-                setTimeout(() => {
-                    this.codeContainerMaxHeight = "none";
-                    this.tempHidden = false;
-                }, 300);
-            } else {
-                this.codeContainerMaxHeight = `${scrollHeight}px`;
-                setTimeout(() => {
-                    this.codeContainerMaxHeight = "0px";
-                    this.tempHidden = false;
-                }, 150);
-            }
-        }
+    hasHeader() {
+      return this.hasAction || (this.title || this.subtitle);
     },
-    components: {
-        Prism
+    StyleItems() {
+      return { maxHeight: this.maxHeight };
+    },
+    cardStyles() {
+      return { maxHeight: this.cardMaxHeight };
+    },
+    codeContainerStyles() {
+      return { maxHeight: this.codeContainerMaxHeight };
     }
+  },
+  methods: {
+    toggleContent() {
+      this.$refs.content.style.overflow = "hidden";
+      let scrollHeight = this.$refs.content.scrollHeight;
+      if (this.maxHeight === "1.5rem") {
+        this.maxHeight = `${scrollHeight}px`;
+        setTimeout(() => {
+          this.maxHeight = "none";
+          this.$refs.content.style.overflow = "hidden";
+        }, 300);
+      } else {
+        this.maxHeight = `${scrollHeight}px`;
+        setTimeout(() => {
+          this.maxHeight = "1.5rem";
+          this.$refs.content.style.overflow = "hidden";
+        }, 50);
+      }
+      this.isContentCollapsed = !this.isContentCollapsed;
+    },
+    refreshcard() {
+      this.tempHidden = true;
+      this.$vs.loading({
+        container: this.$refs.content,
+        scale: 0.5
+      });
+      setTimeout(() => {
+        this.$vs.loading.close(this.$refs.content);
+        this.tempHidden = false;
+      }, 3000);
+    },
+    removeCard() {
+      let scrollHeight = this.$refs.card.scrollHeight;
+      this.cardMaxHeight = `${scrollHeight}px`;
+      this.$el.style.overflow = "hidden";
+      setTimeout(() => {
+        this.cardMaxHeight = "0px";
+      }, 50);
+    },
+    toggleCode() {
+      this.tempHidden = true;
+      this.showCode = !this.showCode;
+      let scrollHeight = this.$refs.codeContainer.scrollHeight;
+      if (this.codeContainerMaxHeight === "0px") {
+        this.codeContainerMaxHeight = `${scrollHeight}px`;
+        setTimeout(() => {
+          this.codeContainerMaxHeight = "none";
+          this.tempHidden = false;
+        }, 300);
+      } else {
+        this.codeContainerMaxHeight = `${scrollHeight}px`;
+        setTimeout(() => {
+          this.codeContainerMaxHeight = "0px";
+          this.tempHidden = false;
+        }, 150);
+      }
+    }
+  },
+  components: {
+    Prism
+  }
 };
 </script>
 

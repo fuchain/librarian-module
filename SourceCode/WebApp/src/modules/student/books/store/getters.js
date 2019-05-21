@@ -1,5 +1,5 @@
 const getters = {
-    books: state => state.books
+  books: state => state.books
 };
 
 export default getters;

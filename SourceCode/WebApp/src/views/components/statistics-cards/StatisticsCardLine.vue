@@ -44,84 +44,84 @@
 import VueApexCharts from "vue-apexcharts";
 
 export default {
-    props: {
-        icon: {
-            type: String,
-            required: true
-        },
-        statistic: {
-            type: [Number, String],
-            required: true
-        },
-        statisticTitle: {
-            type: String
-        },
-        chartData: {
-            type: Object,
-            required: true
-        },
-        color: {
-            type: String,
-            default: "primary"
-        },
-        chartType: {
-            type: String,
-            default: "line-chart"
-        },
-        type: {
-            type: String,
-            default: "line"
-        },
-        iconRight: {
-            type: Boolean,
-            default: false
-        }
+  props: {
+    icon: {
+      type: String,
+      required: true
     },
-    watch: {
-        themePrimaryColor() {
-            this.$refs.apexChart.updateOptions({
-                theme: { monochrome: { color: this.getHex() } }
-            });
-        }
+    statistic: {
+      type: [Number, String],
+      required: true
     },
-    computed: {
-        themePrimaryColor() {
-            return this.$store.state.themePrimaryColor;
-        }
+    statisticTitle: {
+      type: String
     },
-    methods: {
-        getHex() {
-            let rgb = window
-                .getComputedStyle(document.documentElement)
-                .getPropertyValue(`--vs-${this.color}`);
-            rgb = rgb.split(",");
-            return (
-                "#" +
+    chartData: {
+      type: Object,
+      required: true
+    },
+    color: {
+      type: String,
+      default: "primary"
+    },
+    chartType: {
+      type: String,
+      default: "line-chart"
+    },
+    type: {
+      type: String,
+      default: "line"
+    },
+    iconRight: {
+      type: Boolean,
+      default: false
+    }
+  },
+  watch: {
+    themePrimaryColor() {
+      this.$refs.apexChart.updateOptions({
+        theme: { monochrome: { color: this.getHex() } }
+      });
+    }
+  },
+  computed: {
+    themePrimaryColor() {
+      return this.$store.state.themePrimaryColor;
+    }
+  },
+  methods: {
+    getHex() {
+      let rgb = window
+        .getComputedStyle(document.documentElement)
+        .getPropertyValue(`--vs-${this.color}`);
+      rgb = rgb.split(",");
+      return (
+        "#" +
         (
-            (1 << 24) +
+          (1 << 24) +
           (Number(rgb[0]) << 16) +
           (Number(rgb[1]) << 8) +
           Number(rgb[2])
         )
-            .toString(16)
-            .slice(1)
-            );
-        }
-    },
-    components: {
-        VueApexCharts
-    },
-    created() {
-        if (this.type === "area") {
-            this.chartData.chartOptions["theme"] = {
-                monochrome: {
-                    enabled: true,
-                    color: this.getHex(this.color),
-                    shadeTo: "light",
-                    shadeIntensity: 0.65
-                }
-            };
-        }
+          .toString(16)
+          .slice(1)
+      );
     }
+  },
+  components: {
+    VueApexCharts
+  },
+  created() {
+    if (this.type === "area") {
+      this.chartData.chartOptions["theme"] = {
+        monochrome: {
+          enabled: true,
+          color: this.getHex(this.color),
+          shadeTo: "light",
+          shadeIntensity: 0.65
+        }
+      };
+    }
+  }
 };
 </script>

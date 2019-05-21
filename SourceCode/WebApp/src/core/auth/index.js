@@ -13,17 +13,17 @@ import setBoard from "./setBoard";
 import getBoard from "./getBoard";
 
 export default {
-    clearAuth,
-    getAccessToken,
-    getAccessTokenExpiresAt,
-    getRefreshToken,
-    isAuthenticated,
-    setAccessToken,
-    setAccessTokenExpiresAt,
-    setRefreshToken,
-    tokenExpiresIn,
-    tokenIsExpired,
-    tokenIsAlmostExpired,
-    setBoard,
-    getBoard
+  clearAuth,
+  getAccessToken,
+  getAccessTokenExpiresAt,
+  getRefreshToken,
+  isAuthenticated,
+  setAccessToken,
+  setAccessTokenExpiresAt,
+  setRefreshToken,
+  tokenExpiresIn,
+  tokenIsExpired,
+  tokenIsAlmostExpired,
+  setBoard,
+  getBoard
 };

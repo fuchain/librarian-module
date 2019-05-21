@@ -1,279 +1,144 @@
+<!-- =========================================================================================
+	File Name: ECommerceWishList.vue
+	Description: eCommerce Wish List Page
+	----------------------------------------------------------------------------------------
+	Item Name: Vuesax Admin - VueJS Dashboard Admin Template
+	Author: Pixinvent
+	Author URL: http://www.themeforest.net/user/pixinvent
+========================================================================================== -->
+
 <template>
-  <div id="data-list-list-view" class="data-list-container">
-    <vs-table
-      ref="table"
-      multiple
-      v-model="selected"
-      pagination
-      :max-items="itemsPerPage"
-      search
-      :data="books"
-    >
-      <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
-        <div class="flex flex-wrap-reverse items-center">
-          <!-- ACTION - DROPDOWN -->
-          <vs-dropdown vs-trigger-click class="cursor-pointer mr-4 mb-4">
-            <div
-              class="p-4 shadow-drop rounded-lg d-theme-dark-bg cursor-pointer flex items-center justify-center text-lg font-medium w-32"
-            >
-              <span class="mr-2">Dùng</span>
-              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
+  <div id="ecommerce-wishlist-demo">
+    <h2 class="mb-4">Sách đang giữ</h2>
+    <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
+      <div
+        class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
+        v-for="item in wishListitems"
+        :key="item.objectID"
+      >
+        <item-grid-view :item="item">
+          <!-- SLOT: ACTION BUTTONS -->
+          <template slot="action-buttons">
+            <div class="flex flex-wrap">
+              <!-- PRIMARY BUTTON : REMOVE -->
+              <div
+                class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
+                @click="removeItemFromWishList(item)"
+              >
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4"/>
+
+                <span class="text-sm font-semibold ml-2">TRẢ SÁCH</span>
+              </div>
+
+              <!-- SECONDARY BUTTON: MOVE TO CART -->
+              <div
+                class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+                @click="cartButtonClicked(item)"
+              >
+                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4"/>
+
+                <span class="text-sm font-semibold ml-2">CHI TIẾT</span>
+              </div>
             </div>
-
-            <vs-dropdown-menu>
-              <vs-dropdown-item>
-                <span>Truy xuất thông tin</span>
-              </vs-dropdown-item>
-              <vs-dropdown-item>
-                <span>Chuyển sách đi</span>
-              </vs-dropdown-item>
-            </vs-dropdown-menu>
-          </vs-dropdown>
-
-          <!-- ADD NEW -->
-          <div
-            class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-primary border border-solid border-primary"
-          >
-            <feather-icon icon="PlusIcon" svgClasses="h-4 w-4"/>
-            <span class="ml-2 text-base text-primary">Yêu cầu nhận sách</span>
-          </div>
-        </div>
-
-        <!-- ITEMS PER PAGE -->
-        <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
-          <div
-            class="p-4 border border-solid border-grey-light rounded-full d-theme-dark-bg cursor-pointer flex items-center justify-between font-medium"
-          >
-            <span
-              class="mr-2"
-            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ books.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : books.length }} of {{ books.length }}</span>
-            <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
-          </div>
-          <!-- <vs-button class="btn-drop" type="line" color="primary" icon-pack="feather" icon="icon-chevron-down"></vs-button> -->
-          <vs-dropdown-menu>
-            <vs-dropdown-item @click="itemsPerPage=4">
-              <span>4</span>
-            </vs-dropdown-item>
-            <vs-dropdown-item @click="itemsPerPage=10">
-              <span>10</span>
-            </vs-dropdown-item>
-            <vs-dropdown-item @click="itemsPerPage=15">
-              <span>15</span>
-            </vs-dropdown-item>
-            <vs-dropdown-item @click="itemsPerPage=20">
-              <span>20</span>
-            </vs-dropdown-item>
-          </vs-dropdown-menu>
-        </vs-dropdown>
+          </template>
+        </item-grid-view>
       </div>
+    </div>
 
-      <template slot="thead">
-        <vs-th sort-key="id">Mã sách</vs-th>
-        <vs-th sort-key="name">Tên sách</vs-th>
-        <vs-th sort-key="subject">Mã môn</vs-th>
-        <vs-th sort-key="category">Phân loại</vs-th>
-        <vs-th sort-key="status">Trạng thái</vs-th>
-      </template>
-
-      <template slot-scope="{data}">
-        <tbody>
-          <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
-            <vs-td>
-              <p class="book-id">{{ tr.id }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="book-name font-medium">{{ tr.name }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="book-subject">{{ tr.subject }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="book-category">{{ tr.category }}</p>
-            </vs-td>
-
-            <vs-td>
-              <vs-chip
-                :color="getOrderStatusColor(tr.status)"
-                class="book-order-status"
-              >{{ tr.status }}</vs-chip>
-            </vs-td>
-          </vs-tr>
-        </tbody>
-      </template>
-    </vs-table>
+    <!-- IF NO ITEMS IN CART -->
+    <vx-card title="You don't have any items in your wish list." v-else>
+      <vs-button @click="$router.push('/apps/eCommerce/shop')">Browse Shop</vs-button>
+    </vx-card>
   </div>
 </template>
 
 <script>
+const ItemGridView = () => import("./ItemGridView.vue");
+
 export default {
-    data() {
-        return {
-            selected: [],
-            books: [
-                {
-                    id: "FUB123001",
-                    name: "Introduce to Software Engineering",
-                    subject: "SWE101",
-                    category: "Software Engineering",
-                    status: "đang giữ"
-                },
-                {
-                    id: "FUB123002",
-                    name: "Basic Mathematic for Engineering",
-                    subject: "MAE101",
-                    category: "Software Engineering",
-                    status: "đang giữ"
-                },
-                {
-                    id: "FUB123003",
-                    name: "Advanced Mathematic for Engineering",
-                    subject: "MAE102",
-                    category: "Software Engineering",
-                    status: "hư hỏng"
-                },
-                {
-                    id: "FUB123004",
-                    name: "Computer Networking",
-                    subject: "NWC101",
-                    category: "Software Engineering",
-                    status: "đang giữ"
-                },
-                {
-                    id: "FUB123005",
-                    name: "Java Web for Dummies",
-                    subject: "PRJ321",
-                    category: "Software Engineering",
-                    status: "đang giữ"
-                }
-            ],
-            itemsPerPage: 4,
-            isMounted: false
-        };
-    },
-    computed: {
-        currentPage() {
-            if (this.isMounted) {
-                return this.$refs.table.currentx;
-            }
-            return 0;
-        }
-    },
-    methods: {
-        getOrderStatusColor(status) {
-            if (status === "đang giữ") return "success";
-            if (status === "hư hỏng") return "warning";
-            if (status === "đang chuyển") return "info";
-            return "primary";
+  components: {
+    ItemGridView
+  },
+  computed: {
+    wishListitems() {
+      return [
+        {
+          objectID: 1,
+          name: "Never Split The Difference",
+          description:
+            "A field-tested, game-changing approach to high-stakes negotiations-whether in the boardroom or at home.",
+          image:
+            "https://salt.tikicdn.com/cache/w1200/ts/product/08/8b/39/211e3c14160851aa742f59a342476892.jpg",
+          time: "12 ngày",
+          code: "NWC101"
         },
-        getPopularityColor(num) {
-            if (num > 90) return "success";
-            if (num > 70) return "primary";
-            if (num >= 50) return "warning";
-            if (num < 50) return "danger";
-            return "primary";
+        {
+          objectID: 2,
+          name: "Mark Zuckerberg: In His Own Words",
+          description:
+            "Mark Zuckerberg: In His Own Words details the visionary thoughts and opinions of Facebook's founder entirely through direct quotations from Zuckerberg himself. It is an intimate and authoritative look at the man behind Facebook's once-in-a-generation success. This book serves up his most thought-provoking insights, as researched and chosen by George Beahm, the New York Times bestselling editor of I, Steve: Steve Jobs In His Own Words. Mark Zuckerberg: In His Own Words provides crucial illumination of Zuckerberg and the company he's created, emphasizing insights, business strategies, and lessons learned. It is essential reading for people who seek innovative solutions applicable to their business, regardless of size, and makes an ideal gift or reference item for anyone interested in this American business icon.",
+          image:
+            "https://salt.tikicdn.com/cache/w1200/ts/product/65/b3/10/efcc9cba254c26baed7cb202eba745fd.jpg",
+          time: "12 ngày",
+          code: "NWC101"
         },
-        formatData(data) {
-            // formats data received from API
-            let formattedData = data.map(item => {
-                const fields = item.fields;
-                let obj = {};
-                for (const key of Object.keys(fields)) {
-                    obj[key] =
-            fields[key].stringValue ||
-            fields[key].integerValue ||
-            fields[key].doubleValue;
-                }
-                return obj;
-            });
-            return formattedData;
+        {
+          objectID: 3,
+          name: "Jeff Bezos: In His Own Words",
+          description:
+            "Jeff Bezos started Amazon in 1994 as an online bookstore based out of his garage. Since then, the ever-expanding enterprise has revolutionized shopping and, in many important ways, invented e-commerce as we know it. Today, Amazon is the third-most valuable company in the world, and Bezos's vast customer-oriented empire has mushroomed to include everything from cloud computing and fresh food delivery to movie production and consumer electronics. In recent years, Bezos also has invested in rocket technology, newspaper publishing, and artificial intelligence. Every arm of Bezos's business, however, is guided by a fundamental goal: to give customers what they want before they even think to ask for it. Jeff Bezos: In His Own Words offers a unique look into the mind of one of the world's most successful entrepreneurs by collecting more than 500 of Bezos's quotes on business, technology, customer service, e-commerce, innovation, entrepreneurship, and more. Meticulously curated from interviews, speeches, shareholder letters, press releases, and other sources, this book creates a comprehensive picture of Jeff Bezos, his obsessions, and what makes his ventures thrive.",
+          image:
+            "https://salt.tikicdn.com/cache/w1200/ts/product/b1/e6/a3/cd891bd031eb3503f375048414cf0843.jpg",
+          time: "12 ngày",
+          code: "NWC101"
+        },
+        {
+          objectID: 4,
+          name: "Computer Networking",
+          description:
+            "Computer Networking for Computer Networking in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          time: "12 ngày",
+          code: "NWC101"
         }
+      ];
     },
-    mounted() {
-        this.isMounted = true;
+    isInCart() {
+      return true;
+    },
+    isInWishList() {
+      return true;
     }
+  },
+  methods: {
+    removeItemFromWishList(item) {
+      this.$store.dispatch("eCommerce/toggleItemInWishList", item);
+    },
+    cartButtonClicked(item) {
+      if (this.isInCart(item.objectID)) {
+        this.$router.push("/apps/eCommerce/checkout");
+      } else {
+        this.additemInCart(item);
+        this.removeItemFromWishList(item);
+      }
+    },
+    additemInCart(item) {
+      this.$store.dispatch("eCommerce/additemInCart", item);
+    }
+  }
 };
 </script>
 
-<style lang="scss">
-#data-list-list-view {
-  .vs-con-table {
-    .vs-table--header {
-      display: flex;
-      flex-wrap: wrap-reverse;
-      margin-left: 1.5rem;
-      margin-right: 1.5rem;
-      > span {
-        display: flex;
-        flex-grow: 1;
-      }
+<style lang="scss" scoped>
+#ecommerce-wishlist-demo {
+  .item-view-primary-action-btn {
+    color: #2c2c2c !important;
+    background-color: #f6f6f6;
+    min-width: 50%;
+  }
 
-      .vs-table--search {
-        padding-top: 0;
-
-        .vs-table--search-input {
-          padding: 0.9rem 2.5rem;
-          font-size: 1rem;
-
-          & + i {
-            left: 1rem;
-          }
-
-          &:focus + i {
-            left: 1rem;
-          }
-        }
-      }
-    }
-
-    .vs-table {
-      border-collapse: separate;
-      border-spacing: 0 1.3rem;
-      padding: 0 1rem;
-
-      tr {
-        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05);
-        td {
-          padding: 20px;
-          &:first-child {
-            border-top-left-radius: 0.5rem;
-            border-bottom-left-radius: 0.5rem;
-          }
-          &:last-child {
-            border-top-right-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
-          }
-        }
-        td.td-check {
-          padding: 20px !important;
-        }
-      }
-    }
-
-    .vs-table--thead {
-      th {
-        padding-top: 0;
-        padding-bottom: 0;
-
-        .vs-table-text {
-          text-transform: uppercase;
-          font-weight: 600;
-        }
-      }
-      th.td-check {
-        padding: 0 15px !important;
-      }
-      tr {
-        background: none;
-        box-shadow: none;
-      }
-    }
-
-    .vs-table--pagination {
-      justify-content: center;
-    }
+  .item-view-secondary-action-btn {
+    min-width: 50%;
   }
 }
 </style>

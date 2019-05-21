@@ -9,9 +9,9 @@ import actions from "./actions";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-    getters,
-    mutations,
-    state,
-    actions,
-    strict: process.env.NODE_ENV !== "production"
+  getters,
+  mutations,
+  state,
+  actions,
+  strict: process.env.NODE_ENV !== "production"
 });

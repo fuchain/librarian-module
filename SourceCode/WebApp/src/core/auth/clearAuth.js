@@ -3,7 +3,7 @@ import setRefreshToken from "./setRefreshToken";
 import setAccessTokenExpiresAt from "./setAccessTokenExpiresAt";
 
 export default function() {
-    setAccessToken();
-    setRefreshToken();
-    setAccessTokenExpiresAt();
+  setAccessToken();
+  setRefreshToken();
+  setAccessTokenExpiresAt();
 }
