@@ -214,204 +214,204 @@ import draggable from "vuedraggable";
 import { setTimeout } from "timers";
 
 export default {
-    name: "the-navbar",
-    props: {
-        navbarColor: {
-            type: String,
-            default: "#fff"
-        }
-    },
-    data() {
-        return {
-            navbarSearchAndPinList: this.$store.state.navbarSearchAndPinList,
-            searchQuery: "",
-            showFullSearch: false,
-            unreadNotifications: [
-                {
-                    index: 0,
-                    title: "Tin nhắn mới",
-                    msg: "Bạn mang sách qua phòng 201 nhé?",
-                    icon: "MessageSquareIcon",
-                    time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
-                    category: "primary"
-                },
-                {
-                    index: 1,
-                    title: "Đề nghị nhận sách mới",
-                    msg: "Đề nghị nhhận sách môn PRJ321",
-                    icon: "PackageIcon",
-                    time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
-                    category: "success"
-                }
-            ],
-            settings: {
-                // perfectscrollbar settings
-                maxScrollbarLength: 60,
-                wheelSpeed: 0.6
-            },
-            autoFocusSearch: false,
-            showBookmarkPagesDropdown: false
-        };
-    },
-    watch: {
-        $route() {
-            if (this.showBookmarkPagesDropdown) {
-                this.showBookmarkPagesDropdown = false;
-            }
-        }
-    },
-    computed: {
-    // HELPER
-        sidebarWidth() {
-            return this.$store.state.sidebarWidth;
-        },
-        breakpoint() {
-            return this.$store.state.breakpoint;
-        },
-
-        // NAVBAR STYLE
-        classObj() {
-            if (this.sidebarWidth === "default") return "navbar-default";
-            else if (this.sidebarWidth === "reduced") return "navbar-reduced";
-            return "navbar-full";
-        },
-
-        // BOOKMARK & SEARCH
-        data() {
-            return this.$store.state.navbarSearchAndPinList;
-        },
-        starredPages() {
-            return this.$store.state.starredPages;
-        },
-        starredPagesLimited: {
-            get() {
-                return this.starredPages.slice(0, 10);
-            },
-            set(list) {
-                this.$store.dispatch("arrangeStarredPagesLimited", list);
-            }
-        },
-        starredPagesMore: {
-            get() {
-                return this.starredPages.slice(10);
-            },
-            set(list) {
-                this.$store.dispatch("arrangeStarredPagesMore", list);
-            }
-        },
-
-        // CART DROPDOWN
-        cartItems() {
-            return this.$store.state.eCommerce.cartItems.slice().reverse();
-        },
-
-        // PROFILE
-        activeUserInfo() {
-            return this.$store.state.AppActiveUser;
-        }
-    },
-    methods: {
-        showSidebar() {
-            this.$store.commit("TOGGLE_IS_SIDEBAR_ACTIVE", true);
-        },
-        selected(item) {
-            this.$router.push(item.url);
-            this.showFullSearch = false;
-        },
-        actionClicked(item) {
-            // e.stopPropogation();
-            this.$store.dispatch("updateStarredPage", {
-                index: item.index,
-                val: !item.highlightAction
-            });
-        },
-        showNavbarSearch() {
-            this.showFullSearch = true;
-        },
-        showSearchbar() {
-            this.showFullSearch = true;
-        },
-        elapsedTime(startTime) {
-            let x = new Date(startTime);
-            let now = new Date();
-            var timeDiff = now - x;
-            timeDiff /= 1000;
-
-            var seconds = Math.round(timeDiff);
-            timeDiff = Math.floor(timeDiff / 60);
-
-            var minutes = Math.round(timeDiff % 60);
-            timeDiff = Math.floor(timeDiff / 60);
-
-            var hours = Math.round(timeDiff % 24);
-            timeDiff = Math.floor(timeDiff / 24);
-
-            var days = Math.round(timeDiff % 365);
-            timeDiff = Math.floor(timeDiff / 365);
-
-            var years = timeDiff;
-
-            if (years > 0) {
-                return years + (years > 1 ? " năm " : " năm ") + "trước";
-            } else if (days > 0) {
-                return days + (days > 1 ? " ngày " : " ngày ") + "trước";
-            } else if (hours > 0) {
-                return hours + (hours > 1 ? " giờ " : " giờ ") + "trước";
-            } else if (minutes > 0) {
-                return minutes + (minutes > 1 ? " phút " : " phút ") + "trước";
-            } else if (seconds > 0) {
-                return seconds + (seconds > 1 ? `${seconds} giây trước` : "mới đây");
-            }
-
-            return "Just Now";
-        },
-        outside: function() {
-            this.showBookmarkPagesDropdown = false;
-        },
-        doLogout: function() {
-            this.$vs.loading({
-                type: "corners",
-                color: "white",
-                background: "primary"
-            });
-
-            setTimeout(
-                function() {
-                    this.$auth.clearAuth();
-                    this.$router.push("/login");
-
-                    this.$vs.loading.close();
-                }.bind(this),
-                500
-            );
-        },
-        doSwitch: function() {
-            this.$router.push("/switch");
-        }
-    },
-    directives: {
-        "click-outside": {
-            bind: function(el, binding) {
-                const bubble = binding.modifiers.bubble;
-                const handler = e => {
-                    if (bubble || (!el.contains(e.target) && el !== e.target)) {
-                        binding.value(e);
-                    }
-                };
-                el.__vueClickOutside__ = handler;
-                document.addEventListener("click", handler);
-            },
-
-            unbind: function(el) {
-                document.removeEventListener("click", el.__vueClickOutside__);
-                el.__vueClickOutside__ = null;
-            }
-        }
-    },
-    components: {
-        VxAutoSuggest,
-        VuePerfectScrollbar,
-        draggable
+  name: "the-navbar",
+  props: {
+    navbarColor: {
+      type: String,
+      default: "#fff"
     }
+  },
+  data() {
+    return {
+      navbarSearchAndPinList: this.$store.state.navbarSearchAndPinList,
+      searchQuery: "",
+      showFullSearch: false,
+      unreadNotifications: [
+        {
+          index: 0,
+          title: "Tin nhắn mới",
+          msg: "Bạn mang sách qua phòng 201 nhé?",
+          icon: "MessageSquareIcon",
+          time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
+          category: "primary"
+        },
+        {
+          index: 1,
+          title: "Đề nghị mượn sách mới",
+          msg: "Đề nghị mượn sách môn PRJ321",
+          icon: "PackageIcon",
+          time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
+          category: "success"
+        }
+      ],
+      settings: {
+        // perfectscrollbar settings
+        maxScrollbarLength: 60,
+        wheelSpeed: 0.6
+      },
+      autoFocusSearch: false,
+      showBookmarkPagesDropdown: false
+    };
+  },
+  watch: {
+    $route() {
+      if (this.showBookmarkPagesDropdown) {
+        this.showBookmarkPagesDropdown = false;
+      }
+    }
+  },
+  computed: {
+    // HELPER
+    sidebarWidth() {
+      return this.$store.state.sidebarWidth;
+    },
+    breakpoint() {
+      return this.$store.state.breakpoint;
+    },
+
+    // NAVBAR STYLE
+    classObj() {
+      if (this.sidebarWidth === "default") return "navbar-default";
+      else if (this.sidebarWidth === "reduced") return "navbar-reduced";
+      return "navbar-full";
+    },
+
+    // BOOKMARK & SEARCH
+    data() {
+      return this.$store.state.navbarSearchAndPinList;
+    },
+    starredPages() {
+      return this.$store.state.starredPages;
+    },
+    starredPagesLimited: {
+      get() {
+        return this.starredPages.slice(0, 10);
+      },
+      set(list) {
+        this.$store.dispatch("arrangeStarredPagesLimited", list);
+      }
+    },
+    starredPagesMore: {
+      get() {
+        return this.starredPages.slice(10);
+      },
+      set(list) {
+        this.$store.dispatch("arrangeStarredPagesMore", list);
+      }
+    },
+
+    // CART DROPDOWN
+    cartItems() {
+      return this.$store.state.eCommerce.cartItems.slice().reverse();
+    },
+
+    // PROFILE
+    activeUserInfo() {
+      return this.$store.state.AppActiveUser;
+    }
+  },
+  methods: {
+    showSidebar() {
+      this.$store.commit("TOGGLE_IS_SIDEBAR_ACTIVE", true);
+    },
+    selected(item) {
+      this.$router.push(item.url);
+      this.showFullSearch = false;
+    },
+    actionClicked(item) {
+      // e.stopPropogation();
+      this.$store.dispatch("updateStarredPage", {
+        index: item.index,
+        val: !item.highlightAction
+      });
+    },
+    showNavbarSearch() {
+      this.showFullSearch = true;
+    },
+    showSearchbar() {
+      this.showFullSearch = true;
+    },
+    elapsedTime(startTime) {
+      let x = new Date(startTime);
+      let now = new Date();
+      var timeDiff = now - x;
+      timeDiff /= 1000;
+
+      var seconds = Math.round(timeDiff);
+      timeDiff = Math.floor(timeDiff / 60);
+
+      var minutes = Math.round(timeDiff % 60);
+      timeDiff = Math.floor(timeDiff / 60);
+
+      var hours = Math.round(timeDiff % 24);
+      timeDiff = Math.floor(timeDiff / 24);
+
+      var days = Math.round(timeDiff % 365);
+      timeDiff = Math.floor(timeDiff / 365);
+
+      var years = timeDiff;
+
+      if (years > 0) {
+        return years + (years > 1 ? " năm " : " năm ") + "trước";
+      } else if (days > 0) {
+        return days + (days > 1 ? " ngày " : " ngày ") + "trước";
+      } else if (hours > 0) {
+        return hours + (hours > 1 ? " giờ " : " giờ ") + "trước";
+      } else if (minutes > 0) {
+        return minutes + (minutes > 1 ? " phút " : " phút ") + "trước";
+      } else if (seconds > 0) {
+        return seconds + (seconds > 1 ? `${seconds} giây trước` : "mới đây");
+      }
+
+      return "Just Now";
+    },
+    outside: function() {
+      this.showBookmarkPagesDropdown = false;
+    },
+    doLogout: function() {
+      this.$vs.loading({
+        type: "corners",
+        color: "white",
+        background: "primary"
+      });
+
+      setTimeout(
+        function() {
+          this.$auth.clearAuth();
+          this.$router.push("/login");
+
+          this.$vs.loading.close();
+        }.bind(this),
+        500
+      );
+    },
+    doSwitch: function() {
+      this.$router.push("/switch");
+    }
+  },
+  directives: {
+    "click-outside": {
+      bind: function(el, binding) {
+        const bubble = binding.modifiers.bubble;
+        const handler = e => {
+          if (bubble || (!el.contains(e.target) && el !== e.target)) {
+            binding.value(e);
+          }
+        };
+        el.__vueClickOutside__ = handler;
+        document.addEventListener("click", handler);
+      },
+
+      unbind: function(el) {
+        document.removeEventListener("click", el.__vueClickOutside__);
+        el.__vueClickOutside__ = null;
+      }
+    }
+  },
+  components: {
+    VxAutoSuggest,
+    VuePerfectScrollbar,
+    draggable
+  }
 };
 </script>

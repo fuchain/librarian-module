@@ -34,31 +34,31 @@ Vue.use(Vuesax);
 require("./assets/css/iconfont.css");
 
 Vue.use({
-    install(Vue) {
-        Vue.prototype.$http = http;
-    }
+  install(Vue) {
+    Vue.prototype.$http = http;
+  }
 });
 Vue.use({
-    install(Vue) {
-        Vue.prototype.$auth = auth;
-    }
+  install(Vue) {
+    Vue.prototype.$auth = auth;
+  }
 });
 
 Vue.use(VueTimeago, {
-    name: "Timeago", // Component name, `Timeago` by default
-    locale: "en", // Default locale
-    // We use `date-fns` under the hood
-    // So you can use all locales from it
-    locales: {
-        "zh-CN": require("date-fns/locale/zh_cn"),
-        ja: require("date-fns/locale/ja")
-    }
+  name: "Timeago", // Component name, `Timeago` by default
+  locale: "en", // Default locale
+  // We use `date-fns` under the hood
+  // So you can use all locales from it
+  locales: {
+    // "zh-CN": require("date-fns/locale/zh_cn"),
+    // ja: require("date-fns/locale/ja")
+  }
 });
 
 Vue.config.productionTip = false;
 
-new Vue({
-    router,
-    store,
-    render: h => h(App)
+window.vue = new Vue({
+  router,
+  store,
+  render: h => h(App)
 }).$mount("#app");

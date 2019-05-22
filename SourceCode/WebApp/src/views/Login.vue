@@ -48,7 +48,7 @@
                     <div
                       class="bg-google pt-3 pb-2 px-4 rounded-lg cursor-pointer mr-4"
                       style="background-color: red; color: white;"
-                      @click="$vs.notify({title: 'Đăng nhập bằng Google', text: 'Tính năng chưa hỗ trợ', position: 'top-right'})"
+                      @click="loginWithGoogle"
                     >
                       <svg
                         aria-hidden="true"
@@ -81,57 +81,62 @@
 
 <script>
 export default {
-    data() {
-        return {
-            email: null,
-            password: null,
-            remember: false
-        };
+  data() {
+    return {
+      email: null,
+      password: null,
+      remember: false
+    };
+  },
+  methods: {
+    doLogin: function() {
+      if (!this.email || !this.password) {
+        this.$vs.notify({
+          title: "Không hợp lệ",
+          text: "Email hoặc mật khẩu bị thiếu",
+          color: "warning",
+          position: "top-right"
+        });
+
+        return;
+      }
+
+      this.$vs.loading({
+        type: "corners",
+        text: "Đang tải"
+      });
+
+      this.$http
+        .get("https://jsonplaceholder.typicode.com/todos/1")
+        .then(() => {
+          this.$auth.setAccessToken(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgxMDg3NDIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlLCJleHRfaW5mbyI6e30sInJvbGVzIjpbXX0.PKWuvQUG1deq8Bl4D03TVCM-oFnp6yO76NEjaECtjvc"
+          );
+          this.$auth.setRefreshToken(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgwMjU5NDIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlLCJleHRfaW5mbyI6e30sInJvbGVzIjpbXX0.0D6IIl_02a5haj02YPzFYldibEsNMIFa6QXQWHGgbnY"
+          );
+          this.$auth.setAccessTokenExpiresAt("1558108742");
+
+          this.$vs.loading.close();
+          this.$router.push("/");
+        })
+        .catch(() => {
+          this.$vs.notify({
+            title: "Không hợp lệ",
+            text: "Email hoặc mật khẩu bị sai",
+            color: "danger",
+            position: "top-right"
+          });
+
+          this.$vs.loading.close();
+        });
     },
-    methods: {
-        doLogin: function() {
-            if (!this.email || !this.password) {
-                this.$vs.notify({
-                    title: "Không hợp lệ",
-                    text: "Email hoặc mật khẩu bị thiếu",
-                    color: "warning",
-                    position: "top-right"
-                });
-
-                return;
-            }
-
-            this.$vs.loading({
-                type: "corners",
-                text: "Đang tải"
-            });
-
-            this.$http
-                .get("https://jsonplaceholder.typicode.com/todos/1")
-                .then(() => {
-                    this.$auth.setAccessToken(
-                        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgxMDg3NDIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlLCJleHRfaW5mbyI6e30sInJvbGVzIjpbXX0.PKWuvQUG1deq8Bl4D03TVCM-oFnp6yO76NEjaECtjvc"
-                    );
-                    this.$auth.setRefreshToken(
-                        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgwMjU5NDIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlLCJleHRfaW5mbyI6e30sInJvbGVzIjpbXX0.0D6IIl_02a5haj02YPzFYldibEsNMIFa6QXQWHGgbnY"
-                    );
-                    this.$auth.setAccessTokenExpiresAt("1558108742");
-
-                    this.$vs.loading.close();
-                    this.$router.push("/");
-                })
-                .catch(() => {
-                    this.$vs.notify({
-                        title: "Không hợp lệ",
-                        text: "Email hoặc mật khẩu bị sai",
-                        color: "danger",
-                        position: "top-right"
-                    });
-
-                    this.$vs.loading.close();
-                });
-        }
+    loginWithGoogle: function() {
+      this.email = "tuhmse62531@fpt.edu.vn";
+      this.password = "dayladoantotnghiep";
+      this.doLogin();
     }
+  }
 };
 </script>
 

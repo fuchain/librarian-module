@@ -1,26 +1,43 @@
 export default [
-    {
-        url: "/",
-        name: "Thư viện",
-        slug: "home",
-        icon: "HomeIcon"
-    },
-    {
+  {
+    url: "/",
+    name: "Trang chính",
+    slug: "home",
+    icon: "HomeIcon"
+  },
+  {
+    url: null,
+    name: "Sách của tôi",
+    slug: "books",
+    icon: "BookIcon",
+    submenu: [
+      {
         url: "/books",
         name: "Sách đang mượn",
-        slug: "books",
-        icon: "BookIcon"
-    },
-    {
-        url: "/request",
-        name: "Yêu cầu nhận sách",
-        slug: "request",
-        icon: "BookOpenIcon"
-    },
-    {
-        url: "/report",
-        name: "Báo cáo tình trạng",
-        slug: "report",
-        icon: "FileIcon"
-    }
+        slug: "books"
+      },
+      {
+        url: "/books/returning",
+        name: "Sách đang trả",
+        slug: "returning-books"
+      },
+      {
+        url: "/books/requesting",
+        name: "Sách đang yêu cầu",
+        slug: "requesting-books"
+      }
+    ]
+  },
+  {
+    url: "/books/request",
+    name: "Yêu cầu mượn sách",
+    slug: "request",
+    icon: "BookOpenIcon"
+  },
+  {
+    url: "/report",
+    name: "Báo cáo tình trạng",
+    slug: "report",
+    icon: "FileIcon"
+  }
 ];

@@ -19,11 +19,11 @@
 
 <script>
 export default {
-    name: "the-footer",
-    props: {
-        classes: {
-            type: String
-        }
+  name: "the-footer",
+  props: {
+    classes: {
+      type: String
     }
+  }
 };
 </script>

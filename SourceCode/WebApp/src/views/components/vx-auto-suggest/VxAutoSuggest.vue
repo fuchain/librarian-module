@@ -54,198 +54,198 @@
 
 <script>
 export default {
-    props: {
-        placeholder: {
-            type: String,
-            default: "Search.."
-        },
-        data: {
-            type: Object,
-            required: true
-        },
-        showAction: {
-            type: Boolean,
-            default: false
-        },
-        inputClassses: {
-            type: [String, Object, Array]
-        },
-        autoFocus: {
-            type: Boolean,
-            default: false
-        },
-        showPinned: {
-            type: Boolean,
-            default: false
-        },
-        backgroundOverlay: {
-            type: Boolean,
-            default: false
-        },
-        searchLimit: {
-            type: Number,
-            default: 10
-        }
+  props: {
+    placeholder: {
+      type: String,
+      default: "Search.."
     },
-    data() {
-        return {
-            searchQuery: "",
-            filteredData: [],
-            currentSelected: -1,
-            inputFocused: false,
-            insideSuggestions: false
-        };
+    data: {
+      type: Object,
+      required: true
     },
-    watch: {
+    showAction: {
+      type: Boolean,
+      default: false
+    },
+    inputClassses: {
+      type: [String, Object, Array]
+    },
+    autoFocus: {
+      type: Boolean,
+      default: false
+    },
+    showPinned: {
+      type: Boolean,
+      default: false
+    },
+    backgroundOverlay: {
+      type: Boolean,
+      default: false
+    },
+    searchLimit: {
+      type: Number,
+      default: 10
+    }
+  },
+  data() {
+    return {
+      searchQuery: "",
+      filteredData: [],
+      currentSelected: -1,
+      inputFocused: false,
+      insideSuggestions: false
+    };
+  },
+  watch: {
     // UPDATE SUGGESTIONS LIST
-        searchQuery(val) {
-            if (val === "") {
-                this.inputInit();
-                if (this.bodyOverlay) {
-                    this.$store.commit("TOGGLE_CONTENT_OVERLAY", false);
-                }
-            } else {
-                if (this.backgroundOverlay && !this.bodyOverlay) {
-                    this.$store.commit("TOGGLE_CONTENT_OVERLAY", true);
-                }
-                let exactEle = this.data.data.filter(item => {
-                    return item.label
-                        .toLowerCase()
-                        .startsWith(this.searchQuery.toLowerCase());
-                });
-                let containEle = this.data.data.filter(item => {
-                    return (
-                        !item.label
-                            .toLowerCase()
-                            .startsWith(this.searchQuery.toLowerCase()) &&
+    searchQuery(val) {
+      if (val === "") {
+        this.inputInit();
+        if (this.bodyOverlay) {
+          this.$store.commit("TOGGLE_CONTENT_OVERLAY", false);
+        }
+      } else {
+        if (this.backgroundOverlay && !this.bodyOverlay) {
+          this.$store.commit("TOGGLE_CONTENT_OVERLAY", true);
+        }
+        let exactEle = this.data.data.filter(item => {
+          return item.label
+            .toLowerCase()
+            .startsWith(this.searchQuery.toLowerCase());
+        });
+        let containEle = this.data.data.filter(item => {
+          return (
+            !item.label
+              .toLowerCase()
+              .startsWith(this.searchQuery.toLowerCase()) &&
             item.label.toLowerCase().indexOf(this.searchQuery.toLowerCase()) >
               -1
-                    );
-                });
-                this.filteredData = exactEle
-                    .concat(containEle)
-                    .slice(0, this.searchLimit);
-                if (!this.filteredData[0]) this.currentSelected = -1;
-            }
+          );
+        });
+        this.filteredData = exactEle
+          .concat(containEle)
+          .slice(0, this.searchLimit);
+        if (!this.filteredData[0]) this.currentSelected = -1;
+      }
 
-            // ADD: No result found
-            if (!this.filteredData.length && this.searchQuery) {
-                this.filteredData = [
-                    {
-                        highlightAction: false,
-                        index: -1,
-                        label: "No results found.",
-                        labelIcon: "AlertCircleIcon",
-                        url: null
-                    }
-                ];
-            }
-        },
-        autoFocus(val) {
-            if (val) this.focusInput();
-            else this.searchQuery = "";
-        },
-        filteredData() {
-            if (this.filteredData.length) {
-                this.currentSelected = 0;
-            }
-            // Prevent selecting if first item in list dont have url e.g. 'No Reult'
-            if (this.filteredData[0]) {
-                if (!this.filteredData[0].url) {
-                    this.currentSelected = -1;
-                }
-            }
-        }
+      // ADD: No result found
+      if (!this.filteredData.length && this.searchQuery) {
+        this.filteredData = [
+          {
+            highlightAction: false,
+            index: -1,
+            label: "No results found.",
+            labelIcon: "AlertCircleIcon",
+            url: null
+          }
+        ];
+      }
     },
-    computed: {
-        bodyOverlay() {
-            return this.$store.state.bodyOverlay;
-        },
-        actionClasses() {
-            return isHighlighted => {
-                if (isHighlighted) {
-                    return `stroke-current text-${this.data.highlightColor}`;
-                }
-            };
-        }
+    autoFocus(val) {
+      if (val) this.focusInput();
+      else this.searchQuery = "";
     },
-    methods: {
-        escPressed() {
-            this.$emit("closeSearchbar");
-            this.searchQuery = "";
-            this.filteredData = [];
-        },
-        inputInit() {
-            if (this.showPinned) {
-                const starredData = this.data.data.filter(item => item.highlightAction);
-                this.filteredData = starredData;
-            } else {
-                this.filteredData = [];
-            }
-        },
-        updateInputFocus(val = true) {
-            if (val) {
-                if (this.searchQuery === "") this.inputInit();
-                setTimeout(() => {
-                    this.inputFocused = true;
-                }, 100);
-            } else {
-                if (this.insideSuggestions) return;
-                setTimeout(() => {
-                    this.inputFocused = false;
-                }, 100);
-                this.escPressed();
-            }
-        },
-        suggestionSelected() {
-            if (this.bodyOverlay && this.filteredData[0].url) {
-                this.$store.commit("TOGGLE_CONTENT_OVERLAY", false);
-            }
-            if (this.filteredData.length) {
-                if (this.filteredData[0].url) {
-                    this.searchQuery = "";
-                    if (this.currentSelected >= 0) {
-                        this.$emit("selected", this.filteredData[this.currentSelected]);
-                    } else this.$emit("selected", this.filteredData[0]);
-                    this.filteredData = [];
-                }
-            }
-        },
-        actionClicked() {
-            this.$emit("actionClicked", this.filteredData[this.currentSelected]);
-            if (!this.filteredData[this.currentSelected].highlightAction) {
-                this.filteredData.splice(this.currentSelected, 1);
-            }
-        },
-        increaseIndex(val = false) {
-            if (!val && this.currentSelected > 0) this.currentSelected--;
-            else if (
-                val &&
+    filteredData() {
+      if (this.filteredData.length) {
+        this.currentSelected = 0;
+      }
+      // Prevent selecting if first item in list dont have url e.g. 'No Reult'
+      if (this.filteredData[0]) {
+        if (!this.filteredData[0].url) {
+          this.currentSelected = -1;
+        }
+      }
+    }
+  },
+  computed: {
+    bodyOverlay() {
+      return this.$store.state.bodyOverlay;
+    },
+    actionClasses() {
+      return isHighlighted => {
+        if (isHighlighted) {
+          return `stroke-current text-${this.data.highlightColor}`;
+        }
+      };
+    }
+  },
+  methods: {
+    escPressed() {
+      this.$emit("closeSearchbar");
+      this.searchQuery = "";
+      this.filteredData = [];
+    },
+    inputInit() {
+      if (this.showPinned) {
+        const starredData = this.data.data.filter(item => item.highlightAction);
+        this.filteredData = starredData;
+      } else {
+        this.filteredData = [];
+      }
+    },
+    updateInputFocus(val = true) {
+      if (val) {
+        if (this.searchQuery === "") this.inputInit();
+        setTimeout(() => {
+          this.inputFocused = true;
+        }, 100);
+      } else {
+        if (this.insideSuggestions) return;
+        setTimeout(() => {
+          this.inputFocused = false;
+        }, 100);
+        this.escPressed();
+      }
+    },
+    suggestionSelected() {
+      if (this.bodyOverlay && this.filteredData[0].url) {
+        this.$store.commit("TOGGLE_CONTENT_OVERLAY", false);
+      }
+      if (this.filteredData.length) {
+        if (this.filteredData[0].url) {
+          this.searchQuery = "";
+          if (this.currentSelected >= 0) {
+            this.$emit("selected", this.filteredData[this.currentSelected]);
+          } else this.$emit("selected", this.filteredData[0]);
+          this.filteredData = [];
+        }
+      }
+    },
+    actionClicked() {
+      this.$emit("actionClicked", this.filteredData[this.currentSelected]);
+      if (!this.filteredData[this.currentSelected].highlightAction) {
+        this.filteredData.splice(this.currentSelected, 1);
+      }
+    },
+    increaseIndex(val = false) {
+      if (!val && this.currentSelected > 0) this.currentSelected--;
+      else if (
+        val &&
         this.currentSelected < this.filteredData.length - 1 &&
         this.filteredData[this.currentSelected + 1].index > -1
-            ) {
-                this.currentSelected++;
-            }
-            this.fixScrolling();
-        },
-        focusInput() {
-            this.$refs.input.$el.querySelector("input").focus();
-        },
-        fixScrolling() {
-            if (this.currentSelected > 0) {
-                const liH = this.$refs.option[this.currentSelected].clientHeight;
-                const ulH = this.$refs.scrollContainer.clientHeight;
-                if (ulH - liH * this.currentSelected < liH) {
-                    this.$refs.scrollContainer.scrollTop = Math.round(
-                        (this.currentSelected + 1 - ulH / liH + 1) * liH
-                    );
-                }
-            }
-        }
+      ) {
+        this.currentSelected++;
+      }
+      this.fixScrolling();
     },
-    mounted() {
-        if (this.autoFocus) this.focusInput();
+    focusInput() {
+      this.$refs.input.$el.querySelector("input").focus();
+    },
+    fixScrolling() {
+      if (this.currentSelected > 0) {
+        const liH = this.$refs.option[this.currentSelected].clientHeight;
+        const ulH = this.$refs.scrollContainer.clientHeight;
+        if (ulH - liH * this.currentSelected < liH) {
+          this.$refs.scrollContainer.scrollTop = Math.round(
+            (this.currentSelected + 1 - ulH / liH + 1) * liH
+          );
+        }
+      }
     }
+  },
+  mounted() {
+    if (this.autoFocus) this.focusInput();
+  }
 };
 </script>
 
