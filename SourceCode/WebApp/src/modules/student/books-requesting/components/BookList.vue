@@ -16,7 +16,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2" @click="openConfirm">ĐÃ NHẬN SÁCH</span>
+                <span class="text-sm font-semibold ml-2" @click="beginConfirm">ĐÃ NHẬN SÁCH</span>
               </div>
 
               <div
@@ -39,6 +39,15 @@
     <vx-card title="Bạn đang không yêu cầu mượn sách nào." v-else>
       <vs-button @click="$router.push('/books/request')">Yêu cầu mượn sách</vs-button>
     </vx-card>
+
+    <vs-popup title="Xác nhận đã nhận sách" :active.sync="popupActive">
+      <div class="mb-4">
+        <vs-input size="large" class="w-full" placeholder="Xác nhận mã PIN" v-model="pin"/>
+      </div>
+      <div>
+        <vs-button class="w-full" @click="validateConfirm">Đã nhận sách</vs-button>
+      </div>
+    </vs-popup>
   </div>
 </template>
 
@@ -48,6 +57,12 @@ const ItemGridView = () => import("./ItemGridView.vue");
 export default {
   components: {
     ItemGridView
+  },
+  data() {
+    return {
+      popupActive: false,
+      pin: ""
+    };
   },
   computed: {
     wishListitems() {
@@ -77,28 +92,6 @@ export default {
       if (!check) return;
       window.location.href = "tel:0796870446";
     },
-    openConfirm() {
-      this.$vs.dialog({
-        type: "confirm",
-        color: "primary",
-        title: "Xác nhận",
-        text:
-          "Bạn có chắc là bạn đã nhận được sách, bạn đã kiểm tra tình trạng quyển sách chưa?",
-        accept: this.acceptAlert
-      });
-    },
-    async acceptAlert(color) {
-      await this.fakeLoad();
-
-      this.$router.push("/books");
-
-      this.$vs.notify({
-        color: "primary",
-        title: "Thành công",
-        text: "Đã xác nhận mượn thành công sách",
-        position: "top-center"
-      });
-    },
     async fakeLoad() {
       return new Promise((resolve, reject) => {
         this.$vs.loading();
@@ -109,6 +102,19 @@ export default {
           }.bind(this),
           3000
         );
+      });
+    },
+    async beginConfirm() {
+      this.popupActive = true;
+    },
+    async validateConfirm() {
+      await this.fakeLoad();
+
+      this.$vs.notify({
+        title: "Lỗi",
+        text: "Mã PIN không hợp lệ",
+        color: "warning",
+        position: "top-center"
       });
     }
   }

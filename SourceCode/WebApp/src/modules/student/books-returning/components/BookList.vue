@@ -14,17 +14,17 @@
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
                 v-if="item.user"
               >
-                <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2" @click="triggerCall()">LIÊN LẠC</span>
+                <span class="text-sm font-semibold ml-2" @click="beginConfirm">ĐÃ TRẢ</span>
               </div>
 
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               >
-                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2">CHI TIẾT</span>
+                <span class="text-sm font-semibold ml-2" @click="triggerCall()">LIÊN LẠC</span>
               </div>
             </div>
           </template>
@@ -35,6 +35,18 @@
     <vx-card title="Bạn đang không giữ sách nào." v-else>
       <vs-button @click="$router.push('/books/request')">Mượn sách</vs-button>
     </vx-card>
+
+    <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
+      <div style="font-size: 1.5rem; text-align: center;">Mã số PIN xác nhận</div>
+      <div style="font-size: 3rem; text-align: center;">123456</div>
+      <div style="text-align: center; margin-bottom: 1rem;">
+        Chỉ tồn tại trong
+        <strong>60 giây</strong>
+      </div>
+      <div style="text-align: center;">
+        <vs-button @click="validateConfirm">Đã xong</vs-button>
+      </div>
+    </vs-popup>
   </div>
 </template>
 
@@ -45,9 +57,9 @@ export default {
   components: {
     ItemGridView
   },
-  computed: {
-    wishListitems() {
-      return [
+  data() {
+    return {
+      wishListitems: [
         {
           objectID: 5,
           name: "Advance Database",
@@ -67,12 +79,40 @@ export default {
           time: "4 ngày",
           code: "SWE101"
         }
-      ];
-    }
+      ],
+      popupActive: false
+    };
   },
   methods: {
+    async fakeLoad() {
+      return new Promise((resolve, reject) => {
+        this.$vs.loading();
+        setTimeout(
+          function() {
+            this.$vs.loading.close();
+            resolve();
+          }.bind(this),
+          2000
+        );
+      });
+    },
     triggerCall() {
       window.location.href = "tel:0796870446";
+    },
+    async beginConfirm() {
+      await this.fakeLoad();
+
+      this.popupActive = true;
+    },
+    async validateConfirm() {
+      await this.fakeLoad();
+
+      this.$vs.notify({
+        title: "Lỗi",
+        text: "Người nhận chưa xác nhận mã PIN",
+        color: "warning",
+        position: "top-center"
+      });
     }
   }
 };
