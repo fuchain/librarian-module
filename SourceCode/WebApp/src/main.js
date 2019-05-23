@@ -24,8 +24,14 @@ import "prismjs/themes/prism-tomorrow.css";
 // Time Ago
 import VueTimeago from "vue-timeago";
 
+// Form Wizard
+import VueFormWizard from "vue-form-wizard";
+
 import http from "@http";
 import auth from "@auth";
+
+// Form Wizard
+Vue.use(VueFormWizard);
 
 // Vuesax
 Vue.use(Vuesax);

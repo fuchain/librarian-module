@@ -2,22 +2,6 @@
   <vx-card title="Yêu cầu mượn sách">
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
-        <span>Mã số sinh viên</span>
-      </div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" disabled v-model="studentID"/>
-      </div>
-    </div>
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Họ tên</span>
-      </div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" type="email" disabled v-model="fullName"/>
-      </div>
-    </div>
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
         <span>Mã môn hoặc Tên môn</span>
       </div>
       <div class="vx-col sm:w-1/3 w-full">
@@ -58,8 +42,6 @@
 export default {
   data() {
     return {
-      studentID: "SE62531",
-      fullName: "Huỳnh Minh Tú",
       subjectCode: "",
       bookCode: "",
       listBooks: []
