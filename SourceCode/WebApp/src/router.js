@@ -49,6 +49,10 @@ const router = new Router({
           path: "books/requesting",
           component: () =>
             import("@/modules/student/books-requesting/BooksRequesting.vue")
+        },
+        {
+          path: "books/pair",
+          component: () => import("@/modules/student/books-pair/BooksPair.vue")
         }
       ]
     },

@@ -35,6 +35,12 @@ export default [
     icon: "BookOpenIcon"
   },
   {
+    url: "/books/pair",
+    name: "Nhập mã nhận sách",
+    slug: "request",
+    icon: "ShoppingBagIcon"
+  },
+  {
     url: "/report",
     name: "Báo cáo tình trạng",
     slug: "report",
