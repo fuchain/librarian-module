@@ -57,12 +57,12 @@ export default {
 
           this.listBooks = [].concat([
             {
-              id: "FULIB001",
-              name: "Introduce to Software Engineering"
+              id: "FUHCM000000002",
+              name: "Japanese Elementary 3"
             },
             {
-              id: "FULIB002",
-              name: "Advance to Database"
+              id: "FUHCM000000003",
+              name: "Start Your Business"
             }
           ]);
         }.bind(this),

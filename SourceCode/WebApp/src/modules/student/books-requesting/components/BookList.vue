@@ -68,21 +68,21 @@ export default {
     wishListitems() {
       return [
         {
-          objectID: 4,
-          name: "Advance Java (Java Web)",
+          objectID: 7,
+          name: "Japanese Elementary 3",
           description:
-            "Best subject in FU. Goodluck with this subject, hope you can pass it!",
+            "Japanese Elementary 3 for Japanese Elementary 3 in FPT University",
           image: "https://i.imgur.com/2j6B1n5.jpg",
           user: "SE62533",
-          code: "PRJ321"
+          code: "JPD131"
         },
         {
-          objectID: 7,
-          name: "Software Project Management",
+          objectID: 8,
+          name: "Start Your Business",
           description:
-            "Jack Welch knows how to win. During his 40-year career at General Electric, he led the company to year-after-year success around the globe, in multiple markets, against brutal competition. His honest, be-the-best style of management became the gold standard in business, with his relentless focus on people, teamwork and profits.",
+            "Start Your Business for Start Your Business in FPT University",
           image: "https://i.imgur.com/2j6B1n5.jpg",
-          code: "SWM301"
+          code: "SYB301"
         }
       ];
     }

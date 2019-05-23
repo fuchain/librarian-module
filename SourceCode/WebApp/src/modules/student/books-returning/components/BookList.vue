@@ -62,22 +62,22 @@ export default {
       wishListitems: [
         {
           objectID: 5,
-          name: "Advance Database",
+          name: "Introduction to Software Engineering",
           description:
-            "Advance Database for Advance Database in FPT University",
+            "Introduction to Software Engineering for Introduction to Software Engineering in FPT University",
           image: "https://i.imgur.com/2j6B1n5.jpg",
           time: "4 ngày",
-          code: "DBI201",
+          code: "SWE102",
           user: "SE62535"
         },
         {
-          objectID: 4,
-          name: "Introduce to Software Engineering",
+          objectID: 6,
+          name: "Computer Networking",
           description:
-            "Introduce to Software Engineering for Introduce to Software Engineering in FPT University",
+            "Computer Networking for Computer Networking in FPT University",
           image: "https://i.imgur.com/2j6B1n5.jpg",
           time: "4 ngày",
-          code: "SWE101"
+          code: "NWC202"
         }
       ],
       popupActive: false

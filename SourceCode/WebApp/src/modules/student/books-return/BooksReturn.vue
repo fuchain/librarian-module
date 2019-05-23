@@ -102,7 +102,7 @@ export default {
   data() {
     return {
       bookID: "FUHCM000000001",
-      bookName: "Introduce to Software Engineering",
+      bookName: "Software Requirements",
       transferType: "auto",
       remainTime: 0
     };
