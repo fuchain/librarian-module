@@ -81,10 +81,67 @@
 
   Tendermint is designed to be easy-to-use, simple-to-understand, highly performant, and useful for a wide variety of distributed applications.
 
-  ![](https://docs.bigchaindb.com/en/latest/_images/schemaDB.png)
+
+## **The life of BigchainDB Transaction**
+
+  - **Sending a Transaction to a BigchainDB Network**
+  
+      A transaction can be sent to a BigchainDB network using the BigchainDB HTTP API. More specifically, one would use one of the following endpoints, with the transaction in the body of the HTTP request
+
+      ```
+        POST /api/v1/transactions
+
+        POST /api/v1/transactions?mode=async
+
+        POST /api/v1/transactions?mode=sync
+
+        POST /api/v1/transactions?mode=commit
+      ```
+
+      A BigchainDB driver could also be used to post a transaction. The HTTP request (containing the trans- action) can be sent to **ANY** of the nodes in the BigchainDB network, or even more than one. Picture below illustrates the main components in a four-node BigchainDB 2.0 network, and how they communicate with each other.
+
+      ![](https://docs.bigchaindb.com/en/latest/_images/schemaDB.png)
+
+  - **Arrival of a Transaction at a Node**
+
+      Assume that the HTTP request arrives successfully at the Gunicorn web server inside a BigchainDB node. There is a Python method for handling that endpoint. That method checks the validity of the transaction.
+      
+      - If it’s not valid, then that’s the end of the story for the transaction, the HTTP response status code is 400 (Error), and the response body gives some information about what was invalid.
+      
+      - If the transaction is valid, then it’s converted to Base64 and put into a new JSON string with some other information (such as the mode). BigchainDB then sends that string to the local Tendermint instance in the body of an HTTP POST request. That request uses the Tendermint Broadcast API (Tendermint has other APIs).
+
+  - **Arrival of a Transaction at a Tendermint Instance**
+
+      When a transaction is sent to a Tendermint node, it will run via CheckTx against the application. If it passes CheckTx, it will be included in the mempool, broadcast to other peers, and eventually included in a block.
+
+      Since there are multiple phases to processing a transaction, they offer multiple endpoints to broadcast a transaction:
+
+      `/broadcast.tx.async`: will return right away without waiting to hear if the transaction is even valid
+
+      `/broadcast.tx.sync`: will return with the result of running the transaction through `CheckTx`
+
+      `/broadcast.tx.commit`: will wait until the transaction is committed in a block or until some timeout is reached, but will return right away if the transaction does not pass CheckTx
+
+      The benefit of using `broadcast.tx.commit` is that the request re- turns after the transaction is committed (i.e. included in a block), but that can take on the order of a second.
+
+      For a quick result, use `broadcast,tx.sync`, but the transaction will not be committed until later, and by that point its effect on the state may change.
+
+  - **The above text requires some explanation**
+
+      `CheckTx` is an API that Tendermint expects BigchainDB to implement. It’s explained below.
+
+      If someone uses BigchainDB’s POST `/api/v1/transactions?mode=async` endpoint to send the transaction, then the Tendermint `/broadcast.tx.async` endpoint will be used. Similar things can be said for the `sync` and `commit` modes. If no mode was specified, then the default is `async`
+
+      Every Tendermint instance has a local mempool (memory pool) of transactions which have passed initial validation, but haven’t been included in a block yet.
+
+      When Tendermint wants to determine if a transaction is valid, it sends the transaction to BigchainDB using a CheckTx request. It expects BigchainDB to implement CheckTx, and several other message types, all of which are explained in the ABCI pecification (ABCI stands for Application BlockChain Interface). In particular, BigchainDB implements:
+
+      - `CheckTx`: executed before a new tx is stored to the current node's mempool
+      - `DeliverTx`: executed before a new tx is broadcasted to other nodes' mempool
+      - `Commit`: add new block to chain by storing collection of assets & collection of metadatas to mongoDB **(facilitate the text search)**
 
 
-## **Basic local development of BigchainDB**
+## **Basic local deployment of BigchainDB**
 
   Install `git`
 
@@ -109,5 +166,9 @@
 
   - https://www.bigchaindb.com
 
+  - https://github.com/bigchaindb/BEPs/tree/master/13#transaction-validation
+
   - https://www.tendermint.com
+
+  - https://github.com/tendermint/abci/blob/master/specification.rst
 

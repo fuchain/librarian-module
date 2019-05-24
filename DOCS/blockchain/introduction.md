@@ -32,7 +32,7 @@
     ![](https://lisk.io/content/5-academy/2-blockchain-basics/4-how-does-blockchain-work/2-blockchain-cryptography-explained/6-public-key-cryptography-1.jpg)
 
 
-- **Disital Signature**
+- **Digital Signature**
 
     Digital signatures provide three key advantages of storing and transferring information on a blockchain. First of all, they guarantee integrity. Theoretically, data that is being sent can be altered without necessarily even being seen by a hacker. However, if this does happen in the case of data that is accompanied by a digital signature, the signature  would become invalid. Therefore digitally signed data, that is encrypted, is not only safe from being seen but will also reveal if it has been tampered with, cementing its incorruptibility.
 
