@@ -61,7 +61,7 @@
         <div class="vx-col w-full">
           <vx-card v-if="transferType === 'manual'">
             <div style="font-size: 1.5rem; text-align: center;">Mã số PIN xác nhận</div>
-            <div style="font-size: 3rem; text-align: center;">123456</div>
+            <div style="font-size: 3rem; text-align: center;">{{ randomPIN }}</div>
             <div style="text-align: center;">
               Chỉ tồn tại trong
               <strong>{{ remainTime }} giây</strong>
@@ -106,6 +106,11 @@ export default {
       transferType: "auto",
       remainTime: 0
     };
+  },
+  computed: {
+    randomPIN() {
+      return Math.floor(100000 + Math.random() * 900000);
+    }
   },
   methods: {
     async checkDone() {

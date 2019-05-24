@@ -32,6 +32,7 @@
           class="mr-3 mb-2"
           @click="submit"
           :disabled="!subjectCode.trim() || !bookCode.trim()"
+          icon="done"
         >Đăng kí</vs-button>
       </div>
     </div>

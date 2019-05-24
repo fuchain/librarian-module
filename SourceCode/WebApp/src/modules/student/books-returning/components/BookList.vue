@@ -21,10 +21,20 @@
 
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+                v-if="item.user"
               >
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
 
                 <span class="text-sm font-semibold ml-2" @click="triggerCall()">LIÊN LẠC</span>
+              </div>
+
+              <div
+                class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+                v-if="!item.user"
+              >
+                <feather-icon icon="ArchiveIcon" svgClasses="h-4 w-4"/>
+
+                <span class="text-sm font-semibold ml-2">CHƯA CÓ NGƯỜI NHẬN</span>
               </div>
             </div>
           </template>
@@ -38,7 +48,7 @@
 
     <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
       <div style="font-size: 1.5rem; text-align: center;">Mã số PIN xác nhận</div>
-      <div style="font-size: 3rem; text-align: center;">123456</div>
+      <div style="font-size: 3rem; text-align: center;">{{ randomPIN }}</div>
       <div style="text-align: center; margin-bottom: 1rem;">
         Chỉ tồn tại trong
         <strong>60 giây</strong>
@@ -82,6 +92,11 @@ export default {
       ],
       popupActive: false
     };
+  },
+  computed: {
+    randomPIN() {
+      return Math.floor(100000 + Math.random() * 900000);
+    }
   },
   methods: {
     async fakeLoad() {
