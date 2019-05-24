@@ -3,12 +3,12 @@
 ## **Concepts**
 - **P2P Network**
 
-  A Peer to Peer (abbreviated to `P2P`) network is a very important part of how blockchain technology works.
-  
+    A Peer to Peer (abbreviated to `P2P`) network is a very important part of how blockchain technology works.
+    
 
-  Each peer (a “peer” being a computer system on the network) is considered equal and are commonly referred to as `nodes`. A peer makes a portion of computing resources such as disk storage, processing power or network bandwidth, directly available to other participants without the need for any central coordination by servers or stable hosts.
+    Each peer (a “peer” being a computer system on the network) is considered equal and are commonly referred to as `nodes`. A peer makes a portion of computing resources such as disk storage, processing power or network bandwidth, directly available to other participants without the need for any central coordination by servers or stable hosts.
 
-  ![](https://lisk.io/content/5-academy/2-blockchain-basics/4-how-does-blockchain-work/1-what-is-a-peer-to-peer-network/3-p2p-vs-centralised.jpg)
+    ![](https://lisk.io/content/5-academy/2-blockchain-basics/4-how-does-blockchain-work/1-what-is-a-peer-to-peer-network/3-p2p-vs-centralised.jpg)
 
 
 - **Cryptography**
@@ -75,7 +75,7 @@
 
     ![](https://lisk.io/content/5-academy/2-blockchain-basics/4-how-does-blockchain-work/5-what-is-hashing/11d_hashing_comparaison.gif)
 
-- **BLockchain Hashing**
+- **Blockchain Hashing**
 
     In blockchain, hashes are used to represent the current state of the world, or to be more precise, the state of a blockchain. As such, the input represents everything that has happened on a blockchain, so every single transaction up to that point, combined with the new data that is being added. What this means is that the output is based on, and therefore shaped by, all previous transactions that have occurred on a blockchain.
 
