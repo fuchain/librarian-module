@@ -7,8 +7,9 @@
                        http://www.springframework.org/schema/context
                        http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="com.fpt.edu.web.controller" />
-    <context:component-scan base-package="com.fpt.edu.web.service" />
+    <context:component-scan base-package="com.fpt.edu.controller" />
+    <context:component-scan base-package="com.fpt.edu.service" />
+    <context:component-scan base-package="com.fpt.edu.config" />
     <context:property-placeholder location="classpath:authmodule.properties"/>
 
     <!--<bean name="jsonHelper" class="com.fptedu.common.helper.json.JsonHelper"/>-->
