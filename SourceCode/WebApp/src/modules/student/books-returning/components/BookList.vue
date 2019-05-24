@@ -51,7 +51,7 @@
       <div style="font-size: 3rem; text-align: center;">{{ randomPIN }}</div>
       <div style="text-align: center; margin-bottom: 1rem;">
         Chỉ tồn tại trong
-        <strong>60 giây</strong>
+        <strong>{{ remainTime }} giây</strong>
       </div>
       <div style="text-align: center;">
         <vs-button @click="validateConfirm">Đã xong</vs-button>
@@ -62,6 +62,8 @@
 
 <script>
 const ItemGridView = () => import("./ItemGridView.vue");
+
+let countInterval;
 
 export default {
   components: {
@@ -90,12 +92,16 @@ export default {
           code: "NWC202"
         }
       ],
-      popupActive: false
+      popupActive: false,
+      randomPIN: 0,
+      remainTime: 0
     };
   },
-  computed: {
-    randomPIN() {
-      return Math.floor(100000 + Math.random() * 900000);
+  watch: {
+    popupActive(val) {
+      if (val === false && countInterval) {
+        clearInterval(countInterval);
+      }
     }
   },
   methods: {
@@ -117,6 +123,8 @@ export default {
     async beginConfirm() {
       await this.fakeLoad();
 
+      this.randomPIN = Math.floor(100000 + Math.random() * 900000);
+      this.startCount();
       this.popupActive = true;
     },
     async validateConfirm() {
@@ -128,7 +136,31 @@ export default {
         color: "warning",
         position: "top-center"
       });
+    },
+    startCount() {
+      this.remainTime = 360;
+
+      countInterval = setInterval(
+        function() {
+          this.remainTime = this.remainTime - 1;
+
+          if (this.remainTime <= 0) {
+            this.$vs.notify({
+              title: "Lỗi",
+              text: "Hết hạn xác nhận mã PIN, vui lòng thao tác lại từ đầu",
+              color: "warning",
+              position: "top-center"
+            });
+
+            clearInterval(countInterval);
+          }
+        }.bind(this),
+        1000
+      );
     }
+  },
+  beforeDestroy() {
+    clearInterval(countInterval);
   }
 };
 </script>

@@ -98,6 +98,8 @@ import { FormWizard, TabContent } from "vue-form-wizard";
 import "vue-form-wizard/dist/vue-form-wizard.min.css";
 import { setInterval, clearInterval } from "timers";
 
+let countInterval;
+
 export default {
   data() {
     return {
@@ -147,9 +149,9 @@ export default {
       return true;
     },
     startCount() {
-      this.remainTime = 60;
+      this.remainTime = 360;
 
-      const countInterval = setInterval(
+      countInterval = setInterval(
         function() {
           this.remainTime = this.remainTime - 1;
 
@@ -167,6 +169,9 @@ export default {
         1000
       );
     }
+  },
+  beforeDestroy() {
+    clearInterval(countInterval);
   },
   components: {
     FormWizard,
