@@ -1,4 +1,4 @@
-# FPT Library Module_API part
+# FPT Librarian Module - API part
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
@@ -25,9 +25,14 @@
 
 ![](https://i.ibb.co/yFLxJts/contrroller.png)
 
-- [1] Anotation to define this java class will be a controller. So that client can request to this class method if do the request mapping.
-- [2] Define Swagger docs, using @ApiOperation and @ApiResponses to declare the information about the. If you start serser then you can see the swagger docs at [SWAGGER_UI](http://localhost:9090/swagger-ui.html) (note that start your local server before you click on this link, Start server by run Application.java)
-- [3] Define and do mapping: Using anotation @RequestMapping mean that you tell spring that hey Spring I declarce a url that can do some thine awesome please expose it to client can access to it. For example :
-  @RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json")
-  This will map the /test path to current running web app with method GET and return type is application/json. You can test it by run postman via this link : http://localhost:9090/users/test
-  ![](https://i.ibb.co/9qwJ9YS/postman-test.png)
+1. Anotation to define this java class will be a controller. So that client can request to this class method if do the request mapping.
+2. Define Swagger docs, using @ApiOperation and @ApiResponses to declare the information about the. If you start serser then you can see the swagger docs at [SWAGGER_UI](http://localhost:8080/swagger-ui.html) (note that start your local server before you click on this link, Start server by run Application.java)
+3. Define and do mapping: Using anotation @RequestMapping mean that you tell spring that hey Spring I declarce a url that can do some thine awesome please expose it to client can access to it. For example:
+
+   ```
+   @RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json")
+   ```
+
+   This will map the /test path to current running web app with method GET and return type is application/json. You can test it by run postman via this link : http://localhost:9090/users/test
+
+![](https://i.ibb.co/9qwJ9YS/postman-test.png)
