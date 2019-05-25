@@ -7,7 +7,7 @@ COPY . .
 
 RUN ./gradlew build
 
-FROM openjdk:12-alpine
+FROM openjdk:12-jdk-alpine
 
 WORKDIR /root/src/api
 
