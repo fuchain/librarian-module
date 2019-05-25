@@ -5,6 +5,6 @@ WORKDIR /root/src/api
 
 COPY . .
 
-RUN ./gradlew build --refresh-dependencies
+RUN ./gradlew build
 
 ENTRYPOINT ["./gradlew","bootRun"]
