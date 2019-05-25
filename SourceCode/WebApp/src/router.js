@@ -29,6 +29,30 @@ const router = new Router({
         {
           path: "books",
           component: () => import("@/modules/student/books/Books.vue")
+        },
+        {
+          path: "books/return",
+          component: () =>
+            import("@/modules/student/books-return/BooksReturn.vue")
+        },
+        {
+          path: "books/returning",
+          component: () =>
+            import("@/modules/student/books-returning/BooksReturning.vue")
+        },
+        {
+          path: "books/request",
+          component: () =>
+            import("@/modules/student/books-request/BooksRequest.vue")
+        },
+        {
+          path: "books/requesting",
+          component: () =>
+            import("@/modules/student/books-requesting/BooksRequesting.vue")
+        },
+        {
+          path: "books/pair",
+          component: () => import("@/modules/student/books-pair/BooksPair.vue")
         }
       ]
     },

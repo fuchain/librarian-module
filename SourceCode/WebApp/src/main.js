@@ -24,8 +24,14 @@ import "prismjs/themes/prism-tomorrow.css";
 // Time Ago
 import VueTimeago from "vue-timeago";
 
+// Form Wizard
+import VueFormWizard from "vue-form-wizard";
+
 import http from "@http";
 import auth from "@auth";
+
+// Form Wizard
+Vue.use(VueFormWizard);
 
 // Vuesax
 Vue.use(Vuesax);
@@ -50,14 +56,14 @@ Vue.use(VueTimeago, {
   // We use `date-fns` under the hood
   // So you can use all locales from it
   locales: {
-    "zh-CN": require("date-fns/locale/zh_cn"),
-    ja: require("date-fns/locale/ja")
+    // "zh-CN": require("date-fns/locale/zh_cn"),
+    // ja: require("date-fns/locale/ja")
   }
 });
 
 Vue.config.productionTip = false;
 
-new Vue({
+window.vue = new Vue({
   router,
   store,
   render: h => h(App)

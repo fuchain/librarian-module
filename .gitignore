@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-*.iml
-SourceCode/WebServer/.gradle/
-SourceCode/WebServer/.idea/
-=======
 *.bak
 target/
 .settings/
@@ -26,7 +21,6 @@ target/
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
@@ -46,5 +40,12 @@ target/
 *.project
 pom.properies
 *.MF
->>>>>>> b6cf20c... [PHONDV] add git ignre file
 SourceCode/WebServer/out/
+
+logs
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+build
+SourceCode/WebServer/.idea/
