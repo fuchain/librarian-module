@@ -172,3 +172,8 @@
 
   - https://github.com/tendermint/abci/blob/master/specification.rst
 
+## **Deep Concern**
+
+  - Transaction per second: https://blog.bigchaindb.com/and-were-off-to-the-races-1aff2b66567c
+
+  - Transaction validation rule: https://github.com/bigchaindb/BEPs/tree/master/13

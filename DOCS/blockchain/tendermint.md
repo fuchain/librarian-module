@@ -41,3 +41,7 @@
 ## **References**
 
   - https://www.tendermint.com
+
+## **Deep Concern**
+
+  - Byzantine consensus algorithm: https://github.com/tendermint/tendermint/wiki/Byzantine-Consensus-Algorithm
