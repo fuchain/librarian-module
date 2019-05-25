@@ -11,6 +11,7 @@ module.exports = {
     semi: ["error", "always"],
     "comma-dangle": ["error", "never"],
     "no-tabs": ["error", { allowIndentationTabs: true }],
+    indent: ["error", 2],
     "space-before-function-paren": [
       "error",
       {
