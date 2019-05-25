@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:12
 
 RUN mkdir -p /root/src/api
 WORKDIR /root/src/api
