@@ -237,8 +237,8 @@ export default {
         },
         {
           index: 1,
-          title: "Đề nghị nhận sách mới",
-          msg: "Đề nghị nhhận sách môn PRJ321",
+          title: "Đề nghị mượn sách mới",
+          msg: "Đề nghị mượn sách môn PRJ321",
           icon: "PackageIcon",
           time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
           category: "success"
