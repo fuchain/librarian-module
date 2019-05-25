@@ -49,3 +49,4 @@ logs
 
 build
 SourceCode/WebServer/.idea/
+SourceCode/WebServer/out/
