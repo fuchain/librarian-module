@@ -1,4 +1,4 @@
-FROM openjdk:12 as builder
+FROM openjdk:12 AS builder
 
 RUN mkdir -p /root/src/api
 WORKDIR /root/src/api
@@ -15,7 +15,7 @@ COPY --from=builder /root/src/api/build/libs/LibrarianModule.jar /root/src/api/L
 
 EXPOSE 8080
 
-ENTRYPOINT ["java -jar ./LibrarianModule.jar"]
+ENTRYPOINT ["java -jar LibrarianModule.jar"]
 
 # This is docker build command: 
 # docker build -t librarian-module .
