@@ -13,7 +13,7 @@
   - Disavantage the complexcity when implement is higher than monolothich application.
  
 # Details Design
-  | package | Responsibility  |
+| package | Responsibility  |
 | ------ | ------ |
 | com.fpt.edu.controller | Store all of controller |
 | com.fpt.edu.services| contain all of services class that help us do our business logic |
