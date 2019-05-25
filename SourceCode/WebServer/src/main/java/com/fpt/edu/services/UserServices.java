@@ -12,8 +12,6 @@ public class UserServices {
 	@Autowired
 	private UserRepository userRepository;
 	
-	
-	
 	public boolean save(User u){
 		try{
 		userRepository.save(u);
