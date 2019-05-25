@@ -1,11 +1,10 @@
-package com.fptedu.common.helper;
+package com.fpt.edu.common.helper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class Utils {
 
@@ -14,7 +13,9 @@ public class Utils {
 
     public static Double roundMark(Double mark, int scale){
         BigDecimal bd = new BigDecimal(mark);
+        //ETransactionStatus.COMPLETED
         return bd.setScale(scale, RoundingMode.HALF_UP).doubleValue();
+      
     }
 
     public static String getCurrentDate1(){
@@ -36,5 +37,6 @@ public class Utils {
         String format = sdf1.format(date);
         return format;
     }
+
 
 }
