@@ -1,279 +1,106 @@
 <template>
-  <div id="data-list-list-view" class="data-list-container">
-    <vs-table
-      ref="table"
-      multiple
-      v-model="selected"
-      pagination
-      :max-items="itemsPerPage"
-      search
-      :data="books"
-    >
-      <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
-        <div class="flex flex-wrap-reverse items-center">
-          <!-- ACTION - DROPDOWN -->
-          <vs-dropdown vs-trigger-click class="cursor-pointer mr-4 mb-4">
-            <div
-              class="p-4 shadow-drop rounded-lg d-theme-dark-bg cursor-pointer flex items-center justify-center text-lg font-medium w-32"
-            >
-              <span class="mr-2">Dùng</span>
-              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
+  <div id="ecommerce-wishlist-demo">
+    <h2 class="mb-6">Sách đang mượn</h2>
+    <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
+      <div
+        class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
+        v-for="item in wishListitems"
+        :key="item.objectID"
+      >
+        <item-grid-view :item="item">
+          <template slot="action-buttons">
+            <div class="flex flex-wrap">
+              <div
+                class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
+              >
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4"/>
+
+                <span
+                  class="text-sm font-semibold ml-2"
+                  @click="$router.push('/books/return')"
+                >TRẢ SÁCH</span>
+              </div>
+
+              <div
+                class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+              >
+                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4"/>
+
+                <span class="text-sm font-semibold ml-2">CHI TIẾT</span>
+              </div>
             </div>
-
-            <vs-dropdown-menu>
-              <vs-dropdown-item>
-                <span>Truy xuất thông tin</span>
-              </vs-dropdown-item>
-              <vs-dropdown-item>
-                <span>Chuyển sách đi</span>
-              </vs-dropdown-item>
-            </vs-dropdown-menu>
-          </vs-dropdown>
-
-          <!-- ADD NEW -->
-          <div
-            class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-primary border border-solid border-primary"
-          >
-            <feather-icon icon="PlusIcon" svgClasses="h-4 w-4"/>
-            <span class="ml-2 text-base text-primary">Yêu cầu nhận sách</span>
-          </div>
-        </div>
-
-        <!-- ITEMS PER PAGE -->
-        <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
-          <div
-            class="p-4 border border-solid border-grey-light rounded-full d-theme-dark-bg cursor-pointer flex items-center justify-between font-medium"
-          >
-            <span
-              class="mr-2"
-            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ books.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : books.length }} of {{ books.length }}</span>
-            <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
-          </div>
-          <!-- <vs-button class="btn-drop" type="line" color="primary" icon-pack="feather" icon="icon-chevron-down"></vs-button> -->
-          <vs-dropdown-menu>
-            <vs-dropdown-item @click="itemsPerPage=4">
-              <span>4</span>
-            </vs-dropdown-item>
-            <vs-dropdown-item @click="itemsPerPage=10">
-              <span>10</span>
-            </vs-dropdown-item>
-            <vs-dropdown-item @click="itemsPerPage=15">
-              <span>15</span>
-            </vs-dropdown-item>
-            <vs-dropdown-item @click="itemsPerPage=20">
-              <span>20</span>
-            </vs-dropdown-item>
-          </vs-dropdown-menu>
-        </vs-dropdown>
+          </template>
+        </item-grid-view>
       </div>
+    </div>
 
-      <template slot="thead">
-        <vs-th sort-key="id">Mã sách</vs-th>
-        <vs-th sort-key="name">Tên sách</vs-th>
-        <vs-th sort-key="subject">Mã môn</vs-th>
-        <vs-th sort-key="category">Phân loại</vs-th>
-        <vs-th sort-key="status">Trạng thái</vs-th>
-      </template>
-
-      <template slot-scope="{data}">
-        <tbody>
-          <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
-            <vs-td>
-              <p class="book-id">{{ tr.id }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="book-name font-medium">{{ tr.name }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="book-subject">{{ tr.subject }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="book-category">{{ tr.category }}</p>
-            </vs-td>
-
-            <vs-td>
-              <vs-chip
-                :color="getOrderStatusColor(tr.status)"
-                class="book-order-status"
-              >{{ tr.status }}</vs-chip>
-            </vs-td>
-          </vs-tr>
-        </tbody>
-      </template>
-    </vs-table>
+    <vx-card title="Bạn đang không giữ sách nào." v-else>
+      <vs-button @click="$router.push('/books/request')">Mượn sách</vs-button>
+    </vx-card>
   </div>
 </template>
 
 <script>
+const ItemGridView = () => import("./ItemGridView.vue");
+
 export default {
-  data() {
-    return {
-      selected: [],
-      books: [
-        {
-          id: "FUB123001",
-          name: "Introduce to Software Engineering",
-          subject: "SWE101",
-          category: "Software Engineering",
-          status: "đang giữ"
-        },
-        {
-          id: "FUB123002",
-          name: "Basic Mathematic for Engineering",
-          subject: "MAE101",
-          category: "Software Engineering",
-          status: "đang giữ"
-        },
-        {
-          id: "FUB123003",
-          name: "Advanced Mathematic for Engineering",
-          subject: "MAE102",
-          category: "Software Engineering",
-          status: "hư hỏng"
-        },
-        {
-          id: "FUB123004",
-          name: "Computer Networking",
-          subject: "NWC101",
-          category: "Software Engineering",
-          status: "đang giữ"
-        },
-        {
-          id: "FUB123005",
-          name: "Java Web for Dummies",
-          subject: "PRJ321",
-          category: "Software Engineering",
-          status: "đang giữ"
-        }
-      ],
-      itemsPerPage: 4,
-      isMounted: false
-    };
+  components: {
+    ItemGridView
   },
   computed: {
-    currentPage() {
-      if (this.isMounted) {
-        return this.$refs.table.currentx;
-      }
-      return 0;
-    }
-  },
-  methods: {
-    getOrderStatusColor(status) {
-      if (status === "đang giữ") return "success";
-      if (status === "hư hỏng") return "warning";
-      if (status === "đang chuyển") return "info";
-      return "primary";
-    },
-    getPopularityColor(num) {
-      if (num > 90) return "success";
-      if (num > 70) return "primary";
-      if (num >= 50) return "warning";
-      if (num < 50) return "danger";
-      return "primary";
-    },
-    formatData(data) {
-      // formats data received from API
-      let formattedData = data.map(item => {
-        const fields = item.fields;
-        let obj = {};
-        for (const key of Object.keys(fields)) {
-          obj[key] =
-            fields[key].stringValue ||
-            fields[key].integerValue ||
-            fields[key].doubleValue;
+    wishListitems() {
+      return [
+        {
+          objectID: 1,
+          name: "Software Requirements",
+          description:
+            "Software Requirements for Software Requirements in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          time: "12 ngày",
+          code: "SWR301"
+        },
+        {
+          objectID: 2,
+          name: "Software Quality Assurance and Testing",
+          description:
+            "Software Quality Assurance and Testing for Software Quality Assurance and Testing in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          time: "12 ngày",
+          code: "SWQ391"
+        },
+        {
+          objectID: 3,
+          name: ".NET and C#",
+          description: ".NET and C# for .NET and C# in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          time: "12 ngày",
+          code: "PRN292"
+        },
+        {
+          objectID: 4,
+          name: "Web Java Lab",
+          description: "Web Java Lab for Web Java Lab in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
+          time: "12 ngày",
+          code: "LAB231"
         }
-        return obj;
-      });
-      return formattedData;
+      ];
     }
   },
-  mounted() {
-    this.isMounted = true;
-  }
+  methods: {}
 };
 </script>
 
-<style lang="scss">
-#data-list-list-view {
-  .vs-con-table {
-    .vs-table--header {
-      display: flex;
-      flex-wrap: wrap-reverse;
-      margin-left: 1.5rem;
-      margin-right: 1.5rem;
-      > span {
-        display: flex;
-        flex-grow: 1;
-      }
+<style lang="scss" scoped>
+#ecommerce-wishlist-demo {
+  .item-view-primary-action-btn {
+    color: #2c2c2c !important;
+    background-color: #f6f6f6;
+    min-width: 50%;
+  }
 
-      .vs-table--search {
-        padding-top: 0;
-
-        .vs-table--search-input {
-          padding: 0.9rem 2.5rem;
-          font-size: 1rem;
-
-          & + i {
-            left: 1rem;
-          }
-
-          &:focus + i {
-            left: 1rem;
-          }
-        }
-      }
-    }
-
-    .vs-table {
-      border-collapse: separate;
-      border-spacing: 0 1.3rem;
-      padding: 0 1rem;
-
-      tr {
-        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05);
-        td {
-          padding: 20px;
-          &:first-child {
-            border-top-left-radius: 0.5rem;
-            border-bottom-left-radius: 0.5rem;
-          }
-          &:last-child {
-            border-top-right-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
-          }
-        }
-        td.td-check {
-          padding: 20px !important;
-        }
-      }
-    }
-
-    .vs-table--thead {
-      th {
-        padding-top: 0;
-        padding-bottom: 0;
-
-        .vs-table-text {
-          text-transform: uppercase;
-          font-weight: 600;
-        }
-      }
-      th.td-check {
-        padding: 0 15px !important;
-      }
-      tr {
-        background: none;
-        box-shadow: none;
-      }
-    }
-
-    .vs-table--pagination {
-      justify-content: center;
-    }
+  .item-view-secondary-action-btn {
+    min-width: 50%;
   }
 }
 </style>

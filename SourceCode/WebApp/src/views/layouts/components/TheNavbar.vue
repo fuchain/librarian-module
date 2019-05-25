@@ -229,16 +229,9 @@ export default {
       unreadNotifications: [
         {
           index: 0,
-          title: "Tin nhắn mới",
-          msg: "Bạn mang sách qua phòng 201 nhé?",
-          icon: "MessageSquareIcon",
-          time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
-          category: "primary"
-        },
-        {
-          index: 1,
-          title: "Đề nghị nhận sách mới",
-          msg: "Đề nghị nhhận sách môn PRJ321",
+          title: "Japanese Elementary 3",
+          msg:
+            "Đã tìm thấy sinh viên trả sách Japanese Elementary 3, liên lạc để mượn lại",
           icon: "PackageIcon",
           time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
           category: "success"
