@@ -52,42 +52,37 @@ export default {
       return [
         {
           objectID: 1,
-          name: "Never Split The Difference",
+          name: "Software Requirements",
           description:
-            "A field-tested, game-changing approach to high-stakes negotiations-whether in the boardroom or at home.",
-          image:
-            "https://salt.tikicdn.com/cache/w1200/ts/product/08/8b/39/211e3c14160851aa742f59a342476892.jpg",
+            "Software Requirements for Software Requirements in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
           time: "12 ngày",
-          code: "NWC101"
+          code: "SWR301"
         },
         {
           objectID: 2,
-          name: "Mark Zuckerberg: In His Own Words",
+          name: "Software Quality Assurance and Testing",
           description:
-            "Mark Zuckerberg: In His Own Words details the visionary thoughts and opinions of Facebook's founder entirely through direct quotations from Zuckerberg himself. It is an intimate and authoritative look at the man behind Facebook's once-in-a-generation success. This book serves up his most thought-provoking insights, as researched and chosen by George Beahm, the New York Times bestselling editor of I, Steve: Steve Jobs In His Own Words. Mark Zuckerberg: In His Own Words provides crucial illumination of Zuckerberg and the company he's created, emphasizing insights, business strategies, and lessons learned. It is essential reading for people who seek innovative solutions applicable to their business, regardless of size, and makes an ideal gift or reference item for anyone interested in this American business icon.",
-          image:
-            "https://salt.tikicdn.com/cache/w1200/ts/product/65/b3/10/efcc9cba254c26baed7cb202eba745fd.jpg",
+            "Software Quality Assurance and Testing for Software Quality Assurance and Testing in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
           time: "12 ngày",
-          code: "NWC101"
+          code: "SWQ391"
         },
         {
           objectID: 3,
-          name: "Jeff Bezos: In His Own Words",
-          description:
-            "Jeff Bezos started Amazon in 1994 as an online bookstore based out of his garage. Since then, the ever-expanding enterprise has revolutionized shopping and, in many important ways, invented e-commerce as we know it. Today, Amazon is the third-most valuable company in the world, and Bezos's vast customer-oriented empire has mushroomed to include everything from cloud computing and fresh food delivery to movie production and consumer electronics. In recent years, Bezos also has invested in rocket technology, newspaper publishing, and artificial intelligence. Every arm of Bezos's business, however, is guided by a fundamental goal: to give customers what they want before they even think to ask for it. Jeff Bezos: In His Own Words offers a unique look into the mind of one of the world's most successful entrepreneurs by collecting more than 500 of Bezos's quotes on business, technology, customer service, e-commerce, innovation, entrepreneurship, and more. Meticulously curated from interviews, speeches, shareholder letters, press releases, and other sources, this book creates a comprehensive picture of Jeff Bezos, his obsessions, and what makes his ventures thrive.",
-          image:
-            "https://salt.tikicdn.com/cache/w1200/ts/product/b1/e6/a3/cd891bd031eb3503f375048414cf0843.jpg",
+          name: ".NET and C#",
+          description: ".NET and C# for .NET and C# in FPT University",
+          image: "https://i.imgur.com/2j6B1n5.jpg",
           time: "12 ngày",
-          code: "NWC101"
+          code: "PRN292"
         },
         {
           objectID: 4,
-          name: "Computer Networking",
-          description:
-            "Computer Networking for Computer Networking in FPT University",
+          name: "Web Java Lab",
+          description: "Web Java Lab for Web Java Lab in FPT University",
           image: "https://i.imgur.com/2j6B1n5.jpg",
           time: "12 ngày",
-          code: "NWC101"
+          code: "LAB231"
         }
       ];
     }

@@ -23,13 +23,6 @@ export default {
       this.$store.registerModule(STORE_KEY, store);
     }
   },
-  async mounted() {
-    // this.$vs.loading({
-    //     container: "#div-with-loading",
-    //     scale: 0.6
-    // });
-    // await this.$store.dispatch(`${STORE_KEY}/getBooks`);
-    // this.$vs.loading.close("#div-with-loading > .con-vs-loading");
-  }
+  async mounted() {}
 };
 </script>

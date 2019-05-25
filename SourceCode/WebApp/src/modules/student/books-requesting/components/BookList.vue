@@ -16,7 +16,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2" @click="openConfirm">ĐÃ NHẬN SÁCH</span>
+                <span class="text-sm font-semibold ml-2" @click="beginConfirm">ĐÃ NHẬN SÁCH</span>
               </div>
 
               <div
@@ -39,6 +39,15 @@
     <vx-card title="Bạn đang không yêu cầu mượn sách nào." v-else>
       <vs-button @click="$router.push('/books/request')">Yêu cầu mượn sách</vs-button>
     </vx-card>
+
+    <vs-popup title="Xác nhận đã nhận sách" :active.sync="popupActive">
+      <div class="mb-4">
+        <vs-input size="large" class="w-full" placeholder="Xác nhận mã PIN" v-model="pin"/>
+      </div>
+      <div>
+        <vs-button class="w-full" @click="validateConfirm">Đã nhận sách</vs-button>
+      </div>
+    </vs-popup>
   </div>
 </template>
 
@@ -49,25 +58,31 @@ export default {
   components: {
     ItemGridView
   },
+  data() {
+    return {
+      popupActive: false,
+      pin: ""
+    };
+  },
   computed: {
     wishListitems() {
       return [
         {
-          objectID: 4,
-          name: "Advance Java (Java Web)",
+          objectID: 7,
+          name: "Japanese Elementary 3",
           description:
-            "Best subject in FU. Goodluck with this subject, hope you can pass it!",
+            "Japanese Elementary 3 for Japanese Elementary 3 in FPT University",
           image: "https://i.imgur.com/2j6B1n5.jpg",
           user: "SE62533",
-          code: "PRJ321"
+          code: "JPD131"
         },
         {
-          objectID: 7,
-          name: "Software Project Management",
+          objectID: 8,
+          name: "Start Your Business",
           description:
-            "Jack Welch knows how to win. During his 40-year career at General Electric, he led the company to year-after-year success around the globe, in multiple markets, against brutal competition. His honest, be-the-best style of management became the gold standard in business, with his relentless focus on people, teamwork and profits.",
+            "Start Your Business for Start Your Business in FPT University",
           image: "https://i.imgur.com/2j6B1n5.jpg",
-          code: "SWM301"
+          code: "SYB301"
         }
       ];
     }
@@ -76,28 +91,6 @@ export default {
     triggerCall(check) {
       if (!check) return;
       window.location.href = "tel:0796870446";
-    },
-    openConfirm() {
-      this.$vs.dialog({
-        type: "confirm",
-        color: "primary",
-        title: "Xác nhận",
-        text:
-          "Bạn có chắc là bạn đã nhận được sách, bạn đã kiểm tra tình trạng quyển sách chưa?",
-        accept: this.acceptAlert
-      });
-    },
-    async acceptAlert(color) {
-      await this.fakeLoad();
-
-      this.$router.push("/books");
-
-      this.$vs.notify({
-        color: "primary",
-        title: "Thành công",
-        text: "Đã xác nhận mượn thành công sách",
-        position: "top-center"
-      });
     },
     async fakeLoad() {
       return new Promise((resolve, reject) => {
@@ -109,6 +102,19 @@ export default {
           }.bind(this),
           3000
         );
+      });
+    },
+    async beginConfirm() {
+      this.popupActive = true;
+    },
+    async validateConfirm() {
+      await this.fakeLoad();
+
+      this.$vs.notify({
+        title: "Lỗi",
+        text: "Mã PIN không hợp lệ",
+        color: "warning",
+        position: "top-center"
       });
     }
   }

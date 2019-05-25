@@ -2,22 +2,6 @@
   <vx-card title="Yêu cầu mượn sách">
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
-        <span>Mã số sinh viên</span>
-      </div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" disabled v-model="studentID"/>
-      </div>
-    </div>
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Họ tên</span>
-      </div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" type="email" disabled v-model="fullName"/>
-      </div>
-    </div>
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
         <span>Mã môn hoặc Tên môn</span>
       </div>
       <div class="vx-col sm:w-1/3 w-full">
@@ -48,6 +32,7 @@
           class="mr-3 mb-2"
           @click="submit"
           :disabled="!subjectCode.trim() || !bookCode.trim()"
+          icon="done"
         >Đăng kí</vs-button>
       </div>
     </div>
@@ -58,8 +43,6 @@
 export default {
   data() {
     return {
-      studentID: "SE62531",
-      fullName: "Huỳnh Minh Tú",
       subjectCode: "",
       bookCode: "",
       listBooks: []
@@ -75,12 +58,12 @@ export default {
 
           this.listBooks = [].concat([
             {
-              id: "FULIB001",
-              name: "Introduce to Software Engineering"
+              id: "FUHCM000000002",
+              name: "Japanese Elementary 3"
             },
             {
-              id: "FULIB002",
-              name: "Advance to Database"
+              id: "FUHCM000000003",
+              name: "Start Your Business"
             }
           ]);
         }.bind(this),
