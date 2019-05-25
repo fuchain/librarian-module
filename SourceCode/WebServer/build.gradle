@@ -28,6 +28,8 @@ dependencies {
     //compile group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.9.RELEASE'
     //compile group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.9.RELEASE'
     //compile group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '2.3.0'
+	// https://mvnrepository.com/artifact/org.json/json
+	compile group: 'org.json', name: 'json', version: '20160810'
 
     implementation('org.postgresql:postgresql')
     

@@ -1,4 +1,4 @@
-package com.fpt.edu.web.repository;
+package com.fpt.edu.repository;
 
 import org.springframework.data.repository.CrudRepository;
 

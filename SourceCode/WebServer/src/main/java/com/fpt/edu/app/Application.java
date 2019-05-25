@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EntityScan("com.fpt.edu.entities")
-@EnableJpaRepositories("com.fptedu.web.repository")
+@EnableJpaRepositories("com.fpt.edu.repository")
 //@EnableAsync
 //@EnableAuthModule
 //@EnableApiCaller
