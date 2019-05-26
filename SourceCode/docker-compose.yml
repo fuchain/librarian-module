@@ -1,0 +1,65 @@
+version: "3"
+services:
+  api:
+    build:
+      context: ./WebServer
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    image: server-dev
+    container_name: server-dev
+    volumes:
+      - ./WebServer/src:/root/src/api/src
+    tty: true
+    networks:
+      - backend
+
+  web:
+    build:
+      context: ./WebApp
+    expose:
+      - 3000
+    ports:
+      - 3000:3000
+    image: web-dev
+    container_name: web-dev
+    volumes:
+      - ./WebApp/src:/root/src/app/src
+      - ./WebApp/public:/root/src/app/public
+    tty: true
+    networks:
+      - backend
+
+  postgres_db:
+    container_name: postgres_db
+    hostname: postgres_db
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    env_file:
+      - ./dev.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - backend
+
+  pg_admin:
+    container_name: pg_admin
+    hostname: pg_admin
+    image: dpage/pgadmin4
+    ports:
+      - 7000:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - postgres_db
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: "bridge"
