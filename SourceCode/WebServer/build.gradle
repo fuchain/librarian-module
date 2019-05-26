@@ -23,16 +23,22 @@ dependencies {
 	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    // https://mvnrepository.com/artifact/commons-collections/commons-collections
+    compile group: 'commons-collections', name: 'commons-collections', version: '3.2.1'
 
     implementation('org.postgresql:postgresql')
-    
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    //  compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
     // JSON handling
     //https://mvnrepository.com/artifact/org.json/json
     compile group: 'org.json', name: 'json', version: '20160810'
     compile group: 'com.google.guava', name: 'guava', version: '23.0'
-    
-    compile fileTree(dir: 'libs', include: '*.jar')
+    // https://mvnrepository.com/artifact/com.fast  erxml.jackson.core/jackson-core
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
+        compile fileTree(dir: 'libs', include: '*.jar')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    // dev tool for host reload
+    compile("org.springframework.boot:spring-boot-devtools")
 }
 
 buildscript {

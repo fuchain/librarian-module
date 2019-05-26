@@ -1,41 +1,30 @@
 package com.fpt.edu.common.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fpt.edu.constant.Constant;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
+@Component
 public class Utils {
-
-    private final static SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
-    private final static SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MMM/yyyy");
-
-    public static Double roundMark(Double mark, int scale){
-        BigDecimal bd = new BigDecimal(mark);
-        //ETransactionStatus.COMPLETED
-        return bd.setScale(scale, RoundingMode.HALF_UP).doubleValue();
-      
-    }
-
-    public static String getCurrentDate1(){
-        String format = sdf1.format(Calendar.getInstance().getTime());
-        return format;
-    }
-
-    public static String getCurrentDate2(){
-        String format = sdf2.format(Calendar.getInstance().getTime());
-        return format;
-    }
-
-    public static String getDateFormatType2(Timestamp date){
-        String format = sdf2.format(date);
-        return format;
-    }
-
-    public static String getDateFormatType1(Timestamp date){
-        String format = sdf1.format(date);
-        return format;
+    public JSONObject buildListEntity(List<?> list) throws JsonProcessingException {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray arr = new JSONArray();
+        ObjectMapper objectMapper = new ObjectMapper();
+        for (int i = 0; i < list.size(); i++) {
+            arr.put(new JSONObject(objectMapper.writeValueAsString(list.get(i))));
+        }
+        jsonObject.put(Constant.ITEMS, arr);
+        return jsonObject;
     }
 
 

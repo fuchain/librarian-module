@@ -24,28 +24,7 @@ public class Application {
     private static int REDIRECT_PORT = 8443;
 
     public static void main(String[] args){
-        if(args.length > 0){
-            Integer ajpPort = Integer.valueOf(args[0]);
-            AJP_PORT = ajpPort;
-        }
         SpringApplication.run(Application.class, args);
-    }
-
-    @Bean
-    public EmbeddedServletContainerFactory servletContainer() {
-        TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
-        tomcat.addAdditionalTomcatConnectors(redirectConnector());
-        return tomcat;
-    }
-
-    private Connector redirectConnector() {
-        Connector connector = new Connector("AJP/1.3");
-        connector.setScheme("http");
-        connector.setPort(AJP_PORT);
-        connector.setRedirectPort(REDIRECT_PORT);
-        connector.setSecure(false);
-        connector.setAllowTrace(false);
-        return connector;
     }
 
 }
