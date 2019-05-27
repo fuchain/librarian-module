@@ -15,7 +15,7 @@ COPY --from=builder /root/src/api/build/libs/LibrarianModule.jar /root/src/api/L
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","LibrarianModule.jar --spring.profiles.active=prod"]
+ENTRYPOINT ["java","-jar","LibrarianModule.jar","--spring.profiles.active=prod"]
 
 # This is docker build command: 
 # docker build -t librarian-module .
