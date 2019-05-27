@@ -29,13 +29,16 @@ public class UserController {
 		})
 
 	@RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json")
-	public String test() {
+	public String test() throws Exception {
 		User u = new User();
 		u.setUsername("phongdv");
 		u.setPassword("12345678");
 		JSONObject result = new JSONObject();
 		result.put("Message",userServices.save(u) );
-		return result.toString();
+		throw new Exception("ec ");
+
+
+//		return result.toString();
 	}
 
 }
