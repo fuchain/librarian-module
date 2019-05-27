@@ -30,6 +30,8 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '23.0'
     // dev tool for host reload
     compile("org.springframework.boot:spring-boot-devtools")
+
+    compile group: 'com.bigchaindb', name: 'bigchaindb-driver', version: '1.2'
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     compile fileTree(dir: 'libs', include: '*.jar')
