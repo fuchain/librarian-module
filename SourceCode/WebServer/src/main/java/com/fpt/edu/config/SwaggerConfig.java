@@ -26,11 +26,7 @@ public class SwaggerConfig {
 	          .build().apiInfo(new ApiInfoBuilder().version("1.0").title("FPT Library API").description("Documentation Library API v1.0").build())	;
 
 	    }
-	 @Bean
-	 public UiConfiguration uiConfig() {
-			String[] supportmethod= {"get","post","put","delete","patch","options"};
-			    return new UiConfiguration(null,supportmethod);
-		    }
+
 		 
 		 @Bean
 		    public ApiInfo apiInfo() {
