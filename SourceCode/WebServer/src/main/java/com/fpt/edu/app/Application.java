@@ -12,10 +12,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ImportResource({"classpath:META-INF/application-config.xml"})
 
 public class Application {
-
-    private static int AJP_PORT = 8609;
-    private static int REDIRECT_PORT = 8443;
-
     public static void main(String[] args){
         SpringApplication.run(Application.class, args);
     }
