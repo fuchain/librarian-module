@@ -1,5 +1,9 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -30,26 +34,25 @@ public class BookDetail {
     private String name;
 
 
-
+    @JsonIgnore
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "book_author", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "author_id")})
     private List<Author> authors;
 
-
+    @JsonIgnore
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private List<Category> category;
-
 
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
+    @CreationTimestamp
     @Column(name = "created_at",nullable = true)
-    private Date bookStartDate;
+    private Timestamp bookStartDate;
 
-
-
+    @JsonIgnore
     @OneToMany(mappedBy = "bookDetail")
     private List<Book> books;
 
@@ -91,7 +94,7 @@ public class BookDetail {
         return bookStartDate;
     }
 
-    public void setBookStartDate(Date bookStartDate) {
+    public void setBookStartDate(Timestamp bookStartDate) {
         this.bookStartDate = bookStartDate;
     }
 

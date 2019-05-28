@@ -26,19 +26,13 @@ public class BookDetailController extends BaseController {
     public ResponseEntity<String> findBookDetailsById() throws EntityNotFoundException, JsonProcessingException {
         String requestPattern=httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
         LOGGER.info("START Controller :" + requestPattern);
-
-
-        JSONObject raw = utils.buildListEntity(bookDetailsServices.getAllBookDetails());
-
-
-
-        return new ResponseEntity<>(utils.buildRelatedLink(requestPattern,httpServletRequest.getMethod(),raw).toString(), HttpStatus.OK);
+        JSONObject raw = utils.buildListEntity(bookDetailsServices.getAllBookDetails(),httpServletRequest);
+        return new ResponseEntity<>(raw.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> createBookDetails(@RequestBody String body) throws IOException {
         bookDetailsServices.saveBookDetail(body);
-
         return new ResponseEntity<>("{'200':'Success'}", HttpStatus.OK);
     }
 

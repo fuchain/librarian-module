@@ -15,6 +15,30 @@ public class EndPoint {
     private String linkSelf;
     @CsvBindByName(column = "METHOD", required = true)
     private String method;
+
+    @CsvBindByName(column = "ITEMS_LINK", required = true)
+    private String itemLink;
+
+    public String getItemLink() {
+        return itemLink;
+    }
+
+    public void setItemLink(String itemLink) {
+        this.itemLink = itemLink;
+    }
+
+    public String getIsCollection() {
+        return isCollection;
+    }
+
+    public void setIsCollection(String isCollection) {
+        this.isCollection = isCollection;
+    }
+
+    @CsvBindByName(column = "IS_COLLECTION", required = true)
+    private String isCollection;
+
+
     @CsvBindByName(column = "SUB_LINK_KEY", required = true)
     private String subLinkKey;
 
