@@ -1,0 +1,163 @@
+{
+	"info": {
+		"_postman_id": "580e568d-0cbe-42ba-90c4-449c222c3573",
+		"name": "LIB_API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create a book details",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"think in java\"}"
+				},
+				"url": {
+					"raw": "{{http}}://{{hostname}}/{{path}}/{{bookdetails}}",
+					"protocol": "{{http}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"{{path}}",
+						"{{bookdetails}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get booklist list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cedb9b08-7766-4429-8b51-6a5b7f091a31",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var data = JSON.parse(responseBody);",
+							"",
+							"postman.setEnvironmentVariable(\"bookdetail-id\", data[\"items\"][0][\"id\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{http}}://{{hostname}}/{{path}}/{{bookdetails}}",
+					"protocol": "{{http}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"{{path}}",
+						"{{bookdetails}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a book details Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a28de503-ae7f-403f-8ed1-6ad672916aad",
+						"exec": [
+							"{",
+							"     \"name\": \"think in javaSCript\"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"think in java\"}"
+				},
+				"url": {
+					"raw": "{{http}}://{{hostname}}/{{path}}/{{bookdetails}}/{{bookdetail-id}}",
+					"protocol": "{{http}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"{{path}}",
+						"{{bookdetails}}",
+						"{{bookdetail-id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a bookDetail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a28de503-ae7f-403f-8ed1-6ad672916aad",
+						"exec": [
+							"{",
+							"     \"name\": \"think in javaSCript\"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"think in java\"}"
+				},
+				"url": {
+					"raw": "{{http}}://{{hostname}}/{{path}}/{{bookdetails}}/{{bookdetail-id}}",
+					"protocol": "{{http}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"{{path}}",
+						"{{bookdetails}}",
+						"{{bookdetail-id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
