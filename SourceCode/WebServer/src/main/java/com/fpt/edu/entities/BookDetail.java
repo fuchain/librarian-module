@@ -50,7 +50,7 @@ public class BookDetail {
 
     @CreationTimestamp
     @Column(name = "created_at",nullable = true)
-    private Timestamp bookStartDate;
+    private Date bookStartDate;
 
     @JsonIgnore
     @OneToMany(mappedBy = "bookDetail")

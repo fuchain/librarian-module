@@ -38,14 +38,23 @@ public class Utils {
         if (endPoint.getIsCollection().equalsIgnoreCase(Constant.YES)) {
             for (int i = 0; i < list.size(); i++) {
                 JSONObject jsonItem = new JSONObject(objectMapper.writeValueAsString(list.get(i)));
-                httpServletRequest.getRequestURL().toString();
-
+                String instanceLink=httpServletRequest.getRequestURL().toString()+"/"+jsonItem.get(Constant.ID).toString();
+                jsonItem.put(Constant.LINK,instanceLink);
                 arr.put(jsonItem);
             }
             jsonObject.put(Constant.ITEMS, arr);
         }
         return jsonObject;
     }
+
+    public JSONObject convertObjectToJSONObject(Object o) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString=objectMapper.writeValueAsString(o);
+        return new JSONObject(jsonString);
+
+
+    }
+
 
     public String buildItemDetailLink(String currentPath, JSONObject raw) {
         String id = raw.getString(Constant.ID);
@@ -86,9 +95,7 @@ public class Utils {
                 return currentKeyValue.toString();
             }
         }
-
         return "";
-
     }
 
 
