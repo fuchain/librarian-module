@@ -42,7 +42,7 @@ public class BookDetail {
     @JsonIgnore
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
-    private List<Category> category;
+    private List<Category> categories;
 
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "publisher_id")
@@ -74,12 +74,12 @@ public class BookDetail {
         this.authors = authors;
     }
 
-    public List<Category> getCategory() {
-        return category;
+    public List<Category> getCategories() {
+        return categories;
     }
 
-    public void setCategory(List<Category> category) {
-        this.category = category;
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 
     public Publisher getPublisher() {
