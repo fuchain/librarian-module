@@ -1,1 +1,4 @@
-*.css linguist-language=typescript
+*.css linguist-vendored=false
+*.scss linguist-vendored=false
+*.sass linguist-vendored=false
+*.less linguist-vendored=false
