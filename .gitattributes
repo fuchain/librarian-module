@@ -1,3 +1,4 @@
 SourceCode/WebApp/public/* linguist-vendored
 SourceCode/WebApp/src/assets/* linguist-vendored
 Documents/* linguist-documentation
+*.css linguist-language=Javascript
