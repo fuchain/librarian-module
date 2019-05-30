@@ -94,7 +94,7 @@ public class BookDetail {
         return bookStartDate;
     }
 
-    public void setBookStartDate(Timestamp bookStartDate) {
+    public void setBookStartDate(Date bookStartDate) {
         this.bookStartDate = bookStartDate;
     }
 

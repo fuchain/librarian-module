@@ -30,7 +30,19 @@ public class Book {
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	private List<Request> requests;
-	
+
+	@ManyToOne(cascade={CascadeType.ALL})
+	@JoinColumn(name="user_id")
+	private User user;
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public List<Transaction> getTransactions() {
 		return transactions;
 	}

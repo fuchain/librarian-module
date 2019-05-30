@@ -1,8 +1,6 @@
 package com.fpt.edu.linkresource;
 
 import com.opencsv.bean.CsvBindByName;
-import org.omg.CORBA.PRIVATE_MEMBER;
-import org.springframework.stereotype.Component;
 
 
 public class Link {

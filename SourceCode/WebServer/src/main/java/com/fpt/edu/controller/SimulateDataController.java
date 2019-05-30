@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +69,7 @@ public class SimulateDataController {
         for (String bookDetailName : bookDetailNames) {
             BookDetail bookDetail = new BookDetail();
             bookDetail.setName(bookDetailName);
-            bookDetail.setBookStartDate(new Date());
+            bookDetail.setBookStartDate((Timestamp) new Date());
 
             // Map author to book detail
             List<Author> authorList = new ArrayList<>();
