@@ -2,7 +2,16 @@ package com.fpt.edu.entities;
 
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="tbl_user")
@@ -24,16 +33,6 @@ public class User {
 	@JoinTable(name="user_role",joinColumns={@JoinColumn(name="user_id")},inverseJoinColumns={@JoinColumn(name="role_id")})
 	private List<Role> roles;
 
-	@OneToMany(cascade=CascadeType.ALL)
-	private List<Book> listBooks;
-
-	public List<Book> getListBooks() {
-		return listBooks;
-	}
-
-	public void setListBooks(List<Book> listBooks) {
-		this.listBooks = listBooks;
-	}
 
 	public Long getId() {
 		return id;
