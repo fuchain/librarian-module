@@ -56,5 +56,17 @@ public class UserServices {
         return bookList;
     }
 
+    @Transactional
+    public List<Book> getReturningBookList(Long userId) {
+        List<Book> bookList = new ArrayList<>();
 
+        List<Request> requestList =
+                (List<Request>) requestRepository.findRequestByUserIdAndStatus(userId, RequestStatus.RETURNING.getValue());
+        for (Request request : requestList) {
+            Book book = bookRepository.findById(request.getId()).get();
+            bookList.add(book);
+        }
+
+        return bookList;
+    }
 }

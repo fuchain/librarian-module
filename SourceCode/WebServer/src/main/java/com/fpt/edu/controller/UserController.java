@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
@@ -71,6 +72,15 @@ public class UserController extends BaseController {
         LOGGER.info("START Controller : " + requestPattern);
         List<Book> requiringBookList = userServices.getRequiringBookList(id);
         JSONObject jsonResult = utils.buildListEntity(requiringBookList, httpServletRequest);
+        return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/returning/{id}", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> getReturningBookList(@PathVariable Long id) throws JsonProcessingException {
+        String requestPattern = httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
+        LOGGER.info("START Controller : " + requestPattern);
+        List<Book> returningBookList = userServices.getReturningBookList(id);
+        JSONObject jsonResult = utils.buildListEntity(returningBookList, httpServletRequest);
         return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
     }
 
