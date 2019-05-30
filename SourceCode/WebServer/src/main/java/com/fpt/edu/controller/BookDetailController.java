@@ -18,7 +18,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping("bookdetails")
 public class BookDetailController extends BaseController {
-
     @Autowired
     BookDetailsServices bookDetailsServices;
 
@@ -59,6 +58,4 @@ public class BookDetailController extends BaseController {
 
         return new ResponseEntity<>(json.toString(), HttpStatus.OK);
     }
-
-
 }
