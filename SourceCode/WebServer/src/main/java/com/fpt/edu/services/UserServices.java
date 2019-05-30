@@ -1,17 +1,13 @@
 package com.fpt.edu.services;
 
-import com.fpt.edu.entities.Author;
-import com.fpt.edu.entities.Book;
-import com.fpt.edu.entities.BookDetail;
-import com.fpt.edu.repository.AuthorRepository;
-import com.fpt.edu.repository.BookDetailRepository;
-import com.fpt.edu.repository.BookRepository;
+import com.fpt.edu.common.RequestStatus;
+import com.fpt.edu.entities.*;
+import com.fpt.edu.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fpt.edu.entities.User;
-import com.fpt.edu.repository.UserRepository;
-
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,10 +20,7 @@ public class UserServices {
     private BookRepository bookRepository;
 
     @Autowired
-    private BookDetailRepository bookDetailRepository;
-
-    @Autowired
-    private AuthorRepository authorRepository;
+    private RequestRepository requestRepository;
 
     public boolean save(User u) {
         try {
@@ -39,15 +32,28 @@ public class UserServices {
 
     }
 
+    @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {
         List<Book> result = (List<Book>) bookRepository.findBookListByUserId(userId);
         for (int i = 0; i < result.size(); i++) {
             BookDetail bookDetail = result.get(i).getBookDetail();
-           bookDetail.getAuthors().size();
-            List<Author> authorList=bookDetail.getAuthors();
-            System.out.println(authorList.size());
+            bookDetail.getAuthors().size();
         }
         return result;
+    }
+
+    @Transactional
+    public List<Book> getRequiringBookList(Long userId) {
+        List<Book> bookList = new ArrayList<>();
+
+        List<Request> requestList =
+                (List<Request>) requestRepository.findRequestByUserIdAndStatus(userId, RequestStatus.REQUIRING.getValue());
+        for (Request request : requestList) {
+            Book book = bookRepository.findById(request.getId()).get();
+            bookList.add(book);
+        }
+
+        return bookList;
     }
 
 
