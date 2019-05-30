@@ -19,7 +19,7 @@ public class Category {
 	private Long id;
 	@Column(name="name")
 	private String name;
-	@ManyToMany(mappedBy="category")
+	@ManyToMany(mappedBy="categories")
 	private List<BookDetail> booksDetails;
 	public Long getId() {
 		return id;

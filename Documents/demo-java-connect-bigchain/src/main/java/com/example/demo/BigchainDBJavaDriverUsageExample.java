@@ -1,5 +1,6 @@
 package com.example.demo;
 import java.io.IOException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.util.Map;
 import java.util.TreeMap;
@@ -139,7 +140,9 @@ public class BigchainDBJavaDriverUsageExample {
     public static KeyPair getKeys() {
         //  prepare your keys
         net.i2p.crypto.eddsa.KeyPairGenerator edDsaKpg = new net.i2p.crypto.eddsa.KeyPairGenerator();
+
         KeyPair keyPair = edDsaKpg.generateKeyPair();
+        keyPair.getPublic().toString();
         System.out.println("(*) Keys Generated..");
         return keyPair;
 
