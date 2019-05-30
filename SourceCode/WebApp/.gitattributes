@@ -1,4 +1,1 @@
-*.css linguist-vendored
-*.scss linguist-vendored
-*.sass linguist-vendored
-*.less linguist-vendored
+public/ export-ignore
