@@ -10,15 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 
 @Component
 public class BaseController {
-
-    protected   final Logger LOGGER = LogManager.getLogger(getClass());
-
+    protected final Logger LOGGER = LogManager.getLogger(getClass());
 
     @Autowired
     protected Utils utils;
+
     @Autowired
     HttpServletRequest httpServletRequest;
-
-
-
 }

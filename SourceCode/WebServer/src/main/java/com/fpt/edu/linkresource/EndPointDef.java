@@ -18,7 +18,7 @@ public class EndPointDef {
     private   String END_POINT_PATH = "src/main/resources/schema-definition/endPoint.csv";
     private List<EndPoint> listEndpoints;
 
-     private LinkDef linkDef;
+    private LinkDef linkDef;
 
     public EndPointDef(LinkDef linkDef) {
         END_POINT_PATH= END_POINT_PATH.replace("/", File.separator);
@@ -50,7 +50,6 @@ public class EndPointDef {
 
 
     }
-
 
     public List<Link> getLinkByEndPointSublinkKey(String keyName){
         ArrayList<Link> result= new ArrayList<>();

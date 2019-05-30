@@ -19,6 +19,11 @@ WORKDIR /root/src/app
 
 COPY --from=builder /root/src/app/dist/ /usr/share/nginx/html
 
+# Datadog Log Monitoring
+LABEL "com.datadoghq.ad.check_names"='["vue"]'
+LABEL "com.datadoghq.ad.init_configs"='[{}]'
+LABEL "com.datadoghq.ad.logs"='[{"source": "vue", "service": "webapp"}]'
+
 # This is docker build command: 
 # docker build -t librarian-webapp .
 

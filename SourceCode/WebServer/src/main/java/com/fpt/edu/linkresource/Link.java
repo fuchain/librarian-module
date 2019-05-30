@@ -2,7 +2,6 @@ package com.fpt.edu.linkresource;
 
 import com.opencsv.bean.CsvBindByName;
 
-
 public class Link {
     @CsvBindByName(column = "LINK_NAME", required = true)
     private String linkName;
@@ -12,7 +11,6 @@ public class Link {
     private String title;
     @CsvBindByName(column = "HREF", required = true)
     private String href;
-
 
     public String getLinkName() {
         return linkName;

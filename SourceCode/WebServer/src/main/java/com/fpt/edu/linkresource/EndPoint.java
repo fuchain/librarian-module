@@ -7,8 +7,6 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class EndPoint {
-
-
     @CsvBindByName(column = "END_POINT_NAME", required = true)
     private String endPointName;
     @CsvBindByName(column = "LINK_SELF", required = true)
@@ -38,13 +36,10 @@ public class EndPoint {
     @CsvBindByName(column = "IS_COLLECTION", required = true)
     private String isCollection;
 
-
     @CsvBindByName(column = "SUB_LINK_KEY", required = true)
     private String subLinkKey;
 
-
     private List<Link> linkList;
-
 
     public List<Link> getLinkList() {
         return linkList;
@@ -85,7 +80,4 @@ public class EndPoint {
     public void setSubLinkKey(String subLinkKey) {
         this.subLinkKey = subLinkKey;
     }
-
-
-
 }

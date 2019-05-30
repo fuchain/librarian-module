@@ -55,17 +55,13 @@ public class Utils {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString=objectMapper.writeValueAsString(o);
         return new JSONObject(jsonString);
-
-
     }
-
 
     public String buildItemDetailLink(String currentPath, JSONObject raw) {
         String id = raw.getString(Constant.ID);
         String result = currentPath.replaceAll(Constant.REGULAR_ID_EXP, id);
         return result;
     }
-
 
     public JSONObject buildRelatedLink(HttpServletRequest httpServletRequest, JSONObject raw, EndPoint endPoint) {
         List<Link> linkList = endPoint.getLinkList();
@@ -102,7 +98,6 @@ public class Utils {
         return "";
     }
 
-
     private EndPoint getEndPoint(String requestPattern, String method) {
         for (int i = 0; i < endPointDef.getListEndpoints().size(); i++) {
             EndPoint endPoint = endPointDef.getListEndpoints().get(i);
@@ -113,8 +108,7 @@ public class Utils {
         return null;
     }
 
-
-    // build the root path for the server like http://localhost:9090/api/v1
+    // Build the root path for the server like http://localhost:9090/api/v1
     public String buildServerRootPath(HttpServletRequest httpServletRequest) {
         return
                 httpServletRequest.getScheme() + "://" +
@@ -123,6 +117,4 @@ public class Utils {
                         httpServletRequest.getContextPath();
 
     }
-
-
 }

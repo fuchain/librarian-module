@@ -15,6 +15,11 @@ COPY --from=builder /root/src/api/build/libs/LibrarianModule.jar /root/src/api/L
 
 EXPOSE 8080
 
+# Datadog Log Monitoring
+LABEL "com.datadoghq.ad.check_names"='["java"]'
+LABEL "com.datadoghq.ad.init_configs"='[{}]'
+LABEL "com.datadoghq.ad.logs"='[{"source": "java", "service": "webserver"}]'
+
 ENTRYPOINT ["java","-jar","LibrarianModule.jar","--spring.profiles.active=prod"]
 
 # This is docker build command: 

@@ -1,5 +1,6 @@
 package com.fpt.edu.services;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fpt.edu.entities.Author;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
@@ -18,28 +19,30 @@ import java.util.List;
 @Service
 @Transactional
 public class UserServices {
+	private final BCryptPasswordEncoder encoder;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private BookRepository bookRepository;
 
-    @Autowired
-    private BookRepository bookRepository;
+	@Autowired
+	private BookDetailRepository bookDetailRepository;
 
-    @Autowired
-    private BookDetailRepository bookDetailRepository;
+	@Autowired
+	private AuthorRepository authorRepository;
 
-    @Autowired
-    private AuthorRepository authorRepository;
 
-    public boolean save(User u) {
-        try {
-            userRepository.save(u);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
 
-    }
+	public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
+		this.userRepository = userRepository;
+		this.encoder = encoder;
+	}
+	public User addNewUser(User user) {
+		user.setPassword(encoder.encode(user.getPassword()));
+		userRepository.save(user);
+		return user;
+	}
 
     public List<Book> getCurrentBookListOfUser(Long userId) {
         List<Book> result = (List<Book>) bookRepository.findBookListByUserId(userId);
@@ -51,6 +54,4 @@ public class UserServices {
         }
         return result;
     }
-
-
 }
