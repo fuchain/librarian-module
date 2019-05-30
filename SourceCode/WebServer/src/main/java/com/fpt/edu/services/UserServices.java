@@ -8,7 +8,6 @@ import com.fpt.edu.repository.UserRepository;
 
 @Service
 public class UserServices {
-
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -22,18 +21,8 @@ public class UserServices {
 		
 	}
 
-
 	public User AddaBookForUser(Long userid,Long bookID){
 	User u = userRepository.findById(userid).get();
 	return null;
 	}
-
-
-
-
-
-
-
-	
-	
 }

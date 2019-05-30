@@ -1,10 +1,8 @@
 package com.fpt.edu.exception;
 
 public class EntityNotFoundException extends Exception {
-
     private long id;
     private String message;
-
 
     public EntityNotFoundException(String message) {
         super(message);

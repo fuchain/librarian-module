@@ -11,16 +11,11 @@ import java.util.List;
 
 @Service
 public class RequestServices {
-
-
     @Autowired
     private RequestRepository requestRepository;
-
 
     public List<Request> getListRequest() {
         return IteratorUtils.toList(requestRepository.findAll().iterator());
 
     }
-
-
 }

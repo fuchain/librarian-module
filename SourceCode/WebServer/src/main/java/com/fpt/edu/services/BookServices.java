@@ -8,6 +8,4 @@ import org.springframework.stereotype.Service;
 public class BookServices {
     @Autowired
     private BookRepository bookRepository;
-
-
 }

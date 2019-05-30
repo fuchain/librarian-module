@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 @Component
 public class LinkDef {
     private static final String LINK_PATH="src/main/resources/schema-definition/link.csv";
@@ -34,7 +35,6 @@ public class LinkDef {
         }
 
     }
-
 
     public List<Link> getListLinks() {
         return listLinks;

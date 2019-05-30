@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookDetailsServices {
@@ -20,7 +19,6 @@ public class BookDetailsServices {
         return IteratorUtils.toList(bookDetailRepository.findAll().iterator());
     }
 
-
     public BookDetail saveBookDetail(String obj) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         BookDetail bookDetail = objectMapper.readValue(obj, BookDetail.class);
@@ -28,10 +26,10 @@ public class BookDetailsServices {
         return bookDetail;
     }
 
-
     public BookDetail getBookById(Long id){
         return bookDetailRepository.findById(id).get();
     }
+
     public BookDetail updateBookDetail(String jsonBody) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         BookDetail bookDetail = objectMapper.readValue(jsonBody, BookDetail.class);
@@ -39,14 +37,8 @@ public class BookDetailsServices {
         return bookDetail;
     }
 
-
     public boolean deleteBookDetail(Long id) throws IOException {
         bookDetailRepository.deleteById(id);
         return true;
     }
-
-
-
-
-
 }
