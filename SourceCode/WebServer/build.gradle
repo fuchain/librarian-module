@@ -20,6 +20,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-dependencies', version: '2.1.3.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.3.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.1.3.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.1.3.RELEASE'
     // Spring dev tool
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.1.3.RELEASE'
     // Postgres
@@ -39,6 +40,9 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
         compile fileTree(dir: 'libs', include: '*.jar')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // JWT
+    compile group: 'com.auth0', name: 'java-jwt', version: '3.8.1'
 
     components {
         withModule('org.springframework:spring-beans') {

@@ -3,10 +3,14 @@ package com.fpt.edu.controller;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.services.UserServices;
+import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("users")

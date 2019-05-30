@@ -1,6 +1,6 @@
 package com.fpt.edu.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fpt.edu.entities.User;
@@ -8,21 +8,18 @@ import com.fpt.edu.repository.UserRepository;
 
 @Service
 public class UserServices {
-	@Autowired
-	private UserRepository userRepository;
-	
-	public boolean save(User u){
-		try{
-		userRepository.save(u);
-		}catch(Exception e){
-			return false;
-		}
-		return true;
-		
+	private final UserRepository userRepository;
+	private final BCryptPasswordEncoder encoder;
+
+	public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
+		this.userRepository = userRepository;
+		this.encoder = encoder;
 	}
 
-	public User AddaBookForUser(Long userid,Long bookID){
-	User u = userRepository.findById(userid).get();
-	return null;
+	public User addNewUser(User user) {
+		user.setPassword(encoder.encode(user.getPassword()));
+		userRepository.save(user);
+
+		return user;
 	}
 }
