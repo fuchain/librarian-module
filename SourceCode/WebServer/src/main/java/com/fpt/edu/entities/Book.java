@@ -32,7 +32,7 @@ public class Book {
 	private List<Request> requests;
 
 	@ManyToOne(cascade={CascadeType.ALL})
-	@JoinColumn(name="book_id")
+	@JoinColumn(name="user_id")
 	private User user;
 
 	public User getUser() {
