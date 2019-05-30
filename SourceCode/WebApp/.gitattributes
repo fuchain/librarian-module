@@ -1,1 +1,2 @@
-public/ export-ignore
+public/* linguist-vendored
+src/assets/* linguist-vendored
