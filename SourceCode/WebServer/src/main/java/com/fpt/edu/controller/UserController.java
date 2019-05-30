@@ -1,17 +1,12 @@
 package com.fpt.edu.controller;
 
 import com.fpt.edu.constant.Constant;
+import com.fpt.edu.entities.User;
+import com.fpt.edu.services.UserServices;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.fpt.edu.entities.User;
-import com.fpt.edu.services.UserServices;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("users")
@@ -21,7 +16,7 @@ public class UserController {
 	
 	
 	@RequestMapping(value = "/{userId}/books/addABook",method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<User> AddBooktoUser (@PathVariable String userId, @RequestBody String body){
+	public ResponseEntity<User> AddBooktoUser (@PathVariable Long userId, @RequestBody String body){
 		JSONObject jsonBody = new JSONObject(body);
 
 

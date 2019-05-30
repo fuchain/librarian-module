@@ -2,7 +2,6 @@ package com.fpt.edu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.constant.Constant;
-import com.fpt.edu.repository.RequestRepository;
 import com.fpt.edu.services.RequestServices;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
-import springfox.documentation.RequestHandler;
-
-import javax.xml.ws.Response;
 
 @RestController
 @RequestMapping("requests")
