@@ -21,6 +21,19 @@ public class UserServices {
 		return true;
 		
 	}
+
+
+	public User AddaBookForUser(Long userid,Long bookID){
+	User u = userRepository.findById(userid).get();
+	return null;
+	}
+
+
+
+
+
+
+
 	
 	
 }
