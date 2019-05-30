@@ -7,20 +7,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "book_detail")
@@ -46,14 +33,16 @@ public class BookDetail {
 
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "publisher_id")
+    @JsonIgnore
     private Publisher publisher;
 
     @CreationTimestamp
     @Column(name = "created_at",nullable = true)
     private Date bookStartDate;
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "bookDetail")
+    @JsonIgnore
     private List<Book> books;
 
 

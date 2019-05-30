@@ -2,6 +2,7 @@ package com.fpt.edu.common.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.linkresource.EndPoint;
 import com.fpt.edu.linkresource.EndPointDef;
@@ -19,21 +20,24 @@ import java.util.Iterator;
 import java.util.List;
 
 @Component
+
 public class Utils {
     @Autowired
     EndPointDef endPointDef;
 
     protected final Logger LOGGER = LogManager.getLogger(getClass());
-
     public JSONObject buildListEntity(List<?> list, HttpServletRequest httpServletRequest) throws JsonProcessingException {
         JSONObject jsonObject = new JSONObject();
         JSONArray arr = new JSONArray();
         ObjectMapper objectMapper = new ObjectMapper();
+        Hibernate5Module hbm = new Hibernate5Module();
+        objectMapper.registerModule(hbm);
         EndPoint endPoint = getEndPoint(httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), httpServletRequest.getMethod());
         if (endPoint.getIsCollection().equalsIgnoreCase(Constant.YES)) {
             for (int i = 0; i < list.size(); i++) {
                 JSONObject jsonItem = new JSONObject(objectMapper.writeValueAsString(list.get(i)));
-                String instanceLink=httpServletRequest.getRequestURL().toString()+"/"+jsonItem.get(Constant.ID).toString();
+                String instanceLink=buildServerRootPath(httpServletRequest)+endPoint.getItemLink();
+                instanceLink=instanceLink.replaceAll(Constant.REGULAR_ID_EXP,jsonItem.get(Constant.ID).toString());
                 jsonItem.put(Constant.LINK,instanceLink);
                 arr.put(jsonItem);
             }
@@ -41,6 +45,11 @@ public class Utils {
         }
         return jsonObject;
     }
+
+
+
+
+
 
     public JSONObject convertObjectToJSONObject(Object o) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();

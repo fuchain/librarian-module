@@ -20,7 +20,6 @@ public class AuthenticationController {
     @PostMapping("new")
     public ResponseEntity<User> signUp(@RequestBody User user) {
         User result = userServices.addNewUser(user);
-
         return ResponseEntity.ok().body(result);
     }
 }
