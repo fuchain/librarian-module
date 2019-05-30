@@ -35,7 +35,7 @@ public class Utils {
         JSONArray arr = new JSONArray();
         ObjectMapper objectMapper = new ObjectMapper();
         EndPoint endPoint = getEndPoint(httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), httpServletRequest.getMethod());
-        if (endPoint.getIsCollection().equalsIgnoreCase(Constant.YES)) {
+//        if (endPoint.getIsCollection().equalsIgnoreCase(Constant.YES)) {
             for (int i = 0; i < list.size(); i++) {
                 JSONObject jsonItem = new JSONObject(objectMapper.writeValueAsString(list.get(i)));
                 String instanceLink=httpServletRequest.getRequestURL().toString()+"/"+jsonItem.get(Constant.ID).toString();
@@ -43,7 +43,7 @@ public class Utils {
                 arr.put(jsonItem);
             }
             jsonObject.put(Constant.ITEMS, arr);
-        }
+//        }
         return jsonObject;
     }
 
