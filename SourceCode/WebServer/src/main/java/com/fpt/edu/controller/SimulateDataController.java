@@ -69,7 +69,7 @@ public class SimulateDataController {
         for (String bookDetailName : bookDetailNames) {
             BookDetail bookDetail = new BookDetail();
             bookDetail.setName(bookDetailName);
-            bookDetail.setBookStartDate(new Date());
+            bookDetail.setBookStartDate((Timestamp) new Date());
 
             // Map author to book detail
             List<Author> authorList = new ArrayList<>();
