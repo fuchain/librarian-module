@@ -1,4 +1,4 @@
-*.css linguist-vendored=false
-*.scss linguist-vendored=false
-*.sass linguist-vendored=false
-*.less linguist-vendored=false
+*.css linguist-vendored
+*.scss linguist-vendored
+*.sass linguist-vendored
+*.less linguist-vendored
