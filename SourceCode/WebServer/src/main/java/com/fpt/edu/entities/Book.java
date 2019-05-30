@@ -19,10 +19,8 @@ import javax.persistence.Table;
 public class Book {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-	@Column(name="name")
-	private String name;
 	@ManyToOne(cascade={CascadeType.ALL})
 	@JoinColumn(name="book_id")
 	private BookDetail bookDetail;
@@ -32,7 +30,19 @@ public class Book {
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	private List<Request> requests;
-	
+
+	@ManyToOne(cascade={CascadeType.ALL})
+	@JoinColumn(name="user_id")
+	private User user;
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public List<Transaction> getTransactions() {
 		return transactions;
 	}
@@ -50,12 +60,6 @@ public class Book {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 	public BookDetail getBookDetail() {
 		return bookDetail;

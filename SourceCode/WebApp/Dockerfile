@@ -19,8 +19,13 @@ WORKDIR /root/src/app
 
 COPY --from=builder /root/src/app/dist/ /usr/share/nginx/html
 
+# Datadog Log Monitoring
+LABEL "com.datadoghq.ad.check_names"='["vue"]'
+LABEL "com.datadoghq.ad.init_configs"='[{}]'
+LABEL "com.datadoghq.ad.logs"='[{"source": "vue", "service": "webapp"}]'
+
 # This is docker build command: 
-# docker build -t fptu-librarian-webapp .
+# docker build -t librarian-webapp .
 
 # This is docker run command:
-# docker run -d --name fptu-librarian-webapp -p 3000:80 fptu-librarian-webapp:latest
+# docker run -d --name librarian-webapp -p 3000:80 librarian-webapp:latest

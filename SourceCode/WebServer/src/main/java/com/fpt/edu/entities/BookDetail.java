@@ -1,5 +1,9 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -17,94 +21,99 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 @Entity
-@Table(name="book_detail")
+@Table(name = "book_detail")
 public class BookDetail {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
-	
-	@Column(name="name")
-	private String Long;
-	
-	
-	@ManyToMany(cascade={CascadeType.ALL})
-	@JoinTable(name="book_author",joinColumns={@JoinColumn(name="book_id")},inverseJoinColumns={@JoinColumn(name="author_id")})
-	private List<Author> authors;
-	
-	
-	@ManyToMany(cascade={CascadeType.ALL})
-	@JoinTable(name="book_category",joinColumns={@JoinColumn(name="book_id")},inverseJoinColumns={@JoinColumn(name="category_id")})
-	private List<Category> category;
-	
-	
-	@ManyToOne(cascade={CascadeType.ALL})
-	@JoinColumn(name="publisher_id")
-	private Publisher publisher;
-	
-	@Column(name="created_at", nullable=false)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date bookStartDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-	@OneToMany(mappedBy="bookDetail")
-	private List<Book> books;
-	
-	
-	
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "name")
+    private String name;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
 
-	public String getLong() {
-		return Long;
-	}
+    @JsonIgnore
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "book_author", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "author_id")})
+    private List<Author> authors;
 
-	public void setLong(String l) {
-		Long = l;
-	}
+    @JsonIgnore
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
+    private List<Category> categories;
 
-	public List<Author> getAuthors() {
-		return authors;
-	}
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "publisher_id")
+    private Publisher publisher;
 
-	public void setAuthors(List<Author> authors) {
-		this.authors = authors;
-	}
+    @CreationTimestamp
+    @Column(name = "created_at",nullable = true)
+    private Date bookStartDate;
 
-	public List<Category> getCategory() {
-		return category;
-	}
+    @JsonIgnore
+    @OneToMany(mappedBy = "bookDetail")
+    private List<Book> books;
 
-	public void setCategory(List<Category> category) {
-		this.category = category;
-	}
 
-	public Publisher getPublisher() {
-		return publisher;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setPublisher(Publisher publisher) {
-		this.publisher = publisher;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Date getBookStartDate() {
-		return bookStartDate;
-	}
 
-	public void setBookStartDate(Date bookStartDate) {
-		this.bookStartDate = bookStartDate;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
+    public List<Author> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public Date getBookStartDate() {
+        return bookStartDate;
+    }
+
+    public void setBookStartDate(Date bookStartDate) {
+        this.bookStartDate = bookStartDate;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+
 }

@@ -12,8 +12,6 @@ public class UserServices {
 	@Autowired
 	private UserRepository userRepository;
 	
-	
-	
 	public boolean save(User u){
 		try{
 		userRepository.save(u);
@@ -23,6 +21,19 @@ public class UserServices {
 		return true;
 		
 	}
+
+
+	public User AddaBookForUser(Long userid,Long bookID){
+	User u = userRepository.findById(userid).get();
+	return null;
+	}
+
+
+
+
+
+
+
 	
 	
 }
