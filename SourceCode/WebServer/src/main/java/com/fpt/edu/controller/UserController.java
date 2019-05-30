@@ -22,6 +22,9 @@ public class UserController {
 	
 	@RequestMapping(value = "/{userId}/books/addABook",method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<User> AddBooktoUser (@PathVariable String userId, @RequestBody String body){
+		JSONObject jsonBody = new JSONObject(body);
+
+
 
 
 
