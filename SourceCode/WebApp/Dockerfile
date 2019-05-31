@@ -18,7 +18,7 @@ FROM nginx:alpine
 WORKDIR /root/src/app
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /root/src/app/dist/ /usr/share/nginx/html
+COPY --from=builder /root/src/app/dist /var/www/html
 
 # Datadog Log Monitoring
 LABEL "com.datadoghq.ad.check_names"='["vue"]'
