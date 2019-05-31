@@ -17,6 +17,7 @@ FROM nginx:alpine
 
 WORKDIR /root/src/app
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /root/src/app/dist/ /usr/share/nginx/html
 
 # Datadog Log Monitoring
