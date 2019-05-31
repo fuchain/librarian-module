@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class BookServices {
@@ -14,7 +15,13 @@ public class BookServices {
     private BookRepository bookRepository;
 
     public Book getBookById(Long id) {
-        Book book = bookRepository.findById(id).get();
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        Book book = null;
+
+        if (optionalBook.isPresent()) {
+            book = optionalBook.get();
+        }
+
         return book;
     }
 

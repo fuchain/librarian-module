@@ -10,74 +10,76 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="request")
+@Table(name = "request")
 public class Request {
 
-	
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
-	
-	@ManyToOne
-	@JoinColumn(name="book_id")
-	private Book book;
-	
-	
-	@ManyToOne
-	@JoinColumn(name="user_id")
-	private User user;
-	
-	
-	@Column(name="status")
-	private int status;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
+
+    @ManyToOne
+    @JoinColumn(name = "book_detail_id")
+    private BookDetail bookDetail;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "status")
+    private int status;
+
+    public BookDetail getBookDetail() {
+        return bookDetail;
+    }
+
+    public void setBookDetail(BookDetail bookDetail) {
+        this.bookDetail = bookDetail;
+    }
+
+    public Long getId() {
+        return id;
+    }
 
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
 
-	public Book getBook() {
-		return book;
-	}
+    public Book getBook() {
+        return book;
+    }
 
 
-	public void setBook(Book book) {
-		this.book = book;
-	}
+    public void setBook(Book book) {
+        this.book = book;
+    }
 
 
-	public User getUser() {
-		return user;
-	}
+    public User getUser() {
+        return user;
+    }
 
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    public void setUser(User user) {
+        this.user = user;
+    }
 
 
-	public int getStatus() {
-		return status;
-	}
+    public int getStatus() {
+        return status;
+    }
 
 
-	public void setStatus(int status) {
-		this.status = status;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+
 }
