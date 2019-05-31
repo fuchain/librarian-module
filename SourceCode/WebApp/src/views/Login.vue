@@ -109,15 +109,15 @@ export default {
       });
 
       this.$http
-        .get("https://jsonplaceholder.typicode.com/todos/1")
-        .then(() => {
-          this.$auth.setAccessToken(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgxMDg3NDIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlLCJleHRfaW5mbyI6e30sInJvbGVzIjpbXX0.PKWuvQUG1deq8Bl4D03TVCM-oFnp6yO76NEjaECtjvc"
-          );
-          this.$auth.setRefreshToken(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgwMjU5NDIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlLCJleHRfaW5mbyI6e30sInJvbGVzIjpbXX0.0D6IIl_02a5haj02YPzFYldibEsNMIFa6QXQWHGgbnY"
-          );
-          this.$auth.setAccessTokenExpiresAt("1558108742");
+        .post(`${this.$http.baseUrl}/auth/login`, {
+          username: this.email,
+          password: this.password
+        })
+        .then(response => {
+          // Set data;
+          const data = response.data;
+          this.$auth.setAccessToken(data.token);
+          this.$auth.setAccessTokenExpiresAt(data.expire.toString());
 
           this.$vs.loading.close();
           this.$router.push("/");

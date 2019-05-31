@@ -63,7 +63,7 @@ public class AuthenticationController {
             }
 
             // Generate JWT token
-            Date expireDate = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
+            Date expireDate = new Date(System.currentTimeMillis() / 1000L + EXPIRATION_TIME);
             String responseToken = JWT.create()
                     .withClaim("id", loggedUser.get().getId())
                     .withSubject(email)
