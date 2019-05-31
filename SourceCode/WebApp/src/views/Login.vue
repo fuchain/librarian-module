@@ -80,6 +80,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -89,8 +91,8 @@ export default {
     };
   },
   methods: {
-    doLogin: function() {
-      if (!this.email || !this.password) {
+    doLogin: function(noValidate) {
+      if ((!this.email || !this.password) && !noValidate) {
         this.$vs.notify({
           title: "Không hợp lệ",
           text: "Email hoặc mật khẩu bị thiếu",
@@ -132,9 +134,48 @@ export default {
         });
     },
     loginWithGoogle: function() {
-      this.email = "tuhmse62531@fpt.edu.vn";
-      this.password = "dayladoantotnghiep";
-      this.doLogin();
+      window.auth2.signIn({
+        ux_mode: "redirect"
+      });
+    },
+    parseToken: function(fragmentStr) {
+      // Parse query string to see if page request is coming from OAuth 2.0 server.
+      const params = {};
+      const regex = /([^&=]+)=([^&]*)/g;
+      let m;
+      while ((m = regex.exec(fragmentStr))) {
+        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+      }
+
+      return params["id_token"];
+    }
+  },
+  mounted: function() {
+    window.gapi.load("auth2", function() {
+      window.auth2 = window.gapi.auth2.init({
+        client_id:
+          "292520951559-5fqe0olanvlto3bd06bt4u36dqsclnni.apps.googleusercontent.com"
+      });
+    });
+
+    const idToken = this.parseToken(window.location.hash);
+    if (idToken) {
+      axios
+        .get(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`)
+        .then(response => {
+          const email = response.data.email;
+          const domain = email.replace(/.*@/, "");
+          if (domain !== "fpt.edu.vn") {
+            this.$vs.notify({
+              title: "Không hợp lệ",
+              text: "Bạn phải dùng email @fpt.edu.vn nhé",
+              color: "warning",
+              position: "top-right"
+            });
+          } else {
+            this.doLogin(true);
+          }
+        });
     }
   }
 };
