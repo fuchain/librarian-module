@@ -132,10 +132,31 @@ export default {
         });
     },
     loginWithGoogle: function() {
-      this.email = "tuhmse62531@fpt.edu.vn";
-      this.password = "dayladoantotnghiep";
-      this.doLogin();
+      window.auth2.signIn({
+        ux_mode: "redirect"
+      });
+    },
+    parseToken: function(currentLocation) {
+      // Call the submit
+      const fragmentStr = currentLocation.hash.substr(1);
+      // Parse query string to see if page request is coming from OAuth 2.0 server.
+      const params = {};
+      const regex = /([^&=]+)=([^&]*)/g;
+      let m;
+      while ((m = regex.exec(fragmentStr))) {
+        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+      }
+
+      return params["access_token"];
     }
+  },
+  mounted: function() {
+    gapi.load("auth2", function() {
+      window.auth2 = gapi.auth2.init({
+        client_id:
+          "292520951559-5fqe0olanvlto3bd06bt4u36dqsclnni.apps.googleusercontent.com"
+      });
+    });
   }
 };
 </script>
