@@ -1,30 +1,24 @@
 package com.example.demo.services;
 
 import com.bigchaindb.api.TransactionsApi;
-import com.bigchaindb.builders.BigchainDbTransactionBuilder;
 import com.bigchaindb.constants.Operations;
 import com.bigchaindb.cryptoconditions.types.Ed25519Sha256Condition;
 import com.bigchaindb.cryptoconditions.types.Ed25519Sha256Fulfillment;
 import com.bigchaindb.model.*;
-import com.bigchaindb.util.Base58;
 import com.bigchaindb.util.DriverUtils;
 import com.bigchaindb.util.KeyPairUtils;
 import com.example.demo.helpers.KeypairHelper;
 import com.google.api.client.util.Base64;
 import com.google.gson.JsonObject;
 import net.i2p.crypto.eddsa.EdDSAEngine;
-import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import okhttp3.Response;
 
 import java.security.KeyPair;
 import java.security.MessageDigest;
-import java.security.PublicKey;
 import java.security.Signature;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public final class TransactionBuilderServices {
 
