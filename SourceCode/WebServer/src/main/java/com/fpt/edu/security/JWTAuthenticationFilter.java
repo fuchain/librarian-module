@@ -48,7 +48,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException {
-        Date expireDate = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
+        Date expireDate = new Date(System.currentTimeMillis() / 1000L + EXPIRATION_TIME);
         String token = JWT.create()
                 .withSubject(((UserDetails) auth.getPrincipal()).getUsername())
                 .withExpiresAt(expireDate)
