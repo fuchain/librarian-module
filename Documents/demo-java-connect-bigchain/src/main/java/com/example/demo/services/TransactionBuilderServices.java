@@ -51,14 +51,17 @@ public final class TransactionBuilderServices {
             String owner
     ) throws Exception {
         KeyPair ownerKeys = KeypairHelper.getKeyPairFromInput(owner);
-        this.transaction = BigchainDbTransactionBuilder
-                .init()
-                .addAssets(asset, Object.class)
-                .addMetaData(metadata)
-                .operation(Operations.CREATE)
-                .buildAndSign((EdDSAPublicKey) ownerKeys.getPublic(), (EdDSAPrivateKey) ownerKeys.getPrivate())
-                .sendTransaction(transactionResultHandler());
-        String transactionId = this.transaction.getId();
+        this.transaction = this.initTransaction(
+                asset, metadata, Operations.CREATE.name(),
+                DEFAULT_TRANSACTION_VALIDATION_VERSION);
+
+        this.setInput(null, ownerKeys);
+        this.setOutput(ownerKeys);
+
+        this.sign(this.transaction.toHashInput(), ownerKeys);
+
+        String transactionId = DriverUtils.getSha3HashHex(DriverUtils.makeSelfSortingGson(this.transaction.toHashInput()).toString().getBytes());
+        this.submitTransaction(transactionId);
 
         System.out.println("(*) CREATE Transaction sent..");
         System.out.println("transaction id: " + transactionId);
@@ -115,7 +118,11 @@ public final class TransactionBuilderServices {
         Transaction transaction = new Transaction();
 
         // Set asset
-        transaction.setAsset(new Asset((String) asset));
+        if (String.class.isAssignableFrom(asset.getClass())) {
+            transaction.setAsset(new Asset((String) asset));
+        } else {
+            transaction.setAsset(new Asset(asset, asset.getClass()));
+        }
         // Set metadata
         transaction.setMetaData(metadata);
         // Set operation
@@ -136,12 +143,20 @@ public final class TransactionBuilderServices {
         List<String> owners = null;
         FulFill spendFrom = null;
         String operation = this.transaction.getOperation();
-        owners = TransactionsApi
-                .getTransactionById(previousTransactionId)
-                .getInputs().get(DEFAULT_INPUT_INDEX).getOwnersBefore();
-        spendFrom = new FulFill();
-        spendFrom.setTransactionId(previousTransactionId);
-        spendFrom.setOutputIndex(DEFAULT_OUPUT_INDEX);
+
+        if (previousTransactionId == null && operation.equals(Operations.CREATE.name())) {
+            owners = new ArrayList<>();
+            EdDSAPublicKey ownerPublicKey = (EdDSAPublicKey) ownerKeys.getPublic();
+            String encodedTargetPublicKey = KeyPairUtils.encodePublicKeyInBase58(ownerPublicKey);
+            owners.add(encodedTargetPublicKey);
+        } else if (operation.equals(Operations.TRANSFER.name())) {
+            owners = TransactionsApi
+                    .getTransactionById(previousTransactionId)
+                    .getInputs().get(DEFAULT_INPUT_INDEX).getOwnersBefore();
+            spendFrom = new FulFill();
+            spendFrom.setTransactionId(previousTransactionId);
+            spendFrom.setOutputIndex(DEFAULT_OUPUT_INDEX);
+        }
 
         Input input = new Input();
         input.setFulFills(spendFrom);
@@ -185,15 +200,20 @@ public final class TransactionBuilderServices {
     private void sign(String transactionHash, KeyPair ownerKeys) throws Exception {
         JsonObject transactionJObject = DriverUtils.makeSelfSortingGson(transactionHash);
         byte[] sha3Hash;
-        StringBuilder preimage = new StringBuilder(transactionJObject.toString());
-        for (Input in : this.transaction.getInputs()) {
-            if (in.getFulFills() != null) {
-                FulFill fulfill = in.getFulFills();
-                String txBlock = fulfill.getTransactionId() + fulfill.getOutputIndex();
-                preimage.append(txBlock);
+        if (Operations.TRANSFER.name().equals(this.transaction.getOperation())) {
+            StringBuilder preimage = new StringBuilder(transactionJObject.toString());
+            for (Input in : this.transaction.getInputs()) {
+                if (in.getFulFills() != null) {
+                    FulFill fulfill = in.getFulFills();
+                    String txBlock = fulfill.getTransactionId() + fulfill.getOutputIndex();
+                    preimage.append(txBlock);
+                }
             }
+            sha3Hash = DriverUtils.getSha3HashRaw(preimage.toString().getBytes());
+        } else {
+            // otherwise, just get the message digest
+            sha3Hash = DriverUtils.getSha3HashRaw(transactionJObject.toString().getBytes());
         }
-        sha3Hash = DriverUtils.getSha3HashRaw(preimage.toString().getBytes());
 
         Signature edDsaSigner = new EdDSAEngine(MessageDigest.getInstance(SHA_512_HASH));
         edDsaSigner.initSign(ownerKeys.getPrivate());
