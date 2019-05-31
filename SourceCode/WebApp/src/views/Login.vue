@@ -160,6 +160,7 @@ export default {
 
     const idToken = this.parseToken(window.location.hash);
     if (idToken) {
+      console.log(idToken);
       axios
         .get(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`)
         .then(response => {
