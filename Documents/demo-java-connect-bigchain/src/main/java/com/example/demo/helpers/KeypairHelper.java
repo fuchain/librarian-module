@@ -28,16 +28,14 @@ public final class KeypairHelper {
 
     /**
      * get EdDSA keypair to sign and verify transactions from input
+     * @param input
      * @return KeyPair
+     * @throws Exception
      */
     public static KeyPair getKeyPairFromInput(String input) throws Exception {
         EdDSAParameterSpec ed25519 = EdDSANamedCurveTable.getByName(SIGNATURE);
         String hashInput = convertStringToHash(input, MD5_HASH);
         byte[] seed = hashInput.getBytes();
-
-        System.out.println("Hash of input: " + hashInput);
-        System.out.println("String bytes: " + input.getBytes().length);
-        System.out.println("Seed: " + seed.length);
 
         EdDSAPrivateKeySpec privKey = new EdDSAPrivateKeySpec(seed, ed25519);
         EdDSAPublicKeySpec pubKey = new EdDSAPublicKeySpec(privKey.getA(), ed25519);
@@ -47,7 +45,10 @@ public final class KeypairHelper {
 
     /**
      * Convert string to hash
+     * @param src
+     * @param hashType
      * @return String of hash with length of 32
+     * @throws Exception
      */
     private static String convertStringToHash(String src, String hashType) throws Exception {
         StringBuilder sb = new StringBuilder();
