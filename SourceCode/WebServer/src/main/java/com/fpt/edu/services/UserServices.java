@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,11 +43,16 @@ public class UserServices {
 		this.userRepository = userRepository;
 		this.encoder = encoder;
 	}
+
 	public User addNewUser(User user) {
 		user.setPassword(encoder.encode(user.getPassword()));
 		userRepository.save(user);
 		return user;
 	}
+
+	public Optional<User> findUserByUsername(String name) {
+	    return userRepository.findByUsername(name);
+    }
 
     @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {
