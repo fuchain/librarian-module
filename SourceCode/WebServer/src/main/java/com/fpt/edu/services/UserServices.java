@@ -8,29 +8,45 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.fpt.edu.entities.Author;
+import com.fpt.edu.entities.Book;
+import com.fpt.edu.entities.BookDetail;
+import com.fpt.edu.repository.BookDetailRepository;
+import com.fpt.edu.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fpt.edu.entities.User;
+import com.fpt.edu.repository.UserRepository;
 import java.util.List;
 
 @Service
+@Transactional
 public class UserServices {
+	private final BCryptPasswordEncoder encoder;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private BookRepository bookRepository;
 
-    @Autowired
-    private BookRepository bookRepository;
+	@Autowired
+	private BookDetailRepository bookDetailRepository;
 
     @Autowired
     private RequestRepository requestRepository;
 
-    public boolean save(User u) {
-        try {
-            userRepository.save(u);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
 
-    }
+	public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
+		this.userRepository = userRepository;
+		this.encoder = encoder;
+	}
+	public User addNewUser(User user) {
+		user.setPassword(encoder.encode(user.getPassword()));
+		userRepository.save(user);
+		return user;
+	}
 
     @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {

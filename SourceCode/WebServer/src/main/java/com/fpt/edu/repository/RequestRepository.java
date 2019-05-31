@@ -10,7 +10,6 @@ import java.util.Collection;
 
 @Repository
 public interface RequestRepository extends CrudRepository<Request, Long> {
-
     @Query(value = "SELECT * FROM request where user_id = ?1 AND status = ?2",
             nativeQuery = true)
     Collection<Request> findRequestByUserIdAndStatus(Long userId, int status);

@@ -33,14 +33,16 @@ public class BookDetail {
 
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "publisher_id")
+    @JsonIgnore
     private Publisher publisher;
 
     @CreationTimestamp
     @Column(name = "created_at",nullable = true)
     private Date bookStartDate;
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "bookDetail")
+    @JsonIgnore
     private List<Book> books;
 
 
@@ -81,7 +83,7 @@ public class BookDetail {
         return bookStartDate;
     }
 
-    public void setBookStartDate(Timestamp bookStartDate) {
+    public void setBookStartDate(Date bookStartDate) {
         this.bookStartDate = bookStartDate;
     }
 

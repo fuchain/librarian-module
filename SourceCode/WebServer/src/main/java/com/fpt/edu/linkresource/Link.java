@@ -1,9 +1,6 @@
 package com.fpt.edu.linkresource;
 
 import com.opencsv.bean.CsvBindByName;
-import org.omg.CORBA.PRIVATE_MEMBER;
-import org.springframework.stereotype.Component;
-
 
 public class Link {
     @CsvBindByName(column = "LINK_NAME", required = true)
@@ -14,7 +11,6 @@ public class Link {
     private String title;
     @CsvBindByName(column = "HREF", required = true)
     private String href;
-
 
     public String getLinkName() {
         return linkName;

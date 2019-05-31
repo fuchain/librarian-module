@@ -3,56 +3,35 @@ package com.fpt.edu.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
+import com.fpt.edu.entities.User;
+import com.fpt.edu.services.UserServices;
+import io.swagger.annotations.ApiOperation;
+import org.glassfish.grizzly.compression.lzma.impl.Base;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.fpt.edu.entities.User;
-import com.fpt.edu.services.UserServices;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("users")
 public class UserController extends BaseController {
-    @Autowired
-    private UserServices userServices;
+	@Autowired
+	private UserServices userServices;
 
 
-    @ApiOperation(value = "View a list of available products", response = String.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
+	@RequestMapping(value = "/{userId}/books/addABook",method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<User> AddBooktoUser (@PathVariable Long userId, @RequestBody String body){
+		JSONObject jsonBody = new JSONObject(body);
+		return null;
+	}
 
-//    @RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json")
-//    public String test() throws Exception {
-//        User u = new User();
-//        u.setUsername("phongdv");
-//        u.setPassword("12345678");
-//        JSONObject result = new JSONObject();
-//        result.put("Message", userServices.save(u));
-//        throw new Exception("ec ");
-//
-//
-////		return result.toString();
-//    }
-
-    @RequestMapping(value = "/current/{id}", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    @RequestMapping(value = "/{id}/current_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> getCurrentBookOfUser(@PathVariable Long id) throws JsonProcessingException {
         try {
             String requestPattern = httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
@@ -66,7 +45,7 @@ public class UserController extends BaseController {
         return null;
     }
 
-    @RequestMapping(value = "/requiring/{id}", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    @RequestMapping(value = "/{id}/requiring_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> getRequiringBookList(@PathVariable Long id) throws JsonProcessingException {
         String requestPattern = httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
         LOGGER.info("START Controller : " + requestPattern);
@@ -75,7 +54,7 @@ public class UserController extends BaseController {
         return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/returning/{id}", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    @RequestMapping(value = "/{id}/returning_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> getReturningBookList(@PathVariable Long id) throws JsonProcessingException {
         String requestPattern = httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
         LOGGER.info("START Controller : " + requestPattern);
