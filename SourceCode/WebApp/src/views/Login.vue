@@ -160,22 +160,31 @@ export default {
 
     const idToken = this.parseToken(window.location.hash);
     if (idToken) {
-      console.log(idToken);
-      axios
-        .get(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`)
+      this.$vs.loading({
+        type: "corners",
+        text: "Đang tải"
+      });
+
+      this.$http
+        .post(`${this.$http.baseUrl}/auth/google`, { token: idToken })
         .then(response => {
-          const email = response.data.email;
-          const domain = email.replace(/.*@/, "");
-          if (domain !== "fpt.edu.vn") {
-            this.$vs.notify({
-              title: "Không hợp lệ",
-              text: "Bạn phải dùng email @fpt.edu.vn nhé",
-              color: "warning",
-              position: "top-right"
-            });
-          } else {
-            this.doLogin(true);
-          }
+          // Set data;
+          const data = response.data;
+          this.$auth.setAccessToken(data.token);
+          this.$auth.setAccessTokenExpiresAt(data.expire.toString());
+
+          this.$vs.loading.close();
+          this.$router.push("/");
+        })
+        .catch(() => {
+          this.$vs.loading.close();
+
+          this.$vs.notify({
+            title: "Không hợp lệ",
+            text: "Email không hợp lệ",
+            color: "danger",
+            position: "top-right"
+          });
         });
     }
   }
