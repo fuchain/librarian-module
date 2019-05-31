@@ -1,14 +1,14 @@
 package com.fpt.edu.exception;
 
-public class EntityNotFoundException extends Exception {
+public class EntityAldreayExisted extends  Exception {
     private long id;
     private String message;
 
-    public EntityNotFoundException(String message) {
+    public EntityAldreayExisted(String message) {
         super(message);
     }
 
-    public EntityNotFoundException(long id, String message) {
+    public EntityAldreayExisted(long id, String message) {
         this.id = id;
         this.message = message;
     }

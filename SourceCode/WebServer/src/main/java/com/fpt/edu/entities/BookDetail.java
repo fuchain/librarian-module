@@ -1,22 +1,13 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "book_detail")
@@ -30,27 +21,28 @@ public class BookDetail {
     private String name;
 
 
-
+    @JsonIgnore
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "book_author", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "author_id")})
     private List<Author> authors;
 
-
+    @JsonIgnore
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private List<Category> categories;
 
-
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "publisher_id")
+    @JsonIgnore
     private Publisher publisher;
 
+    @CreationTimestamp
     @Column(name = "created_at",nullable = true)
     private Date bookStartDate;
 
 
-
     @OneToMany(mappedBy = "bookDetail")
+    @JsonIgnore
     private List<Book> books;
 
 

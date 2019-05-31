@@ -12,8 +12,14 @@
     <context:component-scan base-package="com.fpt.edu.controller" />
     <context:component-scan base-package="com.fpt.edu.controllerAdvice" />
     <context:component-scan base-package="com.fpt.edu.config" />
+    <context:component-scan base-package="com.fpt.edu.security" />
     <context:component-scan base-package="com.fpt.edu.common.helper" />
     <context:property-placeholder location="classpath:authmodule.properties"/>
+    <bean id="linkDef" class="com.fpt.edu.linkresource.LinkDef"/>
+    <bean id="endPointDef" class="com.fpt.edu.linkresource.EndPointDef">
+        <constructor-arg ref="linkDef"/>
+    </bean>
+
 
     <!--<bean name="jsonHelper" class="com.fptedu.common.helper.json.JsonHelper"/>-->
 
