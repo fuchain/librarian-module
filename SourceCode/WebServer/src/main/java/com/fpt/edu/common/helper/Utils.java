@@ -2,6 +2,7 @@ package com.fpt.edu.common.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.linkresource.EndPoint;
 import com.fpt.edu.linkresource.EndPointDef;
@@ -15,30 +16,28 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
 @Component
+
 public class Utils {
     @Autowired
     EndPointDef endPointDef;
 
     protected final Logger LOGGER = LogManager.getLogger(getClass());
-
     public JSONObject buildListEntity(List<?> list, HttpServletRequest httpServletRequest) throws JsonProcessingException {
         JSONObject jsonObject = new JSONObject();
         JSONArray arr = new JSONArray();
         ObjectMapper objectMapper = new ObjectMapper();
+        Hibernate5Module hbm = new Hibernate5Module();
+        objectMapper.registerModule(hbm);
         EndPoint endPoint = getEndPoint(httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), httpServletRequest.getMethod());
         if (endPoint.getIsCollection().equalsIgnoreCase(Constant.YES)) {
             for (int i = 0; i < list.size(); i++) {
                 JSONObject jsonItem = new JSONObject(objectMapper.writeValueAsString(list.get(i)));
-                String instanceLink=httpServletRequest.getRequestURL().toString()+"/"+jsonItem.get(Constant.ID).toString();
+                String instanceLink=buildServerRootPath(httpServletRequest)+endPoint.getItemLink();
+                instanceLink=instanceLink.replaceAll(Constant.REGULAR_ID_EXP,jsonItem.get(Constant.ID).toString());
                 jsonItem.put(Constant.LINK,instanceLink);
                 arr.put(jsonItem);
             }
@@ -47,21 +46,22 @@ public class Utils {
         return jsonObject;
     }
 
+
+
+
+
+
     public JSONObject convertObjectToJSONObject(Object o) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString=objectMapper.writeValueAsString(o);
         return new JSONObject(jsonString);
-
-
     }
-
 
     public String buildItemDetailLink(String currentPath, JSONObject raw) {
         String id = raw.getString(Constant.ID);
         String result = currentPath.replaceAll(Constant.REGULAR_ID_EXP, id);
         return result;
     }
-
 
     public JSONObject buildRelatedLink(HttpServletRequest httpServletRequest, JSONObject raw, EndPoint endPoint) {
         List<Link> linkList = endPoint.getLinkList();
@@ -98,7 +98,6 @@ public class Utils {
         return "";
     }
 
-
     private EndPoint getEndPoint(String requestPattern, String method) {
         for (int i = 0; i < endPointDef.getListEndpoints().size(); i++) {
             EndPoint endPoint = endPointDef.getListEndpoints().get(i);
@@ -109,8 +108,7 @@ public class Utils {
         return null;
     }
 
-
-    // build the root path for the server like http://localhost:9090/api/v1
+    // Build the root path for the server like http://localhost:9090/api/v1
     public String buildServerRootPath(HttpServletRequest httpServletRequest) {
         return
                 httpServletRequest.getScheme() + "://" +
@@ -119,6 +117,4 @@ public class Utils {
                         httpServletRequest.getContextPath();
 
     }
-
-
 }

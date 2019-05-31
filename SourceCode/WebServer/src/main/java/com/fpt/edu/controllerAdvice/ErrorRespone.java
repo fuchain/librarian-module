@@ -9,10 +9,10 @@ public class ErrorRespone {
         this.details = details;
     }
 
-    //General error message about nature of error
+    // General error message about nature of error
     private String message;
 
-    //Specific errors in API request processing
+    // Specific errors in API request processing
     private List<String> details;
 
     public String getMessage() {

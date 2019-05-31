@@ -1,10 +1,8 @@
 package com.fpt.edu.exception;
 
 public class EntityAldreayExisted extends  Exception {
-
     private long id;
     private String message;
-
 
     public EntityAldreayExisted(String message) {
         super(message);
@@ -22,6 +20,4 @@ public class EntityAldreayExisted extends  Exception {
     public void setId(long id) {
         this.id = id;
     }
-
-
 }

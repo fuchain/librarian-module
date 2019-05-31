@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -14,12 +15,13 @@ import java.util.List;
 
 @Component
 public class EndPointDef {
-    private static final String END_POINT_PATH = "src/main/resources/schema-definition/endPoint.csv";
+    private   String END_POINT_PATH = "src/main/resources/schema-definition/endPoint.csv";
     private List<EndPoint> listEndpoints;
 
-     private LinkDef linkDef;
+    private LinkDef linkDef;
 
     public EndPointDef(LinkDef linkDef) {
+        END_POINT_PATH= END_POINT_PATH.replace("/", File.separator);
         this.linkDef=linkDef;
         listEndpoints= new ArrayList<>();
         Reader reader = null;
@@ -48,7 +50,6 @@ public class EndPointDef {
 
 
     }
-
 
     public List<Link> getLinkByEndPointSublinkKey(String keyName){
         ArrayList<Link> result= new ArrayList<>();
