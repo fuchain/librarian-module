@@ -9,8 +9,8 @@ ENV PATH /root/src/app/node_modules/.bin:$PATH
 COPY . .
 
 # Fetch dependencies, run script optimize images, build
-RUN yarn
-RUN npm run build
+RUN yarn --pure-lockfile
+RUN yarn build
 
 # Copy files to machine
 FROM nginx:alpine
