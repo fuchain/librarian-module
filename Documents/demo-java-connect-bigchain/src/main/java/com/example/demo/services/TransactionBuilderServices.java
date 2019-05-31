@@ -105,6 +105,14 @@ public final class TransactionBuilderServices {
         return transactionId;
     }
 
+    public Transactions getTransactionByAssetId(String assetId, Operations operartion) throws Exception {
+        return TransactionsApi.getTransactionsByAssetId(assetId, operartion);
+    }
+
+    public Transaction getTransactionById(String id) throws Exception {
+        return TransactionsApi.getTransactionById(id);
+    }
+
     /**
      * Init transaction with asset, metadata, operation, tx validation version
      *
