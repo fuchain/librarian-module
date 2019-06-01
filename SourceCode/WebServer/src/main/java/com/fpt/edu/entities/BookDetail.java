@@ -37,7 +37,7 @@ public class BookDetail {
     private Publisher publisher;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = true)
+    @Column(name = "created_date", nullable = true)
     private Date bookStartDate;
 
 

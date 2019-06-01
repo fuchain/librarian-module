@@ -1,11 +1,11 @@
 package com.fpt.edu.common;
 
-public enum RequestType {
-    BORROWING(1), RETURNING(2);
+public enum ERequestStatus {
+    PENDING(1), MATCHING(2),COMPLETED(3);
 
     private int value;
 
-    private RequestType(int value) {
+    private ERequestStatus(int value) {
         this.value = value;
     }
 
