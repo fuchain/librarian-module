@@ -149,7 +149,7 @@ export default {
       return true;
     },
     startCount() {
-      this.remainTime = 360;
+      this.remainTime = 300;
 
       countInterval = setInterval(
         function() {
