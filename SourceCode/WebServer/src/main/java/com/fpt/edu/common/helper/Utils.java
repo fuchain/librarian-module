@@ -18,6 +18,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 @Component
 
@@ -26,6 +27,7 @@ public class Utils {
     EndPointDef endPointDef;
 
     protected final Logger LOGGER = LogManager.getLogger(getClass());
+
     public JSONObject buildListEntity(List<?> list, HttpServletRequest httpServletRequest) throws JsonProcessingException {
         JSONObject jsonObject = new JSONObject();
         JSONArray arr = new JSONArray();
@@ -36,9 +38,9 @@ public class Utils {
         if (endPoint.getIsCollection().equalsIgnoreCase(Constant.YES)) {
             for (int i = 0; i < list.size(); i++) {
                 JSONObject jsonItem = new JSONObject(objectMapper.writeValueAsString(list.get(i)));
-                String instanceLink=buildServerRootPath(httpServletRequest)+endPoint.getItemLink();
-                instanceLink=instanceLink.replaceAll(Constant.REGULAR_ID_EXP,jsonItem.get(Constant.ID).toString());
-                jsonItem.put(Constant.LINK,instanceLink);
+                String instanceLink = buildServerRootPath(httpServletRequest) + endPoint.getItemLink();
+                instanceLink = instanceLink.replaceAll(Constant.REGULAR_ID_EXP, jsonItem.get(Constant.ID).toString());
+                jsonItem.put(Constant.LINK, instanceLink);
                 arr.put(jsonItem);
             }
             jsonObject.put(Constant.ITEMS, arr);
@@ -47,13 +49,9 @@ public class Utils {
     }
 
 
-
-
-
-
     public JSONObject convertObjectToJSONObject(Object o) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString=objectMapper.writeValueAsString(o);
+        String jsonString = objectMapper.writeValueAsString(o);
         return new JSONObject(jsonString);
     }
 
@@ -116,5 +114,12 @@ public class Utils {
                         httpServletRequest.getServerPort() +
                         httpServletRequest.getContextPath();
 
+    }
+
+    public String getPin() {
+        Random random = new Random();
+        int number = random.nextInt(999999);
+
+        return String.format("%06d", number);
     }
 }

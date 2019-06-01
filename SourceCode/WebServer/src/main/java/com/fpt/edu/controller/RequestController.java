@@ -81,7 +81,7 @@ public class RequestController extends BaseController {
     }
 
     @ApiOperation(value = "Create a book request", response = String.class)
-    @RequestMapping(value = "create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> requestBook(@RequestBody String body) throws IOException, EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -163,6 +163,12 @@ public class RequestController extends BaseController {
 
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
+
+//    @ApiOperation(value = "Borrower returns book", response = String.class)
+//    @RequestMapping(value = "/return", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+//    public ResponseEntity<String> returnBook(){
+//        
+//    }
 
     @ApiOperation(value = "Update request status", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
