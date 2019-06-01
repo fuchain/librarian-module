@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Transaction;
 import com.fpt.edu.exception.EntityNotFoundException;
-import com.fpt.edu.services.TransactionService;
+import com.fpt.edu.services.TransactionServices;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionController extends BaseController {
 
     @Autowired
-    private TransactionService transactionService;
+    private TransactionServices transactionServices;
 
     @ApiOperation(value = "Get a transaction by its id", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> getById(@PathVariable Long id) throws EntityNotFoundException, JsonProcessingException {
-        Transaction transaction = transactionService.getById(id);
+        Transaction transaction = transactionServices.getById(id);
 
         if (transaction == null) {
             throw new EntityNotFoundException("Transaction id: " + id + " not found");
@@ -35,7 +35,7 @@ public class TransactionController extends BaseController {
     @ApiOperation(value = "Create a transaction", response = String.class)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> insertTransaction(@RequestBody Transaction transaction) {
-        Transaction transactionResult = transactionService.insertTransaction(transaction);
+        Transaction transactionResult = transactionServices.insertTransaction(transaction);
         JSONObject jsonObject = new JSONObject();
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.CREATED);
     }

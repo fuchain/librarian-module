@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.fpt.edu.entities.Request;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -11,14 +12,16 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository extends CrudRepository<Request, Long> {
-    @Query(value = "SELECT * FROM request where user_id = ?1 AND type = ?2",
-            nativeQuery = true)
-    Collection<Request> findByUserIdAndType(Long userId, int type);
+    @Query(value = "SELECT r FROM Request r WHERE r.user.id = :userId AND r.type = :type")
+    Collection<Request> findByUserIdAndType(@Param("userId") Long userId,
+                                            @Param("type") int type);
 
-    @Query(value = "SELECT COUNT(id) FROM request WHERE type = ?1 AND user_id = ?2 " +
-            " AND (book_detail_id = ?3 OR book_id = ?4)"
-            , nativeQuery = true)
-    Integer checkExistedRequest(int type, Long user_id, Long book_detail_id, Long book_id);
+    @Query(value = "SELECT COUNT(r.id) FROM Request r WHERE r.type = :type AND r.user.id = :user_id " +
+            " AND (r.bookDetail.id = :book_detail_id OR r.book.id = :book_id)")
+    Integer checkExistedRequest(@Param("type") int type,
+                                @Param("user_id") Long user_id,
+                                @Param("book_detail_id") Long book_detail_id,
+                                @Param("book_id") Long book_id);
 
 
     @Query(value = "SELECT req from Request  req WHERE req.status=1 order by req.createDate asc")
