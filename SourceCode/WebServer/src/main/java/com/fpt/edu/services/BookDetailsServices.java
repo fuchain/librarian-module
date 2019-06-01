@@ -1,6 +1,7 @@
 package com.fpt.edu.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.repository.BookDetailRepository;
 import org.apache.commons.collections.IteratorUtils;
@@ -26,7 +27,7 @@ public class BookDetailsServices {
         return bookDetail;
     }
 
-    public BookDetail getBookById(Long id){
+    public BookDetail getBookById(Long id) {
         return bookDetailRepository.findById(id).get();
     }
 
@@ -40,5 +41,10 @@ public class BookDetailsServices {
     public boolean deleteBookDetail(Long id) throws IOException {
         bookDetailRepository.deleteById(id);
         return true;
+    }
+
+    public BookDetail getBookDetailByName(String name) {
+        BookDetail bookDetail = bookDetailRepository.findByName(name);
+        return bookDetail;
     }
 }

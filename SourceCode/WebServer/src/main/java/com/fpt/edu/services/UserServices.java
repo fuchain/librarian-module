@@ -1,21 +1,19 @@
 package com.fpt.edu.services;
 
-import com.fpt.edu.common.RequestStatus;
+import com.fpt.edu.common.RequestType;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import com.fpt.edu.entities.Author;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.repository.BookDetailRepository;
 import com.fpt.edu.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fpt.edu.entities.User;
 import com.fpt.edu.repository.UserRepository;
@@ -31,13 +29,6 @@ public class UserServices {
 
 	@Autowired
 	private BookRepository bookRepository;
-
-	@Autowired
-	private BookDetailRepository bookDetailRepository;
-
-    @Autowired
-    private RequestRepository requestRepository;
-
 
 	public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
 		this.userRepository = userRepository;
@@ -64,31 +55,19 @@ public class UserServices {
         return result;
     }
 
-    @Transactional
-    public List<Book> getRequiringBookList(Long userId) {
-        List<Book> bookList = new ArrayList<>();
+    public User getUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
 
-        List<Request> requestList =
-                (List<Request>) requestRepository.findRequestByUserIdAndStatus(userId, RequestStatus.REQUIRING.getValue());
-        for (Request request : requestList) {
-            Book book = bookRepository.findById(request.getId()).get();
-            bookList.add(book);
+        User user = null;
+
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
         }
 
-        return bookList;
-    }
-
-    @Transactional
-    public List<Book> getReturningBookList(Long userId) {
-        List<Book> bookList = new ArrayList<>();
-
-        List<Request> requestList =
-                (List<Request>) requestRepository.findRequestByUserIdAndStatus(userId, RequestStatus.RETURNING.getValue());
-        for (Request request : requestList) {
-            Book book = bookRepository.findById(request.getId()).get();
-            bookList.add(book);
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
         }
 
-        return bookList;
+        return user;
     }
 }
