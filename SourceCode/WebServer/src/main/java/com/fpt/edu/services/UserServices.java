@@ -34,11 +34,20 @@ public class UserServices {
 		this.userRepository = userRepository;
 		this.encoder = encoder;
 	}
-	public User addNewUser(User user) {
-		user.setPassword(encoder.encode(user.getPassword()));
+
+	public void addNewUser(User user) {
+	    if (!user.getPassword().trim().isEmpty()) {
+            user.setPassword(encoder.encode(user.getPassword()));
+        } else {
+	        user.setPassword(null);
+        }
+
 		userRepository.save(user);
-		return user;
 	}
+
+	public Optional<User> findUserByEmail(String email) {
+	    return userRepository.findByEmail(email);
+    }
 
     @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {
@@ -50,8 +59,8 @@ public class UserServices {
         return result;
     }
 
-    public User getUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+    public User getUserByEmail(String email) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
         User user = null;
 
@@ -60,7 +69,7 @@ public class UserServices {
         }
 
         if (user == null) {
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException("User not found!");
         }
 
         return user;

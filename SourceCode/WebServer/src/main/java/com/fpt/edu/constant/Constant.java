@@ -11,4 +11,5 @@ public  class Constant {
     public static final String YES="Y";
     public static final String NO="N";
     public static final String REGULAR_ID_EXP="[{][a-zA-Z]+[}]";
+    public static final String GOOGLE_AUTH_API="https://oauth2.googleapis.com/tokeninfo?id_token=";
 }
