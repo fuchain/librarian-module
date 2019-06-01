@@ -59,8 +59,8 @@ public class UserServices {
         return result;
     }
 
-    public User getUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+    public User getUserByEmail(String email) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
         User user = null;
 
@@ -69,7 +69,7 @@ public class UserServices {
         }
 
         if (user == null) {
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException("User not found!");
         }
 
         return user;
