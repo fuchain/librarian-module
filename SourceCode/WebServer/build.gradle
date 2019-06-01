@@ -48,6 +48,12 @@ dependencies {
     // JWT
     compile group: 'com.auth0', name: 'java-jwt', version: '3.8.1'
 
+    // REST Caller Syntax Sugar
+    compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'
+    compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.0.2'
+    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.3.6'
+
     components {
         withModule('org.springframework:spring-beans') {
             allVariants {

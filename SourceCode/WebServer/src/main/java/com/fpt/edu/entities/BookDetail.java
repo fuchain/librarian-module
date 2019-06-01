@@ -37,11 +37,11 @@ public class BookDetail {
     private Publisher publisher;
 
     @CreationTimestamp
-    @Column(name = "created_at",nullable = true)
+    @Column(name = "created_at", nullable = true)
     private Date bookStartDate;
 
 
-    @OneToMany(mappedBy = "bookDetail")
+    @OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
     @JsonIgnore
     private List<Book> books;
 

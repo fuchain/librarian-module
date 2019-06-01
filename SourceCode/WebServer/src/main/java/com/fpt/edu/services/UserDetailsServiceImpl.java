@@ -20,18 +20,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findByEmail(username.toLowerCase());
 
         User user = null;
 
         if (optionalUser.isPresent()) {
+            if (optionalUser.get().getPassword().isEmpty()) {
+                throw new UsernameNotFoundException("Password is wrong!");
+            }
+
             user = optionalUser.get();
         }
 
         if (user == null) {
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException("User not found!");
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), Collections.emptyList());
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), Collections.emptyList());
     }
 }

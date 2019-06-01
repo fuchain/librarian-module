@@ -107,18 +107,29 @@ export default {
       });
 
       this.$http
-        .get("https://jsonplaceholder.typicode.com/todos/1")
-        .then(() => {
-          this.$auth.setAccessToken(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgxMDg3NDIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlLCJleHRfaW5mbyI6e30sInJvbGVzIjpbXX0.PKWuvQUG1deq8Bl4D03TVCM-oFnp6yO76NEjaECtjvc"
-          );
-          this.$auth.setRefreshToken(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgwMjU5NDIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlLCJleHRfaW5mbyI6e30sInJvbGVzIjpbXX0.0D6IIl_02a5haj02YPzFYldibEsNMIFa6QXQWHGgbnY"
-          );
-          this.$auth.setAccessTokenExpiresAt("1558108742");
+        .post(`${this.$http.baseUrl}/auth/login`, {
+          email: this.email,
+          password: this.password
+        })
+        .then(response => {
+          // Set data;
+          const data = response.data;
+          this.$auth.setAccessToken(data.token);
+          this.$auth.setAccessTokenExpiresAt(data.expire.toString());
 
-          this.$vs.loading.close();
-          this.$router.push("/");
+          this.$http.get(`${this.$http.baseUrl}/auth/me`).then(response => {
+            const userProfile = response.data;
+
+            // Set info
+            this.$localStorage.setItem("email", data.email);
+            this.$localStorage.setItem(
+              "fullname",
+              userProfile.fullname || "Người dùng"
+            );
+
+            this.$vs.loading.close();
+            this.$router.push("/");
+          });
         })
         .catch(() => {
           this.$vs.notify({
@@ -136,9 +147,7 @@ export default {
         ux_mode: "redirect"
       });
     },
-    parseToken: function(currentLocation) {
-      // Call the submit
-      const fragmentStr = currentLocation.hash.substr(1);
+    parseToken: function(fragmentStr) {
       // Parse query string to see if page request is coming from OAuth 2.0 server.
       const params = {};
       const regex = /([^&=]+)=([^&]*)/g;
@@ -147,16 +156,54 @@ export default {
         params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
       }
 
-      return params["access_token"];
+      return params["id_token"];
     }
   },
   mounted: function() {
-    gapi.load("auth2", function() {
-      window.auth2 = gapi.auth2.init({
+    window.gapi.load("auth2", function() {
+      window.auth2 = window.gapi.auth2.init({
         client_id:
-          "292520951559-5fqe0olanvlto3bd06bt4u36dqsclnni.apps.googleusercontent.com"
+          "292520951559-5fqe0olanvlto3bd06bt4u36dqsclnni.apps.googleusercontent.com",
+        fetch_basic_profile: true,
+        scope:
+          "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+        response_type: "token"
       });
     });
+
+    const idToken = this.parseToken(window.location.hash);
+    if (idToken) {
+      this.$vs.loading({
+        type: "corners",
+        text: "Đang tải"
+      });
+
+      this.$http
+        .post(`${this.$http.baseUrl}/auth/google`, { token: idToken })
+        .then(response => {
+          // Set data;
+          const data = response.data;
+          this.$auth.setAccessToken(data.token);
+          this.$auth.setAccessTokenExpiresAt(data.expire.toString());
+
+          // Set info
+          this.$localStorage.setItem("email", data.email);
+          this.$localStorage.setItem("fullname", data.fullname || "Người dùng");
+
+          this.$vs.loading.close();
+          this.$router.push("/");
+        })
+        .catch(() => {
+          this.$vs.loading.close();
+
+          this.$vs.notify({
+            title: "Không hợp lệ",
+            text: "Email không hợp lệ",
+            color: "danger",
+            position: "top-right"
+          });
+        });
+    }
   }
 };
 </script>

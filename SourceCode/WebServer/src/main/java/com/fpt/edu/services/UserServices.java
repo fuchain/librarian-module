@@ -1,25 +1,24 @@
 package com.fpt.edu.services;
 
-import com.fpt.edu.common.RequestStatus;
+import com.fpt.edu.common.RequestType;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import com.fpt.edu.entities.Author;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.repository.BookDetailRepository;
 import com.fpt.edu.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fpt.edu.entities.User;
 import com.fpt.edu.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -31,22 +30,24 @@ public class UserServices {
 	@Autowired
 	private BookRepository bookRepository;
 
-	@Autowired
-	private BookDetailRepository bookDetailRepository;
-
-    @Autowired
-    private RequestRepository requestRepository;
-
-
 	public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
 		this.userRepository = userRepository;
 		this.encoder = encoder;
 	}
-	public User addNewUser(User user) {
-		user.setPassword(encoder.encode(user.getPassword()));
+
+	public void addNewUser(User user) {
+	    if (!user.getPassword().trim().isEmpty()) {
+            user.setPassword(encoder.encode(user.getPassword()));
+        } else {
+	        user.setPassword(null);
+        }
+
 		userRepository.save(user);
-		return user;
 	}
+
+	public Optional<User> findUserByEmail(String email) {
+	    return userRepository.findByEmail(email);
+    }
 
     @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {
@@ -58,31 +59,19 @@ public class UserServices {
         return result;
     }
 
-    @Transactional
-    public List<Book> getRequiringBookList(Long userId) {
-        List<Book> bookList = new ArrayList<>();
+    public User getUserByEmail(String email) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        List<Request> requestList =
-                (List<Request>) requestRepository.findRequestByUserIdAndStatus(userId, RequestStatus.REQUIRING.getValue());
-        for (Request request : requestList) {
-            Book book = bookRepository.findById(request.getId()).get();
-            bookList.add(book);
+        User user = null;
+
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
         }
 
-        return bookList;
-    }
-
-    @Transactional
-    public List<Book> getReturningBookList(Long userId) {
-        List<Book> bookList = new ArrayList<>();
-
-        List<Request> requestList =
-                (List<Request>) requestRepository.findRequestByUserIdAndStatus(userId, RequestStatus.RETURNING.getValue());
-        for (Request request : requestList) {
-            Book book = bookRepository.findById(request.getId()).get();
-            bookList.add(book);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found!");
         }
 
-        return bookList;
+        return user;
     }
 }

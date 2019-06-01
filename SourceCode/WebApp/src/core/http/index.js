@@ -34,11 +34,11 @@ async function request({
     data,
     params,
     config,
-    transformResponse: function(data) {
-      // Simple the response data.data
-      const parse = JSON.parse(data);
-      return parse.data;
-    },
+    // transformResponse: function(data) {
+    //   // Simple the response data.data
+    //   const parse = JSON.parse(data);
+    //   return parse.data;
+    // },
     ...custom
   });
 }

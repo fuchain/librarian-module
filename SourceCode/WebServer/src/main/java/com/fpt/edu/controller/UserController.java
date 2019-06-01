@@ -31,6 +31,7 @@ public class UserController extends BaseController {
 		return null;
 	}
 
+	@ApiOperation(value = "get a list of current book", response = String.class)
     @RequestMapping(value = "/{id}/current_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> getCurrentBookOfUser(@PathVariable Long id) throws JsonProcessingException {
         try {
@@ -43,24 +44,6 @@ public class UserController extends BaseController {
             System.out.println("Error: " + ex.getMessage());
         }
         return null;
-    }
-
-    @RequestMapping(value = "/{id}/requiring_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getRequiringBookList(@PathVariable Long id) throws JsonProcessingException {
-        String requestPattern = httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
-        LOGGER.info("START Controller : " + requestPattern);
-        List<Book> requiringBookList = userServices.getRequiringBookList(id);
-        JSONObject jsonResult = utils.buildListEntity(requiringBookList, httpServletRequest);
-        return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/{id}/returning_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getReturningBookList(@PathVariable Long id) throws JsonProcessingException {
-        String requestPattern = httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
-        LOGGER.info("START Controller : " + requestPattern);
-        List<Book> returningBookList = userServices.getReturningBookList(id);
-        JSONObject jsonResult = utils.buildListEntity(returningBookList, httpServletRequest);
-        return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
     }
 
 }
