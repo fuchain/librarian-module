@@ -1,11 +1,11 @@
 package com.fpt.edu.common;
 
-public enum RequestStatus {
-    PENDING(1), MATCHING(2), COMPLETED(3);
+public enum ERequestStatus {
+    PENDING(1), MATCHING(2),COMPLETED(3);
 
     private int value;
 
-    private RequestStatus(int value) {
+    private ERequestStatus(int value) {
         this.value = value;
     }
 

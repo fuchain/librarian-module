@@ -1,5 +1,8 @@
 package com.fpt.edu.entities;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Table(name = "request")
@@ -35,6 +39,32 @@ public class Request {
 
     @Column(name = "type")
     private int type;
+
+
+    @CreationTimestamp
+    @Column(name = "created_date")
+    private Date createDate;
+
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private Date updateDate;
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 
     public BookDetail getBookDetail() {
         return bookDetail;

@@ -1,11 +1,11 @@
 package com.fpt.edu.common;
 
-public enum RequestType {
+public enum ERequestType {
     BORROWING(1), RETURNING(2);
 
     private int value;
 
-    private RequestType(int value) {
+    private ERequestType(int value) {
         this.value = value;
     }
 
