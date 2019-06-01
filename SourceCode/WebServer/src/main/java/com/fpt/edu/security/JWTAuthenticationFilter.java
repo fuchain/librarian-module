@@ -61,7 +61,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         JSONObject tokenObj = new JSONObject();
         tokenObj.put("token", token);
         tokenObj.put("email", ((UserDetails) auth.getPrincipal()).getUsername());
-        tokenObj.put("expire", expireDate.getTime());
+        tokenObj.put("expire", expireDateUnixTime);
         tokenObj.put("authorize", auth.getAuthorities());
 
         res.getWriter().write(tokenObj.toString());
