@@ -1,5 +1,5 @@
-// const API_BASE_URL = process.env.API_BASE_URL || "https://lapi.fptu.tech";
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL =
+  process.env.VUE_APP_API_BASE_URL || "https://lapi.fptu.tech";
 
 export default {
   baseUrl: API_BASE_URL + "/api/v1"
