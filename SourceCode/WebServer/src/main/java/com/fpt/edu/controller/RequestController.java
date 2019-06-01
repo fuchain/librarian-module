@@ -1,7 +1,7 @@
 package com.fpt.edu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fpt.edu.common.RequestType;
+import com.fpt.edu.common.ERequestType;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
@@ -95,7 +95,7 @@ public class RequestController extends BaseController {
         Request request = null;
 
         //if request is requiring
-        if (type == RequestType.BORROWING.getValue()) {
+        if (type == ERequestType.BORROWING.getValue()) {
             //get book name
             String bookName = bodyObject.getString("book_name");
             //get book object
@@ -117,7 +117,7 @@ public class RequestController extends BaseController {
             request.setUser(user);
             request.setBookDetail(bookDetail);
 
-        } else if (type == RequestType.RETURNING.getValue()) {//if request is returning
+        } else if (type == ERequestType.RETURNING.getValue()) {//if request is returning
             //get book id
             Long bookId = bodyObject.getLong("book_id");
             //get book object
