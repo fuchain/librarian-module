@@ -29,6 +29,7 @@ public class Matching {
     @Column(name = "created_at", nullable = true)
     private Date matchingStartDate;
 
+    @Column(name = "status")
     private int status;
 
     public Long getId() {

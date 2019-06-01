@@ -6,10 +6,7 @@ import com.fpt.edu.common.RequestStatus;
 import com.fpt.edu.common.RequestType;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
-import com.fpt.edu.exception.EntityAldreayExisted;
-import com.fpt.edu.exception.EntityIdMismatchException;
-import com.fpt.edu.exception.EntityNotFoundException;
-import com.fpt.edu.exception.TypeNotSupportedException;
+import com.fpt.edu.exception.*;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
@@ -23,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("requests")
@@ -190,6 +188,66 @@ public class RequestController extends BaseController {
         jsonResult.put("status", status);
 
         return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Receiver receives a book", response = String.class)
+    @RequestMapping(value = "/receive", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> receiveBook(@RequestParam String pin, @RequestParam Long matchingId) throws EntityNotFoundException, EntityPinMisMatchException, PinExpiredException {
+        Matching matching = matchingServices.getMatchingById(matchingId);
+        if (matching == null) {
+            throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
+        }
+
+        Date now = new Date();
+        long duration = utils.getDuration(matching.getMatchingStartDate(), now, TimeUnit.MINUTES);
+
+        if (duration > Constant.PIN_EXPIRED_MINUTE) {
+            throw new PinExpiredException("Pin: " + pin + " has been expired");
+        }
+
+        if (!matching.getPin().equals(pin)) {
+            throw new EntityPinMisMatchException("Pin: " + pin + " does not match to Matching");
+        }
+
+        matching.setStatus(MatchingStatus.CONFIRMED.getValue());
+        matchingServices.updateMatching(matching);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "confirmed");
+        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Returner confirms book transfer", response = String.class)
+    @RequestMapping(value = "/confirm", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> confirmBookTransfer(@RequestParam Long matchingId) throws Exception {
+        Matching matching = matchingServices.getMatchingById(matchingId);
+        if (matching == null) {
+            throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
+        }
+
+        if (matching.getStatus() != MatchingStatus.CONFIRMED.getValue()) {
+            throw new Exception("Receiver has not imported pin yet");
+        }
+
+        //update status of request to "completed"
+        Request returnerRequest = matching.getReturnerRequest();
+        Request receiverRequest = matching.getBorrowerRequest();
+
+        returnerRequest.setStatus(RequestStatus.COMPLETED.getValue());
+        receiverRequest.setStatus(RequestStatus.COMPLETED.getValue());
+
+        requestServices.updateRequest(returnerRequest);
+        requestServices.updateRequest(receiverRequest);
+
+        //transfer book from returner to receiver
+        Book book = matching.getBook();
+        User receiver = receiverRequest.getUser();
+        book.setUser(receiver);
+
+        //return message to client
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "confirm book transfer");
+        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Update request status", response = String.class)

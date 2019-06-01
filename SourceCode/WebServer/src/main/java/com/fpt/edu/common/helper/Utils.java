@@ -16,9 +16,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Component
 
@@ -116,10 +118,17 @@ public class Utils {
 
     }
 
+    //get pin from random number
     public String getPin() {
         Random random = new Random();
         int number = random.nextInt(999999);
 
         return String.format("%06d", number);
+    }
+
+    //get duration between 2 dates
+    public static long getDuration(Date oldDate, Date newDate, TimeUnit timeUnit) {
+        long diffInMillies = newDate.getTime() - oldDate.getTime();
+        return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
 }
