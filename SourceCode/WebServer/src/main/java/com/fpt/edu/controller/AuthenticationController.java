@@ -3,7 +3,6 @@ package com.fpt.edu.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fpt.edu.constant.Constant;
-import com.fpt.edu.controllerAdvice.ErrorRespone;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.services.UserServices;
 import com.mashape.unirest.http.HttpResponse;
@@ -92,7 +91,7 @@ public class AuthenticationController {
             responseObj.put("token", responseToken);
             responseObj.put("email", email);
             responseObj.put("fullname", loggedUser.get().getFullName());
-            responseObj.put("expire", expireDate.getTime());
+            responseObj.put("expire", expireDateUnixTime);
 
             return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);
         } catch(Exception ex) {
