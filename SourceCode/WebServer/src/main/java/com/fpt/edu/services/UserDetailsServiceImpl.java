@@ -25,8 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = null;
 
         if (optionalUser.isPresent()) {
-            System.out.println(optionalUser.get().getPassword());
-
             if (optionalUser.get().getPassword().isEmpty()) {
                 throw new UsernameNotFoundException("Password is wrong!");
             }
