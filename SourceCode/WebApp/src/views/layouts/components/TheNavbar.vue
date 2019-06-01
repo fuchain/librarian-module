@@ -153,8 +153,8 @@
         <!-- USER META -->
         <div class="the-navbar__user-meta flex items-center sm:ml-5 ml-2">
           <div class="text-right leading-tight hidden sm:block">
-            <p class="font-semibold">Huỳnh Minh Tú</p>
-            <small>Sinh viên K11</small>
+            <p class="font-semibold">{{ $localStorage.getItem("fullname") }}</p>
+            <small>{{ $localStorage.getItem("email") }}</small>
           </div>
           <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
             <div class="con-img ml-3">
@@ -371,6 +371,7 @@ export default {
       setTimeout(
         function() {
           this.$auth.clearAuth();
+          this.$localStorage.clear();
           this.$router.push("/login");
 
           this.$vs.loading.close();

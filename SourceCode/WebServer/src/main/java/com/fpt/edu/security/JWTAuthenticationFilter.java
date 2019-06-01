@@ -4,7 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.edu.entities.User;
+import com.fpt.edu.services.UserServices;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,7 +49,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException {
-        Date expireDate = new Date(System.currentTimeMillis() / 1000L + EXPIRATION_TIME);
+        long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
+        Date expireDate = new Date(expireDateUnixTime * 1000);
         String token = JWT.create()
                 .withSubject(((UserDetails) auth.getPrincipal()).getUsername())
                 .withExpiresAt(expireDate)
@@ -58,7 +61,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         JSONObject tokenObj = new JSONObject();
         tokenObj.put("token", token);
         tokenObj.put("email", ((UserDetails) auth.getPrincipal()).getUsername());
-        tokenObj.put("expire", expireDate.getTime());
+        tokenObj.put("expire", expireDateUnixTime);
         tokenObj.put("authorize", auth.getAuthorities());
 
         res.getWriter().write(tokenObj.toString());

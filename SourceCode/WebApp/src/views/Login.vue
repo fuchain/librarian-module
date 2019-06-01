@@ -108,7 +108,7 @@ export default {
 
       this.$http
         .post(`${this.$http.baseUrl}/auth/login`, {
-          username: this.email,
+          email: this.email,
           password: this.password
         })
         .then(response => {
@@ -117,8 +117,19 @@ export default {
           this.$auth.setAccessToken(data.token);
           this.$auth.setAccessTokenExpiresAt(data.expire.toString());
 
-          this.$vs.loading.close();
-          this.$router.push("/");
+          this.$http.get(`${this.$http.baseUrl}/auth/me`).then(response => {
+            const userProfile = response.data;
+
+            // Set info
+            this.$localStorage.setItem("email", data.email);
+            this.$localStorage.setItem(
+              "fullname",
+              userProfile.fullname || "Người dùng"
+            );
+
+            this.$vs.loading.close();
+            this.$router.push("/");
+          });
         })
         .catch(() => {
           this.$vs.notify({
@@ -174,6 +185,10 @@ export default {
           const data = response.data;
           this.$auth.setAccessToken(data.token);
           this.$auth.setAccessTokenExpiresAt(data.expire.toString());
+
+          // Set info
+          this.$localStorage.setItem("email", data.email);
+          this.$localStorage.setItem("fullname", data.fullname || "Người dùng");
 
           this.$vs.loading.close();
           this.$router.push("/");
