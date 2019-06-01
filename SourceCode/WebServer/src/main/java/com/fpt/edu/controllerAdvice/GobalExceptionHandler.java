@@ -17,7 +17,7 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
         List<String> details = new ArrayList<>();
             details.add(ex.getLocalizedMessage());
-       ErrorRespone error = new ErrorRespone("Server Internal Error", details);
+       ErrorResponse error = new ErrorResponse("Server Internal Error", details);
        return new ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -25,7 +25,7 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
-        ErrorRespone error = new ErrorRespone("Entity Not Found", details);
+        ErrorResponse error = new ErrorResponse("Entity Not Found", details);
         return new ResponseEntity(error, HttpStatus.NOT_FOUND);
     }
 }
