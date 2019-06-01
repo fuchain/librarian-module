@@ -35,7 +35,6 @@
 
                   <div class="flex flex-wrap justify-between my-5">
                     <vs-checkbox v-model="remember" class="mb-3">Lưu mật khẩu</vs-checkbox>
-                    <router-link>Forgot Password?</router-link>
                   </div>
                   <vs-button class="float-right">Đăng nhập</vs-button>
                 </form>
