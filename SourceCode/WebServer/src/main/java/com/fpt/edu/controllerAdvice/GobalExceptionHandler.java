@@ -1,6 +1,7 @@
 package com.fpt.edu.controllerAdvice;
 
 import com.fpt.edu.exception.EntityNotFoundException;
+import com.fpt.edu.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,4 +29,14 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorRespone error = new ErrorRespone("Entity Not Found", details);
         return new ResponseEntity(error, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    public final ResponseEntity<Object> handleGenneralNotFound(NotFoundException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+        ErrorRespone error = new ErrorRespone(ex.getMessage(), details);
+        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+    }
+
+
 }
