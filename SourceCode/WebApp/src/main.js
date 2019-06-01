@@ -29,6 +29,7 @@ import VueFormWizard from "vue-form-wizard";
 
 import http from "@http";
 import auth from "@auth";
+import * as localStorage from "@localstorage";
 
 // Form Wizard
 Vue.use(VueFormWizard);
@@ -47,6 +48,11 @@ Vue.use({
 Vue.use({
   install(Vue) {
     Vue.prototype.$auth = auth;
+  }
+});
+Vue.use({
+  install(Vue) {
+    Vue.prototype.$localStorage = localStorage;
   }
 });
 
