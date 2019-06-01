@@ -2,13 +2,13 @@
   <vx-card title="Yêu cầu mượn sách">
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
-        <span>Mã môn hoặc Tên môn</span>
+        <span>Mã môn hoặc Tên sách</span>
       </div>
       <div class="vx-col sm:w-1/3 w-full">
-        <vs-input class="w-full" v-model="subjectCode"/>
+        <vs-input class="w-full" v-model="searchText"/>
       </div>
       <div class="vx-col sm:w-1/3 w-full">
-        <vs-button type="border" class="w-full" @click="searchSubject">Tìm sách</vs-button>
+        <vs-button type="border" class="w-full" @click="doSearch">Tìm sách</vs-button>
       </div>
     </div>
     <div class="vx-row mb-6">
@@ -16,7 +16,7 @@
         <span>Tên sách</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-select v-model="bookCode" width="100%" :disabled="!listBooks.length || !subjectCode">
+        <vs-select v-model="bookCode" width="100%" :disabled="!listBooks.length || !searchText">
           <vs-select-item
             :key="index"
             :value="item.id"
@@ -31,7 +31,7 @@
         <vs-button
           class="mr-3 mb-2"
           @click="submit"
-          :disabled="!subjectCode.trim() || !bookCode.trim()"
+          :disabled="!searchText.trim() || !bookCode"
           icon="done"
         >Đăng kí</vs-button>
       </div>
@@ -43,35 +43,37 @@
 export default {
   data() {
     return {
-      subjectCode: "",
+      searchText: "",
       bookCode: "",
       listBooks: []
     };
   },
   methods: {
-    searchSubject() {
-      if (!this.subjectCode.trim()) return;
+    doSearch() {
+      if (!this.searchText.trim()) return;
       this.$vs.loading();
-      setTimeout(
-        function() {
+
+      this.$http
+        .get(`${this.$http.baseUrl}/bookdetails/search?name=${this.searchText}`)
+        .then(response => {
+          const data = response.data;
+
           this.$vs.loading.close();
 
-          this.listBooks = [].concat([
-            {
-              id: "FUHCM000000002",
-              name: "Japanese Elementary 3"
-            },
-            {
-              id: "FUHCM000000003",
-              name: "Start Your Business"
-            }
-          ]);
-        }.bind(this),
-        2000
-      );
+          this.listBooks = [].concat(data);
+
+          if (!data.length) {
+            this.$vs.notify({
+              title: "Lỗi",
+              text: "Không tìm thấy quyển sách nào, vui lòng đổi từ khóa",
+              color: "warning",
+              position: "top-center"
+            });
+          }
+        });
     },
     submit() {
-      if (!this.subjectCode.trim() || !this.bookCode) return;
+      if (!this.searchText.trim() || !this.bookCode) return;
       this.$vs.loading();
       setTimeout(
         function() {
