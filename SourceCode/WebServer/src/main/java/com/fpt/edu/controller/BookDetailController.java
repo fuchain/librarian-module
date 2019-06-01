@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("bookdetails")
@@ -57,5 +58,12 @@ public class BookDetailController extends BaseController {
         json.put("Message", "Success");
 
         return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Search for a book details", response = String.class)
+    @RequestMapping(value = "search", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<List<BookDetail>> searchBook(@RequestParam("name") String name) {
+        List<BookDetail> books = bookDetailsServices.searchBookDetails(name);
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 }
