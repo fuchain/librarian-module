@@ -1,6 +1,7 @@
 package com.fpt.edu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.common.RequestStatus;
 import com.fpt.edu.common.RequestType;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
@@ -113,6 +114,7 @@ public class RequestController extends BaseController {
 
             //create a request and fill data
             request = new Request();
+            request.setStatus(RequestStatus.PENDING.getValue());
             request.setType(type);
             request.setUser(user);
             request.setBookDetail(bookDetail);
@@ -145,6 +147,7 @@ public class RequestController extends BaseController {
 
             //create a request and fill data
             request = new Request();
+            request.setStatus(RequestStatus.PENDING.getValue());
             request.setType(type);
             request.setUser(user);
             request.setBook(book);
