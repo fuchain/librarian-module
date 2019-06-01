@@ -67,16 +67,16 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Get a list of book request", response = String.class)
     @RequestMapping(value = "/get_list", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getBookRequestList(@RequestParam int type) throws JsonProcessingException {
+    public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type) throws JsonProcessingException {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
 
         List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type);
-        JSONObject jsonObject = utils.buildListEntity(requestList, httpServletRequest);
+//        JSONObject jsonObject = utils.buildListEntity(requestList, httpServletRequest);
 
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(requestList, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Create a book request", response = String.class)
