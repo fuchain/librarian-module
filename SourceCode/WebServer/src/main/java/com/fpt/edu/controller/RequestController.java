@@ -1,21 +1,16 @@
 package com.fpt.edu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.common.MatchingStatus;
 import com.fpt.edu.common.RequestStatus;
 import com.fpt.edu.common.RequestType;
 import com.fpt.edu.constant.Constant;
-import com.fpt.edu.entities.Book;
-import com.fpt.edu.entities.BookDetail;
-import com.fpt.edu.entities.Request;
-import com.fpt.edu.entities.User;
+import com.fpt.edu.entities.*;
 import com.fpt.edu.exception.EntityAldreayExisted;
 import com.fpt.edu.exception.EntityIdMismatchException;
 import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.exception.TypeNotSupportedException;
-import com.fpt.edu.services.BookDetailsServices;
-import com.fpt.edu.services.BookServices;
-import com.fpt.edu.services.RequestServices;
-import com.fpt.edu.services.UserServices;
+import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -43,6 +39,11 @@ public class RequestController extends BaseController {
 
     @Autowired
     private BookServices bookServices;
+
+    @Autowired
+    private MatchingServices matchingServices;
+
+
 
   /*  @RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> getListOfRequest() throws JsonProcessingException {
@@ -67,8 +68,8 @@ public class RequestController extends BaseController {
     }
 
     @ApiOperation(value = "Get a list of book request", response = String.class)
-    @RequestMapping(value = "/{type}/get_list", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getBookRequestList(@PathVariable int type) throws JsonProcessingException {
+    @RequestMapping(value = "/get_list", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> getBookRequestList(@RequestParam int type) throws JsonProcessingException {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
@@ -164,11 +165,32 @@ public class RequestController extends BaseController {
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
-//    @ApiOperation(value = "Borrower returns book", response = String.class)
-//    @RequestMapping(value = "/return", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-//    public ResponseEntity<String> returnBook(){
-//        
-//    }
+    @ApiOperation(value = "Returner returns a book", response = String.class)
+    @RequestMapping(value = "/return", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> returnBook(@RequestParam Long matchingId) throws EntityNotFoundException {
+
+        Matching matching = matchingServices.getMatchingById(matchingId);
+        if (matching == null) {
+            throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
+        }
+
+        String pin = utils.getPin();
+        Date createdAt = new Date();
+        int status = MatchingStatus.PENDING.getValue();
+
+        matching.setPin(pin);
+        matching.setMatchingStartDate(createdAt);
+        matching.setStatus(status);
+
+        matchingServices.updateMatching(matching);
+
+        JSONObject jsonResult = new JSONObject();
+        jsonResult.put("pin", pin);
+        jsonResult.put("created_at", createdAt);
+        jsonResult.put("status", status);
+
+        return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+    }
 
     @ApiOperation(value = "Update request status", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)

@@ -13,10 +13,14 @@ public class Matching {
     private Long id;
 
     @OneToOne
-    private Request returner_req_id;
+    private Request returnerRequest;
 
     @OneToOne
-    private Request borrower_req_id;
+    private Request borrowerRequest;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
 
     @Column(name = "pin")
     private String pin;
@@ -31,24 +35,40 @@ public class Matching {
         return id;
     }
 
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Request getReturner_req_id() {
-        return returner_req_id;
+    public Request getReturnerRequest() {
+        return returnerRequest;
     }
 
-    public void setReturner_req_id(Request returner_req_id) {
-        this.returner_req_id = returner_req_id;
+    public void setReturnerRequest(Request returnerRequest) {
+        this.returnerRequest = returnerRequest;
     }
 
-    public Request getBorrower_req_id() {
-        return borrower_req_id;
+    public Request getBorrowerRequest() {
+        return borrowerRequest;
     }
 
-    public void setBorrower_req_id(Request borrower_req_id) {
-        this.borrower_req_id = borrower_req_id;
+    public void setBorrowerRequest(Request borrowerRequest) {
+        this.borrowerRequest = borrowerRequest;
     }
 
     public String getPin() {
