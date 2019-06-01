@@ -18,6 +18,9 @@
     <bean id="endPointDef" class="com.fpt.edu.linkresource.EndPointDef">
         <constructor-arg ref="linkDef"/>
     </bean>
+    <bean id="bigchainDbConfig" class="com.fpt.edu.config.BigchainDbConfig">
+        <constructor-arg value="${fptu.tech.bigchaindb.host}"/>
+    </bean>
 
 
     <!--<bean name="jsonHelper" class="com.fptedu.common.helper.json.JsonHelper"/>-->
