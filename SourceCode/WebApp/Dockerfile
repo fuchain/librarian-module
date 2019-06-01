@@ -6,10 +6,12 @@ WORKDIR /root/src/app
 ENV PATH /root/src/app/node_modules/.bin:$PATH
 
 # Copy package.json and yarn.lock
-COPY . .
-
-# Fetch dependencies, run script optimize images, build
+COPY package.json yarn.lock ./
+# Fetch dependencies
 RUN yarn --pure-lockfile
+
+# Copy source code and build
+COPY . .
 RUN yarn build
 
 # Copy files to machine

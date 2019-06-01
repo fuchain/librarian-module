@@ -18,10 +18,10 @@
       <div class="vx-col sm:w-2/3 w-full">
         <vs-select v-model="bookCode" width="100%" :disabled="!listBooks.length || !searchText">
           <vs-select-item
-            :key="index"
+            :key="item.id"
             :value="item.id"
             :text="item.name"
-            v-for="item, index in listBooks"
+            v-for="item in listBooks"
           />
         </vs-select>
       </div>
