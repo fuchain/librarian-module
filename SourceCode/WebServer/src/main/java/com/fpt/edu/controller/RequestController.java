@@ -70,8 +70,8 @@ public class RequestController extends BaseController {
     public ResponseEntity<String> getBookRequestList(@PathVariable int type) throws JsonProcessingException {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (String) authentication.getPrincipal();
-        User user = userServices.getUserByUsername(username);
+        String email = (String) authentication.getPrincipal();
+        User user = userServices.getUserByEmail(email);
 
         List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type);
         JSONObject jsonObject = utils.buildListEntity(requestList, httpServletRequest);
@@ -84,8 +84,8 @@ public class RequestController extends BaseController {
     public ResponseEntity<String> requestBook(@RequestBody String body) throws IOException, EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (String) authentication.getPrincipal();
-        User user = userServices.getUserByUsername(username);
+        String email = (String) authentication.getPrincipal();
+        User user = userServices.getUserByEmail(email);
 
         //get response body
         JSONObject bodyObject = new JSONObject(body);
