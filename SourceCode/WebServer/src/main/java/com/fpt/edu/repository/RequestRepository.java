@@ -10,12 +10,12 @@ import java.util.Collection;
 
 @Repository
 public interface RequestRepository extends CrudRepository<Request, Long> {
-    @Query(value = "SELECT * FROM request where user_id = ?1 AND status = ?2",
+    @Query(value = "SELECT * FROM request where user_id = ?1 AND type = ?2",
             nativeQuery = true)
-    Collection<Request> findByUserIdAndStatus(Long userId, int status);
+    Collection<Request> findByUserIdAndType(Long userId, int type);
 
-    @Query(value = "SELECT COUNT(id) FROM request WHERE status = ?1 AND user_id = ?2 " +
+    @Query(value = "SELECT COUNT(id) FROM request WHERE type = ?1 AND user_id = ?2 " +
             " AND (book_detail_id = ?3 OR book_id = ?4)"
             , nativeQuery = true)
-    Integer checkExistedRequest(int status, Long user_id, Long book_detail_id, Long book_id);
+    Integer checkExistedRequest(int type, Long user_id, Long book_detail_id, Long book_id);
 }

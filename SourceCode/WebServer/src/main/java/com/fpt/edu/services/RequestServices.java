@@ -25,7 +25,15 @@ public class RequestServices {
     }
 
     public Request getRequestById(Long id) {
-        return requestRepository.findById(id).get();
+        Optional<Request> optionalRequest = requestRepository.findById(id);
+
+        Request request = null;
+
+        if (optionalRequest.isPresent()) {
+            request = optionalRequest.get();
+        }
+
+        return request;
     }
 
     public Request saveRequest(Request request) {
@@ -33,13 +41,17 @@ public class RequestServices {
         return requestResult;
     }
 
-    public boolean checkExistedRequest(int status, Long userId, Long bookDetailId, Long bookId) {
-        int row = requestRepository.checkExistedRequest(status, userId, bookDetailId, bookId);
+    public boolean checkExistedRequest(int type, Long userId, Long bookDetailId, Long bookId) {
+        int row = requestRepository.checkExistedRequest(type, userId, bookDetailId, bookId);
         return row > 0;
     }
 
-    public List<Request> findByUserIdAndStatus(Long userId, int status) {
-        return (List<Request>) requestRepository.findByUserIdAndStatus(userId, status);
+    public List<Request> findByUserIdAndType(Long userId, int type) {
+        return (List<Request>) requestRepository.findByUserIdAndType(userId, type);
+    }
+
+    public Request updateRequest(Request request) {
+        return requestRepository.save(request);
     }
 
 }

@@ -34,8 +34,19 @@ public class Request {
     @Column(name = "status")
     private int status;
 
+    @Column(name = "type")
+    private int type;
+
     public BookDetail getBookDetail() {
         return bookDetail;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public void setBookDetail(BookDetail bookDetail) {
