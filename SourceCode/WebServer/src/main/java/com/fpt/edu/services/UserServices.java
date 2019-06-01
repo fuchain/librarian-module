@@ -35,14 +35,18 @@ public class UserServices {
 		this.encoder = encoder;
 	}
 
-	public User addNewUser(User user) {
-		user.setPassword(encoder.encode(user.getPassword()));
+	public void addNewUser(User user) {
+	    if (!user.getPassword().trim().isEmpty()) {
+            user.setPassword(encoder.encode(user.getPassword()));
+        } else {
+	        user.setPassword(null);
+        }
+
 		userRepository.save(user);
-		return user;
 	}
 
-	public Optional<User> findUserByUsername(String name) {
-	    return userRepository.findByUsername(name);
+	public Optional<User> findUserByEmail(String email) {
+	    return userRepository.findByEmail(email);
     }
 
     @Transactional

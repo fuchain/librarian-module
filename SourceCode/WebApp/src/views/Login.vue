@@ -80,8 +80,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   data() {
     return {
@@ -91,8 +89,8 @@ export default {
     };
   },
   methods: {
-    doLogin: function(noValidate) {
-      if ((!this.email || !this.password) && !noValidate) {
+    doLogin: function() {
+      if (!this.email || !this.password) {
         this.$vs.notify({
           title: "Không hợp lệ",
           text: "Email hoặc mật khẩu bị thiếu",
@@ -154,7 +152,11 @@ export default {
     window.gapi.load("auth2", function() {
       window.auth2 = window.gapi.auth2.init({
         client_id:
-          "292520951559-5fqe0olanvlto3bd06bt4u36dqsclnni.apps.googleusercontent.com"
+          "292520951559-5fqe0olanvlto3bd06bt4u36dqsclnni.apps.googleusercontent.com",
+        fetch_basic_profile: true,
+        scope:
+          "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+        response_type: "token"
       });
     });
 
