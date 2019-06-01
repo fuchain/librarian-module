@@ -3,6 +3,7 @@ package com.fpt.edu.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fpt.edu.constant.Constant;
+import com.fpt.edu.controllerAdvice.ErrorRespone;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.services.UserServices;
 import com.mashape.unirest.http.HttpResponse;
@@ -10,18 +11,11 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.swagger.annotations.ApiOperation;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Date;
 import java.util.Optional;
 
@@ -39,9 +33,15 @@ public class AuthenticationController {
 
     @ApiOperation(value = "Add new user", response = String.class)
     @PostMapping("new")
-    public ResponseEntity<User> signUp(@RequestBody User user) {
-        User result = userServices.addNewUser(user);
-        return ResponseEntity.ok().body(result);
+    public ResponseEntity<String> signUp(@RequestBody User user) {
+        userServices.addNewUser(user);
+
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("id", user.getId());
+        responseJSON.put("email", user.getEmail());
+        responseJSON.put("fullname", user.getFullName());
+
+        return ResponseEntity.ok().body(responseJSON.toString());
     }
 
     @ApiOperation(value = "Login with Google", response = String.class)
@@ -55,7 +55,7 @@ public class AuthenticationController {
         HttpResponse<JsonNode> jsonGoogleResponse = Unirest.get(Constant.GOOGLE_AUTH_API + token).asJson();
         try {
             String email = jsonGoogleResponse.getBody().getObject().get("email").toString();
-            Optional<User> loggedUser = userServices.findUserByUsername(email);
+            Optional<User> loggedUser = userServices.findUserByEmail(email);
 
             // If email is not in database
             if (loggedUser.isEmpty()) {
@@ -74,6 +74,7 @@ public class AuthenticationController {
             JSONObject responseObj = new JSONObject();
             responseObj.put("token", responseToken);
             responseObj.put("email", email);
+            responseObj.put("fullname", loggedUser.get().getFullName());
             responseObj.put("expire", expireDate.getTime());
 
             return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);
