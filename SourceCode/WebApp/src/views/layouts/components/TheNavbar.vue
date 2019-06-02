@@ -95,11 +95,11 @@
             ></feather-icon>
           </div>
         </div>
-        <!-- <feather-icon
+        <feather-icon
           icon="SearchIcon"
           @click="showFullSearch = true"
           class="cursor-pointer navbar-fuzzy-search ml-4"
-        ></feather-icon>-->
+        ></feather-icon>
 
         <!-- NOTIFICATIONS -->
         <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
@@ -152,7 +152,7 @@
 
         <!-- USER META -->
         <div class="the-navbar__user-meta flex items-center sm:ml-5 ml-2">
-          <div class="text-right leading-tight">
+          <div class="text-right leading-tight hidden sm:block">
             <p class="font-semibold">{{ $localStorage.getItem("fullname") }}</p>
             <small>{{ $localStorage.getItem("email") }}</small>
           </div>
@@ -213,8 +213,6 @@ import draggable from "vuedraggable";
 
 import { setTimeout } from "timers";
 
-import auth from "@auth";
-
 export default {
   name: "the-navbar",
   props: {
@@ -228,19 +226,17 @@ export default {
       navbarSearchAndPinList: this.$store.state.navbarSearchAndPinList,
       searchQuery: "",
       showFullSearch: false,
-      unreadNotifications: auth.isAdmin()
-        ? []
-        : [
-            {
-              index: 0,
-              title: "Japanese Elementary 3",
-              msg:
-                "Đã tìm thấy sinh viên trả sách Japanese Elementary 3, liên lạc để mượn lại",
-              icon: "PackageIcon",
-              time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
-              category: "success"
-            }
-          ],
+      unreadNotifications: [
+        {
+          index: 0,
+          title: "Japanese Elementary 3",
+          msg:
+            "Đã tìm thấy sinh viên trả sách Japanese Elementary 3, liên lạc để mượn lại",
+          icon: "PackageIcon",
+          time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
+          category: "success"
+        }
+      ],
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,
