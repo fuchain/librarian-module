@@ -189,10 +189,14 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Receiver receives a book", response = String.class)
     @RequestMapping(value = "/receive", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> receiveBook(@RequestParam String pin, @RequestParam Long matchingId) throws EntityNotFoundException, EntityPinMisMatchException, PinExpiredException {
+    public ResponseEntity<String> receiveBook(@RequestParam String pin, @RequestParam Long matchingId) throws EntityNotFoundException, EntityPinMisMatchException, PinExpiredException, EntityAldreayExisted {
         Matching matching = matchingServices.getMatchingById(matchingId);
         if (matching == null) {
             throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
+        }
+
+        if (matching.getStatus() == ERequestStatus.COMPLETED.getValue()) {
+            throw new EntityAldreayExisted("The pin has have sent");
         }
 
         Date now = new Date();

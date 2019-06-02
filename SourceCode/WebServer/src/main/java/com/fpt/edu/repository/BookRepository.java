@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.fpt.edu.entities.Book;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -11,6 +12,6 @@ import java.util.Collection;
 @Repository
 public interface BookRepository extends CrudRepository<Book, Long> {
 
-    @Query(value = "SELECT * FROM book WHERE user_id = ?1", nativeQuery = true)
-    Collection<Book> findBookListByUserId(Long userId);
+    @Query(value = "SELECT b FROM Book b WHERE b.user.id = :userId")
+    Collection<Book> findBookListByUserId(@Param("userId") Long userId);
 }
