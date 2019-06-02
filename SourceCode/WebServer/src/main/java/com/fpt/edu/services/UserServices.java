@@ -43,7 +43,7 @@ public class UserServices {
 	}
 
 	public Optional<User> findUserByEmail(String email) {
-	    return userRepository.findByEmail(email);
+	    return userRepository.findUserByEmail(email);
     }
 
     public Optional<User> findUserById(long id) { return userRepository.findById(id); }
@@ -59,7 +59,7 @@ public class UserServices {
     }
 
     public User getUserByEmail(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findUserByEmail(email.toLowerCase());
 
         User user = null;
 

@@ -84,10 +84,8 @@ public class AuthenticationController {
             String email = jsonGoogleResponse.getBody().getObject().get("email").toString();
             Optional<User> loggedUser = userServices.findUserByEmail(email);
 
-            System.out.println("Email of user is: " + email);
-
             // If email is not in database
-            if (loggedUser.isPresent()) {
+            if (loggedUser.isEmpty()) {
                 return new ResponseEntity<>("User is not in database", HttpStatus.BAD_REQUEST);
             }
 
