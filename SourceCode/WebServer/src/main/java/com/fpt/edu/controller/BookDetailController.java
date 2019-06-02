@@ -21,7 +21,6 @@ import java.util.List;
 public class BookDetailController extends BaseController {
     @Autowired
     BookDetailsServices bookDetailsServices;
-
     @ApiOperation(value = "Get a list of book details", response = String.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<List<BookDetail>> findBookDetailsById() throws EntityNotFoundException, JsonProcessingException {
@@ -29,7 +28,7 @@ public class BookDetailController extends BaseController {
     }
     @ApiOperation(value = "Create a bookdetails ", response = String.class)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<BookDetail> createBookDetails(@RequestBody String body) throws IOException {
+    public ResponseEntity<BookDetail> createBookDetails(@RequestBody BookDetail body) throws IOException {
         BookDetail detail = bookDetailsServices.saveBookDetail(body);
         return new ResponseEntity<>(detail, HttpStatus.OK);
     }
@@ -41,22 +40,11 @@ public class BookDetailController extends BaseController {
     }
     @ApiOperation(value = "Update a bookdetails", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail body) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public ResponseEntity<BookDetail> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail body) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         body.setId(id);
         BookDetail bookDetail = bookDetailsServices.updateBookDetail(body);
-        return new ResponseEntity<>(utils.convertObjectToJSONObject(bookDetail).toString(), HttpStatus.OK);
+        return new ResponseEntity<>(bookDetail, HttpStatus.OK);
     }
-
-    @ApiOperation(value = "Update a bookdetails with marsialler", response = String.class)
-  // @RequestMapping(value = "/{id}", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> updateBookDetailwithSpringMashaller(@PathVariable Long id, @RequestBody BookDetail body) throws IOException {
-        body.setId(id);
-        BookDetail bookDetail = bookDetailsServices.updateBookDetailWithObject(body);
-        return new ResponseEntity<>(utils.convertObjectToJSONObject(bookDetail).toString(), HttpStatus.OK);
-    }
-
-
-
     @ApiOperation(value = "Delete a book details", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> deleteBookDetail(@PathVariable Long id) throws IOException {
@@ -65,11 +53,9 @@ public class BookDetailController extends BaseController {
         json.put("Message", "Success");
         return new ResponseEntity<>(json.toString(), HttpStatus.OK);
     }
-
     @ApiOperation(value = "Search for a book details", response = String.class)
     @RequestMapping(value = "search", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<List<BookDetail>> searchBook(@RequestParam("name") String name) {
-
         List<BookDetail> books = bookDetailsServices.searchBookDetails(name.toLowerCase());
         return new ResponseEntity<>(books, HttpStatus.OK);
     }

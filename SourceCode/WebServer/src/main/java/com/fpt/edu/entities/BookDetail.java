@@ -31,7 +31,7 @@ public class BookDetail {
     @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private List<Category> categories;
 
-    @ManyToOne()
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "publisher_id")
     @JsonIgnore
     private Publisher publisher;

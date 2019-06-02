@@ -81,7 +81,7 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Create a book request", response = String.class)
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<Request> requestBook(@RequestBody String body) throws IOException, EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
+    public ResponseEntity<String> requestBook(@RequestBody String body) throws IOException, EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
@@ -153,11 +153,14 @@ public class RequestController extends BaseController {
         } else {
             throw new TypeNotSupportedException("Type " + type + " is not supported");
         }
+
         //save request
         requestServices.saveRequest(request);
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", "success");
-        return new ResponseEntity<>(request, HttpStatus.OK);
+
+        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Returner returns a book", response = String.class)
