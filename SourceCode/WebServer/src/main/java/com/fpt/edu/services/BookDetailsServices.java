@@ -37,12 +37,6 @@ public class BookDetailsServices {
         return bookDetail;
     }
 
-    public BookDetail updateBookDetailWithObject(BookDetail bookDetail) throws IOException {
-        bookDetailRepository.save(bookDetail);
-        return bookDetail;
-    }
-
-
     public boolean deleteBookDetail(Long id) throws IOException {
         bookDetailRepository.deleteById(id);
         return true;
