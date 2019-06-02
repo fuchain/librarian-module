@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +31,7 @@ public class SimulateDataController {
     BookRepository bookRepository;
 
     @RequestMapping(value = "/init", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+   @Transactional
     public String addSimulateBookData() throws Exception {
         Random random = new Random();
 
@@ -69,7 +71,7 @@ public class SimulateDataController {
         for (String bookDetailName : bookDetailNames) {
             BookDetail bookDetail = new BookDetail();
             bookDetail.setName(bookDetailName);
-            bookDetail.setBookStartDate((Timestamp) new Date());
+            bookDetail.setBookStartDate( new Date());
 
             // Map author to book detail
             List<Author> authorList = new ArrayList<>();
@@ -83,6 +85,7 @@ public class SimulateDataController {
 
             // Map publiser to book detail
             bookDetail.setPublisher(publishers.get(random.nextInt(publishers.size())));
+            bookDetailRepository.save(bookDetail);
 
             // Init 10 book instance
             List<Book> books = new ArrayList<>();
@@ -95,6 +98,7 @@ public class SimulateDataController {
             bookDetail.setBooks(books);
             bookDetailRepository.save(bookDetail);
         }
+
         return "Init simulate data completed!";
     }
 }
