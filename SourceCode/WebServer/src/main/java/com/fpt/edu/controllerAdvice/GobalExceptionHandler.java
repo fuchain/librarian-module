@@ -23,9 +23,9 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
         logException(ex);
         List<String> details = new ArrayList<>();
-            details.add(ex.getLocalizedMessage());
-       ErrorResponse error = new ErrorResponse("Server Internal Error", details);
-       return new ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Server Internal Error", details);
+        return new ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -48,13 +48,12 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    private void logException(Exception ex){
-        LOGGER.error("ERROR Message :"+ex.getMessage());
-        LOGGER.error("ERROR Cause :"+ex.getCause());
-        LOGGER.error("ERROR StackTrace :"+ex.getStackTrace());
+    private void logException(Exception ex) {
+        LOGGER.error("ERROR Message :" + ex.getMessage());
+        LOGGER.error("ERROR Cause :" + ex.getCause());
+        LOGGER.error("ERROR StackTrace :" + ex.getStackTrace());
 
     }
 
 
 }
-l
