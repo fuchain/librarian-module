@@ -14,44 +14,38 @@ import javax.persistence.Table;
 @Table(name = "author")
 public class Author {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
-	private Long id;
-	
-	
-	@Column(name="name")
-	private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
 
-	@ManyToMany(mappedBy="authors")
-	private List<BookDetail> books;
-	
-	
-	
-	
-	public List<BookDetail> getBooks() {
-		return books;
-	}
+    @Column(name = "name")
+    private String name;
 
-	public void setBooks(List<BookDetail> books) {
-		this.books = books;
-	}
+    @ManyToMany(mappedBy = "authors")
+    private List<BookDetail> books;
 
-	public Long getId() {
-		return id;
-	}
+    public List<BookDetail> getBooks() {
+        return books;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setBooks(List<BookDetail> books) {
+        this.books = books;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

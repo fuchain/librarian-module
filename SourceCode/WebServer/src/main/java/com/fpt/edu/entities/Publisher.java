@@ -1,7 +1,6 @@
 package com.fpt.edu.entities;
 
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,47 +10,40 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="publisher")
+@Table(name = "publisher")
 public class Publisher {
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
-	
-	
-	@Column(name="name")
-	private String name;
-	 
-	@OneToMany(mappedBy="publisher")
-	private List<BookDetail> bookDetails;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "name")
+    private String name;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @OneToMany(mappedBy = "publisher")
+    private List<BookDetail> bookDetails;
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public List<BookDetail> getBookDetails() {
-		return bookDetails;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setBookDetails(List<BookDetail> bookDetails) {
-		this.bookDetails = bookDetails;
-	}
-	
-	
-	
-	
-	
-	
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<BookDetail> getBookDetails() {
+        return bookDetails;
+    }
+
+    public void setBookDetails(List<BookDetail> bookDetails) {
+        this.bookDetails = bookDetails;
+    }
 }
