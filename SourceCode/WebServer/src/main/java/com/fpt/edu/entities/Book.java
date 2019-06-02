@@ -39,8 +39,8 @@ public class Book {
     @Column(name = "asset_id")
     private String assetId;
 
-    @Column(name = "previous_tx_id")
-    private String previousTxId;
+    @Column(name = "last_tx_id")
+    private String lastTxId;
 
     @Column(name = "status")
     private String status = StatusType.IN_USE.value();
@@ -91,12 +91,21 @@ public class Book {
         this.assetId = assetId;
     }
 
-    public String getPreviousTxId() {
-        return previousTxId;
+    public String getLastTxId() {
+        return lastTxId;
     }
 
-    public void setPreviousTxId(String previousTxId) {
-        this.previousTxId = previousTxId;
+    public void setLastTxId(String lastTxId) {
+        this.lastTxId = lastTxId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.metadata.put("status", status);
+        this.status = status;
     }
 
     public User getUser() {
@@ -104,6 +113,7 @@ public class Book {
     }
 
     public void setUser(User user) {
+        this.metadata.put("current_keeper", user.getEmail());
         this.user = user;
     }
 

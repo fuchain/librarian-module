@@ -109,7 +109,7 @@ public class SimulateDataController {
                         (transaction, response) -> {
                             String trasactionId = transaction.getId();
                             book.setAssetId(trasactionId);
-                            book.setPreviousTxId(trasactionId);
+                            book.setLastTxId(trasactionId);
                             if (!book.getAssetId().isEmpty()){
                                 bookRepository.save(book);
                             }
