@@ -25,6 +25,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Component
+
 public class Utils {
     @Autowired
     EndPointDef endPointDef;

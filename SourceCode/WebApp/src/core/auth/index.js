@@ -11,7 +11,6 @@ import tokenIsExpired from "./tokenIsExpired";
 import tokenIsAlmostExpired from "./tokenIsAlmostExpired";
 import setBoard from "./setBoard";
 import getBoard from "./getBoard";
-import isAdmin from "./isAdmin";
 
 export default {
   clearAuth,
@@ -26,6 +25,5 @@ export default {
   tokenIsExpired,
   tokenIsAlmostExpired,
   setBoard,
-  getBoard,
-  isAdmin
+  getBoard
 };

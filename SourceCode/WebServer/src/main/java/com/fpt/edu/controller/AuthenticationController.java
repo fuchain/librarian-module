@@ -3,7 +3,6 @@ package com.fpt.edu.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fpt.edu.constant.Constant;
-import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.services.UserServices;
 import com.mashape.unirest.http.HttpResponse;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
@@ -44,17 +42,6 @@ public class AuthenticationController {
         responseJSON.put("fullname", user.getFullName());
 
         return ResponseEntity.ok().body(responseJSON.toString());
-    }
-
-    @ApiOperation(value = "Update a user", response = String.class)
-    @RequestMapping(value = "update/{id}", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        if (userServices.findUserById(id).isEmpty()) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
-        User updatedUser = userServices.updateUser(id, user);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get user information", response = String.class)
@@ -85,7 +72,7 @@ public class AuthenticationController {
             Optional<User> loggedUser = userServices.findUserByEmail(email);
 
             // If email is not in database
-            if (loggedUser.isEmpty()) {
+            if (loggedUser.isPresent()) {
                 return new ResponseEntity<>("User is not in database", HttpStatus.BAD_REQUEST);
             }
 
