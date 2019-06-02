@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
@@ -39,14 +40,15 @@ public class BookDetailController extends BaseController {
         return new ResponseEntity<>(utils.convertObjectToJSONObject(bookDetail).toString(), HttpStatus.OK);
     }
     @ApiOperation(value = "Update a bookdetails", response = String.class)
-    @RequestMapping(value = "/{id}/anc", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> updateBookDetail(@PathVariable Long id, @RequestBody String body) throws IOException {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail body) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        body.setId(id);
         BookDetail bookDetail = bookDetailsServices.updateBookDetail(body);
         return new ResponseEntity<>(utils.convertObjectToJSONObject(bookDetail).toString(), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Update a bookdetails with marsialler", response = String.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
+  // @RequestMapping(value = "/{id}", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> updateBookDetailwithSpringMashaller(@PathVariable Long id, @RequestBody BookDetail body) throws IOException {
         body.setId(id);
         BookDetail bookDetail = bookDetailsServices.updateBookDetailWithObject(body);
