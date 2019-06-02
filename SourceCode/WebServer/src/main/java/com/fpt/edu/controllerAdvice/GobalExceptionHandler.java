@@ -10,14 +10,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @ControllerAdvice
 public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected final Logger LOGGER = LogManager.getLogger(getClass());
-
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
@@ -47,13 +45,10 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity(error, HttpStatus.NOT_FOUND);
     }
 
-
     private void logException(Exception ex) {
         LOGGER.error("ERROR Message :" + ex.getMessage());
         LOGGER.error("ERROR Cause :" + ex.getCause());
         LOGGER.error("ERROR StackTrace :" + ex.getStackTrace());
 
     }
-
-
 }
