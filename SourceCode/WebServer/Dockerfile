@@ -3,8 +3,13 @@ FROM openjdk:12 AS builder
 RUN mkdir -p /root/src/api
 WORKDIR /root/src/api
 
-COPY . .
+# Copy build file and get dependenices
+COPY gradle ./gradle
+COPY build.gradle gradlew settings.gradle ./
+RUN ./gradlew dependencies
 
+# Copy source code and Build
+COPY . .
 RUN ./gradlew build
 
 FROM openjdk:12-jdk-alpine

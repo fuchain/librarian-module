@@ -1,7 +1,6 @@
 package com.fpt.edu.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.repository.BookDetailRepository;
 import org.apache.commons.collections.IteratorUtils;
@@ -37,6 +36,12 @@ public class BookDetailsServices {
         bookDetailRepository.save(bookDetail);
         return bookDetail;
     }
+
+    public BookDetail updateBookDetailWithObject(BookDetail bookDetail) throws IOException {
+        bookDetailRepository.save(bookDetail);
+        return bookDetail;
+    }
+
 
     public boolean deleteBookDetail(Long id) throws IOException {
         bookDetailRepository.deleteById(id);

@@ -13,6 +13,7 @@ import com.fpt.edu.repository.BookRepository;
 
 import com.fpt.edu.entities.User;
 import com.fpt.edu.repository.UserRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -42,8 +43,10 @@ public class UserServices {
 	}
 
 	public Optional<User> findUserByEmail(String email) {
-	    return userRepository.findByEmail(email);
+	    return userRepository.findUserByEmail(email);
     }
+
+    public Optional<User> findUserById(long id) { return userRepository.findById(id); }
 
     @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {
@@ -56,7 +59,7 @@ public class UserServices {
     }
 
     public User getUserByEmail(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findUserByEmail(email.toLowerCase());
 
         User user = null;
 
@@ -68,6 +71,13 @@ public class UserServices {
             throw new UsernameNotFoundException("User not found!");
         }
 
+        return user;
+    }
+
+    public User updateUser(Long id, User user) {
+	    user.setId(id);
+	    user.setPassword(encoder.encode(user.getPassword()));
+        userRepository.save(user);
         return user;
     }
 }

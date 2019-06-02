@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -23,7 +25,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Component
-
 public class Utils {
     @Autowired
     EndPointDef endPointDef;
@@ -131,4 +132,26 @@ public class Utils {
         long diffInMillies = newDate.getTime() - oldDate.getTime();
         return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
+
+
+    public Object partialUpdate(Object inDBObject, Object fromBodyObject) {
+        Class reflection = fromBodyObject.getClass();
+        for (int i = 0; i < reflection.getMethods().length; i++) {
+            Method method= reflection.getMethods()[i];
+            System.out.println(method.getName());
+           // fromBodyObject.get
+
+
+
+        }
+
+
+
+
+
+
+        return inDBObject;
+    }
+
+
 }
