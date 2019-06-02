@@ -1,6 +1,7 @@
 package com.fpt.edu.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fpt.edu.common.helper.ReflectionHelper;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.repository.BookDetailRepository;
 import org.apache.commons.collections.IteratorUtils;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @Service
@@ -30,11 +32,11 @@ public class BookDetailsServices {
         return bookDetailRepository.findById(id).get();
     }
 
-    public BookDetail updateBookDetail(String jsonBody) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        BookDetail bookDetail = objectMapper.readValue(jsonBody, BookDetail.class);
-        bookDetailRepository.save(bookDetail);
-        return bookDetail;
+    public BookDetail updateBookDetail(BookDetail bookDetail) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+       BookDetail bookDetailInDB= bookDetailRepository.findById(bookDetail.getId()).get();
+        ReflectionHelper.partialUpdate(bookDetailInDB,bookDetail);
+        bookDetailRepository.save(bookDetailInDB);
+        return bookDetailInDB;
     }
 
     public BookDetail updateBookDetailWithObject(BookDetail bookDetail) throws IOException {

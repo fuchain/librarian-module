@@ -134,24 +134,12 @@ public class Utils {
     }
 
 
-    public Object partialUpdate(Object inDBObject, Object fromBodyObject) {
-        Class reflection = fromBodyObject.getClass();
-        for (int i = 0; i < reflection.getMethods().length; i++) {
-            Method method= reflection.getMethods()[i];
-            System.out.println(method.getName());
-           // fromBodyObject.get
-
-
-
-        }
 
 
 
 
 
 
-        return inDBObject;
-    }
 
 
 }
