@@ -34,7 +34,6 @@ public class Request {
     @JoinColumn(name = "user_id")
     private User user;
 
-
     @Column(name = "status")
     private int status;
 

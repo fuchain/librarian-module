@@ -138,7 +138,7 @@ export default {
       });
     },
     startCount() {
-      this.remainTime = 360;
+      this.remainTime = 300;
 
       countInterval = setInterval(
         function() {
