@@ -1,22 +1,19 @@
 package com.fpt.edu.services;
 
-import com.fpt.edu.common.RequestType;
-import com.fpt.edu.entities.*;
-import com.fpt.edu.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
-import com.fpt.edu.repository.BookDetailRepository;
 import com.fpt.edu.repository.BookRepository;
 
 import com.fpt.edu.entities.User;
 import com.fpt.edu.repository.UserRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -46,8 +43,10 @@ public class UserServices {
 	}
 
 	public Optional<User> findUserByEmail(String email) {
-	    return userRepository.findByEmail(email);
+	    return userRepository.findUserByEmail(email);
     }
+
+    public Optional<User> findUserById(long id) { return userRepository.findById(id); }
 
     @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {
@@ -60,7 +59,7 @@ public class UserServices {
     }
 
     public User getUserByEmail(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findUserByEmail(email.toLowerCase());
 
         User user = null;
 
@@ -72,6 +71,13 @@ public class UserServices {
             throw new UsernameNotFoundException("User not found!");
         }
 
+        return user;
+    }
+
+    public User updateUser(Long id, User user) {
+	    user.setId(id);
+	    user.setPassword(encoder.encode(user.getPassword()));
+        userRepository.save(user);
         return user;
     }
 }

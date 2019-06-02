@@ -2,6 +2,7 @@ package com.fpt.edu.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
+
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -33,7 +34,7 @@ public class BookDetail {
     private Publisher publisher;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = true)
+    @Column(name = "created_date", nullable = true)
     private Date bookStartDate;
 
     @OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})

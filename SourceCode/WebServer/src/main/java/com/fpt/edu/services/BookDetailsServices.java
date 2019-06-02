@@ -1,7 +1,6 @@
 package com.fpt.edu.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.repository.BookDetailRepository;
 import org.apache.commons.collections.IteratorUtils;
@@ -46,5 +45,9 @@ public class BookDetailsServices {
     public BookDetail getBookDetailByName(String name) {
         BookDetail bookDetail = bookDetailRepository.findByName(name);
         return bookDetail;
+    }
+
+    public List<BookDetail> searchBookDetails(String name) {
+        return bookDetailRepository.findBookDetailsByName(name);
     }
 }

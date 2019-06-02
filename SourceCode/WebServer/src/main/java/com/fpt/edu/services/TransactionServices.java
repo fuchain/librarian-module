@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class TransactionService {
+public class TransactionServices {
 
     @Autowired
     private TransactionRepository transactionRepository;
