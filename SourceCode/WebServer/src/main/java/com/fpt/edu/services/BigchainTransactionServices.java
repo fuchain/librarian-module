@@ -13,14 +13,82 @@ import com.google.gson.JsonObject;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import okhttp3.Response;
-
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.Signature;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class TransactionBuilderServices {
+public final class BigchainTransactionServices {
+
+    public interface TransactionresultHandler {
+
+        // This is  callback when transaction has result
+        public void onTransactionResult(Transaction transaction, Response response);
+    }
+
+    public Transaction doCreate(
+            Object asset, Object metadata, String owner
+    ) throws Exception {
+        return doCreate(
+                asset, metadata, owner,
+                (transaction, response) -> {
+                },
+                (transaction, response) -> {
+                });
+    }
+
+    public Transaction doCreate(
+            Object asset, Object metadata, String owner,
+            TransactionresultHandler successCaller,
+            TransactionresultHandler faildedCaller
+    ) throws Exception {
+        TransactionBuilderFactory factory = new TransactionBuilderFactory();
+        return factory.createTransaction(
+                asset, metadata, owner,
+                successCaller, faildedCaller);
+    }
+
+    public Transaction doTransfer(
+            String previousTransactionId,
+            String assetId, Object metadata,
+            String owner, String target
+    ) throws Exception {
+        return doTransfer(
+                previousTransactionId,
+                assetId, metadata,
+                owner, target,
+                (transaction, response) -> {
+                },
+                (transaction, response) -> {
+                });
+    }
+
+    public Transaction doTransfer(
+            String previousTransactionId,
+            String assetId, Object metadata,
+            String owner, String target,
+            TransactionresultHandler successCaller,
+            TransactionresultHandler faildedCaller
+    ) throws Exception {
+        TransactionBuilderFactory factory = new TransactionBuilderFactory();
+        return factory.transferTransaction(
+                previousTransactionId,
+                assetId, metadata,
+                owner, target,
+                successCaller, faildedCaller);
+    }
+
+    public Transactions getTransactionByAssetId(String assetId, Operations operartion) throws Exception {
+        return TransactionsApi.getTransactionsByAssetId(assetId, operartion);
+    }
+
+    public Transaction getTransactionById(String id) throws Exception {
+        return TransactionsApi.getTransactionById(id);
+    }
+}
+
+class TransactionBuilderFactory {
 
     private static final String SHA_512_HASH = "SHA-512";
     private static final String DEFAULT_ASSET_AMOUNT = "1";
@@ -32,17 +100,17 @@ public final class TransactionBuilderServices {
     private Transaction transaction;
 
     /**
-     * CREATE transaction
+     * CREATE transaction with callback handler
      *
      * @param asset
      * @param metadata
      * @param owner
      * @throws Exception
      */
-    public String createTransaction(
-            Object asset,
-            Object metadata,
-            String owner
+    public Transaction createTransaction(
+            Object asset, Object metadata, String owner,
+            BigchainTransactionServices.TransactionresultHandler successCaller,
+            BigchainTransactionServices.TransactionresultHandler faildedCaller
     ) throws Exception {
         KeyPair ownerKeys = KeypairHelper.getKeyPairFromInput(owner);
         this.transaction = this.initTransaction(
@@ -55,12 +123,9 @@ public final class TransactionBuilderServices {
         this.sign(this.transaction.toHashInput(), ownerKeys);
 
         String transactionId = DriverUtils.getSha3HashHex(DriverUtils.makeSelfSortingGson(this.transaction.toHashInput()).toString().getBytes());
-        this.submitTransaction(transactionId);
+        this.submitTransaction(transactionId, successCaller, faildedCaller);
 
-        System.out.println("(*) CREATE Transaction sent..");
-        System.out.println("transaction id: " + transactionId);
-        System.out.println("transaciton: " + this.transaction);
-        return transactionId;
+        return this.transaction;
     }
 
     /**
@@ -68,21 +133,23 @@ public final class TransactionBuilderServices {
      *
      * @param previousTransactionId
      * @param assetId
-     * @param metaData
+     * @param metadata
      * @param owner
      * @param target
      * @return String
      * @throws Exception
      */
-    public String transferTransaction(
+    public Transaction transferTransaction(
             String previousTransactionId,
-            String assetId, Object metaData,
-            String owner, String target
+            String assetId, Object metadata,
+            String owner, String target,
+            BigchainTransactionServices.TransactionresultHandler successCaller,
+            BigchainTransactionServices.TransactionresultHandler faildedCaller
     ) throws Exception {
         KeyPair ownerKeys = KeypairHelper.getKeyPairFromInput(owner);
         KeyPair targetKeys = KeypairHelper.getKeyPairFromInput(target);
         this.transaction = this.initTransaction(
-                assetId, metaData, Operations.TRANSFER.name(),
+                assetId, metadata, Operations.TRANSFER.name(),
                 DEFAULT_TRANSACTION_VALIDATION_VERSION);
 
         this.setInput(previousTransactionId, ownerKeys);
@@ -91,20 +158,9 @@ public final class TransactionBuilderServices {
         this.sign(this.transaction.toHashInput(), ownerKeys);
 
         String transactionId = DriverUtils.getSha3HashHex(DriverUtils.makeSelfSortingGson(this.transaction.toHashInput()).toString().getBytes());
-        this.submitTransaction(transactionId);
+        this.submitTransaction(transactionId, successCaller, faildedCaller);
 
-        System.out.println("(*) TRANSFER Transaction sent..");
-        System.out.println("transaction id: " + transactionId);
-        System.out.println("transaciton: " + this.transaction);
-        return transactionId;
-    }
-
-    public Transactions getTransactionByAssetId(String assetId, Operations operartion) throws Exception {
-        return TransactionsApi.getTransactionsByAssetId(assetId, operartion);
-    }
-
-    public Transaction getTransactionById(String id) throws Exception {
-        return TransactionsApi.getTransactionById(id);
+        return this.transaction;
     }
 
     /**
@@ -231,10 +287,14 @@ public final class TransactionBuilderServices {
      *
      * @param transactionId
      */
-    private void submitTransaction(String transactionId) {
+    private void submitTransaction(
+            String transactionId,
+            BigchainTransactionServices.TransactionresultHandler successCaller,
+            BigchainTransactionServices.TransactionresultHandler faildedCaller
+    ) throws Exception {
         this.transaction.setSigned(true);
         this.transaction.setId(transactionId);
-        TransactionsApi.sendTransaction(this.transaction, transactionResultHandler());
+        TransactionsApi.sendTransaction(this.transaction, transactionResultHandler(successCaller, faildedCaller));
     }
 
     /**
@@ -242,41 +302,27 @@ public final class TransactionBuilderServices {
      *
      * @return GenericCallback
      */
-    private GenericCallback transactionResultHandler() {
+    private GenericCallback transactionResultHandler(
+            BigchainTransactionServices.TransactionresultHandler successCaller,
+            BigchainTransactionServices.TransactionresultHandler faildedCaller
+    ) throws Exception {
+        Transaction transaction = this.transaction;
         GenericCallback callback = new GenericCallback() {
             @Override
             public void transactionMalformed(Response response) {
-                System.out.println("Malformed: " + response.message());
-                System.out.println("error: " + response);
-                onFailure();
+                faildedCaller.onTransactionResult(transaction, response);
             }
 
             @Override
             public void pushedSuccessfully(Response response) {
-                System.out.println("Success: " + response.message());
-                onSuccess();
+                successCaller.onTransactionResult(transaction, response);
             }
 
             @Override
             public void otherError(Response response) {
-                System.out.println("OtherError" + response.message());
-                onFailure();
+                faildedCaller.onTransactionResult(transaction, response);
             }
         };
         return callback;
-    }
-
-    /**
-     * execute when transaction is success
-     */
-    private void onSuccess() {
-        System.out.println("Transaction successfully!!");
-    }
-
-    /**
-     * execute when transaction is failure
-     */
-    private void onFailure() {
-        System.out.println("Transaction failed!!!");
     }
 }

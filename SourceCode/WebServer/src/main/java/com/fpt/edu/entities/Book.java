@@ -43,9 +43,12 @@ public class Book {
     private String previousTxId;
 
     @Column(name = "status")
-    private String status;
+    private String status = StatusType.IN_USE.value();
 
+    @Transient
     private Map<String, String> asset;
+
+    @Transient
     private Map<String, String> metadata;
 
     public static enum StatusType {
@@ -75,7 +78,7 @@ public class Book {
         if (this.metadata == null) {
             this.metadata = new TreeMap<>();
         }
-        this.metadata.put("current_keeper", String.valueOf(this.user.getId()));
+        this.metadata.put("current_keeper", this.user.getEmail());
         this.metadata.put("status", this.status);
         return this.metadata;
     }
