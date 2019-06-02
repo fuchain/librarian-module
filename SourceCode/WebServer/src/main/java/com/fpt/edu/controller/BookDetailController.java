@@ -29,7 +29,7 @@ public class BookDetailController extends BaseController {
     }
     @ApiOperation(value = "Create a bookdetails ", response = String.class)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<BookDetail> createBookDetails(@RequestBody String body) throws IOException {
+    public ResponseEntity<BookDetail> createBookDetails(@RequestBody BookDetail body) throws IOException {
         BookDetail detail = bookDetailsServices.saveBookDetail(body);
         return new ResponseEntity<>(detail, HttpStatus.OK);
     }
@@ -41,10 +41,10 @@ public class BookDetailController extends BaseController {
     }
     @ApiOperation(value = "Update a bookdetails", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail body) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public ResponseEntity<BookDetail> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail body) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         body.setId(id);
         BookDetail bookDetail = bookDetailsServices.updateBookDetail(body);
-        return new ResponseEntity<>(utils.convertObjectToJSONObject(bookDetail).toString(), HttpStatus.OK);
+        return new ResponseEntity<>(bookDetail, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Update a bookdetails with marsialler", response = String.class)

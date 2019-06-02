@@ -21,9 +21,7 @@ public class BookDetailsServices {
         return IteratorUtils.toList(bookDetailRepository.findAll().iterator());
     }
 
-    public BookDetail saveBookDetail(String obj) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        BookDetail bookDetail = objectMapper.readValue(obj, BookDetail.class);
+    public BookDetail saveBookDetail(BookDetail bookDetail) throws IOException {
         bookDetailRepository.save(bookDetail);
         return bookDetail;
     }
