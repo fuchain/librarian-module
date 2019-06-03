@@ -18,17 +18,13 @@ public class Author {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
 	private Long id;
-	
-	
-	@Column(name="name")
+
+	@Column(name = "name")
 	private String name;
 
-	@ManyToMany(mappedBy="authors")
+	@ManyToMany(mappedBy = "authors")
 	private List<BookDetail> books;
-	
-	
-	
-	
+
 	public List<BookDetail> getBooks() {
 		return books;
 	}
@@ -52,6 +48,4 @@ public class Author {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-
 }
