@@ -43,7 +43,7 @@ public class BookDetailsServices {
     }
 
     public BookDetail getBookDetailByName(String name) {
-        BookDetail bookDetail = bookDetailRepository.findByName(name);
+        BookDetail bookDetail = bookDetailRepository.findByName(name).get(0);
         return bookDetail;
     }
 
