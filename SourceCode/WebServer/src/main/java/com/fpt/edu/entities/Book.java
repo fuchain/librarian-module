@@ -4,6 +4,7 @@ package com.fpt.edu.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "book")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Book {
+public class Book extends AbstractTimestampEntity implements Serializable {
 
     @Id
     private Long id;
