@@ -6,18 +6,21 @@ WORKDIR /root/src/app
 ENV PATH /root/src/app/node_modules/.bin:$PATH
 
 # Copy package.json and yarn.lock
-COPY . .
+COPY package.json yarn.lock ./
+# Fetch dependencies
+RUN yarn --pure-lockfile
 
-# Fetch dependencies, run script optimize images, build
-RUN yarn
-RUN npm run build
+# Copy source code and build
+COPY . .
+RUN yarn build
 
 # Copy files to machine
 FROM nginx:alpine
 
 WORKDIR /root/src/app
 
-COPY --from=builder /root/src/app/dist/ /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /root/src/app/dist /var/www/html
 
 # Datadog Log Monitoring
 LABEL "com.datadoghq.ad.check_names"='["vue"]'

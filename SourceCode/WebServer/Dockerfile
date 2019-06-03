@@ -3,8 +3,13 @@ FROM openjdk:12 AS builder
 RUN mkdir -p /root/src/api
 WORKDIR /root/src/api
 
-COPY . .
+# Copy build file and get dependenices
+COPY gradle ./gradle
+COPY build.gradle gradlew settings.gradle ./
+RUN ./gradlew dependencies
 
+# Copy source code and Build
+COPY . .
 RUN ./gradlew build
 
 FROM openjdk:12-jdk-alpine
@@ -23,7 +28,7 @@ LABEL "com.datadoghq.ad.logs"='[{"source": "java", "service": "webserver"}]'
 ENTRYPOINT ["java","-jar","LibrarianModule.jar","--spring.profiles.active=prod"]
 
 # This is docker build command: 
-# docker build -t librarian-module .
+# docker build -t librarian-webserver .
 
 # This is docker run command:
-# docker run -d --name librarian-module -p 5000:8080 librarian-module:latest
+# docker run -d --name librarian-webserver -p 5000:8080 librarian-webserver:latest

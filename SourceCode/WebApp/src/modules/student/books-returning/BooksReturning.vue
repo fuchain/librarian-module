@@ -1,5 +1,5 @@
 <template>
-  <book-list :books="books"/>
+  <book-list/>
 </template>
 
 <script>

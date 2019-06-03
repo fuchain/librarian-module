@@ -1,38 +1,37 @@
 package com.fpt.edu.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="book")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Book {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-	@ManyToOne(cascade={CascadeType.ALL})
+
+	@ManyToOne()
 	@JoinColumn(name="book_id")
 	private BookDetail bookDetail;
 	
 	@OneToMany(cascade=CascadeType.ALL)
+	@JsonIgnore
 	private List<Transaction> transactions;
 	
 	@OneToMany(cascade=CascadeType.ALL)
+	@JsonIgnore
 	private List<Request> requests;
 
 	@ManyToOne(cascade={CascadeType.ALL})
 	@JoinColumn(name="user_id")
+	@JsonIgnore
 	private User user;
 
 	public User getUser() {

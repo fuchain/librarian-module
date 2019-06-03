@@ -2,8 +2,8 @@ package com.fpt.edu.controllerAdvice;
 
 import java.util.List;
 
-public class ErrorRespone {
-    public ErrorRespone(String message, List<String> details) {
+public class ErrorResponse {
+    public ErrorResponse(String message, List<String> details) {
         super();
         this.message = message;
         this.details = details;
