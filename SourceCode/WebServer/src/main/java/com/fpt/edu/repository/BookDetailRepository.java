@@ -11,8 +11,7 @@ import java.util.List;
 
 @Repository
 public interface BookDetailRepository extends CrudRepository<BookDetail, Long> {
-    @Query(value = "SELECT bd FROM BookDetail bd WHERE bd.name = :name")
-    List<BookDetail> findByName(@Param("name") String name);
+    List<BookDetail> findByName(String name);
 
     @Query(value = "SELECT b FROM BookDetail b WHERE lower(b.name) LIKE %:name%")
     List<BookDetail> findBookDetailsByName(@Param("name") String name);

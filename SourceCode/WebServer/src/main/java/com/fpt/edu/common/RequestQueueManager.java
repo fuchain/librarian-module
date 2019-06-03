@@ -32,15 +32,14 @@ public class RequestQueueManager {
                 }else if (currentRequest.getType()== ERequestType.RETURNING.getValue() && currentRequest.getStatus()== ERequestStatus.PENDING.getValue()){
                     requestQueue.getBorrowRequestQueue().add(currentRequest);
                 }
-
             }else{
-
-
+                RequestQueue requestQueue = requestMap.get(bookDetailId);
+                if(currentRequest.getType()== ERequestType.BORROWING.getValue() && currentRequest.getStatus()== ERequestStatus.PENDING.getValue()){
+                    requestQueue.getBorrowRequestQueue().add(currentRequest);
+                }else if (currentRequest.getType()== ERequestType.RETURNING.getValue() && currentRequest.getStatus()== ERequestStatus.PENDING.getValue()){
+                    requestQueue.getBorrowRequestQueue().add(currentRequest);
+                }
             }
-
-
         }
-
-
     }
 }

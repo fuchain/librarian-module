@@ -4,20 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fpt.edu.constant.Constant;
-import com.fpt.edu.linkresource.EndPoint;
-import com.fpt.edu.linkresource.EndPointDef;
-import com.fpt.edu.linkresource.Link;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -27,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 @Component
 
 public class Utils {
-    @Autowired
-    EndPointDef endPointDef;
 
     protected final Logger LOGGER = LogManager.getLogger(getClass());
 
@@ -38,17 +29,7 @@ public class Utils {
         ObjectMapper objectMapper = new ObjectMapper();
         Hibernate5Module hbm = new Hibernate5Module();
         objectMapper.registerModule(hbm);
-        EndPoint endPoint = getEndPoint(httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), httpServletRequest.getMethod());
-        if (endPoint.getIsCollection().equalsIgnoreCase(Constant.YES)) {
-            for (int i = 0; i < list.size(); i++) {
-                JSONObject jsonItem = new JSONObject(objectMapper.writeValueAsString(list.get(i)));
-                String instanceLink = buildServerRootPath(httpServletRequest) + endPoint.getItemLink();
-                instanceLink = instanceLink.replaceAll(Constant.REGULAR_ID_EXP, jsonItem.get(Constant.ID).toString());
-                jsonItem.put(Constant.LINK, instanceLink);
-                arr.put(jsonItem);
-            }
-            jsonObject.put(Constant.ITEMS, arr);
-        }
+        jsonObject.put(Constant.ITEMS, arr);
         return jsonObject;
     }
 
@@ -65,20 +46,7 @@ public class Utils {
         return result;
     }
 
-    public JSONObject buildRelatedLink(HttpServletRequest httpServletRequest, JSONObject raw, EndPoint endPoint) {
-        List<Link> linkList = endPoint.getLinkList();
-        JSONArray arr = new JSONArray();
-        for (int i = 0; i < linkList.size(); i++) {
-            JSONObject subLink = new JSONObject();
-            Link l = linkList.get(i);
-            getValueOfAKey(raw, l.getHref());
-            subLink.put(Constant.TITLE, l.getTitle());
-            subLink.put(Constant.HREF, buildServerRootPath(httpServletRequest) + l.getHref());
-            arr.put(subLink);
-        }
-        raw.put(Constant.LINK, arr);
-        return raw;
-    }
+
 
     private String getValueOfAKey(JSONObject object, String keyName) {
         Iterator<?> it = object.keys();
@@ -100,15 +68,7 @@ public class Utils {
         return "";
     }
 
-    private EndPoint getEndPoint(String requestPattern, String method) {
-        for (int i = 0; i < endPointDef.getListEndpoints().size(); i++) {
-            EndPoint endPoint = endPointDef.getListEndpoints().get(i);
-            if (method.equalsIgnoreCase(endPoint.getMethod()) && requestPattern.equalsIgnoreCase(endPoint.getLinkSelf())) {
-                return endPoint;
-            }
-        }
-        return null;
-    }
+
 
     // Build the root path for the server like http://localhost:9090/api/v1
     public String buildServerRootPath(HttpServletRequest httpServletRequest) {
@@ -133,14 +93,6 @@ public class Utils {
         long diffInMillies = newDate.getTime() - oldDate.getTime();
         return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
-
-
-
-
-
-
-
-
 
 
 }
