@@ -9,10 +9,13 @@ import com.fpt.edu.services.UserServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +46,7 @@ public class SimulateDataController extends BaseController {
     private BookDetailsServices bookDetailsServices;
 
     @RequestMapping(value = "/init", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @Transactional
     public String addSimulateBookData() throws Exception {
         addBookForUser();
 
@@ -134,8 +138,10 @@ public class SimulateDataController extends BaseController {
         return "Init simulate data completed!";
     }
 
-    private void addBookForUser() throws Exception {
-        User user = userServices.getUserByEmail("linh");
+    public void addBookForUser() throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        User user = userServices.getUserByEmail(email);
 
         List<Category> categoryList = new ArrayList<>();
         Category category = new Category();
