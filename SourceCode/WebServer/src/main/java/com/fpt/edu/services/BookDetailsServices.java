@@ -43,8 +43,9 @@ public class BookDetailsServices {
     }
 
     public BookDetail getBookDetailByName(String name) {
-        BookDetail bookDetail = bookDetailRepository.findByName(name);
-        return bookDetail;
+        List<BookDetail> bookDetailList = bookDetailRepository.findByName(name);
+
+        return bookDetailList.get(0);
     }
 
     public List<BookDetail> searchBookDetails(String name) {

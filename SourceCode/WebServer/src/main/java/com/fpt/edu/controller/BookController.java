@@ -44,9 +44,8 @@ public class BookController extends BaseController {
 
     @ApiOperation(value = "Update a book", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody String body) throws IOException, EntityNotFoundException, EntityIdMismatchException {
-        JSONObject bodyObject = new JSONObject(body);
-        Long bookId = bodyObject.getLong("id");
+    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody Book book) throws IOException, EntityNotFoundException, EntityIdMismatchException {
+        Long bookId = book.getId();
 
         if (bookId != id) {
             throw new EntityIdMismatchException("Book ID: " + id + " and " + bookId + " does not match");
@@ -57,7 +56,7 @@ public class BookController extends BaseController {
             throw new EntityNotFoundException("Book id: " + id + " not found");
         }
 
-        Book bookResult = bookServices.updateBook(body);
+        Book bookResult = bookServices.updateBook(existedBook);
 
         JSONObject jsonObject = utils.convertObjectToJSONObject(bookResult);
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);

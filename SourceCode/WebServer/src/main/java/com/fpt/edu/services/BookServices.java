@@ -34,10 +34,7 @@ public class BookServices {
         return bookResult;
     }
 
-    public Book updateBook(String bookStr) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Book book = objectMapper.readValue(bookStr, Book.class);
+    public Book updateBook(Book book) {
         Book bookResult = bookRepository.save(book);
 
         return bookResult;

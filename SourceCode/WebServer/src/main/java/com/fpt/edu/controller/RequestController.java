@@ -41,6 +41,8 @@ public class RequestController extends BaseController {
     @Autowired
     private MatchingServices matchingServices;
 
+    @Autowired
+    private TransactionServices transactionServices;
 
 
   /*  @RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
@@ -233,24 +235,52 @@ public class RequestController extends BaseController {
             throw new Exception("Receiver has not imported pin yet");
         }
 
-        //update status of request to "completed"
+        Book book = matching.getBook();
         Request returnerRequest = matching.getReturnerRequest();
         Request receiverRequest = matching.getBorrowerRequest();
-
-        returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-        receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-
-        requestServices.updateRequest(returnerRequest);
-        requestServices.updateRequest(receiverRequest);
-
-        //transfer book from returner to receiver
-        Book book = matching.getBook();
+        User returner = returnerRequest.getUser();
         User receiver = receiverRequest.getUser();
-        book.setUser(receiver);
-
-        //return message to client
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message", "confirm book transfer");
+
+        //add transaction to bigchainDB
+        BigchainTransactionServices services = new BigchainTransactionServices();
+        services.doTransfer(
+                book.getLastTxId(),
+                book.getAssetId(), book.getMetadata(),
+                String.valueOf(book.getUser().getId()), String.valueOf(receiver.getId()),
+                (transaction, response) -> { //success
+
+                    String tracsactionId = transaction.getId();
+                    book.setAssetId(tracsactionId);
+                    book.setLastTxId(tracsactionId);
+                    LOGGER.info("Create tx success: " + response);
+
+                    //update status of request to "completed"
+                    returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+                    receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+
+                    requestServices.updateRequest(returnerRequest);
+                    requestServices.updateRequest(receiverRequest);
+
+                    //transfer book from returner to receiver
+                    book.setUser(receiver);
+                    bookServices.updateBook(book);
+
+                    //insert a transaction to DB Postgresql
+                    Transaction tran = new Transaction();
+                    tran.setBook(book);
+                    tran.setReturner(returner);
+                    tran.setBorrower(receiver);
+                    transactionServices.insertTransaction(tran);
+
+                    //return message to client
+                    jsonObject.put("message", "confirm book transfer successfully");
+                },
+                (transaction, response) -> { //failed
+                    LOGGER.error("We have a trouble: " + response);
+                    jsonObject.put("message", "confirm failed");
+                }
+        );
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
