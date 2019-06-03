@@ -1,5 +1,0 @@
-END_POINT_NAME,LINK_SELF,METHOD,ITEMS_LINK,IS_COLLECTION,SUB_LINK_KEY
-GET BOOK DETAIL,/bookdetails,GET,/bookdetails/{id},Y,N/A
-CREATE  BOOK DETAIL,/bookdetails,POST,/bookdetails,N,N/A
-GET LIST USER CURRENT BOOK,/users/{id}/current_books,GET,/books/{id},Y,N/A
-GET BOOK REQUEST LIST,/requestsget_list,POST,/books/{id},Y,N/A
