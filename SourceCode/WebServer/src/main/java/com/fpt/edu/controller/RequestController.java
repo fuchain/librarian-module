@@ -81,7 +81,7 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Create a book request", response = String.class)
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> requestBook(@RequestBody String body) throws IOException, EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
+    public ResponseEntity<Request> requestBook(@RequestBody String body) throws IOException, EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
@@ -153,14 +153,11 @@ public class RequestController extends BaseController {
         } else {
             throw new TypeNotSupportedException("Type " + type + " is not supported");
         }
-
         //save request
         requestServices.saveRequest(request);
-
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", "success");
-
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(request, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Returner returns a book", response = String.class)
@@ -192,10 +189,14 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Receiver receives a book", response = String.class)
     @RequestMapping(value = "/receive", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> receiveBook(@RequestParam String pin, @RequestParam Long matchingId) throws EntityNotFoundException, EntityPinMisMatchException, PinExpiredException {
+    public ResponseEntity<String> receiveBook(@RequestParam String pin, @RequestParam Long matchingId) throws EntityNotFoundException, EntityPinMisMatchException, PinExpiredException, EntityAldreayExisted {
         Matching matching = matchingServices.getMatchingById(matchingId);
         if (matching == null) {
             throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
+        }
+
+        if (matching.getStatus() == ERequestStatus.COMPLETED.getValue()) {
+            throw new EntityAldreayExisted("The pin has have sent");
         }
 
         Date now = new Date();

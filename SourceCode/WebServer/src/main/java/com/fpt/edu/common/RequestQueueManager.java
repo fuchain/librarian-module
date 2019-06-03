@@ -1,46 +1,51 @@
 package com.fpt.edu.common;
 
 import com.fpt.edu.entities.Request;
-import com.fpt.edu.services.RequestServices;
-import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
-@Component
 public class RequestQueueManager {
 
-    Map<Long, RequestQueue> requestMap;
+    private Long bookDetailID;
 
-
-    private RequestServices requestServices;
-
-    public RequestQueueManager(RequestServices requestServices) {
-        this.requestServices = requestServices;
-        requestMap = new HashMap<>();
-        List<Request> unProcessRequestList = requestServices.getListPendingRequest();
-        for (int i = 0; i < unProcessRequestList.size(); i++) {
-            Request currentRequest = unProcessRequestList.get(i);
-            long bookDetailId = currentRequest.getBookDetail().getId();
-            // check if map not contain a bookDetail id as a key then add new queue with id is book details ID
-            if (requestMap.get(bookDetailId) == null) {
-                RequestQueue requestQueue = new RequestQueue();
-                requestQueue.setBookDetailID(bookDetailId);
-                if(currentRequest.getType()== ERequestType.BORROWING.getValue() && currentRequest.getStatus()== ERequestStatus.PENDING.getValue()){
-                    requestQueue.getBorrowRequestQueue().add(currentRequest);
-                }else if (currentRequest.getType()== ERequestType.RETURNING.getValue() && currentRequest.getStatus()== ERequestStatus.PENDING.getValue()){
-                    requestQueue.getBorrowRequestQueue().add(currentRequest);
-                }
-
-            }else{
-
-
-            }
-
-
+    private PriorityQueue<Request> borrowRequestQueue;
+    private PriorityQueue<Request> returnRequestQueue;
+    Comparator<Request> createDateComparator = new Comparator<Request>() {
+        @Override
+        public int compare(Request o1, Request o2) {
+            return -1;
         }
+    };
+
+    public RequestQueueManager() {
+        borrowRequestQueue = new PriorityQueue<>(createDateComparator);
+        returnRequestQueue = new PriorityQueue<>(createDateComparator);
+    }
+
+    public Long getBookDetailID() {
+        return bookDetailID;
+    }
+
+    public void setBookDetailID(Long bookDetailID) {
+        this.bookDetailID = bookDetailID;
+    }
 
 
+    public PriorityQueue<Request> getBorrowRequestQueue() {
+        return borrowRequestQueue;
+    }
+
+    public void setBorrowRequestQueue(PriorityQueue<Request> borrowRequestQueue) {
+        this.borrowRequestQueue = borrowRequestQueue;
+    }
+
+    public PriorityQueue<Request> getReturnRequestQueue() {
+        return returnRequestQueue;
+    }
+
+    public void setReturnRequestQueue(PriorityQueue<Request> returnRequestQueue) {
+        this.returnRequestQueue = returnRequestQueue;
     }
 }
