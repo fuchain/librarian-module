@@ -72,7 +72,7 @@ public class AuthenticationController {
             Optional<User> loggedUser = userServices.findUserByEmail(email);
 
             // If email is not in database
-            if (loggedUser.isPresent()) {
+            if (loggedUser.isEmpty()) {
                 return new ResponseEntity<>("User is not in database", HttpStatus.BAD_REQUEST);
             }
 
