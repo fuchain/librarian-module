@@ -1,7 +1,6 @@
 package com.fpt.edu.entities;
 
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,18 +10,17 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="publisher")
+@Table(name = "publisher")
 public class Publisher {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	
-	@Column(name="name")
+
+	@Column(name = "name")
 	private String name;
-	 
-	@OneToMany(mappedBy="publisher")
+
+	@OneToMany(mappedBy = "publisher")
 	private List<BookDetail> bookDetails;
 
 	public Long getId() {
@@ -48,10 +46,4 @@ public class Publisher {
 	public void setBookDetails(List<BookDetail> bookDetails) {
 		this.bookDetails = bookDetails;
 	}
-	
-	
-	
-	
-	
-	
 }

@@ -1,30 +1,30 @@
 package com.fpt.edu.entities;
 
 import java.util.List;
-
 import javax.persistence.*;
 
 @Entity
-@Table(name="tbl_user")
+@Table(name = "tbl_user")
 public class User {
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Column(name="email",unique=true)
+
+	@Column(name = "email", unique = true)
 	private String email;
 
-	@Column(name="password")
+	@Column(name = "password")
 	private String password;
 
-	@Column(name="fullname")
+	@Column(name = "fullname")
 	private String fullName;
-	
-	@ManyToMany(cascade={CascadeType.ALL})
-	@JoinTable(name="user_role",joinColumns={@JoinColumn(name="user_id")},inverseJoinColumns={@JoinColumn(name="role_id")})
+
+	@ManyToMany(cascade = {CascadeType.ALL})
+	@JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
 	private List<Role> roles;
 
-	@OneToMany(cascade=CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<Book> listBooks;
 
 	public List<Book> getListBooks() {

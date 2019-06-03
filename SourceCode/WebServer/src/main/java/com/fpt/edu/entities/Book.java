@@ -3,13 +3,15 @@ package com.fpt.edu.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name="book")
+@Table(name = "book")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Book {
 
@@ -37,8 +39,8 @@ public class Book {
     @Column(name = "asset_id")
     private String assetId;
 
-    @Column(name = "last_tx_id")
-    private String lastTxId;
+    @Column(name = "previous_tx_id")
+    private String previousTxId;
 
     @Column(name = "status")
     private String status = StatusType.IN_USE.value();
@@ -64,17 +66,18 @@ public class Book {
         }
     }
 
-    public Book() {
-        this.asset = new TreeMap<>() ;
-        this.metadata = new TreeMap<>();
-    }
-
     public Map<String, String> getAsset() {
+        if (this.asset == null) {
+            this.asset = new TreeMap<>();
+        }
         this.asset.put("book_id", String.valueOf(this.id));
         return this.asset;
     }
 
     public Map<String, String> getMetadata() {
+        if (this.metadata == null) {
+            this.metadata = new TreeMap<>();
+        }
         this.metadata.put("current_keeper", this.user.getEmail());
         this.metadata.put("status", this.status);
         return this.metadata;
@@ -88,20 +91,12 @@ public class Book {
         this.assetId = assetId;
     }
 
-    public String getLastTxId() {
-        return lastTxId;
+    public String getPreviousTxId() {
+        return previousTxId;
     }
 
-    public void setLastTxId(String lastTxId) {
-        this.lastTxId = lastTxId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setPreviousTxId(String previousTxId) {
+        this.previousTxId = previousTxId;
     }
 
     public User getUser() {
