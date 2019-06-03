@@ -109,7 +109,7 @@ export default {
       routerTransition: themeConfig.routerTransition || "none",
       isNavbarDark: false,
       routeTitle: this.$route.meta.pageTitle,
-      sidebarItems: sidebarItems,
+      sidebarItems: sidebarItems(),
       disableCustomizer: themeConfig.disableCustomizer,
       windowWidth: window.innerWidth // width of windows
     };
