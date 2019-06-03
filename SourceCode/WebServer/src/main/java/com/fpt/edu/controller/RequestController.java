@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping("requests")
@@ -235,20 +236,28 @@ public class RequestController extends BaseController {
             throw new Exception("Receiver has not imported pin yet");
         }
 
-        Book book = matching.getBook();
+        Book book = bookServices.getBookById(matching.getBook().getId());
         Request returnerRequest = matching.getReturnerRequest();
         Request receiverRequest = matching.getBorrowerRequest();
         User returner = returnerRequest.getUser();
         User receiver = receiverRequest.getUser();
         JSONObject jsonObject = new JSONObject();
+        AtomicBoolean success = new AtomicBoolean(false);
+        AtomicBoolean callback = new AtomicBoolean(false);
+
+        String assetId = book.getAssetId();
+        Object asset = book.getAsset();
+
+        Date sendTime = new Date();
 
         //add transaction to bigchainDB
         BigchainTransactionServices services = new BigchainTransactionServices();
         services.doTransfer(
                 book.getLastTxId(),
                 book.getAssetId(), book.getMetadata(),
-                String.valueOf(book.getUser().getId()), String.valueOf(receiver.getId()),
+                String.valueOf(returner.getId()), String.valueOf(receiver.getId()),
                 (transaction, response) -> { //success
+                    callback.set(true);
 
                     String tracsactionId = transaction.getId();
                     book.setAssetId(tracsactionId);
@@ -274,14 +283,30 @@ public class RequestController extends BaseController {
                     transactionServices.insertTransaction(tran);
 
                     //return message to client
-                    jsonObject.put("message", "confirm book transfer successfully");
+                    success.set(true);
                 },
                 (transaction, response) -> { //failed
+                    callback.set(true);
                     LOGGER.error("We have a trouble: " + response);
-                    jsonObject.put("message", "confirm failed");
                 }
         );
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+
+        Date now;
+
+        while (true) {
+            now = new Date();
+            long duration = utils.getDuration(sendTime, now, TimeUnit.MINUTES);
+
+            if (duration > 10 || callback.get() == true) {
+                if (success.get()) {
+                    jsonObject.put("message", "confirm book transfer successfully");
+                    return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+                } else {
+                    jsonObject.put("message", "confirm failed");
+                    return new ResponseEntity<>(jsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
     }
 
     @ApiOperation(value = "Update request status", response = String.class)
