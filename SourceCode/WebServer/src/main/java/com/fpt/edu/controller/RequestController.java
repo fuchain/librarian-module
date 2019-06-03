@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping("requests")
@@ -41,6 +42,8 @@ public class RequestController extends BaseController {
     @Autowired
     private MatchingServices matchingServices;
 
+    @Autowired
+    private TransactionServices transactionServices;
 
 
   /*  @RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
@@ -233,25 +236,77 @@ public class RequestController extends BaseController {
             throw new Exception("Receiver has not imported pin yet");
         }
 
-        //update status of request to "completed"
+        Book book = bookServices.getBookById(matching.getBook().getId());
         Request returnerRequest = matching.getReturnerRequest();
         Request receiverRequest = matching.getBorrowerRequest();
-
-        returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-        receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-
-        requestServices.updateRequest(returnerRequest);
-        requestServices.updateRequest(receiverRequest);
-
-        //transfer book from returner to receiver
-        Book book = matching.getBook();
+        User returner = returnerRequest.getUser();
         User receiver = receiverRequest.getUser();
-        book.setUser(receiver);
-
-        //return message to client
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message", "confirm book transfer");
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        AtomicBoolean success = new AtomicBoolean(false);
+        AtomicBoolean callback = new AtomicBoolean(false);
+
+        String assetId = book.getAssetId();
+        Object asset = book.getAsset();
+
+        Date sendTime = new Date();
+
+        //add transaction to bigchainDB
+        BigchainTransactionServices services = new BigchainTransactionServices();
+        services.doTransfer(
+                book.getPreviousTxId(),
+                book.getAssetId(), book.getMetadata(),
+                String.valueOf(returner.getId()), String.valueOf(receiver.getId()),
+                (transaction, response) -> { //success
+                    callback.set(true);
+
+                    String tracsactionId = transaction.getId();
+                    book.setAssetId(tracsactionId);
+                    book.setPreviousTxId(tracsactionId);
+                    LOGGER.info("Create tx success: " + response);
+
+                    //update status of request to "completed"
+                    returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+                    receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+
+                    requestServices.updateRequest(returnerRequest);
+                    requestServices.updateRequest(receiverRequest);
+
+                    //transfer book from returner to receiver
+                    book.setUser(receiver);
+                    bookServices.updateBook(book);
+
+                    //insert a transaction to DB Postgresql
+                    Transaction tran = new Transaction();
+                    tran.setBook(book);
+                    tran.setReturner(returner);
+                    tran.setBorrower(receiver);
+                    transactionServices.insertTransaction(tran);
+
+                    //return message to client
+                    success.set(true);
+                },
+                (transaction, response) -> { //failed
+                    callback.set(true);
+                    LOGGER.error("We have a trouble: " + response);
+                }
+        );
+
+        Date now;
+
+        while (true) {
+            now = new Date();
+            long duration = utils.getDuration(sendTime, now, TimeUnit.MINUTES);
+
+            if (duration > 10 || callback.get() == true) {
+                if (success.get()) {
+                    jsonObject.put("message", "confirm book transfer successfully");
+                    return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+                } else {
+                    jsonObject.put("message", "confirm failed");
+                    return new ResponseEntity<>(jsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
     }
 
     @ApiOperation(value = "Update request status", response = String.class)
