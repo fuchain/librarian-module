@@ -3,9 +3,9 @@ package com.fpt.edu.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.List;
-
+import java.util.Map;
+import java.util.TreeMap;
 import javax.persistence.*;
 
 @Entity
@@ -65,7 +65,7 @@ public class Book {
     }
 
     public Book() {
-        this.asset = new TreeMap<>();
+        this.asset = new TreeMap<>() ;
         this.metadata = new TreeMap<>();
     }
 

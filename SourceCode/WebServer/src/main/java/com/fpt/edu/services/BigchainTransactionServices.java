@@ -7,7 +7,7 @@ import com.bigchaindb.cryptoconditions.types.Ed25519Sha256Fulfillment;
 import com.bigchaindb.model.*;
 import com.bigchaindb.util.DriverUtils;
 import com.bigchaindb.util.KeyPairUtils;
-import com.example.demo.helpers.KeypairHelper;
+import com.fpt.edu.common.helper.KeypairHelper;
 import com.google.api.client.util.Base64;
 import com.google.gson.JsonObject;
 import net.i2p.crypto.eddsa.EdDSAEngine;
