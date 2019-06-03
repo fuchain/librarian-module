@@ -13,6 +13,9 @@ import com.google.gson.JsonObject;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.Signature;
@@ -98,6 +101,7 @@ class TransactionBuilderFactory {
     private static final int DEFAULT_OUPUT_INDEX = 0;
 
     private Transaction transaction;
+    private Logger logger = LoggerFactory.getLogger(BigchainTransactionServices.class);
 
     /**
      * CREATE transaction with callback handler
@@ -307,10 +311,12 @@ class TransactionBuilderFactory {
             BigchainTransactionServices.TransactionresultHandler faildedCaller
     ) throws Exception {
         Transaction transaction = this.transaction;
+        Logger logger = this.logger;
         GenericCallback callback = new GenericCallback() {
             @Override
             public void transactionMalformed(Response response) {
                 faildedCaller.onTransactionResult(transaction, response);
+                logError(response.message());
             }
 
             @Override
@@ -321,8 +327,19 @@ class TransactionBuilderFactory {
             @Override
             public void otherError(Response response) {
                 faildedCaller.onTransactionResult(transaction, response);
+                logError(response.message());
             }
         };
         return callback;
+    }
+
+    private void logSuccess() {
+        this.logger.info("Transacion submit successful \n" +
+                "Transaction id: " + this.transaction.getId());
+    }
+
+    private void logError(String message) {
+        this.logger.error("Transaction error: " + message + "\n" +
+                "Transaction detail: " + this.transaction);
     }
 }

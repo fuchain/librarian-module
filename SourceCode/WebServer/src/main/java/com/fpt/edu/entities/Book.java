@@ -66,18 +66,17 @@ public class Book {
         }
     }
 
+    public Book() {
+        this.asset = new TreeMap<>();
+        this.metadata = new TreeMap<>();
+    }
+
     public Map<String, String> getAsset() {
-        if (this.asset == null) {
-            this.asset = new TreeMap<>();
-        }
         this.asset.put("book_id", String.valueOf(this.id));
         return this.asset;
     }
 
     public Map<String, String> getMetadata() {
-        if (this.metadata == null) {
-            this.metadata = new TreeMap<>();
-        }
         this.metadata.put("current_keeper", this.user.getEmail());
         this.metadata.put("status", this.status);
         return this.metadata;
@@ -104,7 +103,6 @@ public class Book {
     }
 
     public void setStatus(String status) {
-        this.metadata.put("status", status);
         this.status = status;
     }
 
@@ -113,7 +111,6 @@ public class Book {
     }
 
     public void setUser(User user) {
-        this.metadata.put("current_keeper", user.getEmail());
         this.user = user;
     }
 
