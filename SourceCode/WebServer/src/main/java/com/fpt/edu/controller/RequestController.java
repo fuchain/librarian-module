@@ -83,7 +83,7 @@ public class RequestController extends BaseController {
         return new ResponseEntity<>(requestList, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Create a book request", response = String.class)
+    @ApiOperation(value = "Create a book return request", response = String.class)
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> requestBook(@RequestBody String body) throws  EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
         //get user information

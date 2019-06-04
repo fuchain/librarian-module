@@ -36,8 +36,10 @@ const router = new Router({
         },
         {
           path: "books/return",
+          name: "book-return",
           component: () =>
-            import("@/modules/student/books-return/BooksReturn.vue")
+            import("@/modules/student/books-return/BooksReturn.vue"),
+          props: true
         },
         {
           path: "books/returning",
