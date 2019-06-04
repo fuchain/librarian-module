@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -31,13 +33,15 @@ public class UserController extends BaseController {
     }
 
     @ApiOperation(value = "get a list of current book", response = String.class)
-    @RequestMapping(value = "/{id}/current_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<List<Book>> getCurrentBookOfUser(@PathVariable Long id) throws JsonProcessingException {
+    @RequestMapping(value = "current_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<List<Book>> getCurrentBookOfUser() throws JsonProcessingException {
         try {
-            String requestPattern = httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
-            LOGGER.info("START Controller : " + requestPattern);
-            List<Book> currentBookList = userServices.getCurrentBookListOfUser(id);
-//            JSONObject jsonResult = utils.buildListEntity(currentBookList, httpServletRequest);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = (String) authentication.getPrincipal();
+            User user = userServices.getUserByEmail(email);
+
+            List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
+
             return new ResponseEntity<>(currentBookList, HttpStatus.OK);
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
