@@ -1,11 +1,11 @@
 <template>
   <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">Sách đang yêu cầu</h2>
-    <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
+    <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
       <div
         class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
-        v-for="item in wishListitems"
-        :key="item.objectID"
+        v-for="item in listBooks"
+        :key="item.id"
       >
         <item-grid-view :item="item">
           <template slot="action-buttons">
@@ -105,34 +105,12 @@ export default {
   },
   data() {
     return {
+      listBooks: [],
       confirmPopup: false,
       rejectPopup: false,
       pin: "",
       reason: ""
     };
-  },
-  computed: {
-    wishListitems() {
-      return [
-        {
-          objectID: 7,
-          name: "Japanese Elementary 3",
-          description:
-            "Japanese Elementary 3 for Japanese Elementary 3 in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          user: "SE62533",
-          code: "JPD131"
-        },
-        {
-          objectID: 8,
-          name: "Start Your Business",
-          description:
-            "Start Your Business for Start Your Business in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          code: "SYB301"
-        }
-      ];
-    }
   },
   methods: {
     triggerCall(check) {
@@ -181,6 +159,31 @@ export default {
       this.rejectPopup = false;
       this.reason = "";
     }
+  },
+  mounted() {
+    this.$vs.loading();
+
+    this.$http
+      .get(`${this.$http.baseUrl}/requests/get_list?type=1`)
+      .then(response => {
+        const data = response.data;
+
+        const books = data.map(e => {
+          return {
+            id: e.bookDetail.id,
+            name: e.bookDetail.name,
+            description: `Book ${
+              e.bookDetail.name
+            } for Software Engineering learning at FPT University`,
+            image: "https://i.imgur.com/2j6B1n5.jpg",
+            code: e.bookDetail.name.substring(0, 3).toUpperCase() + "101",
+            status: e.status
+          };
+        });
+
+        this.listBooks = [].concat(books);
+        this.$vs.loading.close();
+      });
   }
 };
 </script>
