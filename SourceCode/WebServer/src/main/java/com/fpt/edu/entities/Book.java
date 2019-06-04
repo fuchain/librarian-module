@@ -80,6 +80,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
         }
         this.metadata.put("current_keeper", this.user.getEmail());
         this.metadata.put("status", this.status);
+        this.metadata.put("transaction_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
         return this.metadata;
     }
 
