@@ -236,7 +236,7 @@ public class RequestController extends BaseController {
         //add transaction to bigchainDB
         BigchainTransactionServices services = new BigchainTransactionServices();
         services.doTransfer(
-                book.getPreviousTxId(),
+                book.getLastTxId(),
                 book.getAssetId(), book.getMetadata(),
                 String.valueOf(returner.getId()), String.valueOf(receiver.getId()),
                 (transaction, response) -> { //success
@@ -246,7 +246,8 @@ public class RequestController extends BaseController {
                     callback.set(true);
 
                     String tracsactionId = transaction.getId();
-                    book.setPreviousTxId(tracsactionId);
+                    book.setAssetId(tracsactionId);
+                    book.setLastTxId(tracsactionId);
                     LOGGER.info("Create tx success: " + response);
 
                     //update status of request to "completed"

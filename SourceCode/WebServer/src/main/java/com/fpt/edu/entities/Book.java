@@ -4,6 +4,7 @@ package com.fpt.edu.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "book")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Book {
+public class Book extends AbstractTimestampEntity implements Serializable {
 
     @Id
     private Long id;
@@ -35,11 +36,11 @@ public class Book {
     @JsonIgnore
     private User user;
 
-    @Column(name = "asset_id")
+    @Column(name = "asset_id", updatable = false)
     private String assetId;
 
-    @Column(name = "previous_tx_id")
-    private String previousTxId;
+    @Column(name = "last_tx_id")
+    private String lastTxId;
 
     @Column(name = "status")
     private String status = StatusType.IN_USE.value();
@@ -79,6 +80,7 @@ public class Book {
         }
         this.metadata.put("current_keeper", this.user.getEmail());
         this.metadata.put("status", this.status);
+        this.metadata.put("transaction_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
         return this.metadata;
     }
 
@@ -90,12 +92,12 @@ public class Book {
         this.assetId = assetId;
     }
 
-    public String getPreviousTxId() {
-        return previousTxId;
+    public String getLastTxId() {
+        return lastTxId;
     }
 
-    public void setPreviousTxId(String previousTxId) {
-        this.previousTxId = previousTxId;
+    public void setLastTxId(String lastTxId) {
+        this.lastTxId = lastTxId;
     }
 
     public User getUser() {

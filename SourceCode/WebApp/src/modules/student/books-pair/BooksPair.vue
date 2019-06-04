@@ -5,7 +5,7 @@
         <vs-input size="large" class="w-full" placeholder="Mã PIN xác nhận" v-model="pin"/>
       </div>
       <div>
-        <vs-button class="w-full" @click="confirm" icon="done">Đã nhận sách</vs-button>
+        <vs-button class="w-full" @click="confirm" icon="done">Xác nhận đã nhận sách</vs-button>
       </div>
     </vx-card>
   </div>

@@ -1,11 +1,12 @@
 package com.fpt.edu.entities;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "tbl_user")
-public class User {
+public class User extends AbstractTimestampEntity implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +20,9 @@ public class User {
 
 	@Column(name = "fullname")
 	private String fullName;
+
+	@Column(name = "phone")
+	private String phone;
 
 	@ManyToMany(cascade = {CascadeType.ALL})
 	@JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
@@ -65,6 +69,14 @@ public class User {
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public List<Role> getRoles() {

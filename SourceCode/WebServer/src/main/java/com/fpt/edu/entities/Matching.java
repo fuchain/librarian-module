@@ -3,10 +3,11 @@ package com.fpt.edu.entities;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-public class Matching {
+public class Matching extends AbstractTimestampEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,7 @@ public class Matching {
     private String pin;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = true)
+    @Column(name = "matching_start_date", nullable = true)
     private Date matchingStartDate;
 
     @Column(name = "status")
