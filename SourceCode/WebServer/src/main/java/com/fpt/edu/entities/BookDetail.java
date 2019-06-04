@@ -3,13 +3,14 @@ package com.fpt.edu.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "book_detail")
-public class BookDetail {
+public class BookDetail extends AbstractTimestampEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,14 +29,12 @@ public class BookDetail {
     @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private List<Category> categories;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne
     @JoinColumn(name = "publisher_id")
     @JsonIgnore
     private Publisher publisher;
 
-    @CreationTimestamp
-    @Column(name = "created_date", nullable = true)
-    private Date bookStartDate;
+
 
     @OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
     @JsonIgnore
@@ -71,14 +70,6 @@ public class BookDetail {
 
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
-    }
-
-    public Date getBookStartDate() {
-        return bookStartDate;
-    }
-
-    public void setBookStartDate(Date bookStartDate) {
-        this.bookStartDate = bookStartDate;
     }
 
     public String getName() {

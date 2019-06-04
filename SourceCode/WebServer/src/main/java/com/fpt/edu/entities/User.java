@@ -1,11 +1,12 @@
 package com.fpt.edu.entities;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "tbl_user")
-public class User {
+public class User extends AbstractTimestampEntity implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
