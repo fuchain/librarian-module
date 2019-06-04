@@ -163,7 +163,7 @@ public class SimulateDataController extends BaseController {
         bookDetail.setName("XML");
         bookDetail.setCategories(categoryList);
         bookDetail.setAuthors(authorList);
-        bookDetail.setBookStartDate(new Date());
+        bookDetail.setCreateDate(new Date());
         bookDetail.setPublisher(publisher);
         bookDetailRepository.save(bookDetail);
 
