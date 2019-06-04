@@ -40,7 +40,6 @@
   </vx-card>
 </template>
 
-
 <script>
 export default {
   data() {
