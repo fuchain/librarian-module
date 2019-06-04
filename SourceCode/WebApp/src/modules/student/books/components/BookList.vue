@@ -1,5 +1,5 @@
 <template>
-  <div id="ecommerce-wishlist-demo">
+  <div id="ecommerce-wishlist-demo" v-if="isMounted">
     <h2 class="mb-6">Sách đang giữ</h2>
     <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
       <div
@@ -46,6 +46,7 @@ export default {
   },
   data() {
     return {
+      isMounted: false,
       listBooks: []
     };
   },
@@ -72,6 +73,7 @@ export default {
 
         this.listBooks = [].concat(books);
         this.$vs.loading.close();
+        this.isMounted = true;
       });
   },
   methods: {
