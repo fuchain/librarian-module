@@ -21,6 +21,9 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	@Column(name = "fullname")
 	private String fullName;
 
+	@Column(name = "phone")
+	private String phone;
+
 	@ManyToMany(cascade = {CascadeType.ALL})
 	@JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
 	private List<Role> roles;
@@ -66,6 +69,14 @@ public class User extends AbstractTimestampEntity implements Serializable {
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public List<Role> getRoles() {
