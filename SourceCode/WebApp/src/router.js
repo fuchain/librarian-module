@@ -27,6 +27,10 @@ const router = new Router({
           component: () => import("@/views/Home.vue")
         },
         {
+          path: "profile",
+          component: () => import("@/modules/profile/Profile.vue")
+        },
+        {
           path: "books",
           component: () => import("@/modules/student/books/Books.vue")
         },
