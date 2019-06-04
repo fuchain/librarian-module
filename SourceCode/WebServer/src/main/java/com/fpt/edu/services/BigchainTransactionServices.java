@@ -322,6 +322,7 @@ class TransactionBuilderFactory {
             @Override
             public void pushedSuccessfully(Response response) {
                 successCaller.onTransactionResult(transaction, response);
+                logSuccess();
             }
 
             @Override
@@ -334,12 +335,12 @@ class TransactionBuilderFactory {
     }
 
     private void logSuccess() {
-        this.logger.info("Transacion submit successful \n" +
+        this.logger.info("Transaction submit successfully \n" +
                 "Transaction id: " + this.transaction.getId());
     }
 
     private void logError(String message) {
         this.logger.error("Transaction error: " + message + "\n" +
-                "Transaction detail: " + this.transaction);
+                "Transaction details: " + this.transaction);
     }
 }
