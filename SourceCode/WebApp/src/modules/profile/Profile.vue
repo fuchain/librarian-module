@@ -24,6 +24,14 @@
         <vs-input class="w-full" v-model="phone"/>
       </div>
     </div>
+    <div class="vx-row mb-6">
+      <div class="vx-col sm:w-1/3 w-full">
+        <span>Tài khoản Facebook</span>
+      </div>
+      <div class="vx-col sm:w-2/3 w-full">
+        <vs-input class="w-full" v-model="facebook"/>
+      </div>
+    </div>
     <div class="vx-row">
       <div class="vx-col sm:w-2/3 w-full ml-auto">
         <vs-button class="mr-3 mb-2" @click="submit">Cập nhật thông tin</vs-button>
@@ -39,7 +47,8 @@ export default {
     return {
       fullname: "Huỳnh Minh Tú",
       email: "tuhmse62531@fpt.edu.vn",
-      phone: "0796870446"
+      phone: "0796870446",
+      facebook: "https://wwww.facebook.com/mr.huynhminhtu"
     };
   },
   methods: {
