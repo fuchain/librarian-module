@@ -56,6 +56,7 @@
           :disabled="pin.trim().length !== 6"
         >Đồng ý nhận sách</vs-button>
       </div>
+      <vs-divider>Hoặc</vs-divider>
       <div class="mt-2">
         <vs-button
           color="danger"
