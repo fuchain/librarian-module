@@ -1,5 +1,5 @@
 <template>
-  <div id="ecommerce-wishlist-demo">
+  <div id="ecommerce-wishlist-demo" v-if="isMounted">
     <h2 class="mb-6">Sách đang trả</h2>
     <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
       <div
@@ -42,8 +42,8 @@
       </div>
     </div>
 
-    <vx-card title="Bạn đang không giữ sách nào." v-else>
-      <vs-button @click="$router.push('/books/request')">Mượn sách</vs-button>
+    <vx-card title="Bạn đang không trả sách nào." v-else>
+      <vs-button @click="$router.push('/books')">Trả sách</vs-button>
     </vx-card>
 
     <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
@@ -71,6 +71,7 @@ export default {
   },
   data() {
     return {
+      isMounted: false,
       listBooks: [],
       popupActive: false,
       randomPIN: 0,
@@ -165,6 +166,7 @@ export default {
 
         this.listBooks = [].concat(books);
         this.$vs.loading.close();
+        this.isMounted = true;
       });
   }
 };
