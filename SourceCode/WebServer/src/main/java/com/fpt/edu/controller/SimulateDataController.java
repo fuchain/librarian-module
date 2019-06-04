@@ -140,6 +140,7 @@ public class SimulateDataController extends BaseController {
                             }
                         });
                 count++;
+                Thread.sleep(500);
             }
         }
         return "Init simulate data completed!";
@@ -175,6 +176,7 @@ public class SimulateDataController extends BaseController {
                         },
                         (transaction, response) -> {}
                 );
+                Thread.sleep(500);
             }
             return "Give book completed";
         } else {
