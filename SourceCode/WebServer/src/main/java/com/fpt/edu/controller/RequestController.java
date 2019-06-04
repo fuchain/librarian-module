@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("requests")
@@ -244,11 +245,15 @@ public class RequestController extends BaseController {
         JSONObject jsonObject = new JSONObject();
         AtomicBoolean success = new AtomicBoolean(false);
         AtomicBoolean callback = new AtomicBoolean(false);
+        AtomicReference<ResponseEntity> responseEntity = null;
 
         String assetId = book.getAssetId();
         Object asset = book.getAsset();
 
         Date sendTime = new Date();
+
+        //update current_keeper
+        book.setUser(receiver);
 
         //add transaction to bigchainDB
         BigchainTransactionServices services = new BigchainTransactionServices();
@@ -257,10 +262,14 @@ public class RequestController extends BaseController {
                 book.getAssetId(), book.getMetadata(),
                 String.valueOf(returner.getId()), String.valueOf(receiver.getId()),
                 (transaction, response) -> { //success
+
+                    //return message to client
+                    success.set(true);
+
                     callback.set(true);
 
                     String tracsactionId = transaction.getId();
-                    book.setAssetId(tracsactionId);
+//                    book.setAssetId(tracsactionId);
                     book.setPreviousTxId(tracsactionId);
                     LOGGER.info("Create tx success: " + response);
 
@@ -272,7 +281,6 @@ public class RequestController extends BaseController {
                     requestServices.updateRequest(receiverRequest);
 
                     //transfer book from returner to receiver
-                    book.setUser(receiver);
                     bookServices.updateBook(book);
 
                     //insert a transaction to DB Postgresql
@@ -282,8 +290,6 @@ public class RequestController extends BaseController {
                     tran.setBorrower(receiver);
                     transactionServices.insertTransaction(tran);
 
-                    //return message to client
-                    success.set(true);
                 },
                 (transaction, response) -> { //failed
                     callback.set(true);
@@ -295,16 +301,11 @@ public class RequestController extends BaseController {
 
         while (true) {
             now = new Date();
-            long duration = utils.getDuration(sendTime, now, TimeUnit.MINUTES);
+            long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-            if (duration > 10 || callback.get() == true) {
-                if (success.get()) {
-                    jsonObject.put("message", "confirm book transfer successfully");
-                    return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
-                } else {
-                    jsonObject.put("message", "confirm failed");
-                    return new ResponseEntity<>(jsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+            if (duration > 15 || callback.get() == true) {
+                jsonObject.put("message", "confirm book transfer successfully");
+                return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
             }
         }
     }
