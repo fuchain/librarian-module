@@ -1,11 +1,11 @@
 <template>
-  <div id="ecommerce-wishlist-demo">
+  <div id="ecommerce-wishlist-demo" v-if="isMounted">
     <h2 class="mb-6">Sách đang yêu cầu</h2>
-    <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
+    <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
       <div
         class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
-        v-for="item in wishListitems"
-        :key="item.objectID"
+        v-for="item in listBooks"
+        :key="item.id"
       >
         <item-grid-view :item="item">
           <template slot="action-buttons">
@@ -16,7 +16,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2" @click="beginConfirm">ĐÃ NHẬN SÁCH</span>
+                <span class="text-sm font-semibold ml-2" @click="beginConfirm">XÁC NHẬN</span>
               </div>
 
               <div
@@ -40,12 +40,57 @@
       <vs-button @click="$router.push('/books/request')">Yêu cầu mượn sách</vs-button>
     </vx-card>
 
-    <vs-popup title="Xác nhận đã nhận sách" :active.sync="popupActive">
+    <vs-popup title="Xác nhận" :active.sync="confirmPopup">
       <div class="mb-4">
-        <vs-input size="large" class="w-full" placeholder="Xác nhận mã PIN" v-model="pin"/>
+        <vs-input
+          size="large"
+          class="w-full"
+          placeholder="Xác nhận mã PIN gồm 6 chữ số"
+          v-model="pin"
+        />
       </div>
       <div>
-        <vs-button class="w-full" @click="validateConfirm">Đã nhận sách</vs-button>
+        <vs-button
+          class="w-full"
+          @click="validateConfirm"
+          :disabled="pin.trim().length !== 6"
+        >Đồng ý nhận sách</vs-button>
+      </div>
+      <vs-divider>Hoặc</vs-divider>
+      <div class="mt-2">
+        <vs-button
+          color="danger"
+          class="w-full"
+          @click="doReject"
+          :disabled="pin.trim().length > 0"
+        >Từ chối nhận sách</vs-button>
+      </div>
+    </vs-popup>
+
+    <vs-popup title="Từ chối nhận sách" :active.sync="rejectPopup">
+      <p>
+        Vui lòng nhập lí do từ chối nhận sách của
+        <strong>PhongDVSE12345</strong> và xác nhận từ chối nhận sách:
+      </p>
+      <div class="mt-2">
+        <vs-textarea label="Lí do từ chối nhận sách" v-model="reason"></vs-textarea>
+      </div>
+      <div class="mt-2">
+        <vs-upload
+          action="https://jsonplaceholder.typicode.com/posts/"
+          @on-success="successUpload"
+          text="Up ảnh bằng chứng"
+          automatic="true"
+          limit="2"
+        />
+      </div>
+      <div class="mt-2">
+        <vs-button
+          color="danger"
+          class="w-full"
+          @click="confirmReject"
+          :disabled="!reason.trim()"
+        >Từ chối nhận sách</vs-button>
       </div>
     </vs-popup>
   </div>
@@ -60,32 +105,13 @@ export default {
   },
   data() {
     return {
-      popupActive: false,
-      pin: ""
+      isMounted: false,
+      listBooks: [],
+      confirmPopup: false,
+      rejectPopup: false,
+      pin: "",
+      reason: ""
     };
-  },
-  computed: {
-    wishListitems() {
-      return [
-        {
-          objectID: 7,
-          name: "Japanese Elementary 3",
-          description:
-            "Japanese Elementary 3 for Japanese Elementary 3 in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          user: "SE62533",
-          code: "JPD131"
-        },
-        {
-          objectID: 8,
-          name: "Start Your Business",
-          description:
-            "Start Your Business for Start Your Business in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          code: "SYB301"
-        }
-      ];
-    }
   },
   methods: {
     triggerCall(check) {
@@ -105,7 +131,7 @@ export default {
       });
     },
     async beginConfirm() {
-      this.popupActive = true;
+      this.confirmPopup = true;
     },
     async validateConfirm() {
       await this.fakeLoad();
@@ -116,7 +142,50 @@ export default {
         color: "warning",
         position: "top-center"
       });
+    },
+    doReject() {
+      this.confirmPopup = false;
+      this.rejectPopup = true;
+    },
+    async confirmReject() {
+      await this.fakeLoad();
+
+      this.$vs.notify({
+        title: "Thành công",
+        text: "Từ chối nhận sách thành công",
+        color: "primary",
+        position: "top-center"
+      });
+
+      this.rejectPopup = false;
+      this.reason = "";
     }
+  },
+  mounted() {
+    this.$vs.loading();
+
+    this.$http
+      .get(`${this.$http.baseUrl}/requests/get_list?type=1`)
+      .then(response => {
+        const data = response.data;
+
+        const books = data.map(e => {
+          return {
+            id: e.bookDetail.id,
+            name: e.bookDetail.name,
+            description: `Book ${
+              e.bookDetail.name
+            } for Software Engineering learning at FPT University`,
+            image: "https://i.imgur.com/2j6B1n5.jpg",
+            code: e.bookDetail.name.substring(0, 3).toUpperCase() + "101",
+            status: e.status
+          };
+        });
+
+        this.listBooks = [].concat(books);
+        this.$vs.loading.close();
+        this.isMounted = true;
+      });
   }
 };
 </script>

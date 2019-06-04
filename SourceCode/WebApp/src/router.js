@@ -27,13 +27,19 @@ const router = new Router({
           component: () => import("@/views/Home.vue")
         },
         {
+          path: "profile",
+          component: () => import("@/modules/profile/Profile.vue")
+        },
+        {
           path: "books",
           component: () => import("@/modules/student/books/Books.vue")
         },
         {
           path: "books/return",
+          name: "book-return",
           component: () =>
-            import("@/modules/student/books-return/BooksReturn.vue")
+            import("@/modules/student/books-return/BooksReturn.vue"),
+          props: true
         },
         {
           path: "books/returning",

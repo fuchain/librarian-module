@@ -3,23 +3,31 @@ package com.fpt.edu.controller;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repository.*;
+import com.fpt.edu.services.BigchainTransactionServices;
+import com.fpt.edu.services.BookDetailsServices;
+import com.fpt.edu.services.UserServices;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import javax.transaction.Transactional;
+import java.util.*;
 
 @RestController
 @RequestMapping("simulate_datas")
-public class SimulateDataController {
+public class SimulateDataController extends BaseController {
+
+    Logger logger = LoggerFactory.getLogger(SimulateDataController.class);
 
     @Autowired
-    AuthorRepository authorRepository ;
+    AuthorRepository authorRepository;
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
@@ -28,10 +36,26 @@ public class SimulateDataController {
     BookDetailRepository bookDetailRepository;
     @Autowired
     BookRepository bookRepository;
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    private UserServices userServices;
+    @Autowired
+    private BookDetailsServices bookDetailsServices;
 
     @RequestMapping(value = "/init", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @Transactional
     public String addSimulateBookData() throws Exception {
+        Iterable<Book> iterable = bookRepository.findAll();
+        if (!((Collection) iterable).isEmpty()) {
+            return "Book is already exist!!!";
+        }
+
         Random random = new Random();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        User librarian = userServices.getUserByEmail(email);
 
         // Init data for  category
         List<Category> categories = new ArrayList<>();
@@ -66,10 +90,10 @@ public class SimulateDataController {
         // Init data for book detail
         List<BookDetail> bookDetails = new ArrayList<>();
         String[] bookDetailNames = {"XML", "C Sharp", "JAVA", "JAVASCRIPT", "SPRING", "BigchainDB", "Data Structure", "Algorithm", "Network", "Machine Learning"};
+        int count = 1;
         for (String bookDetailName : bookDetailNames) {
             BookDetail bookDetail = new BookDetail();
             bookDetail.setName(bookDetailName);
-            bookDetail.setBookStartDate((Timestamp) new Date());
 
             // Map author to book detail
             List<Author> authorList = new ArrayList<>();
@@ -84,17 +108,79 @@ public class SimulateDataController {
             // Map publiser to book detail
             bookDetail.setPublisher(publishers.get(random.nextInt(publishers.size())));
 
+            bookDetailRepository.save(bookDetail);
+
             // Init 10 book instance
-            List<Book> books = new ArrayList<>();
+            List<Book> bookList = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
                 Book book = new Book();
+                book.setId(Long.valueOf(count));
                 book.setBookDetail(bookDetail);
-                bookRepository.save(book);
-                books.add(book);
+                book.setUser(librarian);
+
+                BigchainTransactionServices services = new BigchainTransactionServices();
+                services.doCreate(
+                        book.getAsset(), book.getMetadata(),
+                        String.valueOf(book.getUser().getEmail()),
+                        (transaction, response) -> {
+                            String trasactionId = transaction.getId();
+                            book.setAssetId(trasactionId);
+                            book.setLastTxId(trasactionId);
+                            if (!book.getAssetId().isEmpty()) {
+                                bookList.add(book);
+                                bookDetail.setBooks(bookList);
+                            }
+                        }, (transaction, response) -> {
+                            String trasactionId = transaction.getId();
+                            book.setAssetId(trasactionId);
+                            book.setLastTxId(trasactionId);
+                            if (!book.getAssetId().isEmpty()) {
+                                bookList.add(book);
+                                bookDetail.setBooks(bookList);
+                            }
+                        });
+                count++;
+                Thread.sleep(500);
             }
-            bookDetail.setBooks(books);
-            bookDetailRepository.save(bookDetail);
         }
         return "Init simulate data completed!";
+    }
+
+    @RequestMapping(value = "/give_book", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    public String giveBooksToReader(@RequestBody String body) throws Exception {
+        Random random = new Random();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        User librarian = userServices.getUserByEmail(email);
+
+        JSONObject jsonBody = new JSONObject(body);
+        User receiver = userServices.getUserByEmail(jsonBody.getString("email"));
+        int bookNumber = Integer.parseInt(jsonBody.getString("book_number"));
+
+        BigchainTransactionServices services = new BigchainTransactionServices();
+        List<Book> bookList = (List<Book>) bookRepository.findBookListByUserId(librarian.getId());
+
+
+        if (bookList.size() >= bookNumber) {
+            for (int i = 0; i < bookNumber; i++) {
+                Book book = bookList.get(random.nextInt(bookList.size()));
+                book.setUser(receiver);
+                services.doTransfer(
+                        book.getLastTxId(),
+                        book.getAssetId(), book.getMetadata(),
+                        librarian.getEmail(), receiver.getEmail(),
+                        (transaction, response) -> {
+                            book.setLastTxId(transaction.getId());
+                            bookRepository.save(book);
+                        },
+                        (transaction, response) -> {}
+                );
+                Thread.sleep(500);
+            }
+            return "Give book completed";
+        } else {
+            return "Number of book is out of range";
+        }
     }
 }

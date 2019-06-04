@@ -1,30 +1,37 @@
 package com.fpt.edu.entities;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
+import java.util.List;
 import javax.persistence.*;
 
 @Entity
-@Table(name="tbl_user")
-public class User {
+@Table(name = "tbl_user")
+public class User extends AbstractTimestampEntity implements Serializable {
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Column(name="email",unique=true)
+
+	@Column(name = "email", unique = true)
 	private String email;
 
-	@Column(name="password")
+	@Column(name = "password")
 	private String password;
 
-	@Column(name="fullname")
+	@Column(name = "fullname")
 	private String fullName;
-	
-	@ManyToMany(cascade={CascadeType.ALL})
-	@JoinTable(name="user_role",joinColumns={@JoinColumn(name="user_id")},inverseJoinColumns={@JoinColumn(name="role_id")})
+
+	@Column(name = "phone")
+	private String phone;
+
+	@ManyToMany(cascade = {CascadeType.ALL})
+	@JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
+	@JsonIgnore
 	private List<Role> roles;
 
-	@OneToMany(cascade=CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
 	private List<Book> listBooks;
 
 	public List<Book> getListBooks() {
@@ -65,6 +72,14 @@ public class User {
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public List<Role> getRoles() {

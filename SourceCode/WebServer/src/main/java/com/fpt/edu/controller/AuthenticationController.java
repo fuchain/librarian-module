@@ -40,6 +40,7 @@ public class AuthenticationController {
         responseJSON.put("id", user.getId());
         responseJSON.put("email", user.getEmail());
         responseJSON.put("fullname", user.getFullName());
+        responseJSON.put("phone", user.getPhone());
 
         return ResponseEntity.ok().body(responseJSON.toString());
     }
@@ -72,7 +73,7 @@ public class AuthenticationController {
             Optional<User> loggedUser = userServices.findUserByEmail(email);
 
             // If email is not in database
-            if (loggedUser.isPresent()) {
+            if (loggedUser.isEmpty()) {
                 return new ResponseEntity<>("User is not in database", HttpStatus.BAD_REQUEST);
             }
 
@@ -91,6 +92,7 @@ public class AuthenticationController {
             responseObj.put("token", responseToken);
             responseObj.put("email", email);
             responseObj.put("fullname", loggedUser.get().getFullName());
+            responseObj.put("phone", loggedUser.get().getPhone());
             responseObj.put("expire", expireDateUnixTime);
 
             return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);

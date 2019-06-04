@@ -1,4 +1,40 @@
-export default [
+import auth from "@auth";
+
+export default function() {
+  if (auth.isAdmin()) {
+    return adminMenu;
+  }
+  return userMenu;
+}
+
+const adminMenu = [
+  {
+    url: "/",
+    name: "Trang chính",
+    slug: "home",
+    icon: "HomeIcon"
+  },
+  {
+    url: "/book-search",
+    name: "Tình trạng sách",
+    slug: "book-search",
+    icon: "BookIcon"
+  },
+  {
+    url: "/book-return-request",
+    name: "Thu hồi sách",
+    slug: "book-return-request",
+    icon: "ArchiveIcon"
+  },
+  {
+    url: "/users-manage",
+    name: "Quản lí tài khoản",
+    slug: "users-manage",
+    icon: "UsersIcon"
+  }
+];
+
+const userMenu = [
   {
     url: "/",
     name: "Trang chính",
@@ -13,7 +49,7 @@ export default [
     submenu: [
       {
         url: "/books",
-        name: "Sách đang mượn",
+        name: "Sách đang giữ",
         slug: "books"
       },
       {

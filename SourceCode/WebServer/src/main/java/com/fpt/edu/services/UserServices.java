@@ -45,6 +45,19 @@ public class UserServices {
 	    return userRepository.findByEmail(email);
     }
 
+    public User getUserByEmail(String email) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByEmail(email.toLowerCase());
+        User user = null;
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+        }
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found!");
+        }
+
+        return user;
+    }
+
     @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {
         List<Book> result = (List<Book>) bookRepository.findBookListByUserId(userId);
@@ -53,21 +66,5 @@ public class UserServices {
             bookDetail.getAuthors().size();
         }
         return result;
-    }
-
-    public User getUserByEmail(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-
-        User user = null;
-
-        if (optionalUser.isPresent()) {
-            user = optionalUser.get();
-        }
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found!");
-        }
-
-        return user;
     }
 }

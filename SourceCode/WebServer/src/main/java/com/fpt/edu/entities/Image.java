@@ -8,45 +8,36 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Entity
-@Table(name="image_url")
-public class Image {
+@Table(name = "image_url")
+public class Image  extends AbstractTimestampEntity implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	
-	@Column(name="url")
+
+	@Column(name = "url")
 	private String url;
 
-	
 	@ManyToOne
-	@JoinColumn(name="image_id")
+	@JoinColumn(name = "image_id")
 	Transaction transaction;
-	
 
 	public Long getId() {
 		return id;
 	}
 
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 
 	public String getUrl() {
 		return url;
 	}
 
-
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	
-	
-	
-	
 }
