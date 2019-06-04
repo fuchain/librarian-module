@@ -4,9 +4,11 @@ package com.fpt.edu.services;
 import com.fpt.edu.entities.Request;
 import com.fpt.edu.repository.RequestRepository;
 import org.apache.commons.collections.IteratorUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -42,8 +44,9 @@ public class RequestServices {
         int row = requestRepository.checkExistedRequest(type, userId, bookDetailId, bookId);
         return row > 0;
     }
-
+    @Transactional
     public List<Request> findByUserIdAndType(Long userId, int type) {
+
         return (List<Request>) requestRepository.findByUserIdAndType(userId, type);
     }
 

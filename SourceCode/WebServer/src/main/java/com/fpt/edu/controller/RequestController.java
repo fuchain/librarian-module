@@ -9,6 +9,8 @@ import com.fpt.edu.entities.*;
 import com.fpt.edu.exception.*;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.Hibernate;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,15 +74,14 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Get a list of book request", response = String.class)
     @RequestMapping(value = "/get_list", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    @Transactional
     public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type) throws JsonProcessingException {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
-
+        Hibernate.initialize(user.getListBooks());
         List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type);
-//        JSONObject jsonObject = utils.buildListEntity(requestList, httpServletRequest);
-
         return new ResponseEntity<>(requestList, HttpStatus.OK);
     }
 
