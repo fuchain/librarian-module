@@ -40,6 +40,7 @@ public class AuthenticationController {
         responseJSON.put("id", user.getId());
         responseJSON.put("email", user.getEmail());
         responseJSON.put("fullname", user.getFullName());
+        responseJSON.put("phone", user.getPhone());
 
         return ResponseEntity.ok().body(responseJSON.toString());
     }
