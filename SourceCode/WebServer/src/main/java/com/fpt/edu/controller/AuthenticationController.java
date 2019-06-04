@@ -92,6 +92,7 @@ public class AuthenticationController {
             responseObj.put("token", responseToken);
             responseObj.put("email", email);
             responseObj.put("fullname", loggedUser.get().getFullName());
+            responseObj.put("phone", loggedUser.get().getPhone());
             responseObj.put("expire", expireDateUnixTime);
 
             return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);
