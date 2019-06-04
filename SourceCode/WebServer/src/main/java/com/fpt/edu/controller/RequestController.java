@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -85,6 +86,7 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Create a book request", response = String.class)
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @Transactional
     public ResponseEntity<String> requestBook(@RequestBody String body) throws  EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -128,6 +130,9 @@ public class RequestController extends BaseController {
             //get book object
             Book book = bookServices.getBookById(bookId);
 
+            BookDetail bookDetail= book.getBookDetail();
+
+
             //check whether user is keeping this book
             boolean keeping = false;
             List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
@@ -154,6 +159,7 @@ public class RequestController extends BaseController {
             request.setType(type);
             request.setUser(user);
             request.setBook(book);
+            request.setBookDetail(bookDetail);
         } else {
             throw new TypeNotSupportedException("Type " + type + " is not supported");
         }
