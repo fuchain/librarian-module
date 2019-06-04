@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -80,6 +81,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
         }
         this.metadata.put("current_keeper", this.user.getEmail());
         this.metadata.put("status", this.status);
+        this.metadata.put("transaction_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
         return this.metadata;
     }
 

@@ -116,12 +116,10 @@ public class SimulateDataController extends BaseController {
                 book.setBookDetail(bookDetail);
                 book.setUser(librarian);
 
-//                bookList.add(book);
-
                 BigchainTransactionServices services = new BigchainTransactionServices();
                 services.doCreate(
                         book.getAsset(), book.getMetadata(),
-                        String.valueOf(book.getUser().getId()),
+                        String.valueOf(book.getUser().getEmail()),
                         (transaction, response) -> {
                             String trasactionId = transaction.getId();
                             book.setAssetId(trasactionId);
@@ -144,57 +142,4 @@ public class SimulateDataController extends BaseController {
         }
         return "Init simulate data completed!";
     }
-
-//    public void addBookForUser() throws Exception {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String email = (String) authentication.getPrincipal();
-//        User user = userServices.getUserByEmail(email);
-//
-//        List<Category> categoryList = new ArrayList<>();
-//        Category category = new Category();
-//        category.setName("Computer Scienece");
-//        categoryList.add(category);
-//        categoryRepository.save(category);
-//
-//        List<Author> authorList = new ArrayList<>();
-//        Author author = new Author();
-//        author.setName("Adam Licol");
-//        authorList.add(author);
-//        authorRepository.save(author);
-//
-//        Publisher publisher = new Publisher();
-//        publisher.setName("Springer Nature");
-//        publisherRepository.save(publisher);
-//
-//        BookDetail bookDetail = new BookDetail();
-//        bookDetail.setName("XML");
-//        bookDetail.setCategories(categoryList);
-//        bookDetail.setAuthors(authorList);
-//        bookDetail.setCreateDate(new Date());
-//        bookDetail.setPublisher(publisher);
-//        bookDetailRepository.save(bookDetail);
-//
-//        List<Book> bookList = new ArrayList<>();
-//        Book book = new Book();
-//        book.setId((long) 106);
-//        book.setBookDetail(bookDetail);
-//        book.setUser(user);
-//
-//        BigchainTransactionServices services = new BigchainTransactionServices();
-//        services.doCreate(
-//                book.getAsset(), book.getMetadata(),
-//                String.valueOf(book.getUser().getEmail()),
-//                (transaction, response) -> {
-//                    String trasactionId = transaction.getId();
-//                    book.setAssetId(trasactionId);
-//                    book.setLastTxId(trasactionId);
-//                    if (!book.getAssetId().isEmpty()) {
-//
-//                        bookList.add(book);
-//                        bookDetail.setBooks(bookList);
-//                        bookDetailRepository.save(bookDetail);
-//                    }
-//                }, (transaction, response) -> {
-//                });
-//    }
 }
