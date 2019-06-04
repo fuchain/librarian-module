@@ -22,7 +22,7 @@
               type="email"
               size="large"
               label="Sách muốn trả"
-              v-model="bookName"
+              :value="book.name || 'Null'"
               disabled
               class="w-full"
             />
@@ -32,7 +32,7 @@
               type="email"
               size="large"
               label="Mã sách"
-              v-model="bookID"
+              :value="'FUHCMLIB' + book.id || '0'"
               disabled
               class="w-full"
             />
@@ -103,8 +103,6 @@ let countInterval;
 export default {
   data() {
     return {
-      bookID: "FUHCM000000001",
-      bookName: "Software Requirements",
       transferType: "auto",
       remainTime: 0
     };
@@ -176,6 +174,14 @@ export default {
   components: {
     FormWizard,
     TabContent
+  },
+  beforeMount() {
+    if (!this.book) {
+      this.$router.push({ path: "/404" });
+    }
+  },
+  props: {
+    book: Object
   }
 };
 </script>
