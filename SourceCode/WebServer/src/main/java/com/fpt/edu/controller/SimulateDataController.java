@@ -169,7 +169,7 @@ public class SimulateDataController extends BaseController {
 
         List<Book> bookList = new ArrayList<>();
         Book book = new Book();
-        book.setId((long) 105);
+        book.setId((long) 106);
         book.setBookDetail(bookDetail);
         book.setUser(user);
 
