@@ -152,9 +152,14 @@
 
         <!-- USER META -->
         <div class="the-navbar__user-meta flex items-center sm:ml-5 ml-2">
-          <div class="text-right leading-tight">
-            <p class="font-semibold">{{ $localStorage.getItem("fullname") }}</p>
-            <small>{{ $localStorage.getItem("email") }}</small>
+          <div class="text-right leading-tight profile-bar">
+            <p
+              class="font-semibold"
+              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+            >{{ $localStorage.getItem("fullname") }}</p>
+            <p
+              style="font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+            >{{ $localStorage.getItem("email") }}</p>
           </div>
           <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
             <div class="con-img ml-3">
@@ -170,7 +175,7 @@
               <ul style="min-width: 9rem">
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                  @click="$router.push('/pages/profile')"
+                  @click="$router.push('/profile')"
                 >
                   <feather-icon icon="UserIcon" svgClasses="w-4 h-4"></feather-icon>
                   <span class="ml-2">Hồ sơ</span>
@@ -231,16 +236,16 @@ export default {
       unreadNotifications: auth.isAdmin()
         ? []
         : [
-          {
-            index: 0,
-            title: "Japanese Elementary 3",
-            msg:
+            {
+              index: 0,
+              title: "Japanese Elementary 3",
+              msg:
                 "Đã tìm thấy sinh viên trả sách Japanese Elementary 3, liên lạc để mượn lại",
-            icon: "PackageIcon",
-            time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
-            category: "success"
-          }
-        ],
+              icon: "PackageIcon",
+              time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
+              category: "success"
+            }
+          ],
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,
@@ -413,3 +418,17 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.profile-bar {
+  max-width: 400px;
+
+  @media (min-width: 481px) and (max-width: 767px) {
+    max-width: 200px;
+  }
+
+  @media (min-width: 320px) and (max-width: 480px) {
+    max-width: 150px;
+  }
+}
+</style>
