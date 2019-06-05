@@ -91,6 +91,9 @@ export default {
           });
         })
         .catch(err => {
+          // Catch
+          console.log(err);
+
           this.$vs.loading.close();
           this.$vs.notify({
             title: "Thất bại",
