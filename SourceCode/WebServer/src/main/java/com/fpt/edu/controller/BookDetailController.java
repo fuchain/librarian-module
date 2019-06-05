@@ -1,8 +1,11 @@
 package com.fpt.edu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.common.RequestQueueSimulate.Message;
+import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.BookDetail;
+import com.fpt.edu.entities.Request;
 import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.services.BookDetailsServices;
 import io.swagger.annotations.ApiOperation;
@@ -59,4 +62,8 @@ public class BookDetailController extends BaseController {
         List<BookDetail> books = bookDetailsServices.searchBookDetails(name.toLowerCase());
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
+
+
+
+
 }

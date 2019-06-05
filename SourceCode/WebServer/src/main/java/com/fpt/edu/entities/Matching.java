@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Table(name = "matching")
 public class Matching extends AbstractTimestampEntity implements Serializable {
 
     @Id

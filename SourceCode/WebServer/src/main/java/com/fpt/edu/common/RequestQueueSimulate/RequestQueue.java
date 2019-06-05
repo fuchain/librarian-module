@@ -1,17 +1,16 @@
-package com.fpt.edu.common;
+package com.fpt.edu.common.RequestQueueSimulate;
 
 import com.fpt.edu.entities.Request;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
-import java.util.Queue;
 
 public class RequestQueue {
 
     private Long bookDetailID;
 
-    private Queue<Request> borrowRequestQueue;
-    private Queue<Request> returnRequestQueue;
+    private PriorityQueue<Request> borrowRequestQueue;
+    private PriorityQueue<Request> returnRequestQueue;
     Comparator<Request> createDateComparator = new Comparator<Request>() {
         @Override
         public int compare(Request o1, Request o2) {
@@ -35,19 +34,19 @@ public class RequestQueue {
     }
 
 
-    public Queue<Request> getBorrowRequestQueue() {
+    public PriorityQueue<Request> getBorrowRequestQueue() {
         return borrowRequestQueue;
     }
 
-    public void setBorrowRequestQueue(Queue<Request> borrowRequestQueue) {
+    public void setBorrowRequestQueue(PriorityQueue<Request> borrowRequestQueue) {
         this.borrowRequestQueue = borrowRequestQueue;
     }
 
-    public Queue<Request> getReturnRequestQueue() {
+    public PriorityQueue<Request> getReturnRequestQueue() {
         return returnRequestQueue;
     }
 
-    public void setReturnRequestQueue(Queue<Request> returnRequestQueue) {
+    public void setReturnRequestQueue(PriorityQueue<Request> returnRequestQueue) {
         this.returnRequestQueue = returnRequestQueue;
     }
 }

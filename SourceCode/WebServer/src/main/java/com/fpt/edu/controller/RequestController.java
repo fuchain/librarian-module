@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.common.MatchingStatus;
 import com.fpt.edu.common.ERequestType;
+import com.fpt.edu.common.RequestQueueSimulate.Message;
+import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
+import com.fpt.edu.common.RequestQueueSimulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.exception.*;
@@ -50,6 +53,13 @@ public class RequestController extends BaseController {
     private TransactionServices transactionServices;
 
 
+    @Autowired
+    PublishSubscribe publishSubscribe;
+
+    @Autowired
+    RequestQueueManager requestQueueManager;
+
+
   /*  @RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> getListOfRequest() throws JsonProcessingException {
         LOGGER.info("START Controller :" + httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString());
@@ -88,7 +98,7 @@ public class RequestController extends BaseController {
     @ApiOperation(value = "Create a book request", response = String.class)
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
     @Transactional
-    public ResponseEntity<String> requestBook(@RequestBody String body) throws  EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
+    public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted, NotFoundException {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
@@ -131,7 +141,7 @@ public class RequestController extends BaseController {
             //get book object
             Book book = bookServices.getBookById(bookId);
 
-            BookDetail bookDetail= book.getBookDetail();
+            BookDetail bookDetail = book.getBookDetail();
 
 
             //check whether user is keeping this book
@@ -161,16 +171,44 @@ public class RequestController extends BaseController {
             request.setUser(user);
             request.setBook(book);
             request.setBookDetail(bookDetail);
+
+
         } else {
             throw new TypeNotSupportedException("Type " + type + " is not supported");
         }
-
         //save request
-        requestServices.saveRequest(request);
-
+        Message message = new Message();
+        message.setMessage(request);
+        message.setAction(Constant.ACTION_ADD_NEW);
+        publishSubscribe.setMessage(message);
+        publishSubscribe.notifyToSub();
+        Request matchRequest = requestQueueManager.findTheMatch(request);
+        if (matchRequest != null) {
+            // update for request
+            message.setAction(Constant.ACTION_UPDATE);
+            request.setStatus(ERequestStatus.MATCHING.getValue());
+            publishSubscribe.notifyToSub();
+            matchRequest.setStatus(ERequestStatus.MATCHING.getValue());
+            Message matchMessage = new Message();
+            matchMessage.setAction(Constant.ACTION_UPDATE);
+            matchMessage.setMessage(matchRequest);
+            publishSubscribe.setMessage(matchMessage);
+            publishSubscribe.notifyToSub();
+            Matching matching = new Matching();
+            matching.setStatus(MatchingStatus.PENDING.getValue());
+            matching.setBook(matchRequest.getBook());
+            if (request.getType() == ERequestType.BORROWING.getValue()) {
+                matching.setBorrowerRequest(request);
+                matching.setReturnerRequest(matchRequest);
+            } else {
+                matching.setBorrowerRequest(matchRequest);
+                matching.setReturnerRequest(request);
+            }
+            matchingServices.updateMatching(matching);
+        }
+//        requestServices.saveRequest(request);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", "success");
-
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
@@ -304,11 +342,9 @@ public class RequestController extends BaseController {
         if (matching == null) {
             throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
         }
-
         if (matching.getStatus() != MatchingStatus.CONFIRMED.getValue()) {
             throw new Exception("Receiver has not imported pin yet");
         }
-
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", "confirmed");
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
@@ -320,16 +356,12 @@ public class RequestController extends BaseController {
         if (request.getId() != id) {
             throw new EntityIdMismatchException("Request id: " + id + " and " + request.getId() + " is not matched");
         }
-
         Request existedRequest = requestServices.getRequestById(request.getId());
         if (existedRequest == null) {
             throw new EntityNotFoundException("Request id: " + request + " not found");
         }
-
         Request requestResult = requestServices.updateRequest(request);
-
         JSONObject jsonObject = new JSONObject(requestResult);
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
-
 }

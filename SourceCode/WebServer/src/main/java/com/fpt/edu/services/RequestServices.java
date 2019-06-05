@@ -1,9 +1,14 @@
 package com.fpt.edu.services;
 
 
+import com.fpt.edu.common.RequestQueueSimulate.Message;
+import com.fpt.edu.common.RequestQueueSimulate.Observer;
+import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Request;
 import com.fpt.edu.repository.RequestRepository;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class RequestServices {
+public class RequestServices implements Observer {
+    protected final Logger LOGGER = LogManager.getLogger(getClass());
     @Autowired
     private RequestRepository requestRepository;
 
@@ -61,8 +67,12 @@ public class RequestServices {
     }
 
 
-
-
-
-
+    @Override
+    public void doUpdate(Message mess) {
+        if (mess.getAction().equalsIgnoreCase(Constant.ACTION_ADD_NEW)) {
+            saveRequest((Request) mess.getMessage());
+        } else if (mess.getAction().equalsIgnoreCase(Constant.ACTION_UPDATE)) {
+            updateRequest((Request) mess.getMessage());
+        }
+    }
 }
