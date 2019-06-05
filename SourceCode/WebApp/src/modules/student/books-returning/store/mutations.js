@@ -10,7 +10,8 @@ const mutations = {
         image: "/images/book-thumbnail.jpg",
         code: e.book.bookDetail.name.substring(0, 3).toUpperCase() + "101",
         status: e.status,
-        user: e.pairedUser
+        user: e.pairedUser,
+        requestId: e.id
       };
     });
 
