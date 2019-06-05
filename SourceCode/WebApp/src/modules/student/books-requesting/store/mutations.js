@@ -7,7 +7,7 @@ const mutations = {
         description: `Book ${
           e.bookDetail.name
         } for Software Engineering learning at FPT University`,
-        image: "https://i.imgur.com/2j6B1n5.jpg",
+        image: "/images/book-thumbnail.jpg",
         code: e.bookDetail.name.substring(0, 3).toUpperCase() + "101",
         status: e.status
       };
