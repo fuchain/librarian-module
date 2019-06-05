@@ -1,7 +1,5 @@
 package com.fpt.edu.services;
 
-import com.fpt.edu.common.ERequestType;
-import com.fpt.edu.entities.Request;
 import com.fpt.edu.repository.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,7 +15,6 @@ import com.fpt.edu.repository.BookRepository;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +37,7 @@ public class UserServices {
     }
 
     public void addNewUser(User user) {
-        if (!user.getPassword().trim().isEmpty()) {
+        if (user.getPassword() != null) {
             user.setPassword(encoder.encode(user.getPassword()));
         } else {
             user.setPassword(null);

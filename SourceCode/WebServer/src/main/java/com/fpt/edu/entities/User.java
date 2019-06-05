@@ -93,4 +93,14 @@ public class User extends AbstractTimestampEntity implements Serializable {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
+
+    public User() {
+    }
+
+    public User(String email, String password, String fullName, String phone) {
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.phone = phone;
+    }
 }

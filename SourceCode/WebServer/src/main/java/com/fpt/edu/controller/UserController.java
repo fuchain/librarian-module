@@ -1,6 +1,5 @@
 package com.fpt.edu.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.common.ERequestType;
 import com.fpt.edu.constant.Constant;
@@ -10,7 +9,6 @@ import com.fpt.edu.entities.User;
 import com.fpt.edu.services.RequestServices;
 import com.fpt.edu.services.UserServices;
 import io.swagger.annotations.ApiOperation;
-import org.glassfish.grizzly.compression.lzma.impl.Base;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,11 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerMapping;
 
-import javax.transaction.Transactional;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.security.Principal;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,13 +30,7 @@ public class UserController extends BaseController {
     @Autowired
     private RequestServices requestServices;
 
-    @RequestMapping(value = "/books/addABook", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<User> AddBooktoUser(@RequestBody String body) {
-        JSONObject jsonBody = new JSONObject(body);
-        return null;
-    }
-
-    @ApiOperation(value = "get a list of current book", response = String.class)
+    @ApiOperation(value = "Get a list of current book", response = String.class)
     @RequestMapping(value = "current_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<List<Book>> getCurrentBook() {
         try {
@@ -74,4 +63,22 @@ public class UserController extends BaseController {
         return null;
     }
 
+    static ResponseEntity<String> getJSONResponseUserProfile(User user) {
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("id", user.getId());
+        responseJSON.put("email", user.getEmail());
+        responseJSON.put("fullname", user.getFullName());
+        responseJSON.put("phone", user.getPhone());
+
+        return ResponseEntity.ok().body(responseJSON.toString());
+    }
+
+    @ApiOperation(value = "Get user information", response = String.class)
+    @GetMapping("profile")
+    public ResponseEntity<String> getMe(Principal principal) {
+        String email = principal.getName();
+        User user = userServices.getUserByEmail(email);
+
+        return getJSONResponseUserProfile(user);
+    }
 }
