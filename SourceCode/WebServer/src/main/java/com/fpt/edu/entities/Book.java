@@ -37,18 +37,22 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     private User user;
 
     @Column(name = "asset_id", updatable = false)
+    @JsonIgnore
     private String assetId;
 
     @Column(name = "last_tx_id")
+    @JsonIgnore
     private String lastTxId;
 
     @Column(name = "status")
     private String status = StatusType.IN_USE.value();
 
     @Transient
+    @JsonIgnore
     private Map<String, String> asset;
 
     @Transient
+    @JsonIgnore
     private Map<String, String> metadata;
 
     public static enum StatusType {

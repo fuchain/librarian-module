@@ -31,8 +31,9 @@ const router = new Router({
           component: () => import("@/modules/profile/Profile.vue")
         },
         {
-          path: "books",
-          component: () => import("@/modules/student/books/Books.vue")
+          path: "books/keeping",
+          component: () =>
+            import("@/modules/student/books-keeping/BooksKeeping.vue")
         },
         {
           path: "books/return",

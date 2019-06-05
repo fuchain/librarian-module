@@ -1,7 +1,13 @@
 package com.fpt.edu.common;
 
+//    The request type indicates the type of request
 public enum ERequestType {
-    BORROWING(1), RETURNING(2);
+
+//    If the borrower sends a request with type 1, the borrower is trying to make a request to borrow the book
+    BORROWING(1),
+
+//    If the borrower sends a request with type 2, the borrower is trying to make a request to return the book
+    RETURNING(2);
 
     private int value;
 

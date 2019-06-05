@@ -3,6 +3,7 @@ package com.fpt.edu.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.edu.common.helper.ReflectionHelper;
 import com.fpt.edu.entities.BookDetail;
+import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.repository.BookDetailRepository;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookDetailsServices {
@@ -27,12 +29,25 @@ public class BookDetailsServices {
     }
 
     public BookDetail getBookById(Long id) {
-        return bookDetailRepository.findById(id).get();
+        Optional<BookDetail> optionalBookDetail = bookDetailRepository.findById(id);
+
+        BookDetail bookDetail = null;
+
+        if (optionalBookDetail.isPresent()) {
+            bookDetail = optionalBookDetail.get();
+        }
+
+        return bookDetail;
     }
 
-    public BookDetail updateBookDetail(BookDetail bookDetail) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-       BookDetail bookDetailInDB= bookDetailRepository.findById(bookDetail.getId()).get();
-        ReflectionHelper.partialUpdate(bookDetailInDB,bookDetail);
+    public BookDetail updateBookDetail(BookDetail bookDetail) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, EntityNotFoundException {
+        BookDetail bookDetailInDB = getBookById(bookDetail.getId());
+
+        if (bookDetail == null) {
+            throw new EntityNotFoundException("Book detail id: " + bookDetail.getId() + " not found");
+        }
+
+        ReflectionHelper.partialUpdate(bookDetailInDB, bookDetail);
         bookDetailRepository.save(bookDetailInDB);
         return bookDetailInDB;
     }
