@@ -10,6 +10,8 @@ import com.fpt.edu.entities.*;
 import com.fpt.edu.exception.*;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.Hibernate;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -72,18 +75,18 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Get a list of book request", response = String.class)
     @RequestMapping(value = "/get_list", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    @Transactional
     public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type) throws JsonProcessingException {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
-
+        Hibernate.initialize(user.getListBooks());
         List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type);
-//        JSONObject jsonObject = utils.buildListEntity(requestList, httpServletRequest);
-
         return new ResponseEntity<>(requestList, HttpStatus.OK);
     }
 
+    @Transactional
     @ApiOperation(value = "Create a book request", response = String.class)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
@@ -130,6 +133,9 @@ public class RequestController extends BaseController {
             //get book object
             Book book = bookServices.getBookById(bookId);
 
+            BookDetail bookDetail = book.getBookDetail();
+
+
             //check whether user is keeping this book
             boolean keeping = false;
             List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
@@ -157,6 +163,7 @@ public class RequestController extends BaseController {
             request.setType(type);
             request.setUser(user);
             request.setBook(book);
+            request.setBookDetail(bookDetail);
         } else {
             throw new TypeNotSupportedException("Type " + type + " is not supported");
         }

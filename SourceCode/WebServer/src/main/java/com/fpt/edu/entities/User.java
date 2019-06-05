@@ -1,5 +1,7 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.*;
@@ -26,9 +28,10 @@ public class User extends AbstractTimestampEntity implements Serializable {
 
 	@ManyToMany(cascade = {CascadeType.ALL})
 	@JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
+	@JsonIgnore
 	private List<Role> roles;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
 	private List<Book> listBooks;
 
 	public List<Book> getListBooks() {

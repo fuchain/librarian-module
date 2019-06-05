@@ -1,14 +1,10 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "role")
@@ -21,7 +17,8 @@ public class Role extends AbstractTimestampEntity implements Serializable {
 	@Column(name = "role_name")
 	private String name;
 
-	@ManyToMany(mappedBy = "roles")
+	@ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "roles")
+	@JsonIgnore
 	private List<User> users;
 
 	public Long getId() {

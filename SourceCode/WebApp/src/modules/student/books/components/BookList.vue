@@ -1,11 +1,11 @@
 <template>
-  <div id="ecommerce-wishlist-demo">
-    <h2 class="mb-6">Sách đang mượn</h2>
-    <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
+  <div id="ecommerce-wishlist-demo" v-if="isMounted">
+    <h2 class="mb-6">Sách đang giữ</h2>
+    <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
       <div
         class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
-        v-for="item in wishListitems"
-        :key="item.objectID"
+        v-for="item in listBooks"
+        :key="item.id"
       >
         <item-grid-view :item="item">
           <template slot="action-buttons">
@@ -15,10 +15,7 @@
               >
                 <feather-icon icon="XIcon" svgClasses="h-4 w-4"/>
 
-                <span
-                  class="text-sm font-semibold ml-2"
-                  @click="$router.push('/books/return')"
-                >TRẢ SÁCH</span>
+                <span class="text-sm font-semibold ml-2" @click="doReturnBook(item)">TRẢ SÁCH</span>
               </div>
 
               <div
@@ -47,47 +44,46 @@ export default {
   components: {
     ItemGridView
   },
-  computed: {
-    wishListitems() {
-      return [
-        {
-          objectID: 1,
-          name: "Software Requirements",
-          description:
-            "Software Requirements for Software Requirements in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "12 ngày",
-          code: "SWR301"
-        },
-        {
-          objectID: 2,
-          name: "Software Quality Assurance and Testing",
-          description:
-            "Software Quality Assurance and Testing for Software Quality Assurance and Testing in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "12 ngày",
-          code: "SWQ391"
-        },
-        {
-          objectID: 3,
-          name: ".NET and C#",
-          description: ".NET and C# for .NET and C# in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "12 ngày",
-          code: "PRN292"
-        },
-        {
-          objectID: 4,
-          name: "Web Java Lab",
-          description: "Web Java Lab for Web Java Lab in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "12 ngày",
-          code: "LAB231"
-        }
-      ];
-    }
+  data() {
+    return {
+      isMounted: false,
+      listBooks: []
+    };
   },
-  methods: {}
+  mounted() {
+    this.$vs.loading();
+
+    this.$http
+      .get(`${this.$http.baseUrl}/users/current_books`)
+      .then(response => {
+        const data = response.data;
+
+        const books = data.map(e => {
+          return {
+            id: e.id,
+            name: e.bookDetail.name,
+            description: `Book ${
+              e.bookDetail.name
+            } for Software Engineering learning at FPT University`,
+            image: "https://i.imgur.com/2j6B1n5.jpg",
+            time: e.updateDate,
+            code: e.bookDetail.name.substring(0, 3).toUpperCase() + "101"
+          };
+        });
+
+        this.listBooks = [].concat(books);
+        this.$vs.loading.close();
+        this.isMounted = true;
+      });
+  },
+  methods: {
+    doReturnBook(book) {
+      this.$router.push({
+        name: "book-return",
+        params: { book }
+      });
+    }
+  }
 };
 </script>
 

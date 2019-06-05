@@ -49,7 +49,7 @@ const userMenu = [
     submenu: [
       {
         url: "/books",
-        name: "Sách đang mượn",
+        name: "Sách đang giữ",
         slug: "books"
       },
       {

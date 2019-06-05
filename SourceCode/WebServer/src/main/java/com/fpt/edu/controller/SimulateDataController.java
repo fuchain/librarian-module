@@ -6,11 +6,13 @@ import com.fpt.edu.repository.*;
 import com.fpt.edu.services.BigchainTransactionServices;
 import com.fpt.edu.services.BookDetailsServices;
 import com.fpt.edu.services.UserServices;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -138,8 +140,47 @@ public class SimulateDataController extends BaseController {
                             }
                         });
                 count++;
+                Thread.sleep(500);
             }
         }
         return "Init simulate data completed!";
+    }
+
+    @RequestMapping(value = "/give_book", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    public String giveBooksToReader(@RequestBody String body) throws Exception {
+        Random random = new Random();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        User librarian = userServices.getUserByEmail(email);
+
+        JSONObject jsonBody = new JSONObject(body);
+        User receiver = userServices.getUserByEmail(jsonBody.getString("email"));
+        int bookNumber = Integer.parseInt(jsonBody.getString("book_number"));
+
+        BigchainTransactionServices services = new BigchainTransactionServices();
+        List<Book> bookList = (List<Book>) bookRepository.findBookListByUserId(librarian.getId());
+
+
+        if (bookList.size() >= bookNumber) {
+            for (int i = 0; i < bookNumber; i++) {
+                Book book = bookList.get(random.nextInt(bookList.size()));
+                book.setUser(receiver);
+                services.doTransfer(
+                        book.getLastTxId(),
+                        book.getAssetId(), book.getMetadata(),
+                        librarian.getEmail(), receiver.getEmail(),
+                        (transaction, response) -> {
+                            book.setLastTxId(transaction.getId());
+                            bookRepository.save(book);
+                        },
+                        (transaction, response) -> {}
+                );
+                Thread.sleep(500);
+            }
+            return "Give book completed";
+        } else {
+            return "Number of book is out of range";
+        }
     }
 }

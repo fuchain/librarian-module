@@ -1,11 +1,11 @@
 <template>
-  <div id="ecommerce-wishlist-demo">
+  <div id="ecommerce-wishlist-demo" v-if="isMounted">
     <h2 class="mb-6">Sách đang trả</h2>
-    <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
+    <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
       <div
         class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
-        v-for="item in wishListitems"
-        :key="item.objectID"
+        v-for="item in listBooks"
+        :key="item.id"
       >
         <item-grid-view :item="item">
           <template slot="action-buttons">
@@ -42,8 +42,8 @@
       </div>
     </div>
 
-    <vx-card title="Bạn đang không giữ sách nào." v-else>
-      <vs-button @click="$router.push('/books/request')">Mượn sách</vs-button>
+    <vx-card title="Bạn đang không trả sách nào." v-else>
+      <vs-button @click="$router.push('/books')">Trả sách</vs-button>
     </vx-card>
 
     <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
@@ -71,27 +71,8 @@ export default {
   },
   data() {
     return {
-      wishListitems: [
-        {
-          objectID: 5,
-          name: "Introduction to Software Engineering",
-          description:
-            "Introduction to Software Engineering for Introduction to Software Engineering in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "4 ngày",
-          code: "SWE102",
-          user: "SE62535"
-        },
-        {
-          objectID: 6,
-          name: "Computer Networking",
-          description:
-            "Computer Networking for Computer Networking in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "4 ngày",
-          code: "NWC202"
-        }
-      ],
+      isMounted: false,
+      listBooks: [],
       popupActive: false,
       randomPIN: 0,
       remainTime: 0
@@ -161,6 +142,32 @@ export default {
   },
   beforeDestroy() {
     clearInterval(countInterval);
+  },
+  mounted() {
+    this.$vs.loading();
+
+    this.$http
+      .get(`${this.$http.baseUrl}/requests/get_list?type=2`)
+      .then(response => {
+        const data = response.data;
+
+        const books = data.map(e => {
+          return {
+            id: e.book.id,
+            name: e.book.bookDetail.name,
+            description: `Book ${
+              e.book.bookDetail.name
+            } for Software Engineering learning at FPT University`,
+            image: "https://i.imgur.com/2j6B1n5.jpg",
+            code: e.book.bookDetail.name.substring(0, 3).toUpperCase() + "101",
+            status: e.status
+          };
+        });
+
+        this.listBooks = [].concat(books);
+        this.$vs.loading.close();
+        this.isMounted = true;
+      });
   }
 };
 </script>
