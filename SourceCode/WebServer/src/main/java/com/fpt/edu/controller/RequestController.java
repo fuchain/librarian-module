@@ -387,14 +387,14 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Get Match ID", response = JSONObject.class)
     @RequestMapping(value = "/{id}/matched", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getMatchedIdOfRequest(@PathVariable Long id) throws EntityNotFoundException, EntityIdMismatchException {
+    public ResponseEntity<String> getMatchedIdOfRequest(@PathVariable Long id) throws Exception {
         Matching matched = matchingServices.getMatchingByRequestId(id);
-        JSONObject jsonResposne = new JSONObject();
+        JSONObject jsonResponse = new JSONObject();
         if (matched != null) {
-            jsonResposne.put("MatchedID", matched.getId());
+            jsonResponse.put("matching_id", matched.getId());
+        } else {
+            throw new Exception("Cannot find matching_id with that request_id");
         }
-        return new ResponseEntity<>(jsonResposne.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(jsonResponse.toString(), HttpStatus.OK);
     }
-
-
 }
