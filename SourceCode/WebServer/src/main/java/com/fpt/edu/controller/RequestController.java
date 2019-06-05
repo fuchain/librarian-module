@@ -212,7 +212,12 @@ public class RequestController extends BaseController {
             publishSubscribe.notifyToSub();
             Matching matching = new Matching();
             matching.setStatus(EMatchingStatus.PENDING.getValue());
-            matching.setBook(matchRequest.getBook());
+            if(matchRequest.getBook()!=null){
+                matching.setBook(matchRequest.getBook());
+            }
+            else if(request.getBook()!=null){
+                matching.setBook(request.getBook());
+            }
             if (request.getType() == ERequestType.BORROWING.getValue()) {
                 matching.setBorrowerRequest(request);
                 matching.setReturnerRequest(matchRequest);
