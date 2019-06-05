@@ -110,7 +110,7 @@ public class RequestController extends BaseController {
     }
 
     @ApiOperation(value = "Create a book request", response = String.class)
-    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
     @Transactional
     public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted, NotFoundException {
         //get user information
