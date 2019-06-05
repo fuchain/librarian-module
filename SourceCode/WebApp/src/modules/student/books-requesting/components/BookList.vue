@@ -115,7 +115,7 @@ export default {
   methods: {
     triggerCall(check) {
       if (!check) return;
-      window.location.href = "tel:0796870446";
+      window.location.href = "tel:0123456789";
     },
     async fakeLoad() {
       return new Promise((resolve, reject) => {

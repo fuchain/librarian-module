@@ -25,13 +25,11 @@ export default {
     }
   },
   async mounted() {
-    this.$vs.loading({
-      container: "#div-with-loading"
-    });
+    this.$vs.loading();
 
     await this.$store.dispatch(`${STORE_KEY}/getBooks`);
 
-    this.$vs.loading.close("#div-with-loading > .con-vs-loading");
+    this.$vs.loading.close();
   }
 };
 </script>

@@ -184,6 +184,9 @@ export default {
               "Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.";
           })
           .catch(err => {
+            // Catch
+            console.log(err);
+
             this.isLoading = false;
             this.resultText =
               "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
