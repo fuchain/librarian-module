@@ -73,9 +73,9 @@ public class AuthenticationController {
             Optional<User> loggedUser = userServices.findUserByEmail(email);
 
             // If email is not in database
-            if (loggedUser.isEmpty()) {
-                return new ResponseEntity<>("User is not in database", HttpStatus.BAD_REQUEST);
-            }
+//            if (loggedUser.isEmpty()) {
+//                return new ResponseEntity<>("User is not in database", HttpStatus.BAD_REQUEST);
+//            }
 
             // Generate JWT token
             long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
