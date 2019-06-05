@@ -94,7 +94,7 @@ export default {
           this.$vs.loading.close();
           this.$vs.notify({
             title: "Thất bại",
-            text: "Bạn đã có yêu cầu mượn sách này rồi mà",
+            text: "Bạn đã có yêu cầu mượn sách này rồi",
             color: "warning",
             position: "top-center"
           });

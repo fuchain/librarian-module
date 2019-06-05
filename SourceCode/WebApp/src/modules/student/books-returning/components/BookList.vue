@@ -98,7 +98,7 @@ export default {
       });
     },
     triggerCall() {
-      window.location.href = "tel:0796870446";
+      window.location.href = "tel:0123456789";
     },
     async beginConfirm() {
       await this.fakeLoad();

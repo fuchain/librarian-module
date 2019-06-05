@@ -38,7 +38,7 @@ export default {
     return {
       fullname: "Huỳnh Minh Tú",
       email: "tuhmse62531@fpt.edu.vn",
-      phone: "0796870446"
+      phone: "0123456789"
     };
   },
   methods: {
