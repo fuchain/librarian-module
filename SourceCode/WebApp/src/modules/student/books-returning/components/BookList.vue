@@ -12,7 +12,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2" @click="beginConfirm">ĐÃ TRẢ</span>
+                <span class="text-sm font-semibold ml-2" @click="beginConfirm(item)">ĐÃ TRẢ</span>
               </div>
 
               <div
@@ -21,7 +21,7 @@
               >
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2" @click="triggerCall()">LIÊN LẠC</span>
+                <span class="text-sm font-semibold ml-2" @click="triggerCall(item.user)">LIÊN LẠC</span>
               </div>
 
               <div
@@ -49,9 +49,9 @@
         Chỉ tồn tại trong
         <strong>{{ remainTime }} giây</strong>
       </div>
-      <div style="text-align: center;">
+      <!-- <div style="text-align: center;">
         <vs-button @click="validateConfirm">Đã xong</vs-button>
-      </div>
+      </!-->
     </vs-popup>
   </div>
 </template>
@@ -69,7 +69,8 @@ export default {
     return {
       popupActive: false,
       randomPIN: 0,
-      remainTime: 0
+      remainTime: 0,
+      matchingId: 0
     };
   },
   props: {
@@ -85,44 +86,70 @@ export default {
     }
   },
   methods: {
-    async fakeLoad() {
-      return new Promise((resolve, reject) => {
-        this.$vs.loading();
-        setTimeout(
-          function() {
-            this.$vs.loading.close();
-            resolve();
-          }.bind(this),
-          2000
-        );
-      });
+    triggerCall(user) {
+      if (!user) return;
+      window.location.href = `tel:${user.phone}`;
     },
-    triggerCall() {
-      window.location.href = "tel:0123456789";
-    },
-    async beginConfirm() {
-      await this.fakeLoad();
+    async beginConfirm(request) {
+      this.$vs.loading();
+      this.$http
+        .get(`${this.$http.baseUrl}/requests/${request.requestId}/matched`)
+        .then(response => {
+          const { matching_id } = response.data;
+          this.matchingId = matching_id;
+          this.$http
+            .put(`${this.$http.baseUrl}/requests/transfer`, {
+              type: 1,
+              matchingId: matching_id
+            })
+            .then(response => {
+              const data = response.data;
 
-      this.randomPIN = Math.floor(100000 + Math.random() * 900000);
-      this.startCount();
-      this.popupActive = true;
+              const { created_at, pin, status } = data;
+
+              this.randomPIN = pin;
+              this.startCount();
+              this.popupActive = true;
+              this.$vs.loading.close();
+            });
+        });
     },
     async validateConfirm() {
-      await this.fakeLoad();
+      this.$http
+        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
+        .then(response => {
+          const data = response.data;
 
-      this.$vs.notify({
-        title: "Lỗi",
-        text: "Người nhận chưa xác nhận mã PIN",
-        color: "warning",
-        position: "top-center"
-      });
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Người nhận đã xác nhận mã PIN",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.popupActive = false;
+
+          setTimeout(
+            function() {
+              this.$router.push("/books/keeping");
+            }.bind(this),
+            500
+          );
+        })
+        .catch(err => {
+          // Catch
+          console.log(err);
+        })
+        .finally(() => {});
     },
     startCount() {
       this.remainTime = 300;
+      clearInterval(countInterval);
 
       countInterval = setInterval(
         function() {
           this.remainTime = this.remainTime - 1;
+          this.validateConfirm();
 
           if (this.remainTime <= 0) {
             this.$vs.notify({

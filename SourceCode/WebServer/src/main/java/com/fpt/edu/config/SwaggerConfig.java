@@ -10,15 +10,17 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-	
+
+import java.util.HashSet;
+
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
 	 @Bean
 	 public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_2)
+		return new Docket(DocumentationType.SWAGGER_2).host("lapi.fptu.tech")
 		  .select()
-		  .apis(RequestHandlerSelectors.any())
+		  .apis(RequestHandlerSelectors.basePackage("com.fpt.edu.controller"))
 		  .paths(PathSelectors.any())
 		  .build().apiInfo(new ApiInfoBuilder().version("1.0").title("FPT Library API").description("Documentation Library API v1.0").build())	;
 	 }

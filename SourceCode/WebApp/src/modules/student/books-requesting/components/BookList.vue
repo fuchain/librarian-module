@@ -12,7 +12,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2" @click="beginConfirm">XÁC NHẬN</span>
+                <span class="text-sm font-semibold ml-2" @click="beginConfirm(item)">XÁC NHẬN</span>
               </div>
 
               <div
@@ -23,7 +23,7 @@
 
                 <span
                   class="text-sm font-semibold ml-2"
-                  @click="triggerCall(item.user ? true : false)"
+                  @click="triggerCall(item.user)"
                 >{{ item.user ? "LIÊN LẠC" : "CHI TIẾT" }}</span>
               </div>
             </div>
@@ -76,7 +76,7 @@
           action="https://jsonplaceholder.typicode.com/posts/"
           @on-success="successUpload"
           text="Up ảnh bằng chứng"
-          automatic="true"
+          :automatic="true"
           limit="2"
         />
       </div>
@@ -104,7 +104,9 @@ export default {
       confirmPopup: false,
       rejectPopup: false,
       pin: "",
-      reason: ""
+      reason: "",
+      requestId: 0,
+      matchingId: 0
     };
   },
   props: {
@@ -113,9 +115,9 @@ export default {
     }
   },
   methods: {
-    triggerCall(check) {
-      if (!check) return;
-      window.location.href = "tel:0123456789";
+    triggerCall(user) {
+      if (!user) return;
+      window.location.href = `tel:${user.phone}`;
     },
     async fakeLoad() {
       return new Promise((resolve, reject) => {
@@ -129,18 +131,60 @@ export default {
         );
       });
     },
-    async beginConfirm() {
-      this.confirmPopup = true;
+    async beginConfirm(item) {
+      this.$vs.loading();
+
+      this.$http
+        .get(`${this.$http.baseUrl}/requests/${item.requestId}/matched`)
+        .then(response => {
+          const { matching_id } = response.data;
+          this.matchingId = matching_id;
+          this.requestId = item.requestId;
+          this.confirmPopup = true;
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     },
     async validateConfirm() {
-      await this.fakeLoad();
+      this.$vs.loading();
+      this.$http
+        .put(`${this.$http.baseUrl}/requests/transfer`, {
+          type: 2,
+          matchingId: this.matchingId,
+          pin: this.pin
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Nhận sách thành công",
+            color: "primary",
+            position: "top-center"
+          });
 
-      this.$vs.notify({
-        title: "Lỗi",
-        text: "Mã PIN không hợp lệ",
-        color: "warning",
-        position: "top-center"
-      });
+          this.confirmPopup = false;
+
+          setTimeout(
+            function() {
+              this.$router.push("/books/keeping");
+            }.bind(this),
+            500
+          );
+        })
+        .catch(err => {
+          // Catch
+          console.log(err);
+
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Mã PIN không hợp lệ",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     },
     doReject() {
       this.confirmPopup = false;

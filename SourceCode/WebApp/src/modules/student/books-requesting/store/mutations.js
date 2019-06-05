@@ -9,7 +9,9 @@ const mutations = {
         } for Software Engineering learning at FPT University`,
         image: "/images/book-thumbnail.jpg",
         code: e.bookDetail.name.substring(0, 3).toUpperCase() + "101",
-        status: e.status
+        status: e.status,
+        user: e.pairedUser,
+        requestId: e.id
       };
     });
 

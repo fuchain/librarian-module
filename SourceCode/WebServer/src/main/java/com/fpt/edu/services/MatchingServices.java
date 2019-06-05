@@ -29,7 +29,18 @@ public class MatchingServices {
         return matchingRepository.save(matching);
     }
 
-    public Matching getMatchingByRequestId(Long requestId, int matchingStatus) {
-        return matchingRepository.getByRequestId(requestId, matchingStatus);
+    public Matching getMatchingByReturnRequestId(Long returnRequestId, int matchingStatus) {
+        return matchingRepository.getByReturnRequestId(returnRequestId, matchingStatus);
     }
+
+    public Matching getMatchingByReceiveRequestId(Long receiveRequestId, int matchingStatus) {
+        return matchingRepository.getByReceiveRequestId(receiveRequestId, matchingStatus);
+    }
+
+
+    public Matching getMatchingByRequestId(Long requestId) {
+        return matchingRepository.getMatchByRequestId(requestId);
+    }
+
+
 }
