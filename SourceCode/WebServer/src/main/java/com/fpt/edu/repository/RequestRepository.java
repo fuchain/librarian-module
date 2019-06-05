@@ -12,9 +12,10 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository extends CrudRepository<Request, Long> {
-    @Query(value = "SELECT r FROM Request r WHERE r.user.id = :userId AND r.type = :type")
+    @Query(value = "SELECT r FROM Request r WHERE r.user.id = :userId AND r.type = :type AND r.status <> :status")
     Collection<Request> findByUserIdAndType(@Param("userId") Long userId,
-                                            @Param("type") int type);
+                                            @Param("type") int type,
+                                            @Param("status") int status);
 
     @Query(value = "SELECT COUNT(r.id) FROM Request r WHERE r.type = :type AND r.user.id = :user_id " +
             " AND r.status <> :status" +

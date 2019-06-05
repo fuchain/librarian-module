@@ -15,4 +15,5 @@ public interface BookDetailRepository extends CrudRepository<BookDetail, Long> {
 
     @Query(value = "SELECT b FROM BookDetail b WHERE lower(b.name) LIKE %:name%")
     List<BookDetail> findBookDetailsByName(@Param("name") String name);
+
 }

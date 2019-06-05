@@ -15,7 +15,12 @@ const state = {
   starredPages: navbarSearchAndPinList.data.filter(
     page => page.highlightAction
   ),
-  currentColor: null
+  currentColor: null,
+
+  // Profile
+  email: "",
+  fullname: "",
+  phone: ""
 };
 
 export default state;

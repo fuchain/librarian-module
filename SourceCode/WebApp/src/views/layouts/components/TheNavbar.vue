@@ -156,10 +156,10 @@
             <p
               class="font-semibold"
               style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-            >{{ $localStorage.getItem("fullname") }}</p>
+            >{{ fullname }} {{ (email && !fullname) ? "Chưa có tên" : "" }}</p>
             <p
               style="font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-            >{{ $localStorage.getItem("email") }}</p>
+            >{{ email }}</p>
           </div>
           <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
             <div class="con-img ml-3">
@@ -236,16 +236,16 @@ export default {
       unreadNotifications: auth.isAdmin()
         ? []
         : [
-          {
-            index: 0,
-            title: "Japanese Elementary 3",
-            msg:
+            {
+              index: 0,
+              title: "Japanese Elementary 3",
+              msg:
                 "Đã tìm thấy sinh viên trả sách Japanese Elementary 3, liên lạc để mượn lại",
-            icon: "PackageIcon",
-            time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
-            category: "success"
-          }
-        ],
+              icon: "PackageIcon",
+              time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
+              category: "success"
+            }
+          ],
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,
@@ -308,8 +308,11 @@ export default {
     },
 
     // PROFILE
-    activeUserInfo() {
-      return this.$store.state.AppActiveUser;
+    email() {
+      return this.$store.getters.email;
+    },
+    fullname() {
+      return this.$store.getters.fullname;
     }
   },
   methods: {

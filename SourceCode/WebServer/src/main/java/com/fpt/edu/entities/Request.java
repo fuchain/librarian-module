@@ -36,12 +36,24 @@ public class Request extends AbstractTimestampEntity implements Serializable {
     @JsonIgnore
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "paired_user")
+    private User pairedUser;
+
     @Column(name = "status")
     private int status;
 
     @Column(name = "type")
     private int type;
 
+
+    public User getPairedUser() {
+        return pairedUser;
+    }
+
+    public void setPairedUser(User pairedUser) {
+        this.pairedUser = pairedUser;
+    }
 
     public BookDetail getBookDetail() {
         return bookDetail;

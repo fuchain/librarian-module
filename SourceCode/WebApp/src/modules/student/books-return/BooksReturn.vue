@@ -174,7 +174,7 @@ export default {
         this.isLoading = true;
 
         this.$http
-          .post(`${this.$http.baseUrl}/requests/create`, {
+          .post(`${this.$http.baseUrl}/requests`, {
             type: 2,
             book_id: this.book.id
           })
@@ -203,7 +203,7 @@ export default {
   },
   beforeMount() {
     if (!this.book) {
-      this.$router.push({ path: "/books" });
+      this.$router.push({ path: "/books/keeping" });
     }
   },
   props: {

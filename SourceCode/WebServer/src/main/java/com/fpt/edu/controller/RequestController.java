@@ -3,15 +3,17 @@ package com.fpt.edu.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.common.ETransferType;
-import com.fpt.edu.common.MatchingStatus;
+import com.fpt.edu.common.EMatchingStatus;
 import com.fpt.edu.common.ERequestType;
+import com.fpt.edu.common.RequestQueueSimulate.Message;
+import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
+import com.fpt.edu.common.RequestQueueSimulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.exception.*;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.Hibernate;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,12 +23,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("requests")
@@ -49,6 +49,13 @@ public class RequestController extends BaseController {
 
     @Autowired
     private TransactionServices transactionServices;
+
+
+    @Autowired
+    PublishSubscribe publishSubscribe;
+
+    @Autowired
+    RequestQueueManager requestQueueManager;
 
 
   /*  @RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
@@ -82,14 +89,30 @@ public class RequestController extends BaseController {
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
         Hibernate.initialize(user.getListBooks());
-        List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type);
+        List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type, ERequestStatus.COMPLETED.getValue());
+
+        for (Request r : requestList) {
+            if (r.getStatus() == ERequestStatus.MATCHING.getValue()) {
+                Matching matching = matchingServices.getMatchingByRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
+                if (matching != null) {
+                    if (r.getType() == ERequestType.RETURNING.getValue()) {
+                        User borrower = matching.getBorrowerRequest().getUser();
+                        r.setPairedUser(borrower);
+                    } else if (r.getType() == ERequestType.BORROWING.getValue()) {
+                        User returner = matching.getReturnerRequest().getUser();
+                        r.setPairedUser(returner);
+                    }
+                }
+            }
+        }
+
         return new ResponseEntity<>(requestList, HttpStatus.OK);
     }
 
-    @Transactional
     @ApiOperation(value = "Create a book request", response = String.class)
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
+    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @Transactional
+    public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted, NotFoundException {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
@@ -164,16 +187,44 @@ public class RequestController extends BaseController {
             request.setUser(user);
             request.setBook(book);
             request.setBookDetail(bookDetail);
+
+
         } else {
             throw new TypeNotSupportedException("Type " + type + " is not supported");
         }
-
         //save request
-        requestServices.saveRequest(request);
-
+        Message message = new Message();
+        message.setMessage(request);
+        message.setAction(Constant.ACTION_ADD_NEW);
+        publishSubscribe.setMessage(message);
+        publishSubscribe.notifyToSub();
+        Request matchRequest = requestQueueManager.findTheMatch(request);
+        if (matchRequest != null) {
+            // update for request
+            message.setAction(Constant.ACTION_UPDATE);
+            request.setStatus(ERequestStatus.MATCHING.getValue());
+            publishSubscribe.notifyToSub();
+            matchRequest.setStatus(ERequestStatus.MATCHING.getValue());
+            Message matchMessage = new Message();
+            matchMessage.setAction(Constant.ACTION_UPDATE);
+            matchMessage.setMessage(matchRequest);
+            publishSubscribe.setMessage(matchMessage);
+            publishSubscribe.notifyToSub();
+            Matching matching = new Matching();
+            matching.setStatus(EMatchingStatus.PENDING.getValue());
+            matching.setBook(matchRequest.getBook());
+            if (request.getType() == ERequestType.BORROWING.getValue()) {
+                matching.setBorrowerRequest(request);
+                matching.setReturnerRequest(matchRequest);
+            } else {
+                matching.setBorrowerRequest(matchRequest);
+                matching.setReturnerRequest(request);
+            }
+            matchingServices.updateMatching(matching);
+        }
+//        requestServices.saveRequest(request);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", "success");
-
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
@@ -206,7 +257,7 @@ public class RequestController extends BaseController {
             //update matching fields(pin, matchingDate, status)
             String generatedPin = utils.getPin();
             Date createdAt = new Date();
-            int status = MatchingStatus.PENDING.getValue();
+            int status = EMatchingStatus.PENDING.getValue();
 
             matching.setPin(generatedPin);
             matching.setMatchingStartDate(createdAt);
@@ -282,7 +333,7 @@ public class RequestController extends BaseController {
                         requestServices.updateRequest(receiverRequest);
 
                         //update status of matching
-                        matching.setStatus(MatchingStatus.CONFIRMED.getValue());
+                        matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
                         matchingServices.updateMatching(matching);
 
                         //transfer book from returner to receiver
@@ -324,16 +375,12 @@ public class RequestController extends BaseController {
         if (request.getId().equals(id)) {
             throw new EntityIdMismatchException("Request id: " + id + " and " + request.getId() + " is not matched");
         }
-
         Request existedRequest = requestServices.getRequestById(request.getId());
         if (existedRequest == null) {
             throw new EntityNotFoundException("Request id: " + request + " not found");
         }
-
         Request requestResult = requestServices.updateRequest(request);
-
         JSONObject jsonObject = new JSONObject(requestResult);
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
-
 }

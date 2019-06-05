@@ -1,7 +1,9 @@
-import { getItem } from "@localstorage";
+import jwtDecode from "jwt-decode";
+import getAccessToken from "./getAccessToken";
 
 export default function() {
-  if (getItem("email").includes("@fe.edu.vn")) {
+  const email = jwtDecode(getAccessToken()).sub;
+  if (email.includes("@fe.edu.vn")) {
     return true;
   }
 

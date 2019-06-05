@@ -7,7 +7,7 @@ const actions = {
       commit("BOOKS_UPDATED", data);
     } catch (e) {
       // Catch error
-      console.log(e);
+      throw e;
     }
   }
 };
