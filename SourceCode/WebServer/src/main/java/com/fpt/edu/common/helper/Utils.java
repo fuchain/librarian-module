@@ -24,9 +24,10 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
 
     protected final Logger LOGGER = LogManager.getLogger(getClass());
-    private Random random = SecureRandom.getInstanceStrong();
+    private Random random;
 
     public Utils() throws NoSuchAlgorithmException {
+         random = SecureRandom.getInstanceStrong();
     }
 
     public JSONObject buildListEntity(List<?> list, HttpServletRequest httpServletRequest) throws JsonProcessingException {
@@ -84,15 +85,15 @@ public class Utils {
 
     }
 
-    //get pin from random number
+    // Get pin from random number
     public String getPin() {
         int number = random.nextInt(Constant.RANDOM_BOUND);
 
         return String.format("%06d", number);
     }
 
-    //get duration between 2 dates
-    public static long getDuration(Date oldDate, Date newDate, TimeUnit timeUnit) {
+    // Get duration between 2 dates
+    public long getDuration(Date oldDate, Date newDate, TimeUnit timeUnit) {
         long diffInMillies = newDate.getTime() - oldDate.getTime();
         return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
