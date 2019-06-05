@@ -87,7 +87,8 @@ public class Utils {
 
     // Get pin from random number
     public String getPin() {
-        int number = random.nextInt(Constant.RANDOM_BOUND);
+//        int number = random.nextInt(Constant.RANDOM_BOUND);
+        int number = 999999;
 
         return String.format("%06d", number);
     }
