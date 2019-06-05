@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +24,10 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
 
     protected final Logger LOGGER = LogManager.getLogger(getClass());
+    private Random random = SecureRandom.getInstanceStrong();
+
+    public Utils() throws NoSuchAlgorithmException {
+    }
 
     public JSONObject buildListEntity(List<?> list, HttpServletRequest httpServletRequest) throws JsonProcessingException {
         JSONObject jsonObject = new JSONObject();
@@ -47,7 +53,6 @@ public class Utils {
     }
 
 
-
     private String getValueOfAKey(JSONObject object, String keyName) {
         Iterator<?> it = object.keys();
         if (it.hasNext()) {
@@ -69,7 +74,6 @@ public class Utils {
     }
 
 
-
     // Build the root path for the server like http://localhost:9090/api/v1
     public String buildServerRootPath(HttpServletRequest httpServletRequest) {
         return
@@ -82,8 +86,7 @@ public class Utils {
 
     //get pin from random number
     public String getPin() {
-        Random random = new Random();
-        int number = random.nextInt(999999);
+        int number = random.nextInt(Constant.RANDOM_BOUND);
 
         return String.format("%06d", number);
     }

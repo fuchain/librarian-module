@@ -65,7 +65,7 @@ public class RequestController extends BaseController {
     public ResponseEntity<String> getRequestById(@PathVariable Long id) throws JsonProcessingException, EntityNotFoundException {
         Request request = requestServices.getRequestById(id);
         if (request == null) {
-            throw new EntityNotFoundException("Request id: " + request.getId() + " not found");
+            throw new EntityNotFoundException("Request id: " + id + " not found");
         }
 
         JSONObject jsonObject = utils.convertObjectToJSONObject(request);
@@ -76,7 +76,7 @@ public class RequestController extends BaseController {
     @ApiOperation(value = "Get a list of book request", response = String.class)
     @RequestMapping(value = "/get_list", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
     @Transactional
-    public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type) throws JsonProcessingException {
+    public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type) {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
@@ -140,7 +140,7 @@ public class RequestController extends BaseController {
             boolean keeping = false;
             List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
             for (Book b : currentBookList) {
-                if (b.getId() == bookId) {
+                if (b.getId().equals(bookId)) {
                     keeping = true;
                     break;
                 }
@@ -199,7 +199,7 @@ public class RequestController extends BaseController {
 
         if (type == ETransferType.RETURNER.getValue()) { // if returner returns book
             User matchingUser = matching.getReturnerRequest().getUser();
-            if(matchingUser.getId() != sender.getId()){
+            if (matchingUser.getId() != sender.getId()) {
                 throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
             }
 
@@ -223,7 +223,7 @@ public class RequestController extends BaseController {
 
         } else if (type == ETransferType.RECEIVER.getValue()) { // if receiver receives book
             User matchingUser = matching.getBorrowerRequest().getUser();
-            if(matchingUser.getId() != sender.getId()){
+            if (matchingUser.getId() != sender.getId()) {
                 throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
             }
 
@@ -321,7 +321,7 @@ public class RequestController extends BaseController {
     @ApiOperation(value = "Update request", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> updateRequest(@PathVariable Long id, @RequestBody Request request) throws EntityNotFoundException, EntityIdMismatchException {
-        if (request.getId() != id) {
+        if (request.getId().equals(id)) {
             throw new EntityIdMismatchException("Request id: " + id + " and " + request.getId() + " is not matched");
         }
 
