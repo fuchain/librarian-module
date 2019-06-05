@@ -24,11 +24,6 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
 
     protected final Logger LOGGER = LogManager.getLogger(getClass());
-    private Random random;
-
-    public Utils() throws NoSuchAlgorithmException {
-         random = SecureRandom.getInstanceStrong();
-    }
 
     public JSONObject buildListEntity(List<?> list, HttpServletRequest httpServletRequest) throws JsonProcessingException {
         JSONObject jsonObject = new JSONObject();
@@ -87,8 +82,8 @@ public class Utils {
 
     // Get pin from random number
     public String getPin() {
-//        int number = random.nextInt(Constant.RANDOM_BOUND);
-        int number = 999999;
+        Random random = new Random();
+        int number = random.nextInt(Constant.RANDOM_BOUND);
 
         return String.format("%06d", number);
     }
