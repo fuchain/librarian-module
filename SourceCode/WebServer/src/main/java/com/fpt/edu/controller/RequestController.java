@@ -93,15 +93,16 @@ public class RequestController extends BaseController {
 
         for (Request r : requestList) {
             if (r.getStatus() == ERequestStatus.MATCHING.getValue()) {
-                Matching matching = matchingServices.getMatchingByRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
-                if (matching != null) {
-                    if (r.getType() == ERequestType.RETURNING.getValue()) {
-                        User borrower = matching.getBorrowerRequest().getUser();
-                        r.setPairedUser(borrower);
-                    } else if (r.getType() == ERequestType.BORROWING.getValue()) {
-                        User returner = matching.getReturnerRequest().getUser();
-                        r.setPairedUser(returner);
-                    }
+                if (r.getType() == ERequestType.RETURNING.getValue()) {
+                    Matching matching = matchingServices.getMatchingByReturnRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
+
+                    User borrower = matching.getBorrowerRequest().getUser();
+                    r.setPairedUser(borrower);
+                } else if (r.getType() == ERequestType.BORROWING.getValue()) {
+                    Matching matching = matchingServices.getMatchingByReceiveRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
+
+                    User returner = matching.getReturnerRequest().getUser();
+                    r.setPairedUser(returner);
                 }
             }
         }
