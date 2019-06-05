@@ -49,15 +49,14 @@
         Chỉ tồn tại trong
         <strong>{{ remainTime }} giây</strong>
       </div>
-      <div style="text-align: center;">
+      <!-- <div style="text-align: center;">
         <vs-button @click="validateConfirm">Đã xong</vs-button>
-      </div>
+      </!-->
     </vs-popup>
   </div>
 </template>
 
 <script>
-import { setTimeout } from "timers";
 const ItemGridView = () => import("./ItemGridView.vue");
 
 let countInterval;
@@ -116,8 +115,6 @@ export default {
         });
     },
     async validateConfirm() {
-      this.$vs.loading();
-
       this.$http
         .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
         .then(response => {
@@ -142,24 +139,17 @@ export default {
         .catch(err => {
           // Catch
           console.log(err);
-
-          this.$vs.notify({
-            title: "Lỗi",
-            text: "Người nhận chưa xác nhận mã PIN",
-            color: "warning",
-            position: "top-center"
-          });
         })
-        .finally(() => {
-          this.$vs.loading.close();
-        });
+        .finally(() => {});
     },
     startCount() {
       this.remainTime = 300;
+      clearInterval(countInterval);
 
       countInterval = setInterval(
         function() {
           this.remainTime = this.remainTime - 1;
+          this.validateConfirm();
 
           if (this.remainTime <= 0) {
             this.$vs.notify({
