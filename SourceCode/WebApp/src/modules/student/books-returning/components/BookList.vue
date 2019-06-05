@@ -1,12 +1,8 @@
 <template>
-  <div id="ecommerce-wishlist-demo" v-if="isMounted">
+  <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">Sách đang trả</h2>
-    <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
-      <div
-        class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
-        v-for="item in listBooks"
-        :key="item.id"
-      >
+    <div class="items-grid-view vx-row match-height" v-if="books.length" appear>
+      <div class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full" v-for="item in books" :key="item.id">
         <item-grid-view :item="item">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
@@ -71,12 +67,15 @@ export default {
   },
   data() {
     return {
-      isMounted: false,
-      listBooks: [],
       popupActive: false,
       randomPIN: 0,
       remainTime: 0
     };
+  },
+  props: {
+    books: {
+      type: Array
+    }
   },
   watch: {
     popupActive(val) {
@@ -142,32 +141,6 @@ export default {
   },
   beforeDestroy() {
     clearInterval(countInterval);
-  },
-  mounted() {
-    this.$vs.loading();
-
-    this.$http
-      .get(`${this.$http.baseUrl}/requests/get_list?type=2`)
-      .then(response => {
-        const data = response.data;
-
-        const books = data.map(e => {
-          return {
-            id: e.book.id,
-            name: e.book.bookDetail.name,
-            description: `Book ${
-              e.book.bookDetail.name
-            } for Software Engineering learning at FPT University`,
-            image: "https://i.imgur.com/2j6B1n5.jpg",
-            code: e.book.bookDetail.name.substring(0, 3).toUpperCase() + "101",
-            status: e.status
-          };
-        });
-
-        this.listBooks = [].concat(books);
-        this.$vs.loading.close();
-        this.isMounted = true;
-      });
   }
 };
 </script>

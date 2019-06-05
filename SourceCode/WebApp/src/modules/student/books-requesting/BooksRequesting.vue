@@ -1,5 +1,5 @@
 <template>
-  <book-list :books="books" :loaded="loaded"/>
+  <book-list :books="books" v-if="loaded"/>
 </template>
 
 <script>
