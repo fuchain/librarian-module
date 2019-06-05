@@ -38,8 +38,8 @@ public class RequestServices {
         return requestResult;
     }
 
-    public boolean checkExistedRequest(int type, Long userId, Long bookDetailId, Long bookId) {
-        int row = requestRepository.checkExistedRequest(type, userId, bookDetailId, bookId);
+    public boolean checkExistedRequest(int type, Long userId, int status, Long bookDetailId, Long bookId) {
+        int row = requestRepository.checkExistedRequest(type, userId, status, bookDetailId, bookId);
         return row > 0;
     }
 
@@ -56,10 +56,6 @@ public class RequestServices {
         return IteratorUtils.toList(requestRepository.getListOfPendingRequest().iterator());
 
     }
-
-
-
-
 
 
 }

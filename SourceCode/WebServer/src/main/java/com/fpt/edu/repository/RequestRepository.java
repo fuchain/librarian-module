@@ -17,9 +17,11 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
                                             @Param("type") int type);
 
     @Query(value = "SELECT COUNT(r.id) FROM Request r WHERE r.type = :type AND r.user.id = :user_id " +
+            " AND r.status <> :status" +
             " AND (r.bookDetail.id = :book_detail_id OR r.book.id = :book_id)")
     Integer checkExistedRequest(@Param("type") int type,
                                 @Param("user_id") Long user_id,
+                                @Param("status") int status,
                                 @Param("book_detail_id") Long book_detail_id,
                                 @Param("book_id") Long book_id);
 

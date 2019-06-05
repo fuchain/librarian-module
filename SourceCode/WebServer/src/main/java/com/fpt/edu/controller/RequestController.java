@@ -2,6 +2,7 @@ package com.fpt.edu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.ERequestStatus;
+import com.fpt.edu.common.ETransferType;
 import com.fpt.edu.common.MatchingStatus;
 import com.fpt.edu.common.ERequestType;
 import com.fpt.edu.constant.Constant;
@@ -84,8 +85,8 @@ public class RequestController extends BaseController {
     }
 
     @ApiOperation(value = "Create a book request", response = String.class)
-    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> requestBook(@RequestBody String body) throws  EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted {
         //get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
@@ -110,7 +111,8 @@ public class RequestController extends BaseController {
             }
 
             //check existed request
-            boolean existed = requestServices.checkExistedRequest(type, user.getId(), bookDetail.getId(), (long) 0);
+            boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
+                    bookDetail.getId(), (long) 0);
             if (existed) {
                 throw new EntityAldreayExisted("Request's already existed");
             }
@@ -143,7 +145,8 @@ public class RequestController extends BaseController {
             }
 
             //check whether the request is already existed
-            boolean existed = requestServices.checkExistedRequest(type, user.getId(), (long) 0, book.getId());
+            boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
+                    (long) 0, book.getId());
             if (existed) {
                 throw new EntityAldreayExisted("Request's already existed");
             }
@@ -167,144 +170,132 @@ public class RequestController extends BaseController {
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Returner returns a book", response = String.class)
-    @RequestMapping(value = "/return", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> returnBook(@RequestParam Long matchingId) throws EntityNotFoundException {
+    @ApiOperation(value = "Transfer book for returner and receiver", response = String.class)
+    @RequestMapping(value = "/transfer", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> transferBook(@RequestBody String body) throws Exception {
+        JSONObject bodyObject = new JSONObject(body);
+        int type = bodyObject.getInt("type");
 
-        Matching matching = matchingServices.getMatchingById(matchingId);
-        if (matching == null) {
-            throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
-        }
-
-        String pin = utils.getPin();
-        Date createdAt = new Date();
-        int status = MatchingStatus.PENDING.getValue();
-
-        matching.setPin(pin);
-        matching.setMatchingStartDate(createdAt);
-        matching.setStatus(status);
-
-        matchingServices.updateMatching(matching);
+        Long matchingId = bodyObject.getLong("matchingId");
 
         JSONObject jsonResult = new JSONObject();
-        jsonResult.put("pin", pin);
-        jsonResult.put("created_at", createdAt);
-        jsonResult.put("status", status);
 
-        return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "Receiver receives a book", response = String.class)
-    @RequestMapping(value = "/receive", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> receiveBook(@RequestParam String pin, @RequestParam Long matchingId) throws Exception {
+        //check whether matchingId is existed or not
         Matching matching = matchingServices.getMatchingById(matchingId);
         if (matching == null) {
             throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
         }
 
-        if (matching.getStatus() == ERequestStatus.COMPLETED.getValue()) {
-            throw new EntityAldreayExisted("The pin has have sent");
-        }
+        if (type == ETransferType.RETURNER.getValue()) { // if returner returns book
+            //update matching fields(pin, matchingDate, status)
+            String generatedPin = utils.getPin();
+            Date createdAt = new Date();
+            int status = MatchingStatus.PENDING.getValue();
 
-        long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
+            matching.setPin(generatedPin);
+            matching.setMatchingStartDate(createdAt);
+            matching.setStatus(status);
 
-        if (duration > Constant.PIN_EXPIRED_MINUTE) {
-            throw new PinExpiredException("Pin: " + pin + " has been expired");
-        }
+            matchingServices.updateMatching(matching);
 
-        if (!matching.getPin().equals(pin)) {
-            throw new EntityPinMisMatchException("Pin: " + pin + " does not match to Matching");
-        }
+            //response to user
+            jsonResult.put("pin", generatedPin);
+            jsonResult.put("created_at", createdAt);
+            jsonResult.put("status", status);
 
-        Book book = bookServices.getBookById(matching.getBook().getId());
-        Request returnerRequest = matching.getReturnerRequest();
-        Request receiverRequest = matching.getBorrowerRequest();
-        User returner = returnerRequest.getUser();
-        User receiver = receiverRequest.getUser();
-        JSONObject jsonObject = new JSONObject();
-        AtomicBoolean success = new AtomicBoolean(false);
-        AtomicBoolean callback = new AtomicBoolean(false);
-        AtomicReference<ResponseEntity> responseEntity = null;
+            return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 
-        Object asset = book.getAsset();
-
-        Date sendTime = new Date();
-
-        //update current_keeper
-        book.setUser(receiver);
-
-        //add transaction to bigchainDB
-        BigchainTransactionServices services = new BigchainTransactionServices();
-        services.doTransfer(
-                book.getLastTxId(),
-                book.getAssetId(), book.getMetadata(),
-                String.valueOf(returner.getId()), String.valueOf(receiver.getId()),
-                (transaction, response) -> { //success
-
-                    //turn on the flag success and callback
-                    success.set(true);
-                    callback.set(true);
-
-                    String tracsactionId = transaction.getId();
-                    book.setAssetId(tracsactionId);
-                    book.setLastTxId(tracsactionId);
-                    LOGGER.info("Create tx success: " + response);
-
-                    //update status of request to "completed"
-                    returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-                    receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-                    requestServices.updateRequest(returnerRequest);
-                    requestServices.updateRequest(receiverRequest);
-
-                    //update status of matching
-                    matching.setStatus(MatchingStatus.CONFIRMED.getValue());
-                    matchingServices.updateMatching(matching);
-
-                    //transfer book from returner to receiver
-                    bookServices.updateBook(book);
-
-                    //insert a transaction to DB Postgresql
-                    Transaction tran = new Transaction();
-                    tran.setBook(book);
-                    tran.setReturner(returner);
-                    tran.setBorrower(receiver);
-                    transactionServices.insertTransaction(tran);
-
-                },
-                (transaction, response) -> { //failed
-                    callback.set(true);
-                    LOGGER.error("We have a trouble: " + response);
-                }
-        );
-
-        Date now;
-
-        while (true) {
-            now = new Date();
-            duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
-
-            if (duration > 30 || callback.get() == true) {
-                jsonObject.put("message", "confirm book transfer successfully");
-                return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        } else if (type == ETransferType.RECEIVER.getValue()) { // if receiver receives book
+            //check whether matching status equals completed or not
+            if (matching.getStatus() == ERequestStatus.COMPLETED.getValue()) {
+                throw new EntityAldreayExisted("The pin has have sent");
             }
-        }
-    }
 
-    @ApiOperation(value = "Returner confirms book transfer", response = String.class)
-    @RequestMapping(value = "/confirm", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> confirmBookTransfer(@RequestParam Long matchingId) throws Exception {
-        Matching matching = matchingServices.getMatchingById(matchingId);
-        if (matching == null) {
-            throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
-        }
+            //get pin from receiver
+            String pin = bodyObject.getString("pin");
 
-        if (matching.getStatus() != MatchingStatus.CONFIRMED.getValue()) {
-            throw new Exception("Receiver has not imported pin yet");
-        }
+            //check expired time of pin
+            long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
+            if (duration > Constant.PIN_EXPIRED_MINUTE) {
+                throw new PinExpiredException("Pin: " + pin + " has been expired");
+            }
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message", "confirmed");
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+            if (!matching.getPin().equals(pin)) {
+                throw new EntityPinMisMatchException("Pin: " + pin + " does not match to Matching");
+            }
+
+            Book book = bookServices.getBookById(matching.getBook().getId());
+            Request returnerRequest = matching.getReturnerRequest();
+            Request receiverRequest = matching.getBorrowerRequest();
+            User returner = returnerRequest.getUser();
+            User receiver = receiverRequest.getUser();
+            AtomicBoolean success = new AtomicBoolean(false);
+            AtomicBoolean callback = new AtomicBoolean(false);
+            AtomicReference<ResponseEntity> responseEntity = null;
+            Object asset = book.getAsset();
+            Date sendTime = new Date();
+
+            //update current_keeper
+            book.setUser(receiver);
+
+            //add transaction to bigchainDB
+            BigchainTransactionServices services = new BigchainTransactionServices();
+            services.doTransfer(
+                    book.getLastTxId(),
+                    book.getAssetId(), book.getMetadata(),
+                    String.valueOf(returner.getId()), String.valueOf(receiver.getId()),
+                    (transaction, response) -> { //success
+
+                        //turn on the flag success and callback
+                        success.set(true);
+                        callback.set(true);
+
+                        String tracsactionId = transaction.getId();
+                        book.setAssetId(tracsactionId);
+                        book.setLastTxId(tracsactionId);
+                        LOGGER.info("Create tx success: " + response);
+
+                        //update status of request to "completed"
+                        returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+                        receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+                        requestServices.updateRequest(returnerRequest);
+                        requestServices.updateRequest(receiverRequest);
+
+                        //update status of matching
+                        matching.setStatus(MatchingStatus.CONFIRMED.getValue());
+                        matchingServices.updateMatching(matching);
+
+                        //transfer book from returner to receiver
+                        bookServices.updateBook(book);
+
+                        //insert a transaction to DB Postgresql
+                        Transaction tran = new Transaction();
+                        tran.setBook(book);
+                        tran.setReturner(returner);
+                        tran.setBorrower(receiver);
+                        transactionServices.insertTransaction(tran);
+
+                    },
+                    (transaction, response) -> { //failed
+                        callback.set(true);
+                        LOGGER.error("We have a trouble: " + response);
+                    }
+            );
+
+            Date now;
+
+            while (true) {
+                now = new Date();
+                duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+
+                if (duration > 30 || callback.get() == true) {
+                    jsonResult.put("message", "confirm book transfer successfully");
+                    return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+                }
+            }
+        } else {
+            throw new TypeNotSupportedException("Type: " + type + " is not supported");
+        }
     }
 
     @ApiOperation(value = "Update request", response = String.class)
