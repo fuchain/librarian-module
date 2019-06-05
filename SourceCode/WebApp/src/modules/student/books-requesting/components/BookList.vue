@@ -23,7 +23,7 @@
 
                 <span
                   class="text-sm font-semibold ml-2"
-                  @click="triggerCall(item.user ? true : false)"
+                  @click="triggerCall(item.user)"
                 >{{ item.user ? "LIÊN LẠC" : "CHI TIẾT" }}</span>
               </div>
             </div>
@@ -113,9 +113,9 @@ export default {
     }
   },
   methods: {
-    triggerCall(check) {
-      if (!check) return;
-      window.location.href = "tel:0123456789";
+    triggerCall(user) {
+      if (!user) return;
+      window.location.href = `tel:${user.phone}`;
     },
     async fakeLoad() {
       return new Promise((resolve, reject) => {

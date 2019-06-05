@@ -21,7 +21,7 @@
               >
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2" @click="triggerCall()">LIÊN LẠC</span>
+                <span class="text-sm font-semibold ml-2" @click="triggerCall(item.user)">LIÊN LẠC</span>
               </div>
 
               <div
@@ -97,8 +97,9 @@ export default {
         );
       });
     },
-    triggerCall() {
-      window.location.href = "tel:0123456789";
+    triggerCall(user) {
+      if (!user) return;
+      window.location.href = `tel:${user.phone}`;
     },
     async beginConfirm() {
       await this.fakeLoad();
