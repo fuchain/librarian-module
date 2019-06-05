@@ -174,7 +174,7 @@ export default {
         this.isLoading = true;
 
         this.$http
-          .post(`${this.$http.baseUrl}/requests/create`, {
+          .post(`${this.$http.baseUrl}/requests`, {
             type: 2,
             book_id: this.book.id
           })
