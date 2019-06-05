@@ -48,32 +48,32 @@ const userMenu = [
     icon: "BookIcon",
     submenu: [
       {
-        url: "/books",
+        url: "/books/keeping",
         name: "Sách đang giữ",
-        slug: "books"
+        slug: "books-keeping"
       },
       {
         url: "/books/returning",
         name: "Sách đang trả",
-        slug: "returning-books"
+        slug: "books-returning"
       },
       {
         url: "/books/requesting",
         name: "Sách đang yêu cầu",
-        slug: "requesting-books"
+        slug: "books-requesting"
       }
     ]
   },
   {
     url: "/books/request",
     name: "Yêu cầu mượn sách",
-    slug: "request",
+    slug: "book-request",
     icon: "BookOpenIcon"
   },
   {
     url: "/books/pair",
     name: "Nhập mã nhận sách",
-    slug: "request",
+    slug: "book-pair",
     icon: "ShoppingBagIcon"
   },
   {

@@ -197,7 +197,8 @@ export default {
 
           this.$vs.notify({
             title: "Không hợp lệ",
-            text: "Email không hợp lệ",
+            text:
+              "Email không nằm trong danh sách hệ thống, vui lòng liên hệ nhà trường",
             color: "danger",
             position: "top-right"
           });
