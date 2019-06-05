@@ -1,6 +1,6 @@
 package com.fpt.edu.controller;
 
-import com.fpt.edu.common.MatchingStatus;
+import com.fpt.edu.common.EMatchingStatus;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Matching;
 import com.fpt.edu.entities.User;
@@ -50,7 +50,7 @@ public class MatchingController extends BaseController {
             throw new EntityIdMismatchException("User id of matching: " + matchingUser.getId() + " does not match to user id from authentication");
         }
 
-        if (matching.getStatus() != MatchingStatus.CONFIRMED.getValue()) {
+        if (matching.getStatus() != EMatchingStatus.CONFIRMED.getValue()) {
             throw new Exception("Receiver has not imported pin yet");
         }
 

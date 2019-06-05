@@ -1,5 +1,8 @@
 package com.fpt.edu.services;
 
+import com.fpt.edu.common.ERequestType;
+import com.fpt.edu.entities.Request;
+import com.fpt.edu.repository.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -13,36 +16,41 @@ import com.fpt.edu.repository.BookRepository;
 
 import com.fpt.edu.entities.User;
 import com.fpt.edu.repository.UserRepository;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
 public class UserServices {
-	private final BCryptPasswordEncoder encoder;
-	@Autowired
-	private UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Autowired
-	private BookRepository bookRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
-	public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
-		this.userRepository = userRepository;
-		this.encoder = encoder;
-	}
+    @Autowired
+    private RequestRepository requestRepository;
 
-	public void addNewUser(User user) {
-	    if (!user.getPassword().trim().isEmpty()) {
+    public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+    }
+
+    public void addNewUser(User user) {
+        if (!user.getPassword().trim().isEmpty()) {
             user.setPassword(encoder.encode(user.getPassword()));
         } else {
-	        user.setPassword(null);
+            user.setPassword(null);
         }
 
-		userRepository.save(user);
-	}
+        userRepository.save(user);
+    }
 
-	public Optional<User> findUserByEmail(String email) {
-	    return userRepository.findByEmail(email);
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public User getUserByEmail(String email) throws UsernameNotFoundException {
@@ -60,11 +68,13 @@ public class UserServices {
 
     @Transactional
     public List<Book> getCurrentBookListOfUser(Long userId) {
-        List<Book> result = (List<Book>) bookRepository.findBookListByUserId(userId);
-        for (int i = 0; i < result.size(); i++) {
-            BookDetail bookDetail = result.get(i).getBookDetail();
+        List<Book> currentBookList = (List<Book>) bookRepository.findBookListByUserId(userId);
+
+        for (int i = 0; i < currentBookList.size(); i++) {
+            BookDetail bookDetail = currentBookList.get(i).getBookDetail();
             bookDetail.getAuthors().size();
         }
-        return result;
+
+        return currentBookList;
     }
 }
