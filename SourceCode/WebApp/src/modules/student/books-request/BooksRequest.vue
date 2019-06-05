@@ -77,7 +77,7 @@ export default {
       this.$vs.loading();
 
       this.$http
-        .post(`${this.$http.baseUrl}/requests/create`, {
+        .post(`${this.$http.baseUrl}/requests`, {
           type: 1,
           book_name: this.bookCode
         })
