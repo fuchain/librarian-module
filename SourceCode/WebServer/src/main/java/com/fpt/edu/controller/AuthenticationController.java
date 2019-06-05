@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ import static com.fpt.edu.security.SecurityConstants.SECRET;
 
 @RestController
 @RequestMapping("auth")
-public class AuthenticationController extends BaseController {
+public class AuthenticationController {
     private final UserServices userServices;
 
     public AuthenticationController(UserServices userServices) {
@@ -35,38 +36,32 @@ public class AuthenticationController extends BaseController {
     public ResponseEntity<String> signUp(@RequestBody User user) {
         userServices.addNewUser(user);
 
-        return UserController.getJSONResponseUserProfile(user);
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("id", user.getId());
+        responseJSON.put("email", user.getEmail());
+        responseJSON.put("fullname", user.getFullName());
+        responseJSON.put("phone", user.getPhone());
+
+        return ResponseEntity.ok().body(responseJSON.toString());
     }
 
-    private static String generateJwtTokenResponse(User user) {
-        // Generate JWT token
-        long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
-        Date expireDate = new Date(expireDateUnixTime * 1000);
+    @ApiOperation(value = "Get user information", response = String.class)
+    @GetMapping("me")
+    public ResponseEntity<String> getMe(Principal principal) {
+        String email = principal.getName();
+        User user = userServices.getUserByEmail(email);
 
-        String responseToken = JWT.create()
-                .withClaim("id", user.getId())
-                .withSubject(user.getEmail())
-                .withExpiresAt(expireDate)
-                .sign(Algorithm.HMAC512(SECRET.getBytes()));
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("id", user.getId());
+        responseJSON.put("email", user.getEmail());
+        responseJSON.put("fullname", user.getFullName());
 
-        // Response token JSON
-        JSONObject responseObj = new JSONObject();
-        responseObj.put("token", responseToken);
-        responseObj.put("email", user.getEmail());
-        responseObj.put("fullname", user.getFullName());
-        responseObj.put("phone", user.getPhone());
-        responseObj.put("expire", expireDateUnixTime);
-
-        return responseObj.toString();
-    }
-
-    private String getEmailDomain(String email) {
-        return  email.substring(email.indexOf("@") + 1);
+        return ResponseEntity.ok().body(responseJSON.toString());
     }
 
     @ApiOperation(value = "Login with Google", response = String.class)
     @PostMapping("google")
-    public ResponseEntity<String> googleLogin(@RequestBody String body) throws Exception {
+    public ResponseEntity<String> googleLogin(@RequestBody String body) throws UnirestException {
         // Get token from request body
         JSONObject jsonBody = new JSONObject(body);
         String token = (String)jsonBody.get("token");
@@ -78,23 +73,31 @@ public class AuthenticationController extends BaseController {
             Optional<User> loggedUser = userServices.findUserByEmail(email);
 
             // If email is not in database
-            String tokenResponse;
-
             if (loggedUser.isEmpty()) {
-                if (getEmailDomain(email).equalsIgnoreCase("fpt.edu.vn")) {
-                    User newUser = new User(email, null, null, null);
-                    userServices.addNewUser(newUser);
-                    tokenResponse = generateJwtTokenResponse(newUser);
-                } else {
-                    throw new Exception("Google account must be of FPT University");
-                }
-            } else {
-                tokenResponse = generateJwtTokenResponse(loggedUser.get());
+                return new ResponseEntity<>("User is not in database", HttpStatus.BAD_REQUEST);
             }
 
-            return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
+            // Generate JWT token
+            long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
+            Date expireDate = new Date(expireDateUnixTime * 1000);
+
+            String responseToken = JWT.create()
+                    .withClaim("id", loggedUser.get().getId())
+                    .withSubject(email)
+                    .withExpiresAt(expireDate)
+                    .sign(Algorithm.HMAC512(SECRET.getBytes()));
+
+            // Response token JSON
+            JSONObject responseObj = new JSONObject();
+            responseObj.put("token", responseToken);
+            responseObj.put("email", email);
+            responseObj.put("fullname", loggedUser.get().getFullName());
+            responseObj.put("phone", loggedUser.get().getPhone());
+            responseObj.put("expire", expireDateUnixTime);
+
+            return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);
         } catch(Exception ex) {
-            throw new Exception(ex.toString());
+            return new ResponseEntity<>(ex.toString(), HttpStatus.BAD_REQUEST);
         }
     }
 }

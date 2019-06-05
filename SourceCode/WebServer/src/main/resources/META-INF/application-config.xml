@@ -17,4 +17,5 @@
     <bean id="bigchainDbConfig" class="com.fpt.edu.config.BigchainDbConfig">
         <constructor-arg value="${fptu.tech.bigchaindb.host}"/>
     </bean>
+
 </beans>
