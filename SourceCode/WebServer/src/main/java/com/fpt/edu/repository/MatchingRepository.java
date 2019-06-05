@@ -13,4 +13,9 @@ public interface MatchingRepository extends CrudRepository<Matching, Long> {
             " AND m.status <> :status")
     Matching getByRequestId(@Param("requestId") Long requestId,
                             @Param("status") int matchingStatus);
+
+    @Query(value = "SELECT m FROM Matching m WHERE (m.returnerRequest.id = :requestId OR m.borrowerRequest.id = :requestId)")
+    Matching getMatchByRequestId(@Param("requestId") Long requestId);
+
+
 }

@@ -383,4 +383,18 @@ public class RequestController extends BaseController {
         JSONObject jsonObject = new JSONObject(requestResult);
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
+
+
+    @ApiOperation(value = "Get Match ID", response = JSONObject.class)
+    @RequestMapping(value = "/{id}/matched", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<String> getMatchedIdOfRequest(@PathVariable Long id) throws EntityNotFoundException, EntityIdMismatchException {
+        Matching matched = matchingServices.getMatchingByRequestId(id);
+        JSONObject jsonResposne = new JSONObject();
+        if (matched != null) {
+            jsonResposne.put("MatchedID", matched.getId());
+        }
+        return new ResponseEntity<>(jsonResposne.toString(), HttpStatus.OK);
+    }
+
+
 }
