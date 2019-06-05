@@ -314,7 +314,7 @@ public class RequestController extends BaseController {
             services.doTransfer(
                     book.getLastTxId(),
                     book.getAssetId(), book.getMetadata(),
-                    String.valueOf(returner.getId()), String.valueOf(receiver.getId()),
+                    String.valueOf(returner.getEmail()), String.valueOf(receiver.getEmail()),
                     (transaction, response) -> { //success
 
                         //turn on the flag success and callback
@@ -322,9 +322,7 @@ public class RequestController extends BaseController {
                         callback.set(true);
 
                         String tracsactionId = transaction.getId();
-                        book.setAssetId(tracsactionId);
                         book.setLastTxId(tracsactionId);
-                        LOGGER.info("Create tx success: " + response);
 
                         //update status of request to "completed"
                         returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
@@ -349,7 +347,6 @@ public class RequestController extends BaseController {
                     },
                     (transaction, response) -> { //failed
                         callback.set(true);
-                        LOGGER.error("We have a trouble: " + response);
                     }
             );
 
