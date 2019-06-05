@@ -116,19 +116,8 @@ export default {
           this.$auth.setAccessToken(data.token);
           this.$auth.setAccessTokenExpiresAt(data.expire.toString());
 
-          this.$http.get(`${this.$http.baseUrl}/auth/me`).then(response => {
-            const userProfile = response.data;
-
-            // Set info
-            this.$localStorage.setItem("email", data.email);
-            this.$localStorage.setItem(
-              "fullname",
-              userProfile.fullname || "Người dùng"
-            );
-
-            this.$vs.loading.close();
-            this.$router.push("/");
-          });
+          this.$vs.loading.close();
+          this.$router.push("/");
         })
         .catch(() => {
           this.$vs.notify({
