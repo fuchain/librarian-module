@@ -47,7 +47,7 @@ public class BookController extends BaseController {
     public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody Book book) throws IOException, EntityNotFoundException, EntityIdMismatchException {
         Long bookId = book.getId();
 
-        if (bookId != id) {
+        if (bookId.equals(id)) {
             throw new EntityIdMismatchException("Book ID: " + id + " and " + bookId + " does not match");
         }
 

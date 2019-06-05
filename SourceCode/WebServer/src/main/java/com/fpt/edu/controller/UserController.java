@@ -26,8 +26,8 @@ public class UserController extends BaseController {
     @Autowired
     private UserServices userServices;
 
-    @RequestMapping(value = "/{userId}/books/addABook", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<User> AddBooktoUser(@PathVariable Long userId, @RequestBody String body) {
+    @RequestMapping(value = "/books/addABook", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<User> AddBooktoUser(@RequestBody String body) {
         JSONObject jsonBody = new JSONObject(body);
         return null;
     }
