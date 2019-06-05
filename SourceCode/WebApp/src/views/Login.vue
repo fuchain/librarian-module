@@ -179,15 +179,14 @@ export default {
 
       this.$http
         .post(`${this.$http.baseUrl}/auth/google`, { token: idToken })
-        .then(response => {
+        .then(async response => {
           // Set data;
           const data = response.data;
           this.$auth.setAccessToken(data.token);
           this.$auth.setAccessTokenExpiresAt(data.expire.toString());
 
-          // Set info
-          this.$localStorage.setItem("email", data.email);
-          this.$localStorage.setItem("fullname", data.fullname || "Người dùng");
+          // Get profile
+          await this.$store.dispatch("getProfile");
 
           this.$vs.loading.close();
           this.$router.push("/");

@@ -74,6 +74,25 @@ const mutations = {
     if (!downToUp) {
       state.starredPages.splice(10, 0, lastItemInStarredLimited);
     }
+  },
+
+  PROFILE_UPDATED(state, profile) {
+    state.email = profile.email;
+    state.fullname = profile.fullname;
+    state.phone = profile.phone;
+  },
+  PROFILE_UPDATED_SUCCESS(state, profile) {
+    state.fullname = profile.fullName;
+    state.phone = profile.phone;
+  },
+  UPDATE_PROFILE_EMAIL(state, email) {
+    state.email = email;
+  },
+  UPDATE_PROFILE_FULLNAME(state, fullname) {
+    state.fullname = fullname;
+  },
+  UPDATE_PROFILE_PHONE(state, phone) {
+    state.phone = phone;
   }
 };
 
