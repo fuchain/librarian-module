@@ -162,8 +162,14 @@ export default {
             position: "top-center"
           });
 
-          this.$router.push("/books/keeping");
           this.confirmPopup = false;
+
+          setTimeout(
+            function() {
+              this.$router.push("/books/keeping");
+            }.bind(this),
+            500
+          );
         })
         .catch(err => {
           // Catch

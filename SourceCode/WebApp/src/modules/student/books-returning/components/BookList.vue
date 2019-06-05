@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import { setTimeout } from "timers";
 const ItemGridView = () => import("./ItemGridView.vue");
 
 let countInterval;
@@ -129,8 +130,14 @@ export default {
             position: "top-center"
           });
 
-          this.$router.push("/books/keeping");
           this.popupActive = false;
+
+          setTimeout(
+            function() {
+              this.$router.push("/books/keeping");
+            }.bind(this),
+            500
+          );
         })
         .catch(err => {
           // Catch
