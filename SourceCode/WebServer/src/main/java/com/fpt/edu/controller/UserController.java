@@ -1,9 +1,12 @@
 package com.fpt.edu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.common.ERequestType;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
+import com.fpt.edu.entities.Request;
 import com.fpt.edu.entities.User;
+import com.fpt.edu.services.RequestServices;
 import com.fpt.edu.services.UserServices;
 import io.swagger.annotations.ApiOperation;
 import org.glassfish.grizzly.compression.lzma.impl.Base;
@@ -26,6 +29,9 @@ public class UserController extends BaseController {
     @Autowired
     private UserServices userServices;
 
+    @Autowired
+    private RequestServices requestServices;
+
     @RequestMapping(value = "/books/addABook", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<User> AddBooktoUser(@RequestBody String body) {
         JSONObject jsonBody = new JSONObject(body);
@@ -34,13 +40,25 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "get a list of current book", response = String.class)
     @RequestMapping(value = "current_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<List<Book>> getCurrentBookOfUser() throws JsonProcessingException {
+    public ResponseEntity<List<Book>> getCurrentBook() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = (String) authentication.getPrincipal();
             User user = userServices.getUserByEmail(email);
 
             List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
+            List<Request> returningList = (List<Request>) requestServices.findByUserIdAndType(user.getId(), ERequestType.RETURNING.getValue());
+
+            for (int i = 0; i < currentBookList.size(); i++) {
+                for (int j = 0; j < returningList.size(); j++) {
+                    Book currentBook = currentBookList.get(i);
+                    Book returningBook = returningList.get(j).getBook();
+
+                    if (currentBook.getId().equals(returningBook.getId())) {
+                        currentBookList.remove(currentBook);
+                    }
+                }
+            }
 
             return new ResponseEntity<>(currentBookList, HttpStatus.OK);
         } catch (Exception ex) {

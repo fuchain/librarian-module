@@ -1,6 +1,7 @@
 package com.fpt.edu.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,6 +19,7 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	private String email;
 
 	@JsonIgnore
+	@JsonProperty(value = "password")
 	@Column(name = "password")
 	private String password;
 
