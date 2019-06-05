@@ -7,7 +7,7 @@ import { mapGetters } from "vuex";
 import store from "./store";
 import BookList from "./components/BookList.vue";
 
-export const STORE_KEY = "student-books";
+export const STORE_KEY = "student-book-keeping";
 
 export default {
   components: {
