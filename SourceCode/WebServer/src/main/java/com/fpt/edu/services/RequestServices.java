@@ -1,6 +1,7 @@
 package com.fpt.edu.services;
 
 
+import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.common.RequestQueueSimulate.Message;
 import com.fpt.edu.common.RequestQueueSimulate.Observer;
 import com.fpt.edu.constant.Constant;
@@ -46,14 +47,14 @@ public class RequestServices implements Observer {
         return requestResult;
     }
 
-    public boolean checkExistedRequest(int type, Long userId, Long bookDetailId, Long bookId) {
-        int row = requestRepository.checkExistedRequest(type, userId, bookDetailId, bookId);
+    public boolean checkExistedRequest(int type, Long userId, int status, Long bookDetailId, Long bookId) {
+        int row = requestRepository.checkExistedRequest(type, userId, status, bookDetailId, bookId);
         return row > 0;
     }
-    @Transactional
-    public List<Request> findByUserIdAndType(Long userId, int type) {
 
-        return (List<Request>) requestRepository.findByUserIdAndType(userId, type);
+    @Transactional
+    public List<Request> findByUserIdAndType(Long userId, int type, int status) {
+        return (List<Request>) requestRepository.findByUserIdAndType(userId, type, status);
     }
 
     public Request updateRequest(Request request) {

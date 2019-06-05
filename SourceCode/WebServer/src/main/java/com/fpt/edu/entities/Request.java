@@ -1,5 +1,6 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -32,7 +33,12 @@ public class Request extends AbstractTimestampEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "paired_user")
+    private User pairedUser;
 
     @Column(name = "status")
     private int status;
@@ -41,11 +47,13 @@ public class Request extends AbstractTimestampEntity implements Serializable {
     private int type;
 
 
+    public User getPairedUser() {
+        return pairedUser;
+    }
 
-
-
-
-
+    public void setPairedUser(User pairedUser) {
+        this.pairedUser = pairedUser;
+    }
 
     public BookDetail getBookDetail() {
         return bookDetail;

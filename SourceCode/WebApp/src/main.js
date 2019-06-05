@@ -31,6 +31,10 @@ import http from "@http";
 import auth from "@auth";
 import * as localStorage from "@localstorage";
 
+import VueMoment from "vue-moment";
+import moment from "moment";
+import "moment/locale/vi";
+
 // Form Wizard
 Vue.use(VueFormWizard);
 
@@ -58,13 +62,16 @@ Vue.use({
 
 Vue.use(VueTimeago, {
   name: "Timeago", // Component name, `Timeago` by default
-  locale: "en", // Default locale
+  locale: "vi", // Default locale
   // We use `date-fns` under the hood
   // So you can use all locales from it
   locales: {
-    // "zh-CN": require("date-fns/locale/zh_cn"),
-    // ja: require("date-fns/locale/ja")
+    vi: require("date-fns/locale/vi")
   }
+});
+
+Vue.use(VueMoment, {
+  moment
 });
 
 Vue.config.productionTip = false;

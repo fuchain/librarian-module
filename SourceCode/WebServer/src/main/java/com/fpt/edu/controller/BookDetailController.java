@@ -43,7 +43,7 @@ public class BookDetailController extends BaseController {
     }
     @ApiOperation(value = "Update a bookdetails", response = String.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<BookDetail> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail body) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public ResponseEntity<BookDetail> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail body) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, EntityNotFoundException {
         body.setId(id);
         BookDetail bookDetail = bookDetailsServices.updateBookDetail(body);
         return new ResponseEntity<>(bookDetail, HttpStatus.OK);

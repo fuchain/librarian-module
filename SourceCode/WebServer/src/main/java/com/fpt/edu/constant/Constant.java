@@ -13,6 +13,8 @@ public class Constant {
     public static final String REGULAR_ID_EXP = "[{][a-zA-Z]+[}]";
     public static final String GOOGLE_AUTH_API = "https://oauth2.googleapis.com/tokeninfo?id_token=";
     public static final int PIN_EXPIRED_MINUTE = 5;
+    public static final int RANDOM_BOUND = 999999;
+    public static final int PHONE_NUMBER = 10;
     public static final String ACTION_ADD_NEW = "ADD";
     public static final String ACTION_UPDATE = "UPDATE";
 

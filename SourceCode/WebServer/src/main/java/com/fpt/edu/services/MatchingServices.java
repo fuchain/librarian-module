@@ -29,8 +29,7 @@ public class MatchingServices {
         return matchingRepository.save(matching);
     }
 
-
-
-
-
+    public Matching getMatchingByRequestId(Long requestId, int matchingStatus) {
+        return matchingRepository.getByRequestId(requestId, matchingStatus);
+    }
 }

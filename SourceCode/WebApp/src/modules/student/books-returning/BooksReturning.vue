@@ -1,5 +1,5 @@
 <template>
-  <book-list/>
+  <book-list :books="books" v-if="loaded"/>
 </template>
 
 <script>
@@ -7,7 +7,7 @@ import { mapGetters } from "vuex";
 import store from "./store";
 import BookList from "./components/BookList.vue";
 
-export const STORE_KEY = "student-books";
+export const STORE_KEY = "student-books-returning";
 
 export default {
   components: {
@@ -15,7 +15,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      users: `${STORE_KEY}/users`
+      loaded: `${STORE_KEY}/loaded`,
+      books: `${STORE_KEY}/books`
     })
   },
   created() {
@@ -24,12 +25,11 @@ export default {
     }
   },
   async mounted() {
-    // this.$vs.loading({
-    //     container: "#div-with-loading",
-    //     scale: 0.6
-    // });
-    // await this.$store.dispatch(`${STORE_KEY}/getBooks`);
-    // this.$vs.loading.close("#div-with-loading > .con-vs-loading");
+    this.$vs.loading();
+
+    await this.$store.dispatch(`${STORE_KEY}/getBooks`);
+
+    this.$vs.loading.close();
   }
 };
 </script>

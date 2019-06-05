@@ -31,13 +31,16 @@ const router = new Router({
           component: () => import("@/modules/profile/Profile.vue")
         },
         {
-          path: "books",
-          component: () => import("@/modules/student/books/Books.vue")
+          path: "books/keeping",
+          component: () =>
+            import("@/modules/student/books-keeping/BooksKeeping.vue")
         },
         {
           path: "books/return",
+          name: "book-return",
           component: () =>
-            import("@/modules/student/books-return/BooksReturn.vue")
+            import("@/modules/student/books-return/BooksReturn.vue"),
+          props: true
         },
         {
           path: "books/returning",

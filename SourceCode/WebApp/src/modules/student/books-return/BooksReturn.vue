@@ -22,7 +22,7 @@
               type="email"
               size="large"
               label="Sách muốn trả"
-              v-model="bookName"
+              :value="book.name || 'Null'"
               disabled
               class="w-full"
             />
@@ -32,7 +32,7 @@
               type="email"
               size="large"
               label="Mã sách"
-              v-model="bookID"
+              :value="'FUHCMLIB' + book.id || '0'"
               disabled
               class="w-full"
             />
@@ -67,9 +67,7 @@
               <strong>{{ remainTime }} giây</strong>
             </div>
           </vx-card>
-          <vx-card
-            v-else
-          >Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.</vx-card>
+          <vx-card v-else>{{ isLoading ? "Đang xử lí..." : resultText }}</vx-card>
         </div>
       </div>
     </tab-content>
@@ -77,7 +75,7 @@
       <div class="wizard-footer-right">
         <button
           v-if="!props.isLastStep"
-          @click="props.nextTab()"
+          @click="props.nextTab() | runAction(props)"
           class="wizard-btn"
           style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
         >Tiếp theo</button>
@@ -103,10 +101,10 @@ let countInterval;
 export default {
   data() {
     return {
-      bookID: "FUHCM000000001",
-      bookName: "Software Requirements",
       transferType: "auto",
-      remainTime: 0
+      remainTime: 0,
+      isLoading: false,
+      resultText: "Đang tải"
     };
   },
   computed: {
@@ -142,7 +140,7 @@ export default {
       });
     },
     async loading() {
-      await this.fakeLoad(this.transferType === "manual" ? 3000 : 1000);
+      await this.fakeLoad(this.transferType === "manual" ? 3000 : 0);
 
       this.transferType === "manual" && this.startCount();
 
@@ -168,6 +166,32 @@ export default {
         }.bind(this),
         1000
       );
+    },
+    runAction(props) {
+      const step = props.activeTabIndex;
+
+      if (step === 1 && this.transferType === "auto") {
+        this.isLoading = true;
+
+        this.$http
+          .post(`${this.$http.baseUrl}/requests/create`, {
+            type: 2,
+            book_id: this.book.id
+          })
+          .then(() => {
+            this.isLoading = false;
+            this.resultText =
+              "Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.";
+          })
+          .catch(err => {
+            // Catch
+            console.log(err);
+
+            this.isLoading = false;
+            this.resultText =
+              "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
+          });
+      }
     }
   },
   beforeDestroy() {
@@ -176,6 +200,14 @@ export default {
   components: {
     FormWizard,
     TabContent
+  },
+  beforeMount() {
+    if (!this.book) {
+      this.$router.push({ path: "/books" });
+    }
+  },
+  props: {
+    book: Object
   }
 };
 </script>

@@ -1,3 +1,5 @@
+import $http from "@http";
+
 const actions = {
   // ////////////////////////////////////////////
   // SIDEBAR & UI UX
@@ -31,6 +33,31 @@ const actions = {
   },
   arrangeStarredPagesMore({ commit }, list) {
     commit("ARRANGE_STARRED_PAGES_MORE", list);
+  },
+
+  // Profile
+  async getProfile({ commit }) {
+    try {
+      const { data } = await $http.get(`${$http.baseUrl}/users/profile`);
+      commit("PROFILE_UPDATED", data);
+    } catch (e) {
+      // Catch error
+      throw e;
+    }
+  },
+
+  // Update profile
+  async updateProfile({ commit }, { fullname, phone }) {
+    try {
+      const { data } = await $http.put(
+        `${$http.baseUrl}/users/update_profile`,
+        { fullname, phone }
+      );
+      commit("PROFILE_UPDATED_SUCCESS", data);
+    } catch (e) {
+      // Catch error
+      throw e;
+    }
   }
 };
 

@@ -37,6 +37,11 @@ export default {
   },
   mounted() {
     this.toggleClassInBody(themeConfig.theme);
+
+    // Get profile
+    if (this.$auth.isAuthenticated()) {
+      this.$store.dispatch("getProfile");
+    }
   }
 };
 </script>

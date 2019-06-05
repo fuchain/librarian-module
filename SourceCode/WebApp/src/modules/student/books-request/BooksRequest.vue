@@ -19,7 +19,7 @@
         <vs-select v-model="bookCode" width="100%" :disabled="!listBooks.length || !searchText">
           <vs-select-item
             :key="item.id"
-            :value="item.id"
+            :value="item.name"
             :text="item.name"
             v-for="item in listBooks"
           />
@@ -75,20 +75,33 @@ export default {
     submit() {
       if (!this.searchText.trim() || !this.bookCode) return;
       this.$vs.loading();
-      setTimeout(
-        function() {
-          this.$vs.loading.close();
 
+      this.$http
+        .post(`${this.$http.baseUrl}/requests/create`, {
+          type: 1,
+          book_name: this.bookCode
+        })
+        .then(() => {
+          this.$vs.loading.close();
           this.$vs.notify({
             title: "Thành công",
             text: "Yêu cầu của bạn đã được hệ thống tiếp nhận",
             color: "primary",
             position: "top-center"
           });
-          this.$router.push("/books/requesting");
-        }.bind(this),
-        3000
-      );
+        })
+        .catch(err => {
+          // Catch
+          console.log(err);
+
+          this.$vs.loading.close();
+          this.$vs.notify({
+            title: "Thất bại",
+            text: "Bạn đã có yêu cầu mượn sách này rồi",
+            color: "warning",
+            position: "top-center"
+          });
+        });
     }
   }
 };

@@ -5,7 +5,7 @@
         <span>Họ tên</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" v-model="fullname" disabled/>
+        <vs-input class="w-full" v-model="fullname"/>
       </div>
     </div>
     <div class="vx-row mb-6">
@@ -13,7 +13,7 @@
         <span>Email</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" type="email" v-model="email" disabled/>
+        <vs-input class="w-full" type="email" :value="email" disabled/>
       </div>
     </div>
     <div class="vx-row mb-6">
@@ -22,14 +22,6 @@
       </div>
       <div class="vx-col sm:w-2/3 w-full">
         <vs-input class="w-full" v-model="phone"/>
-      </div>
-    </div>
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Tài khoản Facebook</span>
-      </div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" v-model="facebook"/>
       </div>
     </div>
     <div class="vx-row">
@@ -42,31 +34,66 @@
 
 <script>
 export default {
-  data() {
-    return {
-      fullname: "Huỳnh Minh Tú",
-      email: "tuhmse62531@fpt.edu.vn",
-      phone: "0796870446",
-      facebook: "https://wwww.facebook.com/mr.huynhminhtu"
-    };
+  computed: {
+    email: {
+      get() {
+        return this.$store.getters.email;
+      },
+      set(value) {
+        this.$store.commit("UPDATE_PROFILE_EMAIL", value);
+      }
+    },
+    fullname: {
+      get() {
+        return this.$store.getters.fullname;
+      },
+      set(value) {
+        this.$store.commit("UPDATE_PROFILE_FULLNAME", value);
+      }
+    },
+    phone: {
+      get() {
+        return this.$store.getters.phone;
+      },
+      set(value) {
+        this.$store.commit("UPDATE_PROFILE_PHONE", value);
+      }
+    }
   },
   methods: {
-    submit() {
-      if (!this.phone.trim()) return;
+    async submit() {
+      if (!this.phone.trim() || !this.email.trim()) return;
       this.$vs.loading();
-      setTimeout(
-        function() {
-          this.$vs.loading.close();
 
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Cập nhật hồ sơ thành công",
-            color: "primary",
-            position: "top-center"
-          });
-        }.bind(this),
-        1000
-      );
+      try {
+        await this.$store.dispatch("updateProfile", {
+          fullname: this.fullname,
+          phone: this.phone
+        });
+      } catch (e) {
+        this.$vs.loading.close();
+
+        // Catch
+        console.log(e);
+
+        this.$vs.notify({
+          title: "Thất bại",
+          text: "Cập nhật hồ sơ thất bại",
+          color: "danger",
+          position: "top-center"
+        });
+
+        return;
+      }
+
+      this.$vs.loading.close();
+
+      this.$vs.notify({
+        title: "Thành công",
+        text: "Cập nhật hồ sơ thành công",
+        color: "primary",
+        position: "top-center"
+      });
     }
   }
 };

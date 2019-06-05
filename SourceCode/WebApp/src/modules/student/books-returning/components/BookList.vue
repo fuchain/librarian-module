@@ -1,12 +1,8 @@
 <template>
   <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">Sách đang trả</h2>
-    <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
-      <div
-        class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
-        v-for="item in wishListitems"
-        :key="item.objectID"
-      >
+    <div class="items-grid-view vx-row match-height" v-if="books.length" appear>
+      <div class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full" v-for="item in books" :key="item.id">
         <item-grid-view :item="item">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
@@ -42,8 +38,8 @@
       </div>
     </div>
 
-    <vx-card title="Bạn đang không giữ sách nào." v-else>
-      <vs-button @click="$router.push('/books/request')">Mượn sách</vs-button>
+    <vx-card title="Bạn đang không trả sách nào." v-else>
+      <vs-button @click="$router.push('/books')">Trả sách</vs-button>
     </vx-card>
 
     <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
@@ -71,31 +67,15 @@ export default {
   },
   data() {
     return {
-      wishListitems: [
-        {
-          objectID: 5,
-          name: "Introduction to Software Engineering",
-          description:
-            "Introduction to Software Engineering for Introduction to Software Engineering in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "4 ngày",
-          code: "SWE102",
-          user: "SE62535"
-        },
-        {
-          objectID: 6,
-          name: "Computer Networking",
-          description:
-            "Computer Networking for Computer Networking in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          time: "4 ngày",
-          code: "NWC202"
-        }
-      ],
       popupActive: false,
       randomPIN: 0,
       remainTime: 0
     };
+  },
+  props: {
+    books: {
+      type: Array
+    }
   },
   watch: {
     popupActive(val) {
@@ -118,7 +98,7 @@ export default {
       });
     },
     triggerCall() {
-      window.location.href = "tel:0796870446";
+      window.location.href = "tel:0123456789";
     },
     async beginConfirm() {
       await this.fakeLoad();

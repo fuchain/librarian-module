@@ -1,12 +1,8 @@
 <template>
   <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">Sách đang yêu cầu</h2>
-    <div class="items-grid-view vx-row match-height" v-if="wishListitems.length" appear>
-      <div
-        class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
-        v-for="item in wishListitems"
-        :key="item.objectID"
-      >
+    <div class="items-grid-view vx-row match-height" v-if="books.length" appear>
+      <div class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full" v-for="item in books" :key="item.id">
         <item-grid-view :item="item">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
@@ -111,33 +107,15 @@ export default {
       reason: ""
     };
   },
-  computed: {
-    wishListitems() {
-      return [
-        {
-          objectID: 7,
-          name: "Japanese Elementary 3",
-          description:
-            "Japanese Elementary 3 for Japanese Elementary 3 in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          user: "SE62533",
-          code: "JPD131"
-        },
-        {
-          objectID: 8,
-          name: "Start Your Business",
-          description:
-            "Start Your Business for Start Your Business in FPT University",
-          image: "https://i.imgur.com/2j6B1n5.jpg",
-          code: "SYB301"
-        }
-      ];
+  props: {
+    books: {
+      type: Array
     }
   },
   methods: {
     triggerCall(check) {
       if (!check) return;
-      window.location.href = "tel:0796870446";
+      window.location.href = "tel:0123456789";
     },
     async fakeLoad() {
       return new Promise((resolve, reject) => {
