@@ -7,6 +7,7 @@ import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.Request;
 import com.fpt.edu.entities.User;
+import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.services.RequestServices;
 import com.fpt.edu.services.UserServices;
 import io.swagger.annotations.ApiOperation;
@@ -72,6 +73,30 @@ public class UserController extends BaseController {
             System.out.println("Error: " + ex.getMessage());
         }
         return null;
+    }
+
+    @ApiOperation(value = "update user profile", response = String.class)
+    @RequestMapping(value = "update_profile", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
+    public ResponseEntity<User> updateUser(@RequestBody String body) throws Exception {
+        //get user information
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        User user = userServices.getUserByEmail(email);
+
+        JSONObject bodyObject = new JSONObject(body);
+        String fullName = bodyObject.getString("fullname");
+        String phone = bodyObject.getString("phone");
+
+        if(phone.length() != Constant.PHONE_NUMBER){
+            throw new Exception("Phone number must be 10 digits");
+        }
+
+        user.setFullName(fullName);
+        user.setPhone(phone);
+
+        User updatedUser = userServices.updateUser(user);
+
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
 }

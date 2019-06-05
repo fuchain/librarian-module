@@ -77,4 +77,8 @@ public class UserServices {
 
         return currentBookList;
     }
+
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
 }
