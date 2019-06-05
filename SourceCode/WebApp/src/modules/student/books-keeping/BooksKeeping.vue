@@ -1,5 +1,5 @@
 <template>
-  <book-list/>
+  <book-list :books="books" v-if="loaded"/>
 </template>
 
 <script>
@@ -15,7 +15,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      users: `${STORE_KEY}/users`
+      loaded: `${STORE_KEY}/loaded`,
+      books: `${STORE_KEY}/books`
     })
   },
   created() {
@@ -23,6 +24,14 @@ export default {
       this.$store.registerModule(STORE_KEY, store);
     }
   },
-  async mounted() {}
+  async mounted() {
+    this.$vs.loading({
+      container: "#div-with-loading"
+    });
+
+    await this.$store.dispatch(`${STORE_KEY}/getBooks`);
+
+    this.$vs.loading.close("#div-with-loading > .con-vs-loading");
+  }
 };
 </script>
