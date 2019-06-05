@@ -39,7 +39,7 @@
     </div>
 
     <vx-card title="Bạn đang không trả sách nào." v-else>
-      <vs-button @click="$router.push('/books')">Trả sách</vs-button>
+      <vs-button @click="$router.push('/books/keeping')">Trả sách</vs-button>
     </vx-card>
 
     <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
