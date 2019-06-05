@@ -32,7 +32,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     private List<Request> requests;
 
     @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "user_id") // curent keeper of the book
+    @JoinColumn(name = "user_id") // current keeper of the book
     @JsonIgnore
     private User user;
 

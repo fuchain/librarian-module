@@ -1,6 +1,7 @@
 package com.fpt.edu.services;
 
 
+import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.entities.Request;
 import com.fpt.edu.repository.RequestRepository;
 import org.apache.commons.collections.IteratorUtils;
@@ -44,10 +45,10 @@ public class RequestServices {
         int row = requestRepository.checkExistedRequest(type, userId, status, bookDetailId, bookId);
         return row > 0;
     }
-    @Transactional
-    public List<Request> findByUserIdAndType(Long userId, int type) {
 
-        return (List<Request>) requestRepository.findByUserIdAndType(userId, type);
+    @Transactional
+    public List<Request> findByUserIdAndType(Long userId, int type, int status) {
+        return (List<Request>) requestRepository.findByUserIdAndType(userId, type, status);
     }
 
     public Request updateRequest(Request request) {

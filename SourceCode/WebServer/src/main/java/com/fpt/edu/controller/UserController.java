@@ -1,6 +1,7 @@
 package com.fpt.edu.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.common.ERequestType;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
@@ -21,6 +22,8 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -47,21 +50,25 @@ public class UserController extends BaseController {
             User user = userServices.getUserByEmail(email);
 
             List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
-            List<Request> returningList = (List<Request>) requestServices.findByUserIdAndType(user.getId(), ERequestType.RETURNING.getValue());
+            List<Request> returningList = requestServices.findByUserIdAndType(user.getId(),
+                    ERequestType.RETURNING.getValue(), ERequestStatus.COMPLETED.getValue());
 
-            for (int i = 0; i < currentBookList.size(); i++) {
+            Iterator iterator = currentBookList.iterator();
+            while (iterator.hasNext()) {
+                Book currentBook = (Book) iterator.next();
+
                 for (int j = 0; j < returningList.size(); j++) {
-                    Book currentBook = currentBookList.get(i);
                     Book returningBook = returningList.get(j).getBook();
 
                     if (currentBook.getId().equals(returningBook.getId())) {
-                        currentBookList.remove(currentBook);
+                        iterator.remove();
                     }
                 }
             }
 
             return new ResponseEntity<>(currentBookList, HttpStatus.OK);
-        } catch (Exception ex) {
+        } catch (
+                Exception ex) {
             System.out.println("Error: " + ex.getMessage());
         }
         return null;

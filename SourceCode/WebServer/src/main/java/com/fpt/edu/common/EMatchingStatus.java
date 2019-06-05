@@ -1,7 +1,7 @@
 package com.fpt.edu.common;
 
 // the matching status indicates the status of matching
-public enum MatchingStatus {
+public enum EMatchingStatus {
 
     //    By default, when the system found a borrow request and a return request that match to each other,
     //    1 matching instance will be created and  its status is 'paired'
@@ -17,7 +17,7 @@ public enum MatchingStatus {
 
     private int value;
 
-    private MatchingStatus(int value) {
+    private EMatchingStatus(int value) {
         this.value = value;
     }
 

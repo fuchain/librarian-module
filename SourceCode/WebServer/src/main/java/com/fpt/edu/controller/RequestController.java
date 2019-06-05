@@ -3,7 +3,7 @@ package com.fpt.edu.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.common.ETransferType;
-import com.fpt.edu.common.MatchingStatus;
+import com.fpt.edu.common.EMatchingStatus;
 import com.fpt.edu.common.ERequestType;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
@@ -11,7 +11,6 @@ import com.fpt.edu.exception.*;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.Hibernate;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,12 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("requests")
@@ -82,7 +79,23 @@ public class RequestController extends BaseController {
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
         Hibernate.initialize(user.getListBooks());
-        List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type);
+        List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type, ERequestStatus.COMPLETED.getValue());
+
+        for (Request r : requestList) {
+            if (r.getStatus() == ERequestStatus.MATCHING.getValue()) {
+                Matching matching = matchingServices.getMatchingByRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
+                if (matching != null) {
+                    if (r.getType() == ERequestType.RETURNING.getValue()) {
+                        User borrower = matching.getBorrowerRequest().getUser();
+                        r.setPairedUser(borrower);
+                    } else if (r.getType() == ERequestType.BORROWING.getValue()) {
+                        User returner = matching.getReturnerRequest().getUser();
+                        r.setPairedUser(returner);
+                    }
+                }
+            }
+        }
+
         return new ResponseEntity<>(requestList, HttpStatus.OK);
     }
 
@@ -206,7 +219,7 @@ public class RequestController extends BaseController {
             //update matching fields(pin, matchingDate, status)
             String generatedPin = utils.getPin();
             Date createdAt = new Date();
-            int status = MatchingStatus.PENDING.getValue();
+            int status = EMatchingStatus.PENDING.getValue();
 
             matching.setPin(generatedPin);
             matching.setMatchingStartDate(createdAt);
@@ -282,7 +295,7 @@ public class RequestController extends BaseController {
                         requestServices.updateRequest(receiverRequest);
 
                         //update status of matching
-                        matching.setStatus(MatchingStatus.CONFIRMED.getValue());
+                        matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
                         matchingServices.updateMatching(matching);
 
                         //transfer book from returner to receiver
