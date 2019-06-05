@@ -6,7 +6,6 @@ import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.Request;
 import com.fpt.edu.entities.User;
-import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.services.RequestServices;
 import com.fpt.edu.services.UserServices;
 import io.swagger.annotations.ApiOperation;

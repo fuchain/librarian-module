@@ -23,7 +23,7 @@ import static com.fpt.edu.security.SecurityConstants.SECRET;
 
 @RestController
 @RequestMapping("auth")
-public class AuthenticationController {
+public class AuthenticationController extends BaseController {
     private final UserServices userServices;
 
     public AuthenticationController(UserServices userServices) {
@@ -66,7 +66,7 @@ public class AuthenticationController {
 
     @ApiOperation(value = "Login with Google", response = String.class)
     @PostMapping("google")
-    public ResponseEntity<String> googleLogin(@RequestBody String body) throws UnirestException {
+    public ResponseEntity<String> googleLogin(@RequestBody String body) throws Exception {
         // Get token from request body
         JSONObject jsonBody = new JSONObject(body);
         String token = (String)jsonBody.get("token");
@@ -86,7 +86,7 @@ public class AuthenticationController {
                     userServices.addNewUser(newUser);
                     tokenResponse = generateJwtTokenResponse(newUser);
                 } else {
-                    return new ResponseEntity<>("Google account must be of FPT University", HttpStatus.BAD_REQUEST);
+                    throw new Exception("Google account must be of FPT University");
                 }
             } else {
                 tokenResponse = generateJwtTokenResponse(loggedUser.get());
@@ -94,7 +94,7 @@ public class AuthenticationController {
 
             return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
         } catch(Exception ex) {
-            return new ResponseEntity<>(ex.toString(), HttpStatus.BAD_REQUEST);
+            throw new Exception(ex.toString());
         }
     }
 }
