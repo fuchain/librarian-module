@@ -203,7 +203,7 @@ export default {
   },
   beforeMount() {
     if (!this.book) {
-      this.$router.push({ path: "/books" });
+      this.$router.push({ path: "/books/keeping" });
     }
   },
   props: {
