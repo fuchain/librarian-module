@@ -39,10 +39,6 @@ public class MatchingController extends BaseController {
             throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
         }
 
-        if (matching.getStatus() != MatchingStatus.CONFIRMED.getValue()) {
-            throw new Exception("Receiver has not imported pin yet");
-        }
-
         User matchingUser = matching.getReturnerRequest().getUser();
 
         //get user information
@@ -51,7 +47,11 @@ public class MatchingController extends BaseController {
         User user = userServices.getUserByEmail(email);
 
         if (user.getId() != matchingUser.getId()) {
-            throw new EntityIdMismatchException("User id of matching: " + matchingUser.getId() + " does not match to user id: " + user.getId() + " from authentication");
+            throw new EntityIdMismatchException("User id of matching: " + matchingUser.getId() + " does not match to user id from authentication");
+        }
+
+        if (matching.getStatus() != MatchingStatus.CONFIRMED.getValue()) {
+            throw new Exception("Receiver has not imported pin yet");
         }
 
         JSONObject jsonObject = new JSONObject();

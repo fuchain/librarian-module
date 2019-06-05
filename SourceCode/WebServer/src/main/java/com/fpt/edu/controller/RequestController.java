@@ -180,9 +180,13 @@ public class RequestController extends BaseController {
     @ApiOperation(value = "Transfer book for returner and receiver", response = String.class)
     @RequestMapping(value = "/transfer", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> transferBook(@RequestBody String body) throws Exception {
+        //get user information
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        User sender = userServices.getUserByEmail(email);
+
         JSONObject bodyObject = new JSONObject(body);
         int type = bodyObject.getInt("type");
-
         Long matchingId = bodyObject.getLong("matchingId");
 
         JSONObject jsonResult = new JSONObject();
@@ -194,6 +198,11 @@ public class RequestController extends BaseController {
         }
 
         if (type == ETransferType.RETURNER.getValue()) { // if returner returns book
+            User matchingUser = matching.getReturnerRequest().getUser();
+            if(matchingUser.getId() != sender.getId()){
+                throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
+            }
+
             //update matching fields(pin, matchingDate, status)
             String generatedPin = utils.getPin();
             Date createdAt = new Date();
@@ -213,12 +222,17 @@ public class RequestController extends BaseController {
             return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 
         } else if (type == ETransferType.RECEIVER.getValue()) { // if receiver receives book
+            User matchingUser = matching.getBorrowerRequest().getUser();
+            if(matchingUser.getId() != sender.getId()){
+                throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
+            }
+
             //check whether matching status equals completed or not
             if (matching.getStatus() == ERequestStatus.COMPLETED.getValue()) {
                 throw new EntityAldreayExisted("The pin has have sent");
             }
 
-            //get pin from receiver
+            //get pin entered from receiver
             String pin = bodyObject.getString("pin");
 
             //check expired time of pin
@@ -238,7 +252,6 @@ public class RequestController extends BaseController {
             User receiver = receiverRequest.getUser();
             AtomicBoolean success = new AtomicBoolean(false);
             AtomicBoolean callback = new AtomicBoolean(false);
-            AtomicReference<ResponseEntity> responseEntity = null;
             Object asset = book.getAsset();
             Date sendTime = new Date();
 
