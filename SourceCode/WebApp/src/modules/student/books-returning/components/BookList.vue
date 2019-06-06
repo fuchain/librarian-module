@@ -1,9 +1,23 @@
 <template>
   <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">Sách đang trả</h2>
+    <vs-input size="large" icon="search" class="w-full mb-4" placeholder="Tìm tên sách" v-model="searchText"/>
+    <div>
+      <vs-tabs alignment="fixed">
+        <vs-tab label="Đã ghép" icon="check" @click="showMatched = true">
+          <div>{{ isMatchedNull ? "Chưa có quyển sách nào được ghép." : "" }}</div>
+        </vs-tab>
+        <vs-tab label="Đang ghép" icon="refresh" @click="showMatched = false">
+          <div>{{ isMatchingNull ? "Không có quyển sách nào đang ghép." : "" }}</div>
+        </vs-tab>
+      </vs-tabs>
+    </div>
     <div class="items-grid-view vx-row match-height" v-if="books.length" appear>
-      <div class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full" v-for="item in books" :key="item.id">
-        <item-grid-view :item="item">
+      <div class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full" v-for="item in listBooks" :key="item.id">
+        <item-grid-view
+          :item="item"
+          v-if="(showMatched ? item.status === 2 : item.status === 1)"
+        >
           <template slot="action-buttons">
             <div class="flex flex-wrap">
               <div
@@ -49,9 +63,6 @@
         Chỉ tồn tại trong
         <strong>{{ remainTime }} giây</strong>
       </div>
-      <!-- <div style="text-align: center;">
-        <vs-button @click="validateConfirm">Đã xong</vs-button>
-      </!-->
     </vs-popup>
   </div>
 </template>
@@ -70,12 +81,37 @@ export default {
       popupActive: false,
       randomPIN: 0,
       remainTime: 0,
-      matchingId: 0
+      matchingId: 0,
+      showMatched: true,
+      searchText: ""
     };
   },
   props: {
     books: {
       type: Array
+    }
+  },
+  computed: {
+    isMatchedNull() {
+      const matched = this.books.filter(e => e.status !== 1);
+      if (!matched.length) {
+        return true;
+      }
+
+      return false;
+    },
+    isMatchingNull() {
+      const matched = this.books.filter(e => e.status === 1);
+      if (!matched.length) {
+        return true;
+      }
+
+      return false;
+    },
+    listBooks() {
+      if (!this.searchText.trim()) return this.books;
+
+      return this.books.filter(e => e.name.toLowerCase().includes(this.searchText.trim().toLowerCase()));
     }
   },
   watch: {
@@ -95,17 +131,17 @@ export default {
       this.$http
         .get(`${this.$http.baseUrl}/requests/${request.requestId}/matched`)
         .then(response => {
-          const { matching_id } = response.data;
-          this.matchingId = matching_id;
+          const matchingId = response.data.matching_id;
+          this.matchingId = matchingId;
           this.$http
             .put(`${this.$http.baseUrl}/requests/transfer`, {
               type: 1,
-              matchingId: matching_id
+              matchingId
             })
             .then(response => {
               const data = response.data;
 
-              const { created_at, pin, status } = data;
+              const { pin } = data;
 
               this.randomPIN = pin;
               this.startCount();
@@ -117,9 +153,7 @@ export default {
     async validateConfirm() {
       this.$http
         .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
-        .then(response => {
-          const data = response.data;
-
+        .then(() => {
           this.$vs.notify({
             title: "Thành công",
             text: "Người nhận đã xác nhận mã PIN",
