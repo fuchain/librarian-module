@@ -236,16 +236,16 @@ export default {
       unreadNotifications: auth.isAdmin()
         ? []
         : [
-            {
-              index: 0,
-              title: "Japanese Elementary 3",
-              msg:
+          {
+            index: 0,
+            title: "Japanese Elementary 3",
+            msg:
                 "Đã tìm thấy sinh viên trả sách Japanese Elementary 3, liên lạc để mượn lại",
-              icon: "PackageIcon",
-              time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
-              category: "success"
-            }
-          ],
+            icon: "PackageIcon",
+            time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
+            category: "success"
+          }
+        ],
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,

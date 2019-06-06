@@ -1,5 +1,5 @@
 <template>
-  <vx-card title="Hồ sơ độc giả">
+  <vx-card title="Hồ sơ">
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
         <span>Họ tên</span>
@@ -62,7 +62,17 @@ export default {
   },
   methods: {
     async submit() {
-      if (!this.phone.trim() || !this.email.trim()) return;
+      if (!this.phone.trim() || !this.email.trim()) {
+        this.$vs.notify({
+          title: "Không hợp lệ",
+          text: "Bạn phải nhập đủ cả tên và số điện thoại",
+          color: "warning",
+          position: "top-center"
+        });
+
+        return;
+      }
+
       this.$vs.loading();
 
       try {

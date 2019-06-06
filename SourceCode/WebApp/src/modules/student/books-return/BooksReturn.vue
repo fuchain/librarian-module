@@ -18,24 +18,12 @@
       <div class="vx-row">
         <vx-card>
           <div class="vx-col w-full mt">
-            <vs-input
-              type="email"
-              size="large"
-              label="Sách muốn trả"
-              :value="book.name || 'Null'"
-              disabled
-              class="w-full"
-            />
+            <p>Sách muốn trả</p>
+            <p style="font-size: 2rem;">{{ book && book.name || "Không có" }}</p>
           </div>
           <div class="vx-col w-full mt-5">
-            <vs-input
-              type="email"
-              size="large"
-              label="Mã sách"
-              :value="'FUHCMLIB' + book.id || '0'"
-              disabled
-              class="w-full"
-            />
+            <p>Mã sách</p>
+            <p style="font-size: 2rem;">{{ 'FUHCMLIB' + (book && book.id) || '0' }}</p>
           </div>
         </vx-card>
       </div>

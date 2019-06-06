@@ -125,10 +125,35 @@ public class RequestQueueManager implements Observer {
         if (queueToProcess.size() > 0) {
             return queueToProcess.poll();
             // peak is not remove element
-            //return queueToProcess.peek();
+           // return queueToProcess.peek();
         }
         return null;
     }
+
+    public Request removeRequestOutTheQueue(Request request) throws NotFoundException {
+        long bookDetailId = request.getBookDetail().getId();
+        if (this.requestMap.get(bookDetailId) == null) {
+            throw new NotFoundException("Request not found in Request Queue Hub");
+        }
+        RequestQueue requestQueue = this.requestMap.get(bookDetailId);
+        PriorityQueue<Request> queueToProcess = null;
+        if (request.getType() == ERequestType.BORROWING.getValue()) {
+            queueToProcess = requestQueue.getBorrowRequestQueue();
+        } else if (request.getType() == ERequestType.RETURNING.getValue()) {
+            queueToProcess = requestQueue.getReturnRequestQueue();
+        }
+        Iterator<Request> iterator = queueToProcess.iterator();
+        while (iterator.hasNext()) {
+            Request currentRequest = iterator.next();
+            if (currentRequest.getId() == request.getId()) {
+                    queueToProcess.remove(currentRequest);
+        }
+    }
+        return request;
+    }
+
+
+
 
 
     @Override
