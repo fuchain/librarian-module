@@ -21,15 +21,15 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserServices {
-    private final BCryptPasswordEncoder encoder;
-    @Autowired
+    private BCryptPasswordEncoder encoder;
     private UserRepository userRepository;
-
-    @Autowired
     private BookRepository bookRepository;
 
     @Autowired
-    private RequestRepository requestRepository;
+    public UserServices(UserRepository userRepository, BookRepository bookRepository) {
+        this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
+    }
 
     public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
         this.userRepository = userRepository;
@@ -67,8 +67,8 @@ public class UserServices {
     public List<Book> getCurrentBookListOfUser(Long userId) {
         List<Book> currentBookList = (List<Book>) bookRepository.findBookListByUserId(userId);
 
-        for (int i = 0; i < currentBookList.size(); i++) {
-            BookDetail bookDetail = currentBookList.get(i).getBookDetail();
+        for (Book book : currentBookList) {
+            BookDetail bookDetail = book.getBookDetail();
             bookDetail.getAuthors().size();
         }
 

@@ -24,42 +24,44 @@ import java.util.List;
 @RestController
 @RequestMapping("users")
 public class UserController extends BaseController {
-    @Autowired
-    private UserServices userServices;
+    private final UserServices userServices;
+    private final RequestServices requestServices;
 
     @Autowired
-    private RequestServices requestServices;
+    public UserController(UserServices userServices, RequestServices requestServices) {
+        this.userServices = userServices;
+        this.requestServices = requestServices;
+    }
 
-    @ApiOperation(value = "Get a list of current book", response = String.class)
-    @RequestMapping(value = "current_books", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    @ApiOperation(value = "Get a list of current book")
+    @GetMapping("current_books")
     public ResponseEntity<List<Book>> getCurrentBook() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String email = (String) authentication.getPrincipal();
-            User user = userServices.getUserByEmail(email);
+        // Get user information
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        User user = userServices.getUserByEmail(email);
 
-            List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
-            List<Request> returningList = requestServices.findByUserIdAndType(user.getId(),
-                    ERequestType.RETURNING.getValue(), ERequestStatus.COMPLETED.getValue());
+        // Get current book list of user
+        List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
 
-            Iterator iterator = currentBookList.iterator();
-            while (iterator.hasNext()) {
-                Book currentBook = (Book) iterator.next();
+        // Get book list that is returning
+        List<Request> returningList = requestServices.findByUserIdAndType(user.getId(),
+                ERequestType.RETURNING.getValue(), ERequestStatus.COMPLETED.getValue());
 
-                for (int j = 0; j < returningList.size(); j++) {
-                    Book returningBook = returningList.get(j).getBook();
+        // Remove books that is returning from current book list
+        Iterator iterator = currentBookList.iterator();
+        while (iterator.hasNext()) {
+            Book currentBook = (Book) iterator.next();
 
-                    if (currentBook.getId().equals(returningBook.getId())) {
-                        iterator.remove();
-                    }
+            for (Request request : returningList) {
+                Book returningBook = request.getBook();
+
+                if (currentBook.getId().equals(returningBook.getId())) {
+                    iterator.remove();
                 }
             }
-
-            return new ResponseEntity<>(currentBookList, HttpStatus.OK);
-        } catch (Exception ex) {
-            System.out.println("Error: " + ex.getMessage());
         }
-        return null;
+        return new ResponseEntity<>(currentBookList, HttpStatus.OK);
     }
 
     static ResponseEntity<String> getJSONResponseUserProfile(User user) {
@@ -84,22 +86,33 @@ public class UserController extends BaseController {
     @ApiOperation(value = "Update user profile", response = String.class)
     @RequestMapping(value = "update_profile", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<User> updateUser(@RequestBody String body) throws Exception {
-        // get user information
+        // Get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
 
+        // Get full name and phone from Request Body
         JSONObject bodyObject = new JSONObject(body);
         String fullName = bodyObject.getString("fullname");
         String phone = bodyObject.getString("phone");
 
+        // Check phone number limit is 10 or not
         if (phone.length() != Constant.PHONE_NUMBER) {
             throw new Exception("Phone number must be 10 digits");
         }
 
+        // Check all characters in phone is digit or not
+        for (char ch : phone.toCharArray()) {
+            if (!Character.isDigit(ch)) {
+                throw new Exception("Phone number must be digits");
+            }
+        }
+
+        // Set value for user object
         user.setFullName(fullName);
         user.setPhone(phone);
 
+        // Update user in DB
         User updatedUser = userServices.updateUser(user);
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);

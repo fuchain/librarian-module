@@ -43,7 +43,6 @@ public class Request extends AbstractTimestampEntity implements Serializable {
     @Column(name = "type")
     private int type;
 
-
     public User getPairedUser() {
         return pairedUser;
     }

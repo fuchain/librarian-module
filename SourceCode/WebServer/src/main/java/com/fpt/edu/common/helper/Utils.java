@@ -33,7 +33,6 @@ public class Utils {
         return jsonObject;
     }
 
-
     public JSONObject convertObjectToJSONObject(Object o) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(o);
@@ -45,7 +44,6 @@ public class Utils {
         String result = currentPath.replaceAll(Constant.REGULAR_ID_EXP, id);
         return result;
     }
-
 
     private String getValueOfAKey(JSONObject object, String keyName) {
         Iterator<?> it = object.keys();
@@ -66,7 +64,6 @@ public class Utils {
         }
         return "";
     }
-
 
     // Build the root path for the server like http://localhost:9090/api/v1
     public String buildServerRootPath(HttpServletRequest httpServletRequest) {
@@ -91,6 +88,5 @@ public class Utils {
         long diffInMillies = newDate.getTime() - oldDate.getTime();
         return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
-
 
 }

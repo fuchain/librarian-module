@@ -5,42 +5,37 @@ import com.fpt.edu.repository.MatchingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Service
 public class MatchingServices {
+    private final MatchingRepository matchingRepository;
 
     @Autowired
-    private MatchingRepository matchingRepository;
+    public MatchingServices(MatchingRepository matchingRepository) {
+        this.matchingRepository = matchingRepository;
+    }
 
     public Matching getMatchingById(Long id) {
-        Optional<Matching> optionalMatching = matchingRepository.findById(id);
-
-        Matching matching = null;
-
-        if (optionalMatching.isPresent()) {
-            matching = optionalMatching.get();
-        }
-
-        return matching;
+        return matchingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Matching id: " + id + " not found"));
     }
 
     public Matching updateMatching(Matching matching) {
         return matchingRepository.save(matching);
     }
 
-    public Matching getMatchingByReturnRequestId(Long returnRequestId, int matchingStatus) {
+    public Matching getByReturnRequestId(Long returnRequestId, int matchingStatus) {
         return matchingRepository.getByReturnRequestId(returnRequestId, matchingStatus);
     }
 
-    public Matching getMatchingByReceiveRequestId(Long receiveRequestId, int matchingStatus) {
+    public Matching getByReceiveRequestId(Long receiveRequestId, int matchingStatus) {
         return matchingRepository.getByReceiveRequestId(receiveRequestId, matchingStatus);
     }
 
-
-    public Matching getMatchingByRequestId(Long requestId) {
-        return matchingRepository.getMatchByRequestId(requestId);
+    public Matching getByRequestId(Long requestId) {
+        return matchingRepository.getByRequestId(requestId);
     }
-
 
 }

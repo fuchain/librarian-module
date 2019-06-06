@@ -80,7 +80,7 @@ public class AuthenticationController {
             // If email is not in database
             String tokenResponse;
 
-            if (loggedUser.isEmpty()) {
+            if (!loggedUser.isPresent()) {
                 if (getEmailDomain(email).equalsIgnoreCase("fpt.edu.vn")) {
                     User newUser = new User(email, null, null, null);
                     userServices.addNewUser(newUser);

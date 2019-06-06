@@ -1,21 +1,14 @@
 package com.fpt.edu.controller;
 
-import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repository.*;
 import com.fpt.edu.services.BigchainTransactionServices;
-import com.fpt.edu.services.BookDetailsServices;
 import com.fpt.edu.services.UserServices;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -23,28 +16,26 @@ import java.util.*;
 @RestController
 @RequestMapping("simulate_datas")
 public class SimulateDataController extends BaseController {
-
-    Logger logger = LoggerFactory.getLogger(SimulateDataController.class);
-
-    @Autowired
-    AuthorRepository authorRepository;
-    @Autowired
-    CategoryRepository categoryRepository;
-    @Autowired
-    PublisherRepository publisherRepository;
-    @Autowired
-    BookDetailRepository bookDetailRepository;
-    @Autowired
-    BookRepository bookRepository;
-    @Autowired
-    UserRepository userRepository;
+    private final AuthorRepository authorRepository;
+    private final CategoryRepository categoryRepository;
+    private final PublisherRepository publisherRepository;
+    private final BookDetailRepository bookDetailRepository;
+    private final BookRepository bookRepository;
+    private final UserServices userServices;
 
     @Autowired
-    private UserServices userServices;
-    @Autowired
-    private BookDetailsServices bookDetailsServices;
+    public SimulateDataController(AuthorRepository authorRepository, CategoryRepository categoryRepository,
+                                  PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
+                                  BookRepository bookRepository, UserServices userServices) {
+        this.authorRepository = authorRepository;
+        this.categoryRepository = categoryRepository;
+        this.publisherRepository = publisherRepository;
+        this.bookDetailRepository = bookDetailRepository;
+        this.bookRepository = bookRepository;
+        this.userServices = userServices;
+    }
 
-    @RequestMapping(value = "/init", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @PostMapping("/init")
     @Transactional
     public String addSimulateBookData() throws Exception {
         Iterable<Book> iterable = bookRepository.findAll();
@@ -88,7 +79,6 @@ public class SimulateDataController extends BaseController {
         }
 
         // Init data for book detail
-        List<BookDetail> bookDetails = new ArrayList<>();
         String[] bookDetailNames = {"XML", "C Sharp", "JAVA", "JAVASCRIPT", "SPRING", "BigchainDB", "Data Structure", "Algorithm", "Network", "Machine Learning"};
         int count = 1;
         for (String bookDetailName : bookDetailNames) {
@@ -146,21 +136,22 @@ public class SimulateDataController extends BaseController {
         return "Init simulate data completed!";
     }
 
-    @RequestMapping(value = "/give_book", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @PostMapping("/give_book")
     public String giveBooksToReader(@RequestBody String body) throws Exception {
         Random random = new Random();
 
+        // Get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User librarian = userServices.getUserByEmail(email);
 
+        //Get email and book_number from Request Body
         JSONObject jsonBody = new JSONObject(body);
         User receiver = userServices.getUserByEmail(jsonBody.getString("email"));
         int bookNumber = Integer.parseInt(jsonBody.getString("book_number"));
 
         BigchainTransactionServices services = new BigchainTransactionServices();
         List<Book> bookList = (List<Book>) bookRepository.findBookListByUserId(librarian.getId());
-
 
         if (bookList.size() >= bookNumber) {
             for (int i = 0; i < bookNumber; i++) {
@@ -174,7 +165,8 @@ public class SimulateDataController extends BaseController {
                             book.setLastTxId(transaction.getId());
                             bookRepository.save(book);
                         },
-                        (transaction, response) -> {}
+                        (transaction, response) -> {
+                        }
                 );
                 Thread.sleep(500);
             }
