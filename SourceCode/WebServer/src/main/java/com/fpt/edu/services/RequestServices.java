@@ -1,7 +1,6 @@
 package com.fpt.edu.services;
 
 
-import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.common.RequestQueueSimulate.Message;
 import com.fpt.edu.common.RequestQueueSimulate.Observer;
 import com.fpt.edu.constant.Constant;
@@ -10,13 +9,10 @@ import com.fpt.edu.repository.RequestRepository;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
