@@ -76,6 +76,10 @@ const router = new Router({
         {
           path: "/login",
           component: () => import("@/views/Login.vue")
+        },
+        {
+          path: "/error",
+          component: () => import("@/views/Error500.vue")
         }
       ]
     },
