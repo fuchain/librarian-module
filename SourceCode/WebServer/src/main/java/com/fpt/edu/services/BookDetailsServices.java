@@ -1,6 +1,5 @@
 package com.fpt.edu.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.edu.common.helper.ReflectionHelper;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.exception.EntityNotFoundException;
