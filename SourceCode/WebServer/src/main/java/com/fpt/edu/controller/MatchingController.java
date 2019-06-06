@@ -1,11 +1,9 @@
 package com.fpt.edu.controller;
 
 import com.fpt.edu.common.EMatchingStatus;
-import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Matching;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.exception.EntityIdMismatchException;
-import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.services.MatchingServices;
 import com.fpt.edu.services.UserServices;
 import io.swagger.annotations.ApiOperation;
@@ -42,7 +40,7 @@ public class MatchingController extends BaseController {
         User user = userServices.getUserByEmail(email);
 
         // The returner does not send the request
-        if (user.getId() != matchingUser.getId()) {
+        if (!user.getId().equals(matchingUser.getId())) {
             throw new EntityIdMismatchException("User id of matching: " + matchingUser.getId() + " does not match to user id from authentication");
         }
         // Receiver has not imported pin yet

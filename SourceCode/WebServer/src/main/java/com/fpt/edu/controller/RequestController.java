@@ -1,6 +1,5 @@
 package com.fpt.edu.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.ERequestStatus;
 import com.fpt.edu.common.ETransferType;
 import com.fpt.edu.common.EMatchingStatus;
@@ -113,19 +112,23 @@ public class RequestController extends BaseController {
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
 
-        //Get data from Request Body
+        //Get type from Request Body
         JSONObject bodyObject = new JSONObject(body);
         int type = bodyObject.getInt("type");
-        String bookName = bodyObject.getString("book_name");
-        Long bookId = bodyObject.getLong("book_id");
 
         // Init a request to insert to DB
-        Request request = null;
+        Request request;
 
         // Fill data for request
         if (type == ERequestType.BORROWING.getValue()) {
+            // Get book name from Request Body
+            String bookName = bodyObject.getString("book_name");
+
             request = getBorrowingRequest(type, user, bookName);
         } else if (type == ERequestType.RETURNING.getValue()) {
+            // Get book id from Request Body
+            Long bookId = bodyObject.getLong("book_id");
+
             request = getReturningRequest(type, user, bookId);
         } else {
             throw new TypeNotSupportedException("Type " + type + " is not supported");
@@ -181,7 +184,7 @@ public class RequestController extends BaseController {
             }
         }
         //if user's not keeping this book but want to return book, throw exception
-        if (keeping == false) {
+        if (!keeping) {
             throw new EntityNotFoundException("This book is not found in the current book list");
         }
 
@@ -241,7 +244,7 @@ public class RequestController extends BaseController {
     }
 
     @ApiOperation(value = "Transfer book for returner and receiver", response = String.class)
-    @PutMapping("/transfer")
+    @PutMapping(value = "/transfer", produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> transferBook(@RequestBody String body) throws Exception {
         // Get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -254,7 +257,7 @@ public class RequestController extends BaseController {
         Long matchingId = bodyObject.getLong("matchingId");
 
         // Init JSONObject to return response
-        JSONObject jsonResult = new JSONObject();
+        JSONObject jsonResult;
 
         // Check whether matchingId is existed or not
         Matching matching = matchingServices.getMatchingById(matchingId);
@@ -262,120 +265,134 @@ public class RequestController extends BaseController {
             throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
         }
 
-        if (type == ETransferType.RETURNER.getValue()) { // If this is returner
-            User matchingUser = matching.getReturnerRequest().getUser();
-            if (matchingUser.getId().longValue() != sender.getId().longValue()) {
-                throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
-            }
-
-            // Update matching fields(pin, matchingDate, status)
-            String generatedPin = utils.getPin();
-            Date createdAt = new Date();
-            int status = EMatchingStatus.PENDING.getValue();
-
-            matching.setPin(generatedPin);
-            matching.setMatchingStartDate(createdAt);
-            matching.setStatus(status);
-
-            matchingServices.updateMatching(matching);
-
-            // Response to user
-            jsonResult.put("pin", generatedPin);
-            jsonResult.put("created_at", createdAt);
-            jsonResult.put("status", status);
-
-            return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
-
-        } else if (type == ETransferType.RECEIVER.getValue()) { // If this is receiver
-            User matchingUser = matching.getBorrowerRequest().getUser();
-            if (matchingUser.getId().longValue() != sender.getId().longValue()) {
-                throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
-            }
-
-            // Check whether matching status equals completed or not
-            if (matching.getStatus() == ERequestStatus.COMPLETED.getValue()) {
-                throw new EntityAldreayExisted("The pin has have sent");
-            }
-
-            // Get pin entered from receiver
+        // Check transfer type is returner or receiver
+        if (type == ETransferType.RETURNER.getValue()) {
+            jsonResult = returnBook(matching, sender);
+        } else if (type == ETransferType.RECEIVER.getValue()) {
             String pin = bodyObject.getString("pin");
-
-            // Check expired time of pin
-            long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
-            if (duration > Constant.PIN_EXPIRED_MINUTE) {
-                throw new PinExpiredException("Pin: " + pin + " has been expired");
-            }
-
-            if (!matching.getPin().equals(pin)) {
-                throw new EntityPinMisMatchException("Pin: " + pin + " does not match to Matching");
-            }
-
-            Book book = bookServices.getBookById(matching.getBook().getId());
-            Request returnerRequest = matching.getReturnerRequest();
-            Request receiverRequest = matching.getBorrowerRequest();
-            User returner = returnerRequest.getUser();
-            User receiver = receiverRequest.getUser();
-            AtomicBoolean success = new AtomicBoolean(false);
-            AtomicBoolean callback = new AtomicBoolean(false);
-
-            Date sendTime = new Date();
-
-            // Update current_keeper
-            book.setUser(receiver);
-
-            // Add transaction to BigchainDB
-            BigchainTransactionServices services = new BigchainTransactionServices();
-            services.doTransfer(
-                    book.getLastTxId(),
-                    book.getAssetId(), book.getMetadata(),
-                    String.valueOf(returner.getEmail()), String.valueOf(receiver.getEmail()),
-                    (transaction, response) -> { // Success
-                        // Turn on the flag success and callback
-                        success.set(true);
-                        callback.set(true);
-
-                        String tracsactionId = transaction.getId();
-                        book.setLastTxId(tracsactionId);
-
-                        // Update status of request to "completed"
-                        returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-                        receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-                        requestServices.updateRequest(returnerRequest);
-                        requestServices.updateRequest(receiverRequest);
-
-                        //update status of matching
-                        matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
-                        matchingServices.updateMatching(matching);
-
-                        //transfer book from returner to receiver
-                        bookServices.updateBook(book);
-
-                        //insert a transaction to DB Postgresql
-                        Transaction tran = new Transaction();
-                        tran.setBook(book);
-                        tran.setReturner(returner);
-                        tran.setBorrower(receiver);
-                        transactionServices.insertTransaction(tran);
-
-                    },
-                    (transaction, response) -> { //failed
-                        callback.set(true);
-                    }
-            );
-
-            Date now;
-
-            while (true) {
-                now = new Date();
-                duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
-
-                if (duration > 30 || callback.get()) {
-                    jsonResult.put("message", "confirm book transfer successfully");
-                    return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
-                }
-            }
+            jsonResult = receiveBook(matching, sender, pin);
         } else {
             throw new TypeNotSupportedException("Type: " + type + " is not supported");
+        }
+        return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+    }
+
+    private JSONObject returnBook(Matching matching, User sender) throws EntityIdMismatchException {
+        User matchingUser = matching.getReturnerRequest().getUser();
+        if (matchingUser.getId().longValue() != sender.getId().longValue()) {
+            throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
+        }
+
+        // Update matching fields(pin, matchingDate, status)
+        String generatedPin = utils.getPin();
+        Date createdAt = new Date();
+        int status = EMatchingStatus.PENDING.getValue();
+
+        matching.setPin(generatedPin);
+        matching.setMatchingStartDate(createdAt);
+        matching.setStatus(status);
+
+        matchingServices.updateMatching(matching);
+
+        // Response to user
+        JSONObject jsonResult = new JSONObject();
+        jsonResult.put("pin", generatedPin);
+        jsonResult.put("created_at", createdAt);
+        jsonResult.put("status", status);
+
+        return jsonResult;
+    }
+
+    private JSONObject receiveBook(Matching matching, User sender, String pin)
+            throws Exception {
+        // Check borrower is the person who sends request or not
+        User matchingUser = matching.getBorrowerRequest().getUser();
+        if (matchingUser.getId().longValue() != sender.getId().longValue()) {
+            throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
+        }
+
+        // Check whether matching status equals completed or not
+        if (matching.getStatus() == ERequestStatus.COMPLETED.getValue()) {
+            throw new EntityAldreayExisted("The pin has have sent");
+        }
+
+        // Check expired time of pin
+        long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
+        if (duration > Constant.PIN_EXPIRED_MINUTE) {
+            throw new PinExpiredException("Pin: " + pin + " has been expired");
+        }
+        // Check user enter the correct pin or not
+        if (!matching.getPin().equals(pin)) {
+            throw new EntityPinMisMatchException("Pin: " + pin + " does not match to Matching");
+        }
+
+        return addTransferTxToBC(matching);
+    }
+
+    private JSONObject addTransferTxToBC(Matching matching) throws Exception {
+        // Init data to submit transaction to BlockChain
+        Book book = bookServices.getBookById(matching.getBook().getId());
+        Request returnerRequest = matching.getReturnerRequest();
+        Request receiverRequest = matching.getBorrowerRequest();
+        User returner = returnerRequest.getUser();
+        User receiver = receiverRequest.getUser();
+        Date sendTime = new Date();
+        AtomicBoolean callback = new AtomicBoolean(false);
+        JSONObject jsonResult;
+
+        // Update current_keeper
+        book.setUser(receiver);
+
+        // Submit transaction to BlockChain
+        BigchainTransactionServices services = new BigchainTransactionServices();
+        services.doTransfer(
+                book.getLastTxId(),
+                book.getAssetId(), book.getMetadata(),
+                String.valueOf(returner.getEmail()), String.valueOf(receiver.getEmail()),
+                (transaction, response) -> { // Success
+
+                    // Update last transaction id for book
+                    String tracsactionId = transaction.getId();
+                    book.setLastTxId(tracsactionId);
+
+                    // Update status of request to "completed"
+                    returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+                    receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+                    requestServices.updateRequest(returnerRequest);
+                    requestServices.updateRequest(receiverRequest);
+
+                    //update status of matching
+                    matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+                    matchingServices.updateMatching(matching);
+
+                    // Update book
+                    bookServices.updateBook(book);
+
+                    //insert a transaction to DB Postgresql
+                    Transaction tran = new Transaction();
+                    tran.setBook(book);
+                    tran.setReturner(returner);
+                    tran.setBorrower(receiver);
+                    transactionServices.insertTransaction(tran);
+
+                    callback.set(true);
+                },
+                (transaction, response) -> { //failed
+                    callback.set(true);
+                }
+        );
+
+        // Wait until the BigchainTransactionServices has callback or request is timeout
+        Date now;
+        while (true) {
+            now = new Date();
+            long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+
+            if (duration > 30 || callback.get()) {
+                jsonResult = new JSONObject();
+                jsonResult.put("message", "confirm book transfer successfully");
+                return jsonResult;
+            }
         }
     }
 

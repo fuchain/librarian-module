@@ -1,12 +1,8 @@
 package com.fpt.edu.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Transaction;
-import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.services.TransactionServices;
 import io.swagger.annotations.ApiOperation;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

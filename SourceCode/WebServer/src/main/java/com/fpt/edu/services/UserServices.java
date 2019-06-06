@@ -67,8 +67,8 @@ public class UserServices {
     public List<Book> getCurrentBookListOfUser(Long userId) {
         List<Book> currentBookList = (List<Book>) bookRepository.findBookListByUserId(userId);
 
-        for (int i = 0; i < currentBookList.size(); i++) {
-            BookDetail bookDetail = currentBookList.get(i).getBookDetail();
+        for (Book book : currentBookList) {
+            BookDetail bookDetail = book.getBookDetail();
             bookDetail.getAuthors().size();
         }
 

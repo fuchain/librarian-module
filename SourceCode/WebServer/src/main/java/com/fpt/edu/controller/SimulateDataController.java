@@ -21,19 +21,17 @@ public class SimulateDataController extends BaseController {
     private final PublisherRepository publisherRepository;
     private final BookDetailRepository bookDetailRepository;
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
     private final UserServices userServices;
 
     @Autowired
     public SimulateDataController(AuthorRepository authorRepository, CategoryRepository categoryRepository,
                                   PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
-                                  BookRepository bookRepository, UserRepository userRepository, UserServices userServices) {
+                                  BookRepository bookRepository, UserServices userServices) {
         this.authorRepository = authorRepository;
         this.categoryRepository = categoryRepository;
         this.publisherRepository = publisherRepository;
         this.bookDetailRepository = bookDetailRepository;
         this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
         this.userServices = userServices;
     }
 
@@ -81,7 +79,6 @@ public class SimulateDataController extends BaseController {
         }
 
         // Init data for book detail
-        List<BookDetail> bookDetails = new ArrayList<>();
         String[] bookDetailNames = {"XML", "C Sharp", "JAVA", "JAVASCRIPT", "SPRING", "BigchainDB", "Data Structure", "Algorithm", "Network", "Machine Learning"};
         int count = 1;
         for (String bookDetailName : bookDetailNames) {

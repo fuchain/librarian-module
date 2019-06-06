@@ -1,22 +1,14 @@
 package com.fpt.edu.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fpt.edu.common.RequestQueueSimulate.Message;
-import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
-import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.BookDetail;
-import com.fpt.edu.entities.Request;
 import com.fpt.edu.exception.EntityIdMismatchException;
-import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.services.BookDetailsServices;
 import io.swagger.annotations.ApiOperation;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 

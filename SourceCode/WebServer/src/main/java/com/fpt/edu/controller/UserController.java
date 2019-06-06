@@ -53,8 +53,8 @@ public class UserController extends BaseController {
         while (iterator.hasNext()) {
             Book currentBook = (Book) iterator.next();
 
-            for (int j = 0; j < returningList.size(); j++) {
-                Book returningBook = returningList.get(j).getBook();
+            for (Request request : returningList) {
+                Book returningBook = request.getBook();
 
                 if (currentBook.getId().equals(returningBook.getId())) {
                     iterator.remove();

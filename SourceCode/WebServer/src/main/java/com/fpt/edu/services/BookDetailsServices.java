@@ -3,7 +3,6 @@ package com.fpt.edu.services;
 import com.fpt.edu.common.helper.ReflectionHelper;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.repository.BookDetailRepository;
-import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +42,7 @@ public class BookDetailsServices {
     }
 
     public BookDetail getBookDetailByName(String name) {
-        BookDetail bookDetail = bookDetailRepository.findByName(name).get(0);
-        return bookDetail;
+        return bookDetailRepository.findByName(name).get(0);
     }
 
     public List<BookDetail> searchBookDetails(String name) {
