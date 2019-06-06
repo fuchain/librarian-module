@@ -1,7 +1,13 @@
 <template>
   <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">Sách đang trả</h2>
-    <vs-input size="large" icon="search" class="w-full mb-4" placeholder="Tìm tên sách" v-model="searchText"/>
+    <vs-input
+      size="large"
+      icon="search"
+      class="w-full mb-4"
+      placeholder="Tìm tên sách"
+      v-model="searchText"
+    />
     <div>
       <vs-tabs alignment="fixed">
         <vs-tab label="Đã ghép" icon="check" @click="showMatched = true">
@@ -13,11 +19,12 @@
       </vs-tabs>
     </div>
     <div class="items-grid-view vx-row match-height" v-if="books.length" appear>
-      <div class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full" v-for="item in listBooks" :key="item.id">
-        <item-grid-view
-          :item="item"
-          v-if="(showMatched ? item.status === 2 : item.status === 1)"
-        >
+      <div
+        class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
+        v-for="item in listBooks"
+        :key="item.id"
+      >
+        <item-grid-view :item="item" v-if="(showMatched ? item.status === 2 : item.status === 1)">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
               <div
@@ -52,7 +59,7 @@
       </div>
     </div>
 
-    <vx-card title="Bạn đang không trả sách nào." v-else>
+    <vx-card class="mt-6" title="Bạn đang không trả sách nào." v-else>
       <vs-button @click="$router.push('/books/keeping')">Trả sách</vs-button>
     </vx-card>
 
@@ -111,7 +118,9 @@ export default {
     listBooks() {
       if (!this.searchText.trim()) return this.books;
 
-      return this.books.filter(e => e.name.toLowerCase().includes(this.searchText.trim().toLowerCase()));
+      return this.books.filter(e =>
+        e.name.toLowerCase().includes(this.searchText.trim().toLowerCase())
+      );
     }
   },
   watch: {
