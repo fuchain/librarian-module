@@ -42,6 +42,14 @@ export default {
     if (this.$auth.isAuthenticated()) {
       this.$store.dispatch("getProfile");
     }
+  },
+  errorCaptured(err, vm, info) {
+    this.$vs.notify({
+      title: "Lỗi xảy ra",
+      text: "Lỗi do đường truyền kém, vui lòng tải lại ứng dụng",
+      color: "danger",
+      position: "top-center"
+    });
   }
 };
 </script>

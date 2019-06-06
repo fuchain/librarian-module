@@ -62,7 +62,17 @@ export default {
   },
   methods: {
     async submit() {
-      if (!this.phone.trim() || !this.email.trim()) return;
+      if (!this.phone.trim() || !this.email.trim()) {
+        this.$vs.notify({
+          title: "Không hợp lệ",
+          text: "Bạn phải nhập đủ cả tên và số điện thoại",
+          color: "warning",
+          position: "top-center"
+        });
+
+        return;
+      }
+
       this.$vs.loading();
 
       try {
