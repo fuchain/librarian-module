@@ -14,6 +14,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Date;
@@ -22,29 +23,20 @@ import java.util.Optional;
 
 @Service
 public class RequestServices implements Observer {
-    protected final Logger LOGGER = LogManager.getLogger(getClass());
-    @Autowired
-    private RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
-    public List<Request> getListRequest() {
-        return IteratorUtils.toList(requestRepository.findAll().iterator());
+    @Autowired
+    public RequestServices(RequestRepository requestRepository) {
+        this.requestRepository = requestRepository;
     }
 
     public Request getRequestById(Long id) {
-        Optional<Request> optionalRequest = requestRepository.findById(id);
-
-        Request request = null;
-
-        if (optionalRequest.isPresent()) {
-            request = optionalRequest.get();
-        }
-
-        return request;
+        return requestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Request id: " + id + " not found"));
     }
 
     public Request saveRequest(Request request) {
-        Request requestResult = requestRepository.save(request);
-        return requestResult;
+        return requestRepository.save(request);
     }
 
     public boolean checkExistedRequest(int type, Long userId, int status, Long bookDetailId, Long bookId) {
@@ -61,12 +53,9 @@ public class RequestServices implements Observer {
         return requestRepository.save(request);
     }
 
-
     public List<Request> getListPendingRequest() {
         return IteratorUtils.toList(requestRepository.getListOfPendingRequest().iterator());
-
     }
-
 
     @Override
     public void doUpdate(Message mess) {

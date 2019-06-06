@@ -48,5 +48,4 @@ public class Category extends AbstractTimestampEntity implements Serializable {
 		this.booksDetails = booksDetails;
 	}
 
-
 }

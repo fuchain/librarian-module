@@ -34,8 +34,6 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     @JsonIgnore
     private Publisher publisher;
 
-
-
     @OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
     @JsonIgnore
     private List<Book> books;

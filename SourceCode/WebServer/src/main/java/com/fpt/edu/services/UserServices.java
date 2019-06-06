@@ -21,15 +21,15 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserServices {
-    private final BCryptPasswordEncoder encoder;
-    @Autowired
+    private BCryptPasswordEncoder encoder;
     private UserRepository userRepository;
-
-    @Autowired
     private BookRepository bookRepository;
 
     @Autowired
-    private RequestRepository requestRepository;
+    public UserServices(UserRepository userRepository, BookRepository bookRepository) {
+        this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
+    }
 
     public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
         this.userRepository = userRepository;

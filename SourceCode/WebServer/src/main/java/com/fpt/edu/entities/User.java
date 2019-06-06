@@ -18,7 +18,6 @@ public class User extends AbstractTimestampEntity implements Serializable {
     @Column(name = "email", unique = true)
     private String email;
 
-    //	@JsonIgnore
     @JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password")
     private String password;
@@ -37,6 +36,16 @@ public class User extends AbstractTimestampEntity implements Serializable {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Book> listBooks;
+
+    public User() {
+    }
+
+    public User(String email, String password, String fullName, String phone) {
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.phone = phone;
+    }
 
     public List<Book> getListBooks() {
         return listBooks;
@@ -94,13 +103,4 @@ public class User extends AbstractTimestampEntity implements Serializable {
         this.roles = roles;
     }
 
-    public User() {
-    }
-
-    public User(String email, String password, String fullName, String phone) {
-        this.email = email;
-        this.password = password;
-        this.fullName = fullName;
-        this.phone = phone;
-    }
 }

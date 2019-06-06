@@ -5,24 +5,21 @@ import com.fpt.edu.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Service
 public class TransactionServices {
+    private final TransactionRepository transactionRepository;
 
     @Autowired
-    private TransactionRepository transactionRepository;
+    public TransactionServices(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
 
     public Transaction getById(Long id) {
-        Optional<Transaction> optionalTransaction = transactionRepository.findById(id);
-
-        Transaction transaction = null;
-
-        if (optionalTransaction.isPresent()) {
-            transaction = optionalTransaction.get();
-        }
-
-        return transaction;
+        return transactionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Transaction id: " + id + " not found"));
     }
 
     public Transaction insertTransaction(Transaction transaction) {

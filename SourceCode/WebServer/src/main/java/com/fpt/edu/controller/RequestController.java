@@ -31,174 +31,186 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RestController
 @RequestMapping("requests")
 public class RequestController extends BaseController {
+    private final RequestServices requestServices;
+    private final UserServices userServices;
+    private final BookDetailsServices bookDetailsServices;
+    private final BookServices bookServices;
+    private final MatchingServices matchingServices;
+    private final TransactionServices transactionServices;
+    private final PublishSubscribe publishSubscribe;
+    private final RequestQueueManager requestQueueManager;
 
     @Autowired
-    private RequestServices requestServices;
-
-    @Autowired
-    private UserServices userServices;
-
-    @Autowired
-    private BookDetailsServices bookDetailsServices;
-
-    @Autowired
-    private BookServices bookServices;
-
-    @Autowired
-    private MatchingServices matchingServices;
-
-    @Autowired
-    private TransactionServices transactionServices;
-
-
-    @Autowired
-    PublishSubscribe publishSubscribe;
-
-    @Autowired
-    RequestQueueManager requestQueueManager;
-
-
-  /*  @RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getListOfRequest() throws JsonProcessingException {
-        LOGGER.info("START Controller :" + httpServletRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString());
-            JSONObject jsonResult = utils.buildListEntity(requestServices.getListRequest(), httpServletRequest);
-        return new ResponseEntity<>("Success", HttpStatus.OK);
-
+    public RequestController(RequestServices requestServices, UserServices userServices,
+                             BookDetailsServices bookDetailsServices, BookServices bookServices,
+                             MatchingServices matchingServices, TransactionServices transactionServices,
+                             PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+        this.requestServices = requestServices;
+        this.userServices = userServices;
+        this.bookDetailsServices = bookDetailsServices;
+        this.bookServices = bookServices;
+        this.matchingServices = matchingServices;
+        this.transactionServices = transactionServices;
+        this.publishSubscribe = publishSubscribe;
+        this.requestQueueManager = requestQueueManager;
     }
-*/
 
-    @ApiOperation(value = "Get a request by its id", response = String.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getRequestById(@PathVariable Long id) throws JsonProcessingException, EntityNotFoundException {
+    @ApiOperation(value = "Get a request by its id")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Request> getRequestById(@PathVariable Long id) {
         Request request = requestServices.getRequestById(id);
-        if (request == null) {
-            throw new EntityNotFoundException("Request id: " + id + " not found");
-        }
 
-        JSONObject jsonObject = utils.convertObjectToJSONObject(request);
-
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(request, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get a list of book request", response = String.class)
-    @RequestMapping(value = "/get_list", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    @ApiOperation(value = "Get a list of book request")
+    @GetMapping("/get_list")
     @Transactional
     public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type) {
-        //get user information
+        // Get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
+
+        // Get book list of user, by default lazy loading is enable
         Hibernate.initialize(user.getListBooks());
+
+        // Get all requests based on user id and request type, with status not completed
         List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type, ERequestStatus.COMPLETED.getValue());
 
+        // Get paired user information from the request whose status is matching
         for (Request r : requestList) {
             if (r.getStatus() == ERequestStatus.MATCHING.getValue()) {
                 if (r.getType() == ERequestType.RETURNING.getValue()) {
-                    Matching matching = matchingServices.getMatchingByReturnRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
 
+                    // Get matching based on request id, matching status has not confirmed yet
+                    Matching matching = matchingServices.getByReturnRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
+
+                    // Set paired user information for request
                     User borrower = matching.getBorrowerRequest().getUser();
                     r.setPairedUser(borrower);
                 } else if (r.getType() == ERequestType.BORROWING.getValue()) {
-                    Matching matching = matchingServices.getMatchingByReceiveRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
 
+                    // Get matching based on request id, matching status has not confirmed yet
+                    Matching matching = matchingServices.getByReceiveRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
+
+                    // Set paired user information for request
                     User returner = matching.getReturnerRequest().getUser();
                     r.setPairedUser(returner);
                 }
             }
         }
-
         return new ResponseEntity<>(requestList, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Create a book request", response = String.class)
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
+    @PostMapping("")
     @Transactional
-    public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException, TypeNotSupportedException, EntityAldreayExisted, NotFoundException {
-        //get user information
+    public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException,
+            TypeNotSupportedException, EntityAldreayExisted, NotFoundException {
+        // Get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User user = userServices.getUserByEmail(email);
 
-        //get response body
+        //Get data from Request Body
         JSONObject bodyObject = new JSONObject(body);
-        //get type
         int type = bodyObject.getInt("type");
+        String bookName = bodyObject.getString("book_name");
+        Long bookId = bodyObject.getLong("book_id");
 
+        // Init a request to insert to DB
         Request request = null;
 
-        //if request is requiring
+        // Fill data for request
         if (type == ERequestType.BORROWING.getValue()) {
-            //get book name
-            String bookName = bodyObject.getString("book_name");
-            //get book object
-            BookDetail bookDetail = bookDetailsServices.getBookDetailByName(bookName);
-
-            if (bookDetail == null) {
-                throw new EntityNotFoundException("Book name: " + bookName + " not found");
-            }
-
-            //check existed request
-            boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
-                    bookDetail.getId(), (long) 0);
-            if (existed) {
-                throw new EntityAldreayExisted("Request's already existed");
-            }
-
-            //create a request and fill data
-            request = new Request();
-            request.setStatus(ERequestStatus.PENDING.getValue());
-            request.setType(type);
-            request.setUser(user);
-            request.setBookDetail(bookDetail);
-
-        } else if (type == ERequestType.RETURNING.getValue()) {//if request is returning
-            //get book id
-            Long bookId = bodyObject.getLong("book_id");
-            //get book object
-            Book book = bookServices.getBookById(bookId);
-
-            BookDetail bookDetail = book.getBookDetail();
-
-
-            //check whether user is keeping this book
-            boolean keeping = false;
-            List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
-            for (Book b : currentBookList) {
-                if (b.getId().equals(bookId)) {
-                    keeping = true;
-                    break;
-                }
-            }
-
-            if (keeping == false) {
-                throw new EntityNotFoundException("This book is not found in the current book list");
-            }
-
-            //check whether the request is already existed
-            boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
-                    (long) 0, book.getId());
-            if (existed) {
-                throw new EntityAldreayExisted("Request's already existed");
-            }
-
-            //create a request and fill data
-            request = new Request();
-            request.setStatus(ERequestStatus.PENDING.getValue());
-            request.setType(type);
-            request.setUser(user);
-            request.setBook(book);
-            request.setBookDetail(bookDetail);
-
-
+            request = getBorrowingRequest(type, user, bookName);
+        } else if (type == ERequestType.RETURNING.getValue()) {
+            request = getReturningRequest(type, user, bookId);
         } else {
             throw new TypeNotSupportedException("Type " + type + " is not supported");
         }
-        //save request
+
+        // Find the matching request
+        pairRequest(request);
+
+//        requestServices.saveRequest(request);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "success");
+        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+    }
+
+    private Request getBorrowingRequest(int type, User user, String bookName)
+            throws EntityNotFoundException, EntityAldreayExisted {
+        // Get book detail object from DB
+        BookDetail bookDetail = bookDetailsServices.getBookDetailByName(bookName);
+        if (bookDetail == null) {
+            throw new EntityNotFoundException("Book name: " + bookName + " not found");
+        }
+
+        //check existed request based on request type, user id, book detail, with request status is not completed
+        boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
+                bookDetail.getId(), (long) 0);
+        if (existed) {
+            throw new EntityAldreayExisted("Request's already existed");
+        }
+
+        //create a request and fill data
+        Request request = new Request();
+        request.setStatus(ERequestStatus.PENDING.getValue());
+        request.setType(type);
+        request.setUser(user);
+        request.setBookDetail(bookDetail);
+
+        return request;
+    }
+
+    private Request getReturningRequest(int type, User user, Long bookId)
+            throws EntityNotFoundException, EntityAldreayExisted {
+        //get book object
+        Book book = bookServices.getBookById(bookId);
+        BookDetail bookDetail = book.getBookDetail();
+
+        //check whether user is keeping this book
+        boolean keeping = false;
+        List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
+        for (Book b : currentBookList) {
+            if (b.getId().equals(bookId)) {
+                keeping = true;
+                break;
+            }
+        }
+        //if user's not keeping this book but want to return book, throw exception
+        if (keeping == false) {
+            throw new EntityNotFoundException("This book is not found in the current book list");
+        }
+
+        //check request existed based on request type, user id, book id, with request status is not completed
+        boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
+                (long) 0, book.getId());
+        if (existed) {
+            throw new EntityAldreayExisted("Request's already existed");
+        }
+
+        //create a request and fill data
+        Request request = new Request();
+        request.setStatus(ERequestStatus.PENDING.getValue());
+        request.setType(type);
+        request.setUser(user);
+        request.setBook(book);
+        request.setBookDetail(bookDetail);
+
+        return request;
+    }
+
+    private void pairRequest(Request request) throws NotFoundException {
         Message message = new Message();
         message.setMessage(request);
         message.setAction(Constant.ACTION_ADD_NEW);
+
         publishSubscribe.setMessage(message);
         publishSubscribe.notifyToSub();
+
         Request matchRequest = requestQueueManager.findTheMatch(request);
         if (matchRequest != null) {
             // update for request
@@ -206,14 +218,17 @@ public class RequestController extends BaseController {
             request.setStatus(ERequestStatus.MATCHING.getValue());
             publishSubscribe.notifyToSub();
             matchRequest.setStatus(ERequestStatus.MATCHING.getValue());
+
             Message matchMessage = new Message();
             matchMessage.setAction(Constant.ACTION_UPDATE);
             matchMessage.setMessage(matchRequest);
             publishSubscribe.setMessage(matchMessage);
             publishSubscribe.notifyToSub();
+
             Matching matching = new Matching();
             matching.setStatus(EMatchingStatus.PENDING.getValue());
             matching.setBook(matchRequest.getBook());
+
             if (request.getType() == ERequestType.BORROWING.getValue()) {
                 matching.setBorrowerRequest(request);
                 matching.setReturnerRequest(matchRequest);
@@ -223,24 +238,22 @@ public class RequestController extends BaseController {
             }
             matchingServices.updateMatching(matching);
         }
-//        requestServices.saveRequest(request);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message", "success");
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Transfer book for returner and receiver", response = String.class)
-    @RequestMapping(value = "/transfer", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
+    @PutMapping("/transfer")
     public ResponseEntity<String> transferBook(@RequestBody String body) throws Exception {
         // Get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User sender = userServices.getUserByEmail(email);
 
+        // Get data from Request Body
         JSONObject bodyObject = new JSONObject(body);
         int type = bodyObject.getInt("type");
         Long matchingId = bodyObject.getLong("matchingId");
 
+        // Init JSONObject to return response
         JSONObject jsonResult = new JSONObject();
 
         // Check whether matchingId is existed or not
@@ -367,25 +380,28 @@ public class RequestController extends BaseController {
     }
 
     @ApiOperation(value = "Update request", response = String.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> updateRequest(@PathVariable Long id, @RequestBody Request request) throws EntityNotFoundException, EntityIdMismatchException {
-        if (request.getId().equals(id)) {
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateRequest(@PathVariable Long id, @RequestBody Request request)
+            throws EntityNotFoundException, EntityIdMismatchException {
+        if (!request.getId().equals(id)) {
             throw new EntityIdMismatchException("Request id: " + id + " and " + request.getId() + " is not matched");
         }
+
         Request existedRequest = requestServices.getRequestById(request.getId());
         if (existedRequest == null) {
             throw new EntityNotFoundException("Request id: " + request + " not found");
         }
+
         Request requestResult = requestServices.updateRequest(request);
         JSONObject jsonObject = new JSONObject(requestResult);
+
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
-
     @ApiOperation(value = "Get Match ID", response = JSONObject.class)
-    @RequestMapping(value = "/{id}/matched", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+    @GetMapping("/{id}/matched")
     public ResponseEntity<String> getMatchedIdOfRequest(@PathVariable Long id) throws Exception {
-        Matching matched = matchingServices.getMatchingByRequestId(id);
+        Matching matched = matchingServices.getByRequestId(id);
         JSONObject jsonResponse = new JSONObject();
         if (matched != null) {
             jsonResponse.put("matching_id", matched.getId());
@@ -394,4 +410,5 @@ public class RequestController extends BaseController {
         }
         return new ResponseEntity<>(jsonResponse.toString(), HttpStatus.OK);
     }
+
 }

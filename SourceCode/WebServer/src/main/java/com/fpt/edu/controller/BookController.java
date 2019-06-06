@@ -18,63 +18,44 @@ import java.io.IOException;
 @RestController
 @RequestMapping("books")
 public class BookController extends BaseController {
+    private final BookServices bookServices;
 
     @Autowired
-    private BookServices bookServices;
-
-    @ApiOperation(value = "Get a book by its id", response = String.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getBookById(@PathVariable Long id) throws JsonProcessingException, EntityNotFoundException {
-        Book book = bookServices.getBookById(id);
-        if (book == null) {
-            throw new EntityNotFoundException("Book id: " + id + " not found");
-        }
-
-        JSONObject jsonObject = utils.convertObjectToJSONObject(book);
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+    public BookController(BookServices bookServices) {
+        this.bookServices = bookServices;
     }
 
-    @ApiOperation(value = "Create a book", response = String.class)
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> insertBook(@RequestBody String body) throws IOException {
-        Book bookResult = bookServices.saveBook(body);
-        JSONObject jsonObject = utils.convertObjectToJSONObject(bookResult);
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+    @ApiOperation(value = "Get a book by its id")
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+        return new ResponseEntity<>(bookServices.getBookById(id), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Update a book", response = String.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody Book book) throws IOException, EntityNotFoundException, EntityIdMismatchException {
-        Long bookId = book.getId();
+    @ApiOperation(value = "Create a book")
+    @PostMapping("")
+    public ResponseEntity<Book> insertBook(@RequestBody Book book) {
+        return new ResponseEntity<>(bookServices.saveBook(book), HttpStatus.OK);
+    }
 
-        if (bookId.equals(id)) {
-            throw new EntityIdMismatchException("Book ID: " + id + " and " + bookId + " does not match");
+    @ApiOperation(value = "Update a book")
+    @PutMapping("/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) throws EntityIdMismatchException {
+        if (!book.getId().equals(id)) {
+            throw new EntityIdMismatchException("Book ID: " + id + " and " + book.getId() + " does not match");
         }
 
         Book existedBook = bookServices.getBookById(id);
-        if (existedBook == null) {
-            throw new EntityNotFoundException("Book id: " + id + " not found");
-        }
-
         Book bookResult = bookServices.updateBook(existedBook);
 
-        JSONObject jsonObject = utils.convertObjectToJSONObject(bookResult);
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(bookResult, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Delete a book", response = String.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> deleteBook(@PathVariable Long id) throws EntityNotFoundException {
+    @ApiOperation(value = "Delete a book")
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable Long id) {
         Book existedBook = bookServices.getBookById(id);
-        if (existedBook == null) {
-            throw new EntityNotFoundException("Book id: " + id + " not found");
-        }
 
-        bookServices.deleteBook(id);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message", "success");
-
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        bookServices.deleteBook(existedBook.getId());
     }
 
 }

@@ -15,30 +15,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("transaction")
 public class TransactionController extends BaseController {
+    private final TransactionServices transactionServices;
 
     @Autowired
-    private TransactionServices transactionServices;
-
-    @ApiOperation(value = "Get a transaction by its id", response = String.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getById(@PathVariable Long id) throws EntityNotFoundException, JsonProcessingException {
-        Transaction transaction = transactionServices.getById(id);
-
-        if (transaction == null) {
-            throw new EntityNotFoundException("Transaction id: " + id + " not found");
-        }
-
-        JSONObject jsonObject = utils.convertObjectToJSONObject(transaction);
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+    public TransactionController(TransactionServices transactionServices) {
+        this.transactionServices = transactionServices;
     }
 
-    @ApiOperation(value = "Create a transaction", response = String.class)
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> insertTransaction(@RequestBody Transaction transaction) {
+    @ApiOperation(value = "Get a transaction by its id", response = Transaction.class)
+    @GetMapping("/{id}")
+    public ResponseEntity<Transaction> getById(@PathVariable Long id) {
+        return new ResponseEntity<>(transactionServices.getById(id), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Create a transaction", response = Transaction.class)
+    @PostMapping("")
+    public ResponseEntity<Transaction> insertTransaction(@RequestBody Transaction transaction) {
         Transaction transactionResult = transactionServices.insertTransaction(transaction);
-        JSONObject jsonObject = new JSONObject();
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.CREATED);
-    }
 
+        return new ResponseEntity<>(transactionResult, HttpStatus.CREATED);
+    }
 
 }
