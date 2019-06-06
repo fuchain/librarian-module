@@ -2,7 +2,7 @@
   <vx-card class="grid-view-item mb-base overflow-hidden">
     <template slot="no-body">
       <!-- ITEM IMAGE -->
-      <div class="item-img-container bg-white h-64 flex items-center justify-center mb-4">
+      <div class="item-img-container bg-white h-48 flex items-center justify-center mb-4">
         <img :src="item.image" :alt="item.name" class="grid-view-img px-4">
       </div>
       <div class="item-details px-4">
