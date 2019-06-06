@@ -1,17 +1,27 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <router-view v-if="!error"></router-view>
+    <error-500 v-if="error"></error-500>
   </div>
 </template>
 
 <script>
 import themeConfig from "@/../themeConfig.js";
+import Error500 from "./views/Error500";
 
 export default {
+  data() {
+    return {
+      error: false
+    };
+  },
   watch: {
     "$store.state.theme"(val) {
       this.toggleClassInBody(val);
     }
+  },
+  components: {
+    Error500
   },
   methods: {
     toggleClassInBody(className) {
@@ -44,12 +54,21 @@ export default {
     }
   },
   errorCaptured(err, vm, info) {
+    this.error = true;
+
     this.$vs.notify({
       title: "Lỗi xảy ra",
       text: "Lỗi do đường truyền kém, vui lòng tải lại ứng dụng",
       color: "danger",
       position: "top-center"
     });
+
+    this.$router.push("/error");
+
+    // Log error
+    console.log("Error: ", err);
+    console.log("VM: ", vm);
+    console.log("Info: ", info);
   }
 };
 </script>
