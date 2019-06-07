@@ -236,7 +236,7 @@ public class RequestController extends BaseController {
     @ApiOperation(value = "Transfer book for returner and receiver", response = String.class)
     @RequestMapping(value = "/transfer", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
     public ResponseEntity<String> transferBook(@RequestBody String body) throws Exception {
-        //get user information
+        // Get user information
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         User sender = userServices.getUserByEmail(email);
@@ -247,20 +247,19 @@ public class RequestController extends BaseController {
 
         JSONObject jsonResult = new JSONObject();
 
-        //check whether matchingId is existed or not
+        // Check whether matchingId is existed or not
         Matching matching = matchingServices.getMatchingById(matchingId);
         if (matching == null) {
             throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
         }
 
-        if (type == ETransferType.RETURNER.getValue()) { // if returner returns book
+        if (type == ETransferType.RETURNER.getValue()) { // If this is returner
             User matchingUser = matching.getReturnerRequest().getUser();
-            matchingUser.getId().longValue();
-            if (matchingUser.getId() !=sender.getId()) {
+            if (matchingUser.getId().longValue() != sender.getId().longValue()) {
                 throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
             }
 
-            //update matching fields(pin, matchingDate, status)
+            // Update matching fields(pin, matchingDate, status)
             String generatedPin = utils.getPin();
             Date createdAt = new Date();
             int status = EMatchingStatus.PENDING.getValue();
@@ -271,28 +270,28 @@ public class RequestController extends BaseController {
 
             matchingServices.updateMatching(matching);
 
-            //response to user
+            // Response to user
             jsonResult.put("pin", generatedPin);
             jsonResult.put("created_at", createdAt);
             jsonResult.put("status", status);
 
             return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 
-        } else if (type == ETransferType.RECEIVER.getValue()) { // if receiver receives book
+        } else if (type == ETransferType.RECEIVER.getValue()) { // If this is receiver
             User matchingUser = matching.getBorrowerRequest().getUser();
-            if (matchingUser.getId() != sender.getId()) {
+            if (matchingUser.getId().longValue() != sender.getId().longValue()) {
                 throw new EntityIdMismatchException("User id: " + matchingUser.getId() + " does not match with user id from authentication");
             }
 
-            //check whether matching status equals completed or not
+            // Check whether matching status equals completed or not
             if (matching.getStatus() == ERequestStatus.COMPLETED.getValue()) {
                 throw new EntityAldreayExisted("The pin has have sent");
             }
 
-            //get pin entered from receiver
+            // Get pin entered from receiver
             String pin = bodyObject.getString("pin");
 
-            //check expired time of pin
+            // Check expired time of pin
             long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
             if (duration > Constant.PIN_EXPIRED_MINUTE) {
                 throw new PinExpiredException("Pin: " + pin + " has been expired");
@@ -309,30 +308,27 @@ public class RequestController extends BaseController {
             User receiver = receiverRequest.getUser();
             AtomicBoolean success = new AtomicBoolean(false);
             AtomicBoolean callback = new AtomicBoolean(false);
-            Object asset = book.getAsset();
+
             Date sendTime = new Date();
 
-            //update current_keeper
+            // Update current_keeper
             book.setUser(receiver);
 
-            //add transaction to bigchainDB
+            // Add transaction to BigchainDB
             BigchainTransactionServices services = new BigchainTransactionServices();
             services.doTransfer(
                     book.getLastTxId(),
                     book.getAssetId(), book.getMetadata(),
-                    String.valueOf(returner.getId()), String.valueOf(receiver.getId()),
-                    (transaction, response) -> { //success
-
-                        //turn on the flag success and callback
+                    String.valueOf(returner.getEmail()), String.valueOf(receiver.getEmail()),
+                    (transaction, response) -> { // Success
+                        // Turn on the flag success and callback
                         success.set(true);
                         callback.set(true);
 
                         String tracsactionId = transaction.getId();
-                        book.setAssetId(tracsactionId);
                         book.setLastTxId(tracsactionId);
-                        LOGGER.info("Create tx success: " + response);
 
-                        //update status of request to "completed"
+                        // Update status of request to "completed"
                         returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
                         receiverRequest.setStatus(ERequestStatus.COMPLETED.getValue());
                         requestServices.updateRequest(returnerRequest);
@@ -355,7 +351,6 @@ public class RequestController extends BaseController {
                     },
                     (transaction, response) -> { //failed
                         callback.set(true);
-                        LOGGER.error("We have a trouble: " + response);
                     }
             );
 
@@ -365,7 +360,7 @@ public class RequestController extends BaseController {
                 now = new Date();
                 duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-                if (duration > 30 || callback.get() == true) {
+                if (duration > 30 || callback.get()) {
                     jsonResult.put("message", "confirm book transfer successfully");
                     return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
                 }
@@ -393,14 +388,14 @@ public class RequestController extends BaseController {
 
     @ApiOperation(value = "Get Match ID", response = JSONObject.class)
     @RequestMapping(value = "/{id}/matched", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-    public ResponseEntity<String> getMatchedIdOfRequest(@PathVariable Long id) throws EntityNotFoundException, EntityIdMismatchException {
+    public ResponseEntity<String> getMatchedIdOfRequest(@PathVariable Long id) throws Exception {
         Matching matched = matchingServices.getMatchingByRequestId(id);
-        JSONObject jsonResposne = new JSONObject();
+        JSONObject jsonResponse = new JSONObject();
         if (matched != null) {
-            jsonResposne.put("MatchedID", matched.getId());
+            jsonResponse.put("matching_id", matched.getId());
+        } else {
+            throw new Exception("Cannot find matching_id with that request_id");
         }
-        return new ResponseEntity<>(jsonResposne.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(jsonResponse.toString(), HttpStatus.OK);
     }
-
-
 }
