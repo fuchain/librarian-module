@@ -32,4 +32,11 @@ public class MatchingServices {
     public Matching getMatchingByRequestId(Long requestId, int matchingStatus) {
         return matchingRepository.getByRequestId(requestId, matchingStatus);
     }
+
+
+    public Matching getMatchingByRequestId(Long requestId) {
+        return matchingRepository.getMatchByRequestId(requestId);
+    }
+
+
 }
