@@ -12,8 +12,6 @@ services:
     volumes:
       - ./WebServer/src:/root/src/api/src
     tty: true
-    networks:
-      - backend
 
   web:
     build:
@@ -28,5 +26,3 @@ services:
       - ./WebApp/src:/root/src/app/src
       - ./WebApp/public:/root/src/app/public
     tty: true
-    networks:
-      - backend
