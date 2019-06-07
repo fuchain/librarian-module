@@ -63,7 +63,6 @@ public class UserServices {
 	@Transactional
 	public List<Book> getCurrentBookListOfUser(Long userId) {
 		List<Book> currentBookList = (List<Book>) bookRepository.findBookListByUserId(userId);
-
 		for (Book book : currentBookList) {
 			BookDetail bookDetail = book.getBookDetail();
 			bookDetail.getAuthors().size();
@@ -84,4 +83,12 @@ public class UserServices {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new EntityNotFoundException("User id: " + userId + " not found"));
 	}
+
+
+	public int countNumberOfBookThatUserKeep(Long userId){
+		return bookRepository.getBookNumberOfCurrentUser(userId);
+	}
+
+
+
 }

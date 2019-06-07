@@ -346,7 +346,6 @@ public class RequestController extends BaseController {
 		Date sendTime = new Date();
 		AtomicBoolean callback = new AtomicBoolean(false);
 		JSONObject jsonResult;
-
 		// Update current_keeper
 		book.setUser(receiver);
 
