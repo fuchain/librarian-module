@@ -1,5 +1,8 @@
 FROM node:10.16.0-alpine as builder
 
+RUN apk update
+RUN apk add --no-cache \
+    build-base bash python linux-headers zlib-dev
 RUN apk add yarn
 
 RUN mkdir -p /root/src/app
@@ -17,6 +20,9 @@ RUN yarn build
 
 FROM node:10.16.0-alpine
 
+RUN apk update
+RUN apk add --no-cache \
+    build-base bash python linux-headers zlib-dev
 RUN apk add yarn
 
 WORKDIR /root/src/app
