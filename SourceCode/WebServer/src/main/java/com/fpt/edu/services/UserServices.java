@@ -23,19 +23,14 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserServices {
-	private BCryptPasswordEncoder encoder;
+	private final BCryptPasswordEncoder encoder;
 	private UserRepository userRepository;
 	private BookRepository bookRepository;
 
-	@Autowired
-	public UserServices(UserRepository userRepository, BookRepository bookRepository) {
+	public UserServices(BCryptPasswordEncoder encoder, UserRepository userRepository, BookRepository bookRepository) {
+		this.encoder = encoder;
 		this.userRepository = userRepository;
 		this.bookRepository = bookRepository;
-	}
-
-	public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
-		this.userRepository = userRepository;
-		this.encoder = encoder;
 	}
 
 	public void addNewUser(User user) {
