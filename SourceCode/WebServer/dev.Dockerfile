@@ -5,6 +5,6 @@ WORKDIR /root/src/api
 
 COPY . .
 
-RUN ./gradlew build
+RUN ./gradlew dependencies
 
 ENTRYPOINT ["./gradlew","bootRun"]
