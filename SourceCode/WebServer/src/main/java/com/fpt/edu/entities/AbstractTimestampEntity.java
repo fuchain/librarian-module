@@ -1,5 +1,7 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fpt.edu.config.CustomLocalDateTimeSerializer;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -11,9 +13,11 @@ import java.util.Date;
 public abstract class AbstractTimestampEntity {
 
     @CreationTimestamp
-    @Column(name = "created_date", nullable = true)
-    private Date createDate;
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Column(name = "created_date", nullable = true)
+	private Date createDate;
     @UpdateTimestamp
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @Column(name = "update_date")
     private Date updateDate;
 
