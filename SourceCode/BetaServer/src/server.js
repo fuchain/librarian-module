@@ -17,7 +17,6 @@ async function main() {
         // Init DB
         try {
             models.sequelize.authenticate();
-            models.sequelize.sync({ force: true });
         } catch (dbError) {
             console.error("DB Error: ", dbError);
             process.exit(1);
