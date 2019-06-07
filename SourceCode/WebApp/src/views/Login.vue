@@ -110,11 +110,14 @@ export default {
           email: this.email,
           password: this.password
         })
-        .then(response => {
+        .then(async response => {
           // Set data;
           const data = response.data;
           this.$auth.setAccessToken(data.token);
           this.$auth.setAccessTokenExpiresAt(data.expire.toString());
+
+          // Get profile
+          await this.$store.dispatch("getProfile");
 
           this.$vs.loading.close();
           this.$router.push("/");

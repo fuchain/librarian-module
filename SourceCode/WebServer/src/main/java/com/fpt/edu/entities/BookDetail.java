@@ -1,10 +1,8 @@
 package com.fpt.edu.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 
@@ -33,8 +31,6 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     @JoinColumn(name = "publisher_id")
     @JsonIgnore
     private Publisher publisher;
-
-
 
     @OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
     @JsonIgnore

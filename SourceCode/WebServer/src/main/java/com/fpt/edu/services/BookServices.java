@@ -1,47 +1,35 @@
 package com.fpt.edu.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 
 @Service
 public class BookServices {
-    @Autowired
     private BookRepository bookRepository;
 
-    public Book getBookById(Long id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        Book book = null;
-
-        if (optionalBook.isPresent()) {
-            book = optionalBook.get();
-        }
-
-        return book;
+    @Autowired
+    public BookServices(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
-    public Book saveBook(String bookStr) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book id: " + id + " not found"));
+    }
 
-        Book book = objectMapper.readValue(bookStr, Book.class);
-        Book bookResult = bookRepository.save(book);
-
-        return bookResult;
+    public Book saveBook(Book book) {
+        return bookRepository.save(book);
     }
 
     public Book updateBook(Book book) {
-        Book bookResult = bookRepository.save(book);
-
-        return bookResult;
+        return bookRepository.save(book);
     }
 
-    public boolean deleteBook(Long id) {
+    public void deleteBook(Long id) {
         bookRepository.deleteById(id);
-        return true;
     }
 }

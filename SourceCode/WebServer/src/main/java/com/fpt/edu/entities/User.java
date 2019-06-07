@@ -11,96 +11,107 @@ import javax.persistence.*;
 @Table(name = "tbl_user")
 public class User extends AbstractTimestampEntity implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "email", unique = true)
-    private String email;
+	@Column(name = "email", unique = true)
+	private String email;
 
-    //	@JsonIgnore
-    @JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "password")
-    private String password;
+	@JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
+	@Column(name = "password")
+	private String password;
 
-    @Column(name = "fullname")
-    private String fullName;
+	@Column(name = "fullname")
+	private String fullName;
 
-    @Column(name = "phone")
-    private String phone;
+	@Column(name = "phone")
+	private String phone;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
-    @JsonIgnore
-    private List<Role> roles;
+	@ManyToMany(cascade = {CascadeType.ALL})
+	@JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
+	@JsonIgnore
+	private List<Role> roles;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<Book> listBooks;
+	@JsonIgnore
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+	private List<Book> listBooks;
 
-    public List<Book> getListBooks() {
-        return listBooks;
-    }
+	@Column(name = "isDisabled")
+	private Boolean isDisabled;
 
-    public void setListBooks(List<Book> listBooks) {
-        this.listBooks = listBooks;
-    }
+	public User() {
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public User(String email, String password, String fullName, String phone) {
+		this.email = email;
+		this.password = password;
+		this.fullName = fullName;
+		this.phone = phone;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public List<Book> getListBooks() {
+		return listBooks;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public Boolean getDisabled() {
+		return isDisabled;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setDisabled(Boolean disabled) {
+		isDisabled = disabled;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public void setListBooks(List<Book> listBooks) {
+		this.listBooks = listBooks;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getFullName() {
-        return fullName;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public String getPhone() {
-        return phone;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public List<Role> getRoles() {
-        return roles;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
+	public String getFullName() {
+		return fullName;
+	}
 
-    public User() {
-    }
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
 
-    public User(String email, String password, String fullName, String phone) {
-        this.email = email;
-        this.password = password;
-        this.fullName = fullName;
-        this.phone = phone;
-    }
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
 }

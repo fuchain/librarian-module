@@ -1,10 +1,12 @@
 package com.fpt.edu.services;
 
 import com.fpt.edu.repository.RequestRepository;
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,61 +23,65 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserServices {
-    private final BCryptPasswordEncoder encoder;
-    @Autowired
-    private UserRepository userRepository;
+	private final BCryptPasswordEncoder encoder;
+	private UserRepository userRepository;
+	private BookRepository bookRepository;
 
-    @Autowired
-    private BookRepository bookRepository;
+	public UserServices(BCryptPasswordEncoder encoder, UserRepository userRepository, BookRepository bookRepository) {
+		this.encoder = encoder;
+		this.userRepository = userRepository;
+		this.bookRepository = bookRepository;
+	}
 
-    @Autowired
-    private RequestRepository requestRepository;
+	public void addNewUser(User user) {
+		if (user.getPassword() != null) {
+			user.setPassword(encoder.encode(user.getPassword()));
+		} else {
+			user.setPassword(null);
+		}
 
-    public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
-        this.userRepository = userRepository;
-        this.encoder = encoder;
-    }
+		userRepository.save(user);
+	}
 
-    public void addNewUser(User user) {
-        if (user.getPassword() != null) {
-            user.setPassword(encoder.encode(user.getPassword()));
-        } else {
-            user.setPassword(null);
-        }
+	public Optional<User> findUserByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
 
-        userRepository.save(user);
-    }
+	public User getUserByEmail(String email) throws UsernameNotFoundException {
+		Optional<User> optionalUser = userRepository.findByEmail(email.toLowerCase());
+		User user = null;
+		if (optionalUser.isPresent()) {
+			user = optionalUser.get();
+		}
+		if (user == null) {
+			throw new UsernameNotFoundException("User not found!");
+		}
 
-    public Optional<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
+		return user;
+	}
 
-    public User getUserByEmail(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email.toLowerCase());
-        User user = null;
-        if (optionalUser.isPresent()) {
-            user = optionalUser.get();
-        }
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found!");
-        }
+	@Transactional
+	public List<Book> getCurrentBookListOfUser(Long userId) {
+		List<Book> currentBookList = (List<Book>) bookRepository.findBookListByUserId(userId);
 
-        return user;
-    }
+		for (Book book : currentBookList) {
+			BookDetail bookDetail = book.getBookDetail();
+			bookDetail.getAuthors().size();
+		}
 
-    @Transactional
-    public List<Book> getCurrentBookListOfUser(Long userId) {
-        List<Book> currentBookList = (List<Book>) bookRepository.findBookListByUserId(userId);
+		return currentBookList;
+	}
 
-        for (int i = 0; i < currentBookList.size(); i++) {
-            BookDetail bookDetail = currentBookList.get(i).getBookDetail();
-            bookDetail.getAuthors().size();
-        }
+	public User updateUser(User user) {
+		return userRepository.save(user);
+	}
 
-        return currentBookList;
-    }
+	public List<User> getAllUsers() {
+		return IteratorUtils.toList(userRepository.findAll().iterator());
+	}
 
-    public User updateUser(User user) {
-        return userRepository.save(user);
-    }
+	public User getByUserId(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new EntityNotFoundException("User id: " + userId + " not found"));
+	}
 }
