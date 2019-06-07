@@ -1,7 +1,10 @@
 package com.fpt.edu.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.exception.EntityIdMismatchException;
+import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.services.BookDetailsServices;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,13 @@ public class BookDetailController extends BaseController {
     public BookDetailController(BookDetailsServices bookDetailsServices) {
         this.bookDetailsServices = bookDetailsServices;
     }
+
+
+	@ApiOperation(value = "Get a list of book details", response = String.class)
+	@RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<List<BookDetail>> findBookDetailsById() throws EntityNotFoundException, JsonProcessingException {
+		return new ResponseEntity<>(bookDetailsServices.getAllBookDetails(), HttpStatus.OK);
+	}
 
     @ApiOperation(value = "Create a book detail ", response = BookDetail.class)
     @PostMapping("")
