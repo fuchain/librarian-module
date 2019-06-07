@@ -33,13 +33,14 @@ COPY --from=builder /root/src/app/yarn.lock /root/src/app/yarn.lock
 RUN yarn --production --pure-lockfile
 
 COPY --from=builder /root/src/app/dist /root/src/app/dist
+COPY --from=builder /root/src/app/.env /root/src/app/.env
 
 EXPOSE 3000
 
 ENTRYPOINT ["node","./dist/server.js"]
 
 # This is docker build command: 
-# docker build -t beta-server .
+# docker build -t librarian-betaserver .
 
 # This is docker run command:
-# docker run -d --name beta-server -p 5000:3000 beta-server:latest
+# docker run -d --name librarian-betaserver -p 5002:3000 librarian-betaserver:latest
