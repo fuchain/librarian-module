@@ -200,6 +200,8 @@ public class RequestController extends BaseController {
         publishSubscribe.notifyToSub();
         Request matchRequest = requestQueueManager.findTheMatch(request);
         if (matchRequest != null) {
+            //remove reqyuest
+            requestQueueManager.removeRequestOutTheQueue(request);
             // update for request
             message.setAction(Constant.ACTION_UPDATE);
             request.setStatus(ERequestStatus.MATCHING.getValue());
