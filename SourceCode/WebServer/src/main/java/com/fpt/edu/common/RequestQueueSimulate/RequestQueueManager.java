@@ -123,9 +123,9 @@ public class RequestQueueManager implements Observer {
             queueToProcess = requestQueue.getBorrowRequestQueue();
         }
         if (queueToProcess.size() > 0) {
-            return queueToProcess.poll();
+           // return queueToProcess.poll();
             // peak is not remove element
-            //return queueToProcess.peek();
+            return queueToProcess.peek();
         }
         return null;
     }
