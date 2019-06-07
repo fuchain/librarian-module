@@ -1,6 +1,4 @@
-FROM node:10.15.3-alpine as builder
-
-RUN apk add yarn
+FROM node:10.16.0 as builder
 
 RUN mkdir -p /root/src/app
 WORKDIR /root/src/app
