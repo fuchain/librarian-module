@@ -61,4 +61,11 @@ public class RequestServices implements Observer {
             updateRequest((Request) mess.getMessage());
         }
     }
+
+    @Transactional
+	public int countPendingRequestOfUser(Long userId, int type, int status){
+    	return requestRepository.getNumerOfRequest(userId,type,status);
+	}
+
+
 }

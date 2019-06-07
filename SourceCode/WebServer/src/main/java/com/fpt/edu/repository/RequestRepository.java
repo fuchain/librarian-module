@@ -29,4 +29,16 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
     @Query(value = "SELECT req from Request  req WHERE req.status=1 order by req.createDate asc")
     List<Request> getListOfPendingRequest();
 
+
+
+	@Query(value = "SELECT count(r) FROM Request r WHERE r.user.id = :userId AND r.type = :type AND r.status <> :status")
+	int getNumerOfRequest(@Param("userId") Long userId,
+											@Param("type") int type,
+											@Param("status") int status);
+
+
+
+
+
+
 }
