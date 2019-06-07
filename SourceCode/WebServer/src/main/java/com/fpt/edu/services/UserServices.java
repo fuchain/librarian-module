@@ -1,10 +1,12 @@
 package com.fpt.edu.services;
 
 import com.fpt.edu.repository.RequestRepository;
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,61 +23,70 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserServices {
-    private BCryptPasswordEncoder encoder;
-    private UserRepository userRepository;
-    private BookRepository bookRepository;
+	private BCryptPasswordEncoder encoder;
+	private UserRepository userRepository;
+	private BookRepository bookRepository;
 
-    @Autowired
-    public UserServices(UserRepository userRepository, BookRepository bookRepository) {
-        this.userRepository = userRepository;
-        this.bookRepository = bookRepository;
-    }
+	@Autowired
+	public UserServices(UserRepository userRepository, BookRepository bookRepository) {
+		this.userRepository = userRepository;
+		this.bookRepository = bookRepository;
+	}
 
-    public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
-        this.userRepository = userRepository;
-        this.encoder = encoder;
-    }
+	public UserServices(UserRepository userRepository, BCryptPasswordEncoder encoder) {
+		this.userRepository = userRepository;
+		this.encoder = encoder;
+	}
 
-    public void addNewUser(User user) {
-        if (user.getPassword() != null) {
-            user.setPassword(encoder.encode(user.getPassword()));
-        } else {
-            user.setPassword(null);
-        }
+	public void addNewUser(User user) {
+		if (user.getPassword() != null) {
+			user.setPassword(encoder.encode(user.getPassword()));
+		} else {
+			user.setPassword(null);
+		}
 
-        userRepository.save(user);
-    }
+		userRepository.save(user);
+	}
 
-    public Optional<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
+	public Optional<User> findUserByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
 
-    public User getUserByEmail(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email.toLowerCase());
-        User user = null;
-        if (optionalUser.isPresent()) {
-            user = optionalUser.get();
-        }
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found!");
-        }
+	public User getUserByEmail(String email) throws UsernameNotFoundException {
+		Optional<User> optionalUser = userRepository.findByEmail(email.toLowerCase());
+		User user = null;
+		if (optionalUser.isPresent()) {
+			user = optionalUser.get();
+		}
+		if (user == null) {
+			throw new UsernameNotFoundException("User not found!");
+		}
 
-        return user;
-    }
+		return user;
+	}
 
-    @Transactional
-    public List<Book> getCurrentBookListOfUser(Long userId) {
-        List<Book> currentBookList = (List<Book>) bookRepository.findBookListByUserId(userId);
+	@Transactional
+	public List<Book> getCurrentBookListOfUser(Long userId) {
+		List<Book> currentBookList = (List<Book>) bookRepository.findBookListByUserId(userId);
 
-        for (Book book : currentBookList) {
-            BookDetail bookDetail = book.getBookDetail();
-            bookDetail.getAuthors().size();
-        }
+		for (Book book : currentBookList) {
+			BookDetail bookDetail = book.getBookDetail();
+			bookDetail.getAuthors().size();
+		}
 
-        return currentBookList;
-    }
+		return currentBookList;
+	}
 
-    public User updateUser(User user) {
-        return userRepository.save(user);
-    }
+	public User updateUser(User user) {
+		return userRepository.save(user);
+	}
+
+	public List<User> getAllUsers() {
+		return IteratorUtils.toList(userRepository.findAll().iterator());
+	}
+
+	public User getByUserId(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new EntityNotFoundException("User id: " + userId + " not found"));
+	}
 }
