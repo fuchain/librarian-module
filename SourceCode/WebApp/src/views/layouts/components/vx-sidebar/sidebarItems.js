@@ -57,28 +57,28 @@ function userMenu(numOfBooks, coin = 0) {
       name: "Sách của tôi",
       slug: "books",
       icon: "BookIcon",
-      tag: numOfBooks.numOfKeepingBooks + numOfBooks.numOfReturningBooks,
+      tag: numOfBooks.numOfKeepingBooks + numOfBooks.numOfReturningBooks || "0",
       tagColor: "primary",
       submenu: [
         {
           url: "/books/keeping",
           name: "Sách đang giữ",
           slug: "books-keeping",
-          tag: numOfBooks.numOfKeepingBooks,
+          tag: numOfBooks.numOfKeepingBooks || "0",
           tagColor: "primary"
         },
         {
           url: "/books/returning",
           name: "Sách đang trả",
           slug: "books-returning",
-          tag: numOfBooks.numOfReturningBooks,
+          tag: numOfBooks.numOfReturningBooks || "0",
           tagColor: "success"
         },
         {
           url: "/books/requesting",
           name: "Sách yêu cầu",
           slug: "books-requesting",
-          tag: numOfBooks.numOfRequestingBooks,
+          tag: numOfBooks.numOfRequestingBooks || "0",
           tagColor: "violet"
         }
       ]
