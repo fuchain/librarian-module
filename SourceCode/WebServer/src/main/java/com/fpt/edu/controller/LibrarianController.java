@@ -1,8 +1,11 @@
 package com.fpt.edu.controller;
 
+import com.bigchaindb.constants.Operations;
+import com.bigchaindb.model.Transaction;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.entities.User;
+import com.fpt.edu.services.BigchainTransactionServices;
 import com.fpt.edu.services.BookDetailsServices;
 import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
@@ -20,14 +23,17 @@ public class LibrarianController extends BaseController {
 	private final UserServices userServices;
 	private final BookDetailsServices bookDetailsServices;
 	private final BookServices bookServices;
+	private final BigchainTransactionServices bigchainTransactionServices;
 
 	@Autowired
 	public LibrarianController(UserServices userServices,
 							   BookDetailsServices bookDetailsServices,
-							   BookServices bookServices) {
+							   BookServices bookServices,
+							   BigchainTransactionServices bigchainTransactionServices) {
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
 		this.bookServices = bookServices;
+		this.bigchainTransactionServices = bigchainTransactionServices;
 
 	}
 
@@ -75,4 +81,16 @@ public class LibrarianController extends BaseController {
 		return new ResponseEntity<>(bookServices.getListBookByBookDetailId(id), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "Get history of book instance", response = Book.class)
+	@GetMapping("/books/{id}")
+	public ResponseEntity<Book> getHistoryOfBookInstance(@PathVariable Long id) throws Exception {
+		// Do we need authentication here???
+		Book book = bookServices.getBookById(id);
+		book.setBcTransactions(
+			bigchainTransactionServices.getTransactionsByAssetId(
+				book.getAssetId(),
+				Operations.TRANSFER
+			));
+		return new ResponseEntity<>(book, HttpStatus.OK);
+	}
 }
