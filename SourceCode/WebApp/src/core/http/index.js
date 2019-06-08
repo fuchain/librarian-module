@@ -88,5 +88,6 @@ export default {
   post: doPostRequest,
   put: doPutRequest,
   delete: doDeleteRequest,
-  baseUrl: endpoints.baseUrl
+  baseUrl: endpoints.baseUrl,
+  betaUrl: endpoints.betaUrl
 };
