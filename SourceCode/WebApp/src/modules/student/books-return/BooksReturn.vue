@@ -150,6 +150,7 @@ export default {
             });
 
             clearInterval(countInterval);
+            this.$router.push("/books/keeping");
           }
         }.bind(this),
         1000
