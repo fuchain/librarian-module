@@ -134,7 +134,7 @@ public class UserController extends BaseController {
 		int numberOfReturnRequest = requestServices.countPendingRequestOfUser(user.getId(),
 			ERequestType.RETURNING.getValue(), ERequestStatus.COMPLETED.getValue());
 		JSONObject response = new JSONObject();
-		response.put(Constant.NUM_OF_KEEP_BOOK, numberOfKeepingBook);
+		response.put(Constant.NUM_OF_KEEP_BOOK, numberOfKeepingBook-numberOfReturnRequest);
 		response.put(Constant.NUM_OF_RETURNING_BOOK, numberOfReturnRequest);
 		response.put(Constant.NUM_OF_REQUESTING_BOOK, numberOfBorrowRequest);
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
