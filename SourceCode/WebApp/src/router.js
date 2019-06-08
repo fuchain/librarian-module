@@ -68,6 +68,11 @@ const router = new Router({
         {
           path: "books/pair",
           component: () => import("@/modules/student/books-pair/BooksPair.vue")
+        },
+        {
+          path: "librarian/review-report",
+          component: () =>
+            import("@/modules/librarian/review-report/ReviewReport.vue")
         }
       ]
     },
