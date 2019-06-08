@@ -33,7 +33,7 @@
         v-for="item in listBooks"
         :key="item.id"
       >
-        <item-grid-view :item="item" v-if="(showMatched ? item.status === 2 : item.status === 1)">
+        <item-grid-view :item="item">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
               <div
@@ -164,9 +164,13 @@ export default {
       return false;
     },
     listBooks() {
-      if (!this.searchText.trim()) return this.books;
+      const showMatchedBooks = this.showMatched
+        ? this.books.filter(e => e.status === 2)
+        : this.books.filter(e => e.status === 1);
 
-      return this.books.filter(e =>
+      if (!this.searchText.trim()) return showMatchedBooks;
+
+      return showMatchedBooks.filter(e =>
         e.name.toLowerCase().includes(this.searchText.trim().toLowerCase())
       );
     }
