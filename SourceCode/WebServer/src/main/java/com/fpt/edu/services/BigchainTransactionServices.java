@@ -15,6 +15,7 @@ import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
 import java.security.MessageDigest;
@@ -22,6 +23,7 @@ import java.security.Signature;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public final class BigchainTransactionServices {
 
     public interface TransactionresultHandler {
@@ -82,7 +84,7 @@ public final class BigchainTransactionServices {
                 successCaller, faildedCaller);
     }
 
-    public Transactions getTransactionByAssetId(String assetId, Operations operartion) throws Exception {
+    public Transactions getTransactionsByAssetId(String assetId, Operations operartion) throws Exception {
         return TransactionsApi.getTransactionsByAssetId(assetId, operartion);
     }
 

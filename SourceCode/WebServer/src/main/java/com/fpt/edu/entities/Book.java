@@ -1,10 +1,13 @@
 package com.fpt.edu.entities;
 
 
+import com.bigchaindb.model.Transactions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -56,6 +59,10 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     @JsonIgnore
     private Map<String, String> metadata;
 
+    @Transient
+	@JsonSerialize
+	private List bcTransactions;
+
     public static enum StatusType {
         IN_USE("in use"),
         DAMAGED("damanged");
@@ -89,7 +96,20 @@ public class Book extends AbstractTimestampEntity implements Serializable {
         return this.metadata;
     }
 
-    public String getAssetId() {
+	public List getBcTransactions() {
+		return bcTransactions;
+	}
+
+	public void setBcTransactions(Transactions bcTransactions) {
+    	if (this.bcTransactions == null) {
+    		this.bcTransactions = new ArrayList();
+		}
+		for (com.bigchaindb.model.Transaction bcTransaction : bcTransactions.getTransactions()) {
+			this.bcTransactions.add(bcTransaction.getMetaData());
+		}
+	}
+
+	public String getAssetId() {
         return assetId;
     }
 
