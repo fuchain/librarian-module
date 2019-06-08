@@ -5,7 +5,8 @@ const list = async (req, res, next) => {
     const jsonList = listTrackings.map(e => {
         return {
             email: e.email,
-            review: JSON.parse(e.review)
+            review: JSON.parse(e.review),
+            updatedAt: e.updatedAt
         };
     });
     res.send(jsonList);
