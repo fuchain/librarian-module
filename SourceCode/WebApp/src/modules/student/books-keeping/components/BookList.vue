@@ -1,9 +1,28 @@
 <template>
   <div id="ecommerce-wishlist-demo">
-    <h2 class="mb-6">Sách đang giữ</h2>
-    <vs-input size="large" icon="search" class="w-full mb-4" placeholder="Tìm tên sách" v-model="searchText"/>
+    <h2 class="mb-6">
+      Sách đang giữ
+      <vs-button
+        color="primary"
+        type="relief"
+        size="small"
+        class="ml-4"
+        @click="$router.go()"
+      >Làm mới</vs-button>
+    </h2>
+    <vs-input
+      size="large"
+      icon="search"
+      class="w-full mb-4"
+      placeholder="Tìm tên sách"
+      v-model="searchText"
+    />
     <div class="items-grid-view vx-row match-height" v-if="books.length" appear>
-      <div class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full" v-for="item in listBooks" :key="item.id">
+      <div
+        class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full"
+        v-for="item in listBooks"
+        :key="item.id"
+      >
         <item-grid-view :item="item">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
@@ -55,7 +74,9 @@ export default {
     listBooks() {
       if (!this.searchText.trim()) return this.books;
 
-      return this.books.filter(e => e.name.toLowerCase().includes(this.searchText.trim().toLowerCase()));
+      return this.books.filter(e => {
+        e.name.toLowerCase().includes(this.searchText.trim().toLowerCase());
+      });
     }
   },
   methods: {

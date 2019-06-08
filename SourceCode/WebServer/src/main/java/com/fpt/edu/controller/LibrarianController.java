@@ -1,7 +1,6 @@
 package com.fpt.edu.controller;
 
 import com.bigchaindb.constants.Operations;
-import com.bigchaindb.model.Transaction;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.entities.User;
@@ -75,7 +74,7 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Get list instances of a book detail", response = List.class)
 	// need to identify specific class
-	@GetMapping("/{bookdetail_id}/books")
+	@GetMapping("/book_details/{bookdetail_id}/books")
 	public ResponseEntity<List<Book>> getListBookInstances(@PathVariable("bookdetail_id") Long bookDetailId) {
 		// Do we need authentication here???
 		return new ResponseEntity<>(bookServices.getListBookByBookDetailId(bookDetailId), HttpStatus.OK);

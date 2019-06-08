@@ -5,6 +5,7 @@ import com.bigchaindb.model.Transactions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fpt.edu.common.EBookStatus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,7 +50,10 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     private String lastTxId;
 
     @Column(name = "status")
-    private String status = StatusType.IN_USE.value();
+    private String status = EBookStatus.IN_USE.getValue();
+
+    @Column(name = "transfer_status")
+	private String transferStatus;
 
     @Transient
     @JsonIgnore
@@ -62,21 +66,6 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     @Transient
 	@JsonSerialize
 	private List bcTransactions;
-
-    public static enum StatusType {
-        IN_USE("in use"),
-        DAMAGED("damanged");
-
-        private String value;
-
-        StatusType(String value) {
-            this.value = value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-    }
 
     public Map<String, String> getAsset() {
         if (this.asset == null) {
@@ -104,6 +93,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     	if (this.bcTransactions == null) {
     		this.bcTransactions = new ArrayList();
 		}
+    	this.bcTransactions.clear();
 		for (com.bigchaindb.model.Transaction bcTransaction : bcTransactions.getTransactions()) {
 			this.bcTransactions.add(bcTransaction.getMetaData());
 		}

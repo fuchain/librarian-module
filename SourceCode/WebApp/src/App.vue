@@ -52,6 +52,11 @@ export default {
     if (this.$auth.isAuthenticated()) {
       this.$store.dispatch("getProfile");
     }
+
+    // Get num of books
+    if (this.$auth.isAuthenticated()) {
+      this.$store.dispatch("getNumOfBooks");
+    }
   },
   errorCaptured(err, vm, info) {
     this.error = true;

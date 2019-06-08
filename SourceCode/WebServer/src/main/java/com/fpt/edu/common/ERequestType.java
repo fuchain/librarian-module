@@ -11,7 +11,7 @@ public enum ERequestType {
 
     private int value;
 
-    private ERequestType(int value) {
+    ERequestType(int value) {
         this.value = value;
     }
 

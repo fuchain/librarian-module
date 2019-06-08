@@ -19,9 +19,5 @@ public class Constant {
     public static final String ACTION_UPDATE = "UPDATE";
     public static final String NUM_OF_KEEP_BOOK = "num_of_keeping_book";
     public static final String NUM_OF_RETURNING_BOOK = "num_of_returning_book";
-    public static final String NUM_OF_REQUESTING_BOOK = "num_of_reqeusting_book";
-
-
-
-
+    public static final String NUM_OF_REQUESTING_BOOK = "num_of_requesting_book";
 }

@@ -1,11 +1,13 @@
 package com.fpt.edu.common;
 
 public enum ETransactionStatus {
-	PENDING(1),COMPLETED(2);
+
+	PENDING(1),
+	COMPLETED(2);
 
 	private int value;
 
-	private ETransactionStatus(int value) {
+	ETransactionStatus(int value) {
 		this.value = value;
 	}
 	

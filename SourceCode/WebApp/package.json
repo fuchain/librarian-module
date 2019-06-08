@@ -45,6 +45,7 @@
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.3",
     "vue-select": "^2.6.3",
+    "vue-star-rating": "^1.6.1",
     "vue-timeago": "^5.1.2",
     "vue-tour": "^1.1.0",
     "vue-video-player": "^5.0.2",

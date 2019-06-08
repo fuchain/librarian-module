@@ -34,7 +34,7 @@
       <div class="vx-row">
         <div class="vx-col w-full">
           <vx-card class="w-full mb-4" style="font-size: 1.2rem; text-align: center;">
-            <vs-radio v-model="transferType" vs-value="auto">Tìm tự động</vs-radio>
+            <vs-radio v-model="transferType" vs-value="auto">Ghép tự động</vs-radio>
           </vx-card>
           <vx-card class="w-full" style="font-size: 1.2rem; text-align: center;">
             <vs-radio v-model="transferType" vs-value="manual">Chọn thủ công</vs-radio>
@@ -150,6 +150,7 @@ export default {
             });
 
             clearInterval(countInterval);
+            this.$router.push("/books/keeping");
           }
         }.bind(this),
         1000
@@ -170,6 +171,7 @@ export default {
             this.isLoading = false;
             this.resultText =
               "Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.";
+            this.$store.dispatch("getNumOfBooks");
           })
           .catch(err => {
             // Catch

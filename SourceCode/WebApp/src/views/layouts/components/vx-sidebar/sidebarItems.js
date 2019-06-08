@@ -1,10 +1,10 @@
 import auth from "@auth";
 
-export default function() {
+export default function(numOfBooks, coin = 0) {
   if (auth.isAdmin()) {
     return adminMenu;
   }
-  return userMenu;
+  return userMenu(numOfBooks, coin);
 }
 
 const adminMenu = [
@@ -34,52 +34,72 @@ const adminMenu = [
   }
 ];
 
-const userMenu = [
-  {
-    url: "/",
-    name: "Trang chính",
-    slug: "home",
-    icon: "HomeIcon"
-  },
-  {
-    url: null,
-    name: "Sách của tôi",
-    slug: "books",
-    icon: "BookIcon",
-    submenu: [
-      {
-        url: "/books/keeping",
-        name: "Sách đang giữ",
-        slug: "books-keeping"
-      },
-      {
-        url: "/books/returning",
-        name: "Sách đang trả",
-        slug: "books-returning"
-      },
-      {
-        url: "/books/requesting",
-        name: "Sách đang yêu cầu",
-        slug: "books-requesting"
-      }
-    ]
-  },
-  {
-    url: "/books/request",
-    name: "Yêu cầu mượn sách",
-    slug: "book-request",
-    icon: "BookOpenIcon"
-  },
-  {
-    url: "/books/pair",
-    name: "Nhập mã nhận sách",
-    slug: "book-pair",
-    icon: "ShoppingBagIcon"
-  },
-  {
-    url: "/report",
-    name: "Báo cáo tình trạng",
-    slug: "report",
-    icon: "FileIcon"
-  }
-];
+function userMenu(numOfBooks, coin = 0) {
+  return [
+    {
+      url: "/",
+      name: "Trang chính",
+      slug: "home",
+      icon: "HomeIcon"
+    },
+    {
+      url: null,
+      name: "Sách của tôi",
+      slug: "books",
+      icon: "BookIcon",
+      tag: numOfBooks.numOfKeepingBooks + numOfBooks.numOfReturningBooks,
+      tagColor: "primary",
+      submenu: [
+        {
+          url: "/books/keeping",
+          name: "Sách đang giữ",
+          slug: "books-keeping",
+          tag: numOfBooks.numOfKeepingBooks,
+          tagColor: "primary"
+        },
+        {
+          url: "/books/returning",
+          name: "Sách đang trả",
+          slug: "books-returning",
+          tag: numOfBooks.numOfReturningBooks,
+          tagColor: "success"
+        },
+        {
+          url: "/books/requesting",
+          name: "Sách yêu cầu",
+          slug: "books-requesting",
+          tag: numOfBooks.numOfRequestingBooks,
+          tagColor: "violet"
+        }
+      ]
+    },
+    {
+      url: "/books/request",
+      name: "Yêu cầu mượn sách",
+      slug: "book-request",
+      icon: "BookOpenIcon"
+    },
+    {
+      url: "/books/pair",
+      name: "Nhập mã nhận sách",
+      slug: "book-pair",
+      icon: "ShoppingBagIcon"
+    },
+    {
+      url: "/coin",
+      name: "Ví FUCoin",
+      slug: "coin",
+      icon: "DollarSignIcon",
+      tag: `${coin} FUCoin`,
+      tagColor: "darkorange"
+    },
+    {
+      url: "/review-ux",
+      name: "Đánh giá",
+      slug: "review-ux",
+      icon: "ThumbsUpIcon",
+      tag: "tích coin",
+      tagColor: "orangered"
+    }
+  ];
+}
