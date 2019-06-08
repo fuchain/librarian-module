@@ -118,6 +118,7 @@ export default {
 
           // Get profile
           await this.$store.dispatch("getProfile");
+          await this.$store.dispatch("getNumOfBooks");
 
           this.$vs.loading.close();
           this.$router.push("/");
@@ -179,6 +180,7 @@ export default {
 
           // Get profile
           await this.$store.dispatch("getProfile");
+          await this.$store.dispatch("getNumOfBooks");
 
           this.$vs.loading.close();
           this.$router.push("/");
