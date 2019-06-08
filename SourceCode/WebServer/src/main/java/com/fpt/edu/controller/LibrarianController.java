@@ -1,7 +1,10 @@
 package com.fpt.edu.controller;
 
 import com.fpt.edu.entities.Book;
+import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.entities.User;
+import com.fpt.edu.services.BookDetailsServices;
+import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +18,17 @@ import java.util.List;
 @RequestMapping("librarian")
 public class LibrarianController extends BaseController {
 	private final UserServices userServices;
+	private final BookDetailsServices bookDetailsServices;
+	private final BookServices bookServices;
 
 	@Autowired
-	public LibrarianController(UserServices userServices) {
+	public LibrarianController(UserServices userServices,
+							   BookDetailsServices bookDetailsServices,
+							   BookServices bookServices) {
 		this.userServices = userServices;
+		this.bookDetailsServices = bookDetailsServices;
+		this.bookServices = bookServices;
+
 	}
 
 	@ApiOperation("Get all users")
@@ -48,4 +58,21 @@ public class LibrarianController extends BaseController {
 
 		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
 	}
+
+	@ApiOperation(value = "Get list of all book details", response = List.class)
+	// need to identify specific class
+	@GetMapping("/book_details")
+	public ResponseEntity<List<BookDetail>> getListBookDetails() {
+		// Do we need authentication here???
+		return new ResponseEntity<>(bookDetailsServices.getAllBookDetails(), HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "Get list instances of a book detail", response = List.class)
+	// need to identify specific class
+	@GetMapping("/{id}/books")
+	public ResponseEntity<List<Book>> getListBookInstances(@PathVariable Long id) {
+		// Do we need authentication here???
+		return new ResponseEntity<>(bookServices.getListBookByBookDetailId(id), HttpStatus.OK);
+	}
+
 }
