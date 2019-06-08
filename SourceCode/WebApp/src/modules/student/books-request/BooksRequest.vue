@@ -89,6 +89,8 @@ export default {
             color: "primary",
             position: "top-center"
           });
+
+          this.$store.dispatch("getNumOfBooks");
         })
         .catch(err => {
           // Catch

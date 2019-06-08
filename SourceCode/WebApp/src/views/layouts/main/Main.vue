@@ -109,7 +109,6 @@ export default {
       routerTransition: themeConfig.routerTransition || "none",
       isNavbarDark: false,
       routeTitle: this.$route.meta.pageTitle,
-      sidebarItems: sidebarItems(),
       disableCustomizer: themeConfig.disableCustomizer,
       windowWidth: window.innerWidth // width of windows
     };
@@ -159,6 +158,17 @@ export default {
         "footer-sticky": this.footerType === "sticky",
         "footer-static": this.footerType === "static"
       };
+    },
+    // Keeping books
+    numOfBooks() {
+      return {
+        numOfKeepingBooks: this.$store.state.numOfKeepingBooks,
+        numOfRequestingBooks: this.$store.state.numOfRequestingBooks,
+        numOfReturningBooks: this.$store.state.numOfReturningBooks
+      };
+    },
+    sidebarItems() {
+      return sidebarItems(this.numOfBooks);
     }
   },
   methods: {

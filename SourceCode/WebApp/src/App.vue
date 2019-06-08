@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view v-if="!error"></router-view>
+    <router-view v-if="!error" :key="$route.fullPath"></router-view>
     <error-500 v-if="error"></error-500>
   </div>
 </template>
@@ -51,6 +51,11 @@ export default {
     // Get profile
     if (this.$auth.isAuthenticated()) {
       this.$store.dispatch("getProfile");
+    }
+
+    // Get num of books
+    if (this.$auth.isAuthenticated()) {
+      this.$store.dispatch("getNumOfBooks");
     }
   },
   errorCaptured(err, vm, info) {

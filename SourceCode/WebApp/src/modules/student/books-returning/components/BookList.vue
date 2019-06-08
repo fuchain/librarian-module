@@ -1,6 +1,15 @@
 <template>
   <div id="ecommerce-wishlist-demo">
-    <h2 class="mb-6">Sách đang trả</h2>
+    <h2 class="mb-6">
+      Sách đang trả
+      <vs-button
+        color="primary"
+        type="relief"
+        size="small"
+        class="ml-4"
+        @click="$router.go()"
+      >Làm mới</vs-button>
+    </h2>
     <vs-input
       size="large"
       icon="search"
@@ -171,6 +180,7 @@ export default {
           });
 
           this.popupActive = false;
+          this.$store.dispatch("getNumOfBooks");
 
           setTimeout(
             function() {

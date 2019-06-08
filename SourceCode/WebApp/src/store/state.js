@@ -20,7 +20,12 @@ const state = {
   // Profile
   email: "",
   fullname: "",
-  phone: ""
+  phone: "",
+
+  // Num of books
+  numOfKeepingBooks: 0,
+  numOfRequestingBooks: 0,
+  numOfReturningBooks: 0
 };
 
 export default state;
