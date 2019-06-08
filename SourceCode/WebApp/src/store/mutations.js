@@ -93,6 +93,11 @@ const mutations = {
   },
   UPDATE_PROFILE_PHONE(state, phone) {
     state.phone = phone;
+  },
+  NUM_OF_BOOK_UPDATED(state, data) {
+    state.numOfKeepingBooks = data.num_of_keeping_book;
+    state.numOfRequestingBooks = data.num_of_requesting_book;
+    state.numOfReturningBooks = data.num_of_returning_book;
   }
 };
 

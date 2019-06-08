@@ -8,7 +8,7 @@ const mutations = {
           e.bookDetail.name
         } for Software Engineering learning at FPT University`,
         image: "/images/book-thumbnail.jpg",
-        time: e.updateDate,
+        time: new Date(e.updateDate * 1000),
         code: e.bookDetail.name.substring(0, 3).toUpperCase() + "101"
       };
     });

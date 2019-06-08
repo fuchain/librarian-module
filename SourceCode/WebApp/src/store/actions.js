@@ -58,6 +58,17 @@ const actions = {
       // Catch error
       throw e;
     }
+  },
+
+  // Get num of books
+  async getNumOfBooks({ commit }) {
+    try {
+      const { data } = await $http.get(`${$http.baseUrl}/users/book_infos`);
+      commit("NUM_OF_BOOK_UPDATED", data);
+    } catch (e) {
+      // Catch error
+      throw e;
+    }
   }
 };
 

@@ -170,6 +170,7 @@ export default {
             this.isLoading = false;
             this.resultText =
               "Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.";
+            this.$store.dispatch("getNumOfBooks");
           })
           .catch(err => {
             // Catch
