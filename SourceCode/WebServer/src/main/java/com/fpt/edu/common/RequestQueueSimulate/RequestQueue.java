@@ -15,8 +15,8 @@ public class RequestQueue {
         @Override
         public int compare(Request o1, Request o2) {
             if (o1.getCreateDate().getTime() - o2.getCreateDate().getTime() > 0) {
-                return -1;
-            } else return 1;
+                return 1;
+            } else return -1;
         }
     };
 
