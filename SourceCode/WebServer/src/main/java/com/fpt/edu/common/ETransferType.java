@@ -11,7 +11,7 @@ public enum ETransferType {
 
     private int value;
 
-    private ETransferType(int value) {
+    ETransferType(int value) {
         this.value = value;
     }
 
