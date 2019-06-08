@@ -47,6 +47,8 @@ function userMenu(numOfBooks) {
       name: "Sách của tôi",
       slug: "books",
       icon: "BookIcon",
+      tag: numOfBooks.numOfKeepingBooks + numOfBooks.numOfReturningBooks,
+      tagColor: "primary",
       submenu: [
         {
           url: "/books/keeping",
@@ -60,14 +62,14 @@ function userMenu(numOfBooks) {
           name: "Sách đang trả",
           slug: "books-returning",
           tag: numOfBooks.numOfReturningBooks,
-          tagColor: "primary"
+          tagColor: "success"
         },
         {
           url: "/books/requesting",
           name: "Sách yêu cầu",
           slug: "books-requesting",
           tag: numOfBooks.numOfRequestingBooks,
-          tagColor: "primary"
+          tagColor: "violet"
         }
       ]
     },
