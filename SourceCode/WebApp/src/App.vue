@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view v-if="!error" :key="$route.fullPath"></router-view>
+    <router-view v-if="!error"></router-view>
     <error-500 v-if="error"></error-500>
   </div>
 </template>

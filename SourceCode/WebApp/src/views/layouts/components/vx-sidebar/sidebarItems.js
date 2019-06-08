@@ -1,10 +1,10 @@
 import auth from "@auth";
 
-export default function(numOfBooks) {
+export default function(numOfBooks, coin = 0) {
   if (auth.isAdmin()) {
     return adminMenu;
   }
-  return userMenu(numOfBooks);
+  return userMenu(numOfBooks, coin);
 }
 
 const adminMenu = [
@@ -34,7 +34,7 @@ const adminMenu = [
   }
 ];
 
-function userMenu(numOfBooks) {
+function userMenu(numOfBooks, coin = 0) {
   return [
     {
       url: "/",
@@ -86,10 +86,20 @@ function userMenu(numOfBooks) {
       icon: "ShoppingBagIcon"
     },
     {
-      url: "/report",
-      name: "Báo cáo tình trạng",
-      slug: "report",
-      icon: "FileIcon"
+      url: "/coin",
+      name: "Ví FUCoin",
+      slug: "coin",
+      icon: "DollarSignIcon",
+      tag: `${coin} FUCoin`,
+      tagColor: "darkorange"
+    },
+    {
+      url: "/review-ux",
+      name: "Đánh giá",
+      slug: "review-ux",
+      icon: "ThumbsUpIcon",
+      tag: "tích coin",
+      tagColor: "orangered"
     }
   ];
 }
