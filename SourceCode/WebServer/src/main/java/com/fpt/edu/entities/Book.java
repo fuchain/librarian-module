@@ -104,6 +104,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     	if (this.bcTransactions == null) {
     		this.bcTransactions = new ArrayList();
 		}
+    	this.bcTransactions.clear();
 		for (com.bigchaindb.model.Transaction bcTransaction : bcTransactions.getTransactions()) {
 			this.bcTransactions.add(bcTransaction.getMetaData());
 		}
