@@ -118,16 +118,33 @@ export default {
         note: this.note
       };
 
-      console.log(JSON.stringify(data));
-
       this.$vs.loading({
         type: "radius",
         text: "Đang đào FUCoin",
         color: "black",
         background: "darkorange"
       });
+
       setTimeout(
-        function() {
+        async function() {
+          try {
+            await this.$http.post(`${this.$http.betaUrl}/reviews`, data);
+          } catch (e) {
+            // Catch error
+            console.log(e);
+
+            this.$vs.loading.close();
+
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Bạn không thể gian lận khi đào coin, rất tiếc",
+              color: "danger",
+              position: "top-center"
+            });
+
+            return;
+          }
+
           this.$vs.loading.close();
 
           this.$vs.notify({
