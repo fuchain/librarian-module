@@ -115,7 +115,8 @@ export default {
           this.rating4,
           this.rating5
         ],
-        note: this.note
+        note: this.note,
+        userAgent: window.navigator.userAgent
       };
 
       this.$vs.loading({

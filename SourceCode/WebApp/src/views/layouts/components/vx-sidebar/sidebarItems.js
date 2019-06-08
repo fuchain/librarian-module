@@ -9,28 +9,38 @@ export default function(numOfBooks, coin = 0) {
 
 const adminMenu = [
   {
-    url: "/",
-    name: "Trang chính",
+    url: "/librarian/overview",
+    name: "Thống kê",
     slug: "home",
-    icon: "HomeIcon"
+    icon: "BarChartIcon",
+    tag: "beta",
+    tagColor: "darkorange"
   },
   {
-    url: "/book-search",
+    url: "/librarian/books",
     name: "Tình trạng sách",
     slug: "book-search",
     icon: "BookIcon"
   },
   {
-    url: "/book-return-request",
+    url: "/librarian/book-return-request",
     name: "Thu hồi sách",
     slug: "book-return-request",
     icon: "ArchiveIcon"
   },
   {
-    url: "/users-manage",
+    url: "/librarian/users-manage",
     name: "Quản lí tài khoản",
     slug: "users-manage",
     icon: "UsersIcon"
+  },
+  {
+    url: "/librarian/review-report",
+    name: "Đánh giá",
+    slug: "review-ux",
+    icon: "FileIcon",
+    tag: "báo cáo",
+    tagColor: "primary"
   }
 ];
 

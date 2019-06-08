@@ -175,7 +175,12 @@ export default {
     }
   },
   methods: {},
-  components: {}
+  components: {},
+  beforeMount() {
+    if (this.$auth.isAdmin()) {
+      this.$router.push("/librarian/overview");
+    }
+  }
 };
 </script>
 
