@@ -168,7 +168,10 @@ export default {
       };
     },
     sidebarItems() {
-      return sidebarItems(this.numOfBooks);
+      return sidebarItems(this.numOfBooks, this.coin);
+    },
+    coin() {
+      return this.$store.state.coin;
     }
   },
   methods: {

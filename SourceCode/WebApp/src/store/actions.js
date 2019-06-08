@@ -69,6 +69,11 @@ const actions = {
       // Catch error
       throw e;
     }
+  },
+
+  // Add coin
+  addCoin({ commit }, amount) {
+    commit("ADD_COIN", amount);
   }
 };
 

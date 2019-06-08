@@ -1,3 +1,5 @@
+import * as localStorage from "@localstorage";
+
 const mutations = {
   // ////////////////////////////////////////////
   // SIDEBAR & UI UX
@@ -98,6 +100,10 @@ const mutations = {
     state.numOfKeepingBooks = data.num_of_keeping_book;
     state.numOfRequestingBooks = data.num_of_requesting_book;
     state.numOfReturningBooks = data.num_of_returning_book;
+  },
+  ADD_COIN(state, amount) {
+    state.coin = parseInt(state.coin) + amount;
+    localStorage.setItem("fucoin", parseInt(state.coin));
   }
 };
 
