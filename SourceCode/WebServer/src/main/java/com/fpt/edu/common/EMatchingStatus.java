@@ -17,7 +17,7 @@ public enum EMatchingStatus {
 
     private int value;
 
-    private EMatchingStatus(int value) {
+    EMatchingStatus(int value) {
         this.value = value;
     }
 

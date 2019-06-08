@@ -18,7 +18,7 @@ public enum ERequestStatus {
 
     private int value;
 
-    private ERequestStatus(int value) {
+    ERequestStatus(int value) {
         this.value = value;
     }
 
