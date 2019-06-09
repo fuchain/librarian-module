@@ -616,4 +616,37 @@ public class RequestController extends BaseController {
 		matchingServices.deleteMatching(matching.getId());
 		requestServices.deleteRequest(matching.getReturnerRequest().getId());
 	}
+
+	@ApiOperation(value = "User cancels manually returning request", response = String.class)
+	@PutMapping(value = "/manually/cancel", produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> removeRequestManually(@RequestBody String body, Principal principal) throws Exception {
+		// Get user information
+		User sender = userServices.getUserByEmail(principal.getName());
+
+		// Get request
+		JSONObject jsonBody = new JSONObject(body);
+		Long requestId = jsonBody.getLong("request_id");
+		Request request = requestServices.getRequestById(requestId);
+
+		// Check sender is the returner or not
+		if (!sender.getId().equals(request.getUser().getId())) {
+			throw new Exception("User id: " + sender + " is not the returner of the request");
+		}
+		// Get matching by return request
+		Matching matching = matchingServices.getByReturnRequestId(requestId, EMatchingStatus.CONFIRMED.getValue());
+
+		// Update matching status to 'CANCELED'
+		matching.setStatus(EMatchingStatus.CANCELED.getValue());
+		matchingServices.updateMatching(matching);
+
+		// Update request status to 'CANCELED'
+		Request returnRequest = matching.getReturnerRequest();
+		returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+		requestServices.updateRequest(returnRequest);
+
+		JSONObject jsonResult = new JSONObject();
+		jsonResult.put("message", "Canceled request sucessfully");
+
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
 }
