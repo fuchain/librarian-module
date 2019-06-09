@@ -466,6 +466,7 @@ public class RequestController extends BaseController {
 			// Return pin to client
 			jsonResult.put("pin", existedMatching.getPin());
 			jsonResult.put("matching_id", existedMatching.getId());
+			jsonResult.put("request_id", existedMatching.getReturnerRequest().getId());
 			jsonResult.put("created_at", existedMatching.getMatchingStartDate().getTime());
 			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 		}
