@@ -88,11 +88,15 @@ public class LibrarianController extends BaseController {
 	@GetMapping("/book_details/{bookdetail_id}/books")
 	public ResponseEntity<List<Book>> getListBookInstances(
 		@PathVariable("bookdetail_id") Long bookDetailId,
+		@RequestParam(name = "transfer_status", required = false) String transferStatus,
 		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE + "") int page,
 		@RequestParam(name = "size", required = false, defaultValue = Constant.DEFAULT_OFFSET + "") int size
 	) {
 		Pageable pageable = PageRequest.of(page - 1, size);
-		return new ResponseEntity<>(bookServices.getListBookByBookDetailId(bookDetailId, pageable), HttpStatus.OK);
+		return new ResponseEntity<>(
+			bookServices.getListBookByBookDetailId(bookDetailId, transferStatus, pageable),
+			HttpStatus.OK
+		);
 	}
 
 	@ApiOperation(value = "Get history of book instance", response = Book.class)
