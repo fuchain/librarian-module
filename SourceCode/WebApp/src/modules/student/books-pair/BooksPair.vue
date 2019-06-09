@@ -32,14 +32,37 @@ export default {
       });
     },
     async confirm() {
-      await this.fakeLoad(3000);
+      this.$vs.loading();
 
-      this.$vs.notify({
-        title: "Lỗi",
-        text: "Mã PIN không hợp lệ",
-        color: "warning",
-        position: "top-center"
-      });
+      this.$http
+        .put(`${this.$http.baseUrl}/requests/manually/verify`, {
+          pin: this.pin
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Đã nhận được sách",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.$store.dispatch("getNumOfBooks");
+          this.$router.push("/books/keeping");
+        })
+        .catch(e => {
+          // Catch error
+          console.log(e);
+
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Mã PIN không hợp lệ",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   }
 };
