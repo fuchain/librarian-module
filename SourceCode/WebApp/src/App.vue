@@ -48,22 +48,15 @@ export default {
   async mounted() {
     this.toggleClassInBody(themeConfig.theme);
 
-    this.$vs.loading({
-      background: "primary",
-      color: "white",
-    });
-
-    // Get profile
     if (this.$auth.isAuthenticated()) {
+      this.$vs.loading({
+        background: "primary",
+        color: "white"
+      });
       await this.$store.dispatch("getProfile");
-    }
-
-    // Get num of books
-    if (this.$auth.isAuthenticated()) {
       await this.$store.dispatch("getNumOfBooks");
+      this.$vs.loading.close();
     }
-
-    this.$vs.loading.close();
   },
   errorCaptured(err, vm, info) {
     this.error = true;
