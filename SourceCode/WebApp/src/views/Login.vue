@@ -107,7 +107,7 @@ export default {
 
       this.$vs.loading({
         type: "corners",
-        text: "Đang tải"
+        text: "Đang đăng nhập"
       });
 
       this.$http
@@ -172,7 +172,7 @@ export default {
     if (idToken) {
       this.$vs.loading({
         type: "corners",
-        text: "Đang tải"
+        text: "Đang đăng nhập"
       });
 
       this.$http

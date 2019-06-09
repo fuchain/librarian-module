@@ -1,21 +1,11 @@
 <template>
   <vx-card>
-    <h2 class="mb-4">Ví của bạn</h2>
-    <p>Tính năng này sắp ra mắt. Chúng tôi sẽ thông báo cho bạn khi tính năng này sẵn sàng.</p>
-    <vs-divider>Bản Beta</vs-divider>
-    <p class="mt-2">
-      Email:
-      <strong>{{ email }}</strong>
-    </p>
-    <p class="mt-2">
-      FUCoin:
-      <strong>{{ coin }}</strong>
-    </p>
+    <h2 class="mb-4">Mã QR của tôi</h2>
     <canvas id="canvas"></canvas>
-    <p>Quét mã QR để thanh toán bằng ví này</p>
+    <p>Quét mã QR để định danh người dùng</p>
   </vx-card>
 </template>
- 
+
 <script>
 import QRCode from "qrcode";
 
