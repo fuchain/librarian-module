@@ -76,7 +76,7 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
 		details.add(ex.getMessage());
 		details.add("Entity Id Miss Match ");
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
-		return new ResponseEntity(error, HttpStatus.CONFLICT);
+		return new ResponseEntity(error, HttpStatus.PRECONDITION_FAILED);
 	}
 
 	@ExceptionHandler(TypeNotSupportedException.class)
@@ -86,7 +86,7 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
 		details.add(ex.getMessage());
 		details.add("Type not support");
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
-		return new ResponseEntity(error, HttpStatus.FORBIDDEN);
+		return new ResponseEntity(error, HttpStatus.NOT_ACCEPTABLE);
 	}
 
 
@@ -132,6 +132,6 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
 	private void logException(Exception ex) {
 		LOGGER.error("ERROR Message :" + ex.getMessage());
 		LOGGER.error("ERROR Cause :" + ex.getCause());
-		LOGGER.error("ERROR StackTrace :" + ex.getStackTrace());
+		LOGGER.error("ERROR StackTrace :" + ex.getStackTrace().toString());
 	}
 }
