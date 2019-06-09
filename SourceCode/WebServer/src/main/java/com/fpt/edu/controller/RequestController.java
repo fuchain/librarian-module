@@ -465,6 +465,7 @@ public class RequestController extends BaseController {
 			}
 			// Return pin to client
 			jsonResult.put("pin", existedMatching.getPin());
+			jsonResult.put("matching_id", existedMatching.getId());
 			jsonResult.put("created_at", existedMatching.getMatchingStartDate().getTime());
 			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 		}
@@ -494,8 +495,13 @@ public class RequestController extends BaseController {
 		matching.setStatus(EMatchingStatus.PENDING.getValue());
 		matchingServices.saveMatching(matching);
 
+		// Get matching id
+		Matching m = matchingServices.getByBookId(book.getId(), EMatchingStatus.CONFIRMED.getValue());
+		Long matchingId = m.getId();
+
 		// Return response to client
 		jsonResult.put("pin", pin);
+		jsonResult.put("matching_id", matchingId);
 		jsonResult.put("created_at", now.getTime());
 		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
@@ -514,6 +520,11 @@ public class RequestController extends BaseController {
 		Matching matching = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
 		if (matching == null) {
 			throw new EntityNotFoundException("Pin: " + pin + " is invalid, could not find any matching with pin");
+		}
+
+		// Check returner returns book for himself or not
+		if (matching.getReturnerRequest().getUser().getId().equals(receiver.getId())) {
+			throw new Exception("Returner id: " + matching.getReturnerRequest().getId() + " can not return for himself");
 		}
 
 		// Check expired time of pin
