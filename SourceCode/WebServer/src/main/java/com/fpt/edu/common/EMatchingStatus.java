@@ -13,7 +13,10 @@ public enum EMatchingStatus {
 
     //When the returner enters the pin code correctly,
     // the system will perform a transfer transaction and the matching status will switch to "completed"
-    CONFIRMED(3);
+    CONFIRMED(3),
+
+	// When user has already returned book manually, user can cancel returning request.
+	CANCELED(4);
 
     private int value;
 
