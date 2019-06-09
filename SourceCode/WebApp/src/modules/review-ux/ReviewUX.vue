@@ -6,6 +6,7 @@
       <strong>5</strong> FUCoin về tài khoản
     </vs-alert>
 
+    <h6 class="mt-6">Tốc độ tải trang và độ mượt</h6>
     <star-rating
       :border-width="4"
       border-color="#d8d8d8"
