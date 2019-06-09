@@ -30,7 +30,9 @@ public class BookDetailController extends BaseController {
 
 	@ApiOperation(value = "Get a list of book details", response = String.class)
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<List<BookDetail>> findBookDetailsById(@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE+"") int page, @RequestParam(name = "size", required = false,defaultValue = Constant.DEFAULT_OFFSET+"") int size ) throws EntityNotFoundException, JsonProcessingException {
+	public ResponseEntity<List<BookDetail>> findBookDetailsById(
+		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE+"") int page,
+		@RequestParam(name = "size", required = false,defaultValue = Constant.DEFAULT_OFFSET+"") int size ) throws EntityNotFoundException, JsonProcessingException {
 		Pageable pageable = PageRequest.of(page-1,size);
     	return new ResponseEntity<>(bookDetailsServices.getAllBookDetails(pageable), HttpStatus.OK);
 	}
