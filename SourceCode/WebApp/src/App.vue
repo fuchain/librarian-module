@@ -69,6 +69,7 @@ export default {
     });
 
     this.$router.push("/error");
+    if (this.$vs.loading) this.$vs.loading.close();
 
     // Log error
     console.log("Error: ", err);
