@@ -15,7 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity()
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 	private final UserDetailsServiceImpl userDetailsService;
 
