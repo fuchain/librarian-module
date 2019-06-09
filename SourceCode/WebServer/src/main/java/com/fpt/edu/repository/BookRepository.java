@@ -1,5 +1,7 @@
 package com.fpt.edu.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -19,5 +21,5 @@ public interface BookRepository extends CrudRepository<Book, Long> {
 	int getBookNumberOfCurrentUser(@Param("userId") Long userId);
 
 	@Query(value = "SELECT b FROM Book  b WHERE b.bookDetail.id = :bookDetailId")
-	Collection<Book> findBookListByBookDetailId(@Param("bookDetailId") Long bookDetailId);
+	Page<Book> findBookListByBookDetailId(@Param("bookDetailId") Long bookDetailId, Pageable pageable);
 }

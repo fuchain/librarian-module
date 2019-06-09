@@ -5,6 +5,7 @@ import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.repository.BookDetailRepository;
 import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -46,12 +47,12 @@ public class BookDetailsServices {
         return bookDetailRepository.findByName(name).get(0);
     }
 
-    public List<BookDetail> searchBookDetails(String name) {
-        return bookDetailRepository.findBookDetailsByName(name);
+    public List<BookDetail> searchBookDetails(String name, Pageable pageable) {
+        return bookDetailRepository.findBookDetailsByName(name,pageable).getContent();
     }
 
-	public List<BookDetail> getAllBookDetails() {
-		return IteratorUtils.toList(bookDetailRepository.findAll().iterator());
+	public List<BookDetail> getAllBookDetails(Pageable pageable) {
+		return bookDetailRepository.findAll(pageable).getContent();
 	}
 
 }

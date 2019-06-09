@@ -8,6 +8,8 @@ import com.fpt.edu.exception.EntityNotFoundException;
 import com.fpt.edu.services.BookDetailsServices;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +30,9 @@ public class BookDetailController extends BaseController {
 
 	@ApiOperation(value = "Get a list of book details", response = String.class)
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<List<BookDetail>> findBookDetailsById() throws EntityNotFoundException, JsonProcessingException {
-		return new ResponseEntity<>(bookDetailsServices.getAllBookDetails(), HttpStatus.OK);
+	public ResponseEntity<List<BookDetail>> findBookDetailsById(@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE+"") int page, @RequestParam(name = "size", required = false,defaultValue = Constant.DEFAULT_OFFSET+"") int size ) throws EntityNotFoundException, JsonProcessingException {
+		Pageable pageable = PageRequest.of(page-1,size);
+    	return new ResponseEntity<>(bookDetailsServices.getAllBookDetails(pageable), HttpStatus.OK);
 	}
 
     @ApiOperation(value = "Create a book detail ", response = BookDetail.class)
@@ -70,8 +73,9 @@ public class BookDetailController extends BaseController {
 
     @ApiOperation(value = "Search for a book detail", response = BookDetail.class)
     @GetMapping("search")
-    public ResponseEntity<List<BookDetail>> searchBook(@RequestParam("name") String name) {
-        List<BookDetail> books = bookDetailsServices.searchBookDetails(name.toLowerCase());
+    public ResponseEntity<List<BookDetail>> searchBook(@RequestParam("name") String name,@RequestParam(name = "page", required = false, defaultValue =Constant.DEFAULT_PAGE+"") int page,@RequestParam(name = "size", required = false,defaultValue = Constant.DEFAULT_OFFSET+"") int size ) {
+		Pageable pageable = PageRequest.of(page-1,size);
+        List<BookDetail> books = bookDetailsServices.searchBookDetails(name.toLowerCase(),pageable);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 }
