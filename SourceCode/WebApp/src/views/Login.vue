@@ -5,7 +5,12 @@
         <div slot="no-body" class="full-page-bg-color">
           <div class="vx-row">
             <div class="vx-col hidden sm:hidden md:hidden lg:block lg:w-1/2 mx-auto self-center">
-              <img src="@/assets/images/pages/login.png" alt="login" class="mx-auto">
+              <img
+                src="@/assets/images/pages/login.png"
+                style="width: 300px;"
+                alt="login"
+                class="mx-auto"
+              >
             </div>
             <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white bg-dark">
               <div class="p-8">
