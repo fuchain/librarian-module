@@ -25,8 +25,18 @@ public interface BookRepository extends CrudRepository<Book, Long> {
 			"FROM Book b " +
 			"WHERE b.bookDetail.id = :bookDetailId AND b.transferStatus = :transferStatus"
 	)
-	Page<Book> findBookListByBookDetailId(
+	Page<Book> findBookListByBookDetailIdWithFilter(
 		@Param("bookDetailId") Long bookDetailId,
 		@Param("transferStatus") String transferStatus,
+		Pageable pageable);
+
+	@Query(
+		value = "" +
+			"SELECT b " +
+			"FROM Book b " +
+			"WHERE b.bookDetail.id = :bookDetailId"
+	)
+	Page<Book> findBookListByBookDetailId(
+		@Param("bookDetailId") Long bookDetailId,
 		Pageable pageable);
 }

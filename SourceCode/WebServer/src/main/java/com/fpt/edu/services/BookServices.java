@@ -35,7 +35,11 @@ public class BookServices {
 		bookRepository.deleteById(id);
 	}
 
-	public List<Book> getListBookByBookDetailId(Long bookDetailId, String transferStatus, Pageable pageable) {
-		return bookRepository.findBookListByBookDetailId(bookDetailId, transferStatus, pageable).getContent();
+	public List<Book> getListBookByBookDetailIdWithFilter(Long bookDetailId, String transferStatus, Pageable pageable) {
+		return bookRepository.findBookListByBookDetailIdWithFilter(bookDetailId, transferStatus, pageable).getContent();
+	}
+
+	public List<Book> getListBookByBookDetailId(Long bookDetailId, Pageable pageable) {
+		return bookRepository.findBookListByBookDetailId(bookDetailId, pageable).getContent();
 	}
 }

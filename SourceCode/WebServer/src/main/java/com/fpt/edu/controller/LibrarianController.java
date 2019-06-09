@@ -93,10 +93,17 @@ public class LibrarianController extends BaseController {
 		@RequestParam(name = "size", required = false, defaultValue = Constant.DEFAULT_OFFSET + "") int size
 	) {
 		Pageable pageable = PageRequest.of(page - 1, size);
-		return new ResponseEntity<>(
-			bookServices.getListBookByBookDetailId(bookDetailId, transferStatus, pageable),
-			HttpStatus.OK
-		);
+		if (transferStatus == null) {
+			return new ResponseEntity<>(
+				bookServices.getListBookByBookDetailId(bookDetailId, pageable),
+				HttpStatus.OK
+			);
+		} else {
+			return new ResponseEntity<>(
+				bookServices.getListBookByBookDetailIdWithFilter(bookDetailId, transferStatus, pageable),
+				HttpStatus.OK
+			);
+		}
 	}
 
 	@ApiOperation(value = "Get history of book instance", response = Book.class)
