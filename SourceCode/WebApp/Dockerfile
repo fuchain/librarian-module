@@ -1,4 +1,4 @@
-FROM node:10.15.0 as builder
+FROM node:10.16.0 as builder
 
 # Create working directory
 RUN mkdir -p /root/src/app

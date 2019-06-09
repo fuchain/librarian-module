@@ -1,6 +1,15 @@
 <template>
   <div id="ecommerce-wishlist-demo">
-    <h2 class="mb-6">Sách đang trả</h2>
+    <h2 class="mb-6">
+      Sách đang trả
+      <vs-button
+        color="primary"
+        type="relief"
+        size="small"
+        class="ml-4"
+        @click="$router.go()"
+      >Làm mới</vs-button>
+    </h2>
     <vs-input
       size="large"
       icon="search"
@@ -24,7 +33,7 @@
         v-for="item in listBooks"
         :key="item.id"
       >
-        <item-grid-view :item="item" v-if="(showMatched ? item.status === 2 : item.status === 1)">
+        <item-grid-view :item="item">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
               <div
@@ -49,9 +58,12 @@
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
                 v-if="!item.user"
               >
-                <feather-icon icon="ArchiveIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2">CHƯA CÓ NGƯỜI NHẬN</span>
+                <span
+                  class="text-sm font-semibold ml-2"
+                  @click="doCancel(item)"
+                >HỦY BỎ VIỆC TRẢ SÁCH</span>
               </div>
             </div>
           </template>
@@ -116,9 +128,13 @@ export default {
       return false;
     },
     listBooks() {
-      if (!this.searchText.trim()) return this.books;
+      const showMatchedBooks = this.showMatched
+        ? this.books.filter(e => e.status === 2)
+        : this.books.filter(e => e.status === 1);
 
-      return this.books.filter(e =>
+      if (!this.searchText.trim()) return showMatchedBooks;
+
+      return showMatchedBooks.filter(e =>
         e.name.toLowerCase().includes(this.searchText.trim().toLowerCase())
       );
     }
@@ -171,6 +187,7 @@ export default {
           });
 
           this.popupActive = false;
+          this.$store.dispatch("getNumOfBooks");
 
           setTimeout(
             function() {
@@ -207,6 +224,37 @@ export default {
         }.bind(this),
         1000
       );
+    },
+    doCancel(item) {
+      this.$vs.loading();
+
+      this.$http
+        .put(`${this.$http.baseUrl}/requests/manually/cancel`, {
+          request_id: item.requestId
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Hủy bỏ việc trả sách thành công",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.$store.dispatch("getNumOfBooks");
+
+          this.$router.push("/books/keeping");
+        })
+        .catch(e => {
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Chưa thể hủy bỏ việc trả sách",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   },
   beforeDestroy() {

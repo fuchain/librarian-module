@@ -23,21 +23,21 @@
           </div>
           <div class="vx-col w-full mt-5">
             <p>Mã sách</p>
-            <p style="font-size: 2rem;">{{ 'FUHCMLIB' + (book && book.id) || '0' }}</p>
+            <p style="font-size: 2rem;">{{ 'FUHCMBOOK' + (book && book.id) || '0' }}</p>
           </div>
         </vx-card>
       </div>
     </tab-content>
 
-    <tab-content title="Chọn phương thức trả" class="mb-5" :before-change="loading">
+    <tab-content title="Chọn phương thức trả" class="mb-5" :before-change="loadingPrepare">
       <!-- tab 2 content -->
       <div class="vx-row">
         <div class="vx-col w-full">
           <vx-card class="w-full mb-4" style="font-size: 1.2rem; text-align: center;">
-            <vs-radio v-model="transferType" vs-value="auto">Tìm tự động</vs-radio>
+            <vs-radio v-model="transferType" vs-value="auto">Chưa có người nhận</vs-radio>
           </vx-card>
           <vx-card class="w-full" style="font-size: 1.2rem; text-align: center;">
-            <vs-radio v-model="transferType" vs-value="manual">Chọn thủ công</vs-radio>
+            <vs-radio v-model="transferType" vs-value="manual">Đã có người nhận</vs-radio>
           </vx-card>
         </div>
       </div>
@@ -47,7 +47,7 @@
       <!-- tab 3 content -->
       <div class="vx-row">
         <div class="vx-col w-full">
-          <vx-card v-if="transferType === 'manual'">
+          <vx-card v-if="transferType === 'manual' && !isLoading">
             <div style="font-size: 1.5rem; text-align: center;">Mã số PIN xác nhận</div>
             <div style="font-size: 3rem; text-align: center;">{{ randomPIN }}</div>
             <div style="text-align: center;">
@@ -63,17 +63,24 @@
       <div class="wizard-footer-right">
         <button
           v-if="!props.isLastStep"
-          @click="props.nextTab() | runAction(props)"
+          @click="props.nextTab()"
           class="wizard-btn"
           style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
         >Tiếp theo</button>
 
         <button
-          v-else
+          v-if="props.isLastStep && transferType === 'auto'"
           @click="checkDone"
           class="wizard-btn"
           style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
-        >{{props.isLastStep ? 'Xong' : 'Tiếp theo'}}</button>
+        >Xong</button>
+
+        <button
+          v-if="props.isLastStep && transferType !== 'auto'"
+          @click="doCancel"
+          class="wizard-btn"
+          style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
+        >Huỷ bỏ trả sách</button>
       </div>
     </template>
   </form-wizard>
@@ -92,27 +99,44 @@ export default {
       transferType: "auto",
       remainTime: 0,
       isLoading: false,
-      resultText: "Đang tải"
+      resultText: "Đang tải",
+      randomPIN: "000000",
+      matchingId: 0,
+      requestId: 0
     };
   },
-  computed: {
-    randomPIN() {
-      return Math.floor(100000 + Math.random() * 900000);
-    }
-  },
   methods: {
+    async validateConfirm() {
+      this.$http
+        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Người nhận đã xác nhận mã PIN",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.$store.dispatch("getNumOfBooks");
+
+          setTimeout(
+            function() {
+              this.$router.push("/books/keeping");
+            }.bind(this),
+            500
+          );
+        })
+        .catch(err => {
+          // Catch
+          console.log(err);
+        })
+        .finally(() => {});
+    },
     async checkDone() {
       if (this.transferType === "auto") {
         this.$router.push("/books/returning");
       } else {
-        await this.fakeLoad();
-
-        this.$vs.notify({
-          title: "Lỗi",
-          text: "Người nhận chưa xác nhận mã PIN trên ứng dụng",
-          color: "warning",
-          position: "top-center"
-        });
+        this.validateConfirm();
       }
     },
     async fakeLoad(customTime) {
@@ -128,9 +152,56 @@ export default {
       });
     },
     async loading() {
-      await this.fakeLoad(this.transferType === "manual" ? 3000 : 0);
+      await this.fakeLoad(500);
 
-      this.transferType === "manual" && this.startCount();
+      return true;
+    },
+    async loadingPrepare() {
+      this.isLoading = true;
+
+      if (this.transferType === "auto") {
+        this.$http
+          .post(`${this.$http.baseUrl}/requests`, {
+            type: 2,
+            book_id: this.book.id
+          })
+          .then(() => {
+            this.resultText =
+              "Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.";
+            this.$store.dispatch("getNumOfBooks");
+          })
+          .catch(err => {
+            // Catch
+            console.log(err);
+
+            this.resultText =
+              "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      } else {
+        this.$http
+          .post(`${this.$http.baseUrl}/requests/manually`, {
+            book_id: this.book.id
+          })
+          .then(response => {
+            this.randomPIN = response.data.pin.toString();
+            this.matchingId = response.data.matching_id;
+            this.requestId = response.data.request_id;
+            this.startCount();
+            this.$store.dispatch("getNumOfBooks");
+          })
+          .catch(err => {
+            // Catch
+            console.log(err);
+            this.resultText =
+              "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      }
 
       return true;
     },
@@ -141,6 +212,8 @@ export default {
         function() {
           this.remainTime = this.remainTime - 1;
 
+          this.validateConfirm();
+
           if (this.remainTime <= 0) {
             this.$vs.notify({
               title: "Lỗi",
@@ -150,40 +223,51 @@ export default {
             });
 
             clearInterval(countInterval);
+            this.$router.push("/books/keeping");
           }
         }.bind(this),
         1000
       );
+
+      this.validateConfirm();
     },
-    runAction(props) {
-      const step = props.activeTabIndex;
+    doCancel() {
+      this.$vs.loading();
 
-      if (step === 1 && this.transferType === "auto") {
-        this.isLoading = true;
-
-        this.$http
-          .post(`${this.$http.baseUrl}/requests`, {
-            type: 2,
-            book_id: this.book.id
-          })
-          .then(() => {
-            this.isLoading = false;
-            this.resultText =
-              "Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.";
-          })
-          .catch(err => {
-            // Catch
-            console.log(err);
-
-            this.isLoading = false;
-            this.resultText =
-              "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
+      this.$http
+        .put(`${this.$http.baseUrl}/requests/manually/cancel`, {
+          request_id: this.requestId
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Hủy bỏ việc trả sách thành công",
+            color: "primary",
+            position: "top-center"
           });
-      }
+
+          this.requestId = 0;
+
+          this.$store.dispatch("getNumOfBooks");
+
+          this.$router.push("/books/keeping");
+        })
+        .catch(e => {
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Chưa thể hủy bỏ việc trả sách",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   },
   beforeDestroy() {
     clearInterval(countInterval);
+    if (this.requestId) this.doCancel();
   },
   components: {
     FormWizard,

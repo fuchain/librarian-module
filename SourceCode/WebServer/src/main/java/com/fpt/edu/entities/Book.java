@@ -1,10 +1,15 @@
 package com.fpt.edu.entities;
 
 
+import com.bigchaindb.model.Transactions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fpt.edu.common.EBookStatus;
+import com.fpt.edu.common.EBookTransferStatus;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -46,7 +51,11 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     private String lastTxId;
 
     @Column(name = "status")
-    private String status = StatusType.IN_USE.value();
+    private String status = EBookStatus.IN_USE.getValue();
+
+    @Column(name = "transfer_status")
+    @JsonSerialize
+	private String transferStatus = EBookTransferStatus.TRANSFERRED.getValue();
 
     @Transient
     @JsonIgnore
@@ -56,20 +65,9 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     @JsonIgnore
     private Map<String, String> metadata;
 
-    public static enum StatusType {
-        IN_USE("in use"),
-        DAMAGED("damanged");
-
-        private String value;
-
-        StatusType(String value) {
-            this.value = value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-    }
+    @Transient
+	@JsonSerialize
+	private List bcTransactions;
 
     public Map<String, String> getAsset() {
         if (this.asset == null) {
@@ -89,7 +87,21 @@ public class Book extends AbstractTimestampEntity implements Serializable {
         return this.metadata;
     }
 
-    public String getAssetId() {
+	public List getBcTransactions() {
+		return bcTransactions;
+	}
+
+	public void setBcTransactions(Transactions bcTransactions) {
+    	if (this.bcTransactions == null) {
+    		this.bcTransactions = new ArrayList();
+		}
+    	this.bcTransactions.clear();
+		for (com.bigchaindb.model.Transaction bcTransaction : bcTransactions.getTransactions()) {
+			this.bcTransactions.add(bcTransaction.getMetaData());
+		}
+	}
+
+	public String getAssetId() {
         return assetId;
     }
 
@@ -105,7 +117,23 @@ public class Book extends AbstractTimestampEntity implements Serializable {
         this.lastTxId = lastTxId;
     }
 
-    public User getUser() {
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getTransferStatus() {
+		return transferStatus;
+	}
+
+	public void setTransferStatus(String transferStatus) {
+		this.transferStatus = transferStatus;
+	}
+
+	public User getUser() {
         return user;
     }
 

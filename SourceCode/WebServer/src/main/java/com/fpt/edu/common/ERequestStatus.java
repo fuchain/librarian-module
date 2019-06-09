@@ -14,11 +14,14 @@ public enum ERequestStatus {
 
     // When the borrower and returner are making the transfer, if the transaction transfer is created,
     // the status of the request will be converted to "completed".
-    COMPLETED(3);
+    COMPLETED(3),
+
+	// When user has already returned book manually, user can cancel returning request.
+    CANCELED(4);
 
     private int value;
 
-    private ERequestStatus(int value) {
+    ERequestStatus(int value) {
         this.value = value;
     }
 

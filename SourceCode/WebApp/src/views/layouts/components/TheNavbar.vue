@@ -383,7 +383,6 @@ export default {
       setTimeout(
         function() {
           this.$auth.clearAuth();
-          this.$localStorage.clear();
           this.$router.push("/login");
 
           this.$vs.loading.close();

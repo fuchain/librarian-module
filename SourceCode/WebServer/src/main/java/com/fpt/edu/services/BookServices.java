@@ -3,33 +3,43 @@ package com.fpt.edu.services;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 public class BookServices {
-    private BookRepository bookRepository;
+	private BookRepository bookRepository;
 
-    @Autowired
-    public BookServices(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
+	@Autowired
+	public BookServices(BookRepository bookRepository) {
+		this.bookRepository = bookRepository;
+	}
 
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book id: " + id + " not found"));
-    }
+	public Book getBookById(Long id) {
+		return bookRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("Book id: " + id + " not found"));
+	}
 
-    public Book saveBook(Book book) {
-        return bookRepository.save(book);
-    }
+	public Book saveBook(Book book) {
+		return bookRepository.save(book);
+	}
 
-    public Book updateBook(Book book) {
-        return bookRepository.save(book);
-    }
+	public Book updateBook(Book book) {
+		return bookRepository.save(book);
+	}
 
-    public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
-    }
+	public void deleteBook(Long id) {
+		bookRepository.deleteById(id);
+	}
+
+	public List<Book> getListBookByBookDetailIdWithFilter(Long bookDetailId, String transferStatus, Pageable pageable) {
+		return bookRepository.findBookListByBookDetailIdWithFilter(bookDetailId, transferStatus, pageable).getContent();
+	}
+
+	public List<Book> getListBookByBookDetailId(Long bookDetailId, Pageable pageable) {
+		return bookRepository.findBookListByBookDetailId(bookDetailId, pageable).getContent();
+	}
 }

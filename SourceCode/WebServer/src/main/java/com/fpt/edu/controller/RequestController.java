@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -346,7 +347,6 @@ public class RequestController extends BaseController {
 		Date sendTime = new Date();
 		AtomicBoolean callback = new AtomicBoolean(false);
 		JSONObject jsonResult;
-
 		// Update current_keeper
 		book.setUser(receiver);
 
@@ -435,4 +435,223 @@ public class RequestController extends BaseController {
 		return new ResponseEntity<>(jsonResponse.toString(), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "Return book manually", response = String.class)
+	@PostMapping(value = "/manually", produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> returnBookManually(@RequestBody String body, Principal principal) {
+		// Get user information
+		User user = userServices.getUserByEmail(principal.getName());
+
+		// Get book
+		JSONObject bodyObject = new JSONObject(body);
+		Long bookId = bodyObject.getLong("book_id");
+		Book book = bookServices.getBookById(bookId);
+
+		// Init data
+		JSONObject jsonResult = new JSONObject();
+		Date now = new Date();
+
+		// Check user has created a matching instance in DB or not
+		Matching existedMatching = matchingServices.getByBookId(bookId, EMatchingStatus.CONFIRMED.getValue());
+		if (existedMatching != null) {
+			long duration = utils.getDuration(existedMatching.getMatchingStartDate(), now, TimeUnit.MINUTES);
+
+			// If pin is expired
+			if (duration > Constant.PIN_EXPIRED_MINUTE) {
+				// Update matching
+				String pin = utils.getPin();
+				existedMatching.setPin(pin);
+				existedMatching.setMatchingStartDate(now);
+				matchingServices.updateMatching(existedMatching);
+			}
+			// Return pin to client
+			jsonResult.put("pin", existedMatching.getPin());
+			jsonResult.put("matching_id", existedMatching.getId());
+			jsonResult.put("request_id", existedMatching.getReturnerRequest().getId());
+			jsonResult.put("created_at", existedMatching.getMatchingStartDate().getTime());
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+		}
+
+		// Init a returning request
+		Request returningRequest = new Request();
+		returningRequest.setBook(book);
+		returningRequest.setUser(user);
+		returningRequest.setStatus(ERequestStatus.PENDING.getValue());
+		returningRequest.setType(ERequestType.RETURNING.getValue());
+		Request savedRequest = requestServices.saveRequest(returningRequest);
+
+		// Get request id
+		Long requestId = savedRequest.getId();
+
+		// Check whether pin is duplicated or not
+		String pin;
+		Matching duplicatedMat;
+		do {
+			pin = utils.getPin();
+			duplicatedMat = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+		} while (duplicatedMat != null);
+
+		// Init matching instance
+		Matching matching = new Matching();
+		matching.setReturnerRequest(returningRequest);
+		matching.setBook(book);
+		matching.setPin(pin);
+		matching.setMatchingStartDate(now);
+		matching.setStatus(EMatchingStatus.PENDING.getValue());
+		matchingServices.saveMatching(matching);
+
+		// Get matching id
+		Matching m = matchingServices.getByBookId(book.getId(), EMatchingStatus.CONFIRMED.getValue());
+		Long matchingId = m.getId();
+
+		// Return response to client
+		jsonResult.put("pin", pin);
+		jsonResult.put("matching_id", matchingId);
+		jsonResult.put("request_id", requestId);
+		jsonResult.put("created_at", now.getTime());
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "Receiver enter pin to get book", response = String.class)
+	@PutMapping(value = "/manually/verify", produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> verifyBookManually(@RequestBody String body, Principal principal) throws Exception {
+		// Get user information
+		User receiver = userServices.getUserByEmail(principal.getName());
+
+		// Get pin from Request Body
+		JSONObject bodyObject = new JSONObject(body);
+		String pin = bodyObject.getString("pin");
+
+		// Check pin from client with matching
+		Matching matching = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+		if (matching == null) {
+			throw new EntityNotFoundException("Pin: " + pin + " is invalid, could not find any matching with pin");
+		}
+
+		// Check returner returns book for himself or not
+		if (matching.getReturnerRequest().getUser().getId().equals(receiver.getId())) {
+			throw new Exception("Returner id: " + matching.getReturnerRequest().getId() + " can not return for himself");
+		}
+
+		// Check expired time of pin
+		long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
+		if (duration > Constant.PIN_EXPIRED_MINUTE) {
+			// Delete returning request + matching
+			deleteRequestAndMatching(matching);
+			throw new PinExpiredException("Pin is expired");
+		}
+
+		// Create a borrowing request
+		Request borrowingRequest = new Request();
+		borrowingRequest.setBook(matching.getBook());
+		borrowingRequest.setUser(receiver);
+		borrowingRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+		borrowingRequest.setType(ERequestType.BORROWING.getValue());
+		requestServices.saveRequest(borrowingRequest);
+
+		// Update returning request status to 'COMPLETED'
+		Request returningRequest = matching.getReturnerRequest();
+		returningRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+		requestServices.updateRequest(returningRequest);
+
+		//Update matching
+		matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+		matching.setBorrowerRequest(borrowingRequest);
+		matchingServices.updateMatching(matching);
+
+		// Init data to submit transaction to BlockChain
+		Book book = matching.getBook();
+		User returner = matching.getReturnerRequest().getUser();
+		AtomicBoolean callback = new AtomicBoolean(false);
+		JSONObject jsonResult;
+
+		// Update owner of book
+		book.setUser(receiver);
+
+		Date sendTime = new Date();
+
+		BigchainTransactionServices services = new BigchainTransactionServices();
+		services.doTransfer(
+			book.getLastTxId(),
+			book.getAssetId(), book.getMetadata(),
+			returner.getEmail(), receiver.getEmail(),
+			(transaction, response) -> { //success
+
+				// Update last transaction id for book
+				String transactionId = transaction.getId();
+				book.setLastTxId(transactionId);
+
+				// Update book
+				bookServices.updateBook(book);
+
+				// Insert a transaction to DB Postgresql
+				Transaction tran = new Transaction();
+				tran.setBook(book);
+				tran.setReturner(returner);
+				tran.setBorrower(receiver);
+				transactionServices.insertTransaction(tran);
+
+				callback.set(true);
+			}, (transaction, response) -> { // failed
+				callback.set(true);
+
+				// Delete request + matching
+				deleteRequestAndMatching(matching);
+
+				// Update user in book
+				book.setUser(returner);
+				bookServices.updateBook(book);
+			}
+		);
+
+		// Wait until the BigchainTransactionServices has callback or request is timeout
+		Date now;
+		while (true) {
+			now = new Date();
+			duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+
+			if (duration > 30 || callback.get()) {
+				jsonResult = new JSONObject();
+				jsonResult.put("message", "confirm book transfer successfully");
+				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+			}
+		}
+	}
+
+	private void deleteRequestAndMatching(Matching matching) {
+		matchingServices.deleteMatching(matching.getId());
+		requestServices.deleteRequest(matching.getReturnerRequest().getId());
+	}
+
+	@ApiOperation(value = "User cancels manually returning request", response = String.class)
+	@PutMapping(value = "/manually/cancel", produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> removeRequestManually(@RequestBody String body, Principal principal) throws Exception {
+		// Get user information
+		User sender = userServices.getUserByEmail(principal.getName());
+
+		// Get request
+		JSONObject jsonBody = new JSONObject(body);
+		Long requestId = jsonBody.getLong("request_id");
+		Request request = requestServices.getRequestById(requestId);
+
+		// Check sender is the returner or not
+		if (!sender.getId().equals(request.getUser().getId())) {
+			throw new Exception("User id: " + sender + " is not the returner of the request");
+		}
+		// Get matching by return request
+		Matching matching = matchingServices.getByReturnRequestId(requestId, EMatchingStatus.CONFIRMED.getValue());
+
+		// Update matching status to 'CANCELED'
+		matching.setStatus(EMatchingStatus.CANCELED.getValue());
+		matchingServices.updateMatching(matching);
+
+		// Update request status to 'CANCELED'
+		Request returnRequest = matching.getReturnerRequest();
+		returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+		requestServices.updateRequest(returnRequest);
+
+		JSONObject jsonResult = new JSONObject();
+		jsonResult.put("message", "Canceled request sucessfully");
+
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
 }
