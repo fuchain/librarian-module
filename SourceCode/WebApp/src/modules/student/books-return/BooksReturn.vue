@@ -29,7 +29,7 @@
       </div>
     </tab-content>
 
-    <tab-content title="Chọn phương thức trả" class="mb-5" :before-change="loading">
+    <tab-content title="Chọn phương thức trả" class="mb-5" :before-change="loadingPrepare">
       <!-- tab 2 content -->
       <div class="vx-row">
         <div class="vx-col w-full">
@@ -47,7 +47,7 @@
       <!-- tab 3 content -->
       <div class="vx-row">
         <div class="vx-col w-full">
-          <vx-card v-if="transferType === 'manual'">
+          <vx-card v-if="transferType === 'manual' && !isLoading">
             <div style="font-size: 1.5rem; text-align: center;">Mã số PIN xác nhận</div>
             <div style="font-size: 3rem; text-align: center;">{{ randomPIN }}</div>
             <div style="text-align: center;">
@@ -92,27 +92,46 @@ export default {
       transferType: "auto",
       remainTime: 0,
       isLoading: false,
-      resultText: "Đang tải"
+      resultText: "Đang tải",
+      randomPIN: "000000",
+      matchingId: 0
     };
   },
-  computed: {
-    randomPIN() {
-      return Math.floor(100000 + Math.random() * 900000);
-    }
-  },
   methods: {
+    async validateConfirm() {
+      return;
+
+      // Need to fix
+      this.$http
+        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Người nhận đã xác nhận mã PIN",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.$store.dispatch("getNumOfBooks");
+
+          setTimeout(
+            function() {
+              this.$router.push("/books/keeping");
+            }.bind(this),
+            500
+          );
+        })
+        .catch(err => {
+          // Catch
+          console.log(err);
+        })
+        .finally(() => {});
+    },
     async checkDone() {
       if (this.transferType === "auto") {
         this.$router.push("/books/returning");
       } else {
-        await this.fakeLoad();
-
-        this.$vs.notify({
-          title: "Lỗi",
-          text: "Người nhận chưa xác nhận mã PIN trên ứng dụng",
-          color: "warning",
-          position: "top-center"
-        });
+        this.validateConfirm();
       }
     },
     async fakeLoad(customTime) {
@@ -128,9 +147,54 @@ export default {
       });
     },
     async loading() {
-      await this.fakeLoad(this.transferType === "manual" ? 3000 : 0);
+      await this.fakeLoad(500);
 
-      this.transferType === "manual" && this.startCount();
+      return true;
+    },
+    async loadingPrepare() {
+      this.isLoading = true;
+
+      if (this.transferType === "auto") {
+        this.$http
+          .post(`${this.$http.baseUrl}/requests`, {
+            type: 2,
+            book_id: this.book.id
+          })
+          .then(() => {
+            this.resultText =
+              "Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.";
+            this.$store.dispatch("getNumOfBooks");
+          })
+          .catch(err => {
+            // Catch
+            console.log(err);
+
+            this.resultText =
+              "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      } else {
+        this.$http
+          .post(`${this.$http.baseUrl}/requests/manually`, {
+            book_id: this.book.id
+          })
+          .then(response => {
+            this.randomPIN = response.data.pin.toString();
+            this.startCount();
+            this.$store.dispatch("getNumOfBooks");
+          })
+          .catch(err => {
+            // Catch
+            console.log(err);
+            this.resultText =
+              "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      }
 
       return true;
     },
@@ -155,33 +219,11 @@ export default {
         }.bind(this),
         1000
       );
+
+      this.validateConfirm();
     },
     runAction(props) {
       const step = props.activeTabIndex;
-
-      if (step === 1 && this.transferType === "auto") {
-        this.isLoading = true;
-
-        this.$http
-          .post(`${this.$http.baseUrl}/requests`, {
-            type: 2,
-            book_id: this.book.id
-          })
-          .then(() => {
-            this.isLoading = false;
-            this.resultText =
-              "Thông tin trả sách đã được gửi, bạn sẽ nhận được thông báo khi hệ thống tìm được người nhận sách.";
-            this.$store.dispatch("getNumOfBooks");
-          })
-          .catch(err => {
-            // Catch
-            console.log(err);
-
-            this.isLoading = false;
-            this.resultText =
-              "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
-          });
-      }
     }
   },
   beforeDestroy() {

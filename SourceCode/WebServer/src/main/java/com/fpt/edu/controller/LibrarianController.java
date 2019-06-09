@@ -29,9 +29,9 @@ public class LibrarianController extends BaseController {
 
 	@Autowired
 	public LibrarianController(UserServices userServices,
-							   BookDetailsServices bookDetailsServices,
-							   BookServices bookServices,
-							   BigchainTransactionServices bigchainTransactionServices) {
+	                           BookDetailsServices bookDetailsServices,
+	                           BookServices bookServices,
+	                           BigchainTransactionServices bigchainTransactionServices) {
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
 		this.bookServices = bookServices;
@@ -72,7 +72,6 @@ public class LibrarianController extends BaseController {
 	}
 
 	@ApiOperation(value = "Get list of all book details", response = List.class)
-	// need to identify specific class
 	@GetMapping("/book_details")
 	public ResponseEntity<List<BookDetail>> getListBookDetails(
 		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE+"") int page,
@@ -83,7 +82,6 @@ public class LibrarianController extends BaseController {
 	}
 
 	@ApiOperation(value = "Get list instances of a book detail", response = List.class)
-	// need to identify specific class
 	@GetMapping("/book_details/{bookdetail_id}/books")
 	public ResponseEntity<List<Book>> getListBookInstances(
 		@PathVariable("bookdetail_id") Long bookDetailId,
@@ -96,8 +94,9 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Get history of book instance", response = Book.class)
 	@GetMapping("/books/{book_id}")
-	public ResponseEntity<Book> getHistoryOfBookInstance(@PathVariable("book_id") Long bookId) throws Exception {
-		// Do we need authentication here???
+	public ResponseEntity<Book> getHistoryOfBookInstance(
+		@PathVariable("book_id") Long bookId
+	) throws Exception {
 		Book book = bookServices.getBookById(bookId);
 		book.setBcTransactions(
 			bigchainTransactionServices.getTransactionsByAssetId(

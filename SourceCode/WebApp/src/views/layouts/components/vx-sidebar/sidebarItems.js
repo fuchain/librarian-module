@@ -45,7 +45,7 @@ const adminMenu = [
 ];
 
 function userMenu(numOfBooks, coin = 0) {
-  return [
+  const menu = [
     {
       url: "/",
       name: "Trang chính",
@@ -102,14 +102,21 @@ function userMenu(numOfBooks, coin = 0) {
       icon: "DollarSignIcon",
       tag: `${coin} FUCoin`,
       tagColor: "darkorange"
-    },
-    {
-      url: "/review-ux",
-      name: "Đánh giá",
-      slug: "review-ux",
-      icon: "ThumbsUpIcon",
-      tag: "tích coin",
-      tagColor: "orangered"
     }
   ];
+
+  if (!coin || coin <= 0) {
+    menu.push(reviewMenu);
+  }
+
+  return menu;
 }
+
+const reviewMenu = {
+  url: "/review-ux",
+  name: "Đánh giá",
+  slug: "review-ux",
+  icon: "ThumbsUpIcon",
+  tag: "tích coin",
+  tagColor: "orangered"
+};
