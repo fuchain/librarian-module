@@ -137,6 +137,9 @@ public class RequestController extends BaseController {
 			throw new TypeNotSupportedException("Type " + type + " is not supported");
 		}
 
+		// Set mode of request
+		request.setMode(ERequestMode.AUTOMATIC.getValue());
+
 		// Find the matching request
 		pairRequest(request);
 
@@ -490,6 +493,7 @@ public class RequestController extends BaseController {
 		returningRequest.setUser(user);
 		returningRequest.setStatus(ERequestStatus.PENDING.getValue());
 		returningRequest.setType(ERequestType.RETURNING.getValue());
+		returningRequest.setMode(ERequestMode.MANUAL.getValue());
 		Request savedRequest = requestServices.saveRequest(returningRequest);
 
 		// Get request id
@@ -565,6 +569,7 @@ public class RequestController extends BaseController {
 		borrowingRequest.setUser(receiver);
 		borrowingRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 		borrowingRequest.setType(ERequestType.BORROWING.getValue());
+		borrowingRequest.setMode(ERequestMode.MANUAL.getValue());
 		requestServices.saveRequest(borrowingRequest);
 
 		// Update returning request status to 'COMPLETED'
