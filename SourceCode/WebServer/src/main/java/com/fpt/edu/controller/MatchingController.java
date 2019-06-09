@@ -29,7 +29,7 @@ public class MatchingController extends BaseController {
 
     @ApiOperation(value = "Returner confirms book transfer", response = String.class)
     @GetMapping("/{id}/confirm")
-    public ResponseEntity<String> confirmBookTransfer(@PathVariable("id") Long matchingId) throws Exception {
+    public ResponseEntity<String> confirmBookTransfer(@PathVariable("id") Long matchingId) throws EntityIdMismatchException, EntityIdMismatchException {
 
         Matching matching = matchingServices.getMatchingById(matchingId);
         User matchingUser = matching.getReturnerRequest().getUser();
@@ -45,9 +45,8 @@ public class MatchingController extends BaseController {
         }
         // Receiver has not imported pin yet
         if (matching.getStatus() != EMatchingStatus.CONFIRMED.getValue()) {
-            throw new Exception("Receiver has not imported pin yet");
+            throw new EntityIdMismatchException("Receiver has not imported pin yet");
         }
-
         // Return message
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", "confirmed");
