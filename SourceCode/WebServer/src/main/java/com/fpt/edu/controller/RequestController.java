@@ -455,7 +455,7 @@ public class RequestController extends BaseController {
 		if (existedMatching != null) {
 			long duration = utils.getDuration(existedMatching.getMatchingStartDate(), now, TimeUnit.MINUTES);
 
-			//if pin is expired
+			// If pin is expired
 			if (duration > Constant.PIN_EXPIRED_MINUTE) {
 				// Update matching
 				String pin = utils.getPin();
@@ -477,7 +477,10 @@ public class RequestController extends BaseController {
 		returningRequest.setUser(user);
 		returningRequest.setStatus(ERequestStatus.PENDING.getValue());
 		returningRequest.setType(ERequestType.RETURNING.getValue());
-		requestServices.saveRequest(returningRequest);
+		Request savedRequest = requestServices.saveRequest(returningRequest);
+
+		// Get request id
+		Long requestId = savedRequest.getId();
 
 		// Check whether pin is duplicated or not
 		String pin;
@@ -503,6 +506,7 @@ public class RequestController extends BaseController {
 		// Return response to client
 		jsonResult.put("pin", pin);
 		jsonResult.put("matching_id", matchingId);
+		jsonResult.put("request_id", requestId);
 		jsonResult.put("created_at", now.getTime());
 		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
