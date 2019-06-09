@@ -45,12 +45,17 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.toggleClassInBody(themeConfig.theme);
 
-    // Get profile
     if (this.$auth.isAuthenticated()) {
-      this.$store.dispatch("getProfile");
+      this.$vs.loading({
+        background: "primary",
+        color: "white"
+      });
+      await this.$store.dispatch("getProfile");
+      await this.$store.dispatch("getNumOfBooks");
+      this.$vs.loading.close();
     }
   },
   errorCaptured(err, vm, info) {
