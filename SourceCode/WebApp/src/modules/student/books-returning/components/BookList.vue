@@ -58,9 +58,12 @@
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
                 v-if="!item.user"
               >
-                <feather-icon icon="ArchiveIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2">CHƯA CÓ NGƯỜI NHẬN</span>
+                <span
+                  class="text-sm font-semibold ml-2"
+                  @click="doCancel(item)"
+                >HỦY BỎ VIỆC TRẢ SÁCH</span>
               </div>
             </div>
           </template>
@@ -221,6 +224,37 @@ export default {
         }.bind(this),
         1000
       );
+    },
+    doCancel(item) {
+      this.$vs.loading();
+
+      this.$http
+        .put(`${this.$http.baseUrl}/requests/manually/cancel`, {
+          request_id: item.requestId
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Hủy bỏ việc trả sách thành công",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.$store.dispatch("getNumOfBooks");
+
+          this.$router.push("/books/keeping");
+        })
+        .catch(e => {
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Chưa thể hủy bỏ việc trả sách",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   },
   beforeDestroy() {

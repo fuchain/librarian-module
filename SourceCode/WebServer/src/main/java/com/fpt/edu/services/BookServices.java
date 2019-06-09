@@ -2,7 +2,6 @@ package com.fpt.edu.services;
 
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.repository.BookRepository;
-import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,11 @@ public class BookServices {
 		bookRepository.deleteById(id);
 	}
 
+	public List<Book> getListBookByBookDetailIdWithFilter(Long bookDetailId, String transferStatus, Pageable pageable) {
+		return bookRepository.findBookListByBookDetailIdWithFilter(bookDetailId, transferStatus, pageable).getContent();
+	}
+
 	public List<Book> getListBookByBookDetailId(Long bookDetailId, Pageable pageable) {
-		return bookRepository.findBookListByBookDetailId(bookDetailId,pageable).getContent();
+		return bookRepository.findBookListByBookDetailId(bookDetailId, pageable).getContent();
 	}
 }
