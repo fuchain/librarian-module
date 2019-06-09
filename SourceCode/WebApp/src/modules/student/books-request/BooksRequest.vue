@@ -3,7 +3,7 @@
     <vx-card title="Yêu cầu mượn sách">
       <div class="vx-row mb-6">
         <div class="vx-col sm:w-2/3 w-full">
-          <vs-input class="w-full" v-model="searchText" placeholder="PRC391 hoặc Cloud Computer "/>
+          <vs-input class="w-full" v-model="searchText" placeholder="MCL101 hoặc Machine Learning"/>
         </div>
         <div class="vx-col sm:w-1/3 w-full">
           <vs-button type="relief" color="primary" class="w-full" @click="doSearch">Tìm sách</vs-button>
@@ -53,7 +53,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
 
-                <span class="text-sm font-semibold ml-2">YÊU CẦU MƯỢN SÁCH</span>
+                <span class="text-sm font-semibold ml-2" @click="comingSoon">YÊU CẦU MƯỢN SÁCH</span>
               </div>
             </div>
           </template>
@@ -164,6 +164,14 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+    },
+    comingSoon() {
+      this.$vs.notify({
+        title: "Tính năng này chưa hỗ trợ",
+        text: "Chức năng gợi ý sách sẽ sớm ra mắt thôi, đợi nghen",
+        color: "warning",
+        position: "top-center"
+      });
     }
   }
 };

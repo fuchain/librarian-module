@@ -23,7 +23,7 @@
           </div>
           <div class="vx-col w-full mt-5">
             <p>Mã sách</p>
-            <p style="font-size: 2rem;">{{ 'FUHCMLIB' + (book && book.id) || '0' }}</p>
+            <p style="font-size: 2rem;">{{ 'FUHCMBOOK' + (book && book.id) || '0' }}</p>
           </div>
         </vx-card>
       </div>
@@ -34,10 +34,10 @@
       <div class="vx-row">
         <div class="vx-col w-full">
           <vx-card class="w-full mb-4" style="font-size: 1.2rem; text-align: center;">
-            <vs-radio v-model="transferType" vs-value="auto">Ghép tự động</vs-radio>
+            <vs-radio v-model="transferType" vs-value="auto">Chưa có người nhận</vs-radio>
           </vx-card>
           <vx-card class="w-full" style="font-size: 1.2rem; text-align: center;">
-            <vs-radio v-model="transferType" vs-value="manual">Chọn thủ công</vs-radio>
+            <vs-radio v-model="transferType" vs-value="manual">Đã có người nhận</vs-radio>
           </vx-card>
         </div>
       </div>
@@ -63,17 +63,24 @@
       <div class="wizard-footer-right">
         <button
           v-if="!props.isLastStep"
-          @click="props.nextTab() | runAction(props)"
+          @click="props.nextTab()"
           class="wizard-btn"
           style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
         >Tiếp theo</button>
 
         <button
-          v-else
+          v-if="props.isLastStep && transferType === 'auto'"
           @click="checkDone"
           class="wizard-btn"
           style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
-        >{{props.isLastStep ? 'Xong' : 'Tiếp theo'}}</button>
+        >Xong</button>
+
+        <button
+          v-if="props.isLastStep && transferType !== 'auto'"
+          @click="doCancel"
+          class="wizard-btn"
+          style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
+        >Huỷ bỏ trả sách</button>
       </div>
     </template>
   </form-wizard>
@@ -94,14 +101,12 @@ export default {
       isLoading: false,
       resultText: "Đang tải",
       randomPIN: "000000",
-      matchingId: 0
+      matchingId: 0,
+      requestId: 0
     };
   },
   methods: {
     async validateConfirm() {
-      return;
-
-      // Need to fix
       this.$http
         .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
         .then(() => {
@@ -182,6 +187,8 @@ export default {
           })
           .then(response => {
             this.randomPIN = response.data.pin.toString();
+            this.matchingId = response.data.matching_id;
+            this.requestId = response.data.request_id;
             this.startCount();
             this.$store.dispatch("getNumOfBooks");
           })
@@ -205,6 +212,8 @@ export default {
         function() {
           this.remainTime = this.remainTime - 1;
 
+          this.validateConfirm();
+
           if (this.remainTime <= 0) {
             this.$vs.notify({
               title: "Lỗi",
@@ -222,12 +231,43 @@ export default {
 
       this.validateConfirm();
     },
-    runAction(props) {
-      const step = props.activeTabIndex;
+    doCancel() {
+      this.$vs.loading();
+
+      this.$http
+        .put(`${this.$http.baseUrl}/requests/manually/cancel`, {
+          request_id: this.requestId
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Hủy bỏ việc trả sách thành công",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.requestId = 0;
+
+          this.$store.dispatch("getNumOfBooks");
+
+          this.$router.push("/books/keeping");
+        })
+        .catch(e => {
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Chưa thể hủy bỏ việc trả sách",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   },
   beforeDestroy() {
     clearInterval(countInterval);
+    if (this.requestId) this.doCancel();
   },
   components: {
     FormWizard,
