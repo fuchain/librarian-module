@@ -2,7 +2,6 @@ package com.fpt.edu.controllerAdvice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.exception.*;
-import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -109,6 +108,7 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
 	}
+
 	@ExceptionHandler(JsonProcessingException.class)
 	public final ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException ex, WebRequest request) {
 		logException(ex);
@@ -118,6 +118,7 @@ public class GobalExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.FORBIDDEN);
 	}
+
 	@ExceptionHandler(NoSuchMethodException.class)
 	public final ResponseEntity<Object> handleException(NoSuchMethodException ex, WebRequest request) {
 		logException(ex);
