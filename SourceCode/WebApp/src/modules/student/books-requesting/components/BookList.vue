@@ -264,6 +264,9 @@ export default {
 
       this.rejectPopup = false;
       this.reason = "";
+    },
+    successUpload() {
+      console.log("Success");
     }
   }
 };

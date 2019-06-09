@@ -45,17 +45,17 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.toggleClassInBody(themeConfig.theme);
 
-    // Get profile
     if (this.$auth.isAuthenticated()) {
-      this.$store.dispatch("getProfile");
-    }
-
-    // Get num of books
-    if (this.$auth.isAuthenticated()) {
-      this.$store.dispatch("getNumOfBooks");
+      this.$vs.loading({
+        background: "primary",
+        color: "white"
+      });
+      await this.$store.dispatch("getProfile");
+      await this.$store.dispatch("getNumOfBooks");
+      this.$vs.loading.close();
     }
   },
   errorCaptured(err, vm, info) {
@@ -69,6 +69,7 @@ export default {
     });
 
     this.$router.push("/error");
+    if (this.$vs.loading) this.$vs.loading.close();
 
     // Log error
     console.log("Error: ", err);

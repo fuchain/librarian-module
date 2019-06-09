@@ -36,7 +36,7 @@
     <vs-divider border-style="dashed"></vs-divider>
 
     <vs-alert active="true" class="mb-4">
-      <strong>Gợi ý YÊU CẦU MƯỢN SÁCH</strong> cho bạn trong kì học tiếp theo, dựa vào danh sách môn của kì bạn sắp học. Bạn nên sắp xếp mượn và trả sách đúng hạn mỗi kì để thuận tiện hơn trong việc liên lạc mượn và trả sách.
+      <strong>Gợi ý mượn sách</strong> cho bạn trong kì học tiếp theo, dựa vào danh sách môn của kì bạn sắp học. Bạn nên sắp xếp mượn và trả sách đúng hạn mỗi kì để thuận tiện hơn trong việc liên lạc mượn và trả sách.
     </vs-alert>
 
     <div class="items-grid-view vx-row match-height" v-if="suggestedBooks.length" appear>

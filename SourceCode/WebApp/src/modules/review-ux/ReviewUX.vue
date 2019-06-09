@@ -6,6 +6,7 @@
       <strong>5</strong> FUCoin về tài khoản
     </vs-alert>
 
+    <h6 class="mt-6">Tốc độ tải trang và độ mượt</h6>
     <star-rating
       :border-width="4"
       border-color="#d8d8d8"
@@ -115,10 +116,9 @@ export default {
           this.rating4,
           this.rating5
         ],
-        note: this.note
+        note: this.note,
+        userAgent: window.navigator.userAgent
       };
-
-      console.log(JSON.stringify(data));
 
       this.$vs.loading({
         type: "radius",
@@ -126,8 +126,27 @@ export default {
         color: "black",
         background: "darkorange"
       });
+
       setTimeout(
-        function() {
+        async function() {
+          try {
+            await this.$http.post(`${this.$http.betaUrl}/reviews`, data);
+          } catch (e) {
+            // Catch error
+            console.log(e);
+
+            this.$vs.loading.close();
+
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Bạn không thể gian lận khi đào coin, rất tiếc",
+              color: "danger",
+              position: "top-center"
+            });
+
+            return;
+          }
+
           this.$vs.loading.close();
 
           this.$vs.notify({

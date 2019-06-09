@@ -9,33 +9,43 @@ export default function(numOfBooks, coin = 0) {
 
 const adminMenu = [
   {
-    url: "/",
-    name: "Trang chính",
+    url: "/librarian/overview",
+    name: "Thống kê",
     slug: "home",
-    icon: "HomeIcon"
+    icon: "BarChartIcon",
+    tag: "beta",
+    tagColor: "darkorange"
   },
   {
-    url: "/book-search",
+    url: "/librarian/books",
     name: "Tình trạng sách",
     slug: "book-search",
     icon: "BookIcon"
   },
   {
-    url: "/book-return-request",
+    url: "/librarian/book-return-request",
     name: "Thu hồi sách",
     slug: "book-return-request",
     icon: "ArchiveIcon"
   },
   {
-    url: "/users-manage",
+    url: "/librarian/users-manage",
     name: "Quản lí tài khoản",
     slug: "users-manage",
     icon: "UsersIcon"
+  },
+  {
+    url: "/librarian/review-report",
+    name: "Đánh giá",
+    slug: "review-ux",
+    icon: "FileIcon",
+    tag: "báo cáo",
+    tagColor: "primary"
   }
 ];
 
 function userMenu(numOfBooks, coin = 0) {
-  return [
+  const menu = [
     {
       url: "/",
       name: "Trang chính",
@@ -47,28 +57,28 @@ function userMenu(numOfBooks, coin = 0) {
       name: "Sách của tôi",
       slug: "books",
       icon: "BookIcon",
-      tag: numOfBooks.numOfKeepingBooks + numOfBooks.numOfReturningBooks,
+      tag: numOfBooks.numOfKeepingBooks + numOfBooks.numOfReturningBooks || "0",
       tagColor: "primary",
       submenu: [
         {
           url: "/books/keeping",
           name: "Sách đang giữ",
           slug: "books-keeping",
-          tag: numOfBooks.numOfKeepingBooks,
+          tag: numOfBooks.numOfKeepingBooks || "0",
           tagColor: "primary"
         },
         {
           url: "/books/returning",
           name: "Sách đang trả",
           slug: "books-returning",
-          tag: numOfBooks.numOfReturningBooks,
+          tag: numOfBooks.numOfReturningBooks || "0",
           tagColor: "success"
         },
         {
           url: "/books/requesting",
           name: "Sách yêu cầu",
           slug: "books-requesting",
-          tag: numOfBooks.numOfRequestingBooks,
+          tag: numOfBooks.numOfRequestingBooks || "0",
           tagColor: "violet"
         }
       ]
@@ -92,14 +102,21 @@ function userMenu(numOfBooks, coin = 0) {
       icon: "DollarSignIcon",
       tag: `${coin} FUCoin`,
       tagColor: "darkorange"
-    },
-    {
-      url: "/review-ux",
-      name: "Đánh giá",
-      slug: "review-ux",
-      icon: "ThumbsUpIcon",
-      tag: "tích coin",
-      tagColor: "orangered"
     }
   ];
+
+  if (!coin || coin <= 0) {
+    menu.push(reviewMenu);
+  }
+
+  return menu;
 }
+
+const reviewMenu = {
+  url: "/review-ux",
+  name: "Đánh giá",
+  slug: "review-ux",
+  icon: "ThumbsUpIcon",
+  tag: "tích coin",
+  tagColor: "orangered"
+};

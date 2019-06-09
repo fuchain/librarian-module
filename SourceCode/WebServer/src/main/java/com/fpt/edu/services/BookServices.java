@@ -2,8 +2,8 @@ package com.fpt.edu.services;
 
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.repository.BookRepository;
-import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -35,7 +35,7 @@ public class BookServices {
 		bookRepository.deleteById(id);
 	}
 
-	public List<Book> getListBookByBookDetailId(Long bookDetailId) {
-		return IteratorUtils.toList(bookRepository.findBookListByBookDetailId(bookDetailId).iterator());
+	public List<Book> getListBookByBookDetailId(Long bookDetailId, String transferStatus, Pageable pageable) {
+		return bookRepository.findBookListByBookDetailId(bookDetailId, transferStatus, pageable).getContent();
 	}
 }

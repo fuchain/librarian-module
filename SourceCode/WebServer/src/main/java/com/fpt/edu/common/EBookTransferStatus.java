@@ -2,8 +2,8 @@ package com.fpt.edu.common;
 
 public enum EBookTransferStatus {
 
-	WAITING("waiting"),
-	TRANSFERED("transfered");
+	TRANSFERRING("transferring"),
+	TRANSFERRED("transferred");
 
 	private String value;
 

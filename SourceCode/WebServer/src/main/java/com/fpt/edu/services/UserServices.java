@@ -3,6 +3,7 @@ package com.fpt.edu.services;
 import com.fpt.edu.repository.RequestRepository;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -75,8 +76,8 @@ public class UserServices {
 		return userRepository.save(user);
 	}
 
-	public List<User> getAllUsers() {
-		return IteratorUtils.toList(userRepository.findAll().iterator());
+	public List<User> getAllUsers(Pageable pageable) {
+		return userRepository.findAll(pageable).getContent();
 	}
 
 	public User getByUserId(Long userId) {

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fpt.edu.common.EBookStatus;
+import com.fpt.edu.common.EBookTransferStatus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,7 +54,8 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     private String status = EBookStatus.IN_USE.getValue();
 
     @Column(name = "transfer_status")
-	private String transferStatus;
+    @JsonSerialize
+	private String transferStatus = EBookTransferStatus.TRANSFERRED.getValue();
 
     @Transient
     @JsonIgnore
@@ -115,7 +117,23 @@ public class Book extends AbstractTimestampEntity implements Serializable {
         this.lastTxId = lastTxId;
     }
 
-    public User getUser() {
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getTransferStatus() {
+		return transferStatus;
+	}
+
+	public void setTransferStatus(String transferStatus) {
+		this.transferStatus = transferStatus;
+	}
+
+	public User getUser() {
         return user;
     }
 

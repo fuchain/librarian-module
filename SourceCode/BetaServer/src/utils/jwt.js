@@ -11,5 +11,5 @@ export function createJWT(id) {
 }
 
 export function verifyJWT(token) {
-    return jwt.verify(token, "tudeptrai");
+    return jwt.verify(token, "Capstone");
 }
