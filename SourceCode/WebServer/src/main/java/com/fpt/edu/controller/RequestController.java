@@ -334,6 +334,7 @@ public class RequestController extends BaseController {
 		return addTransferTxToBC(matching);
 	}
 
+	// Add transaction to BC, used for AUTOMATIC transfer
 	private JSONObject addTransferTxToBC(Matching matching) throws Exception {
 		// Init data to submit transaction to BlockChain
 		Book book = bookServices.getBookById(matching.getBook().getId());
@@ -403,7 +404,7 @@ public class RequestController extends BaseController {
 			now = new Date();
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-			if (duration > 30 || callback.get()) {
+			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
 				jsonResult = new JSONObject();
 				jsonResult.put("message", "confirm book transfer successfully");
 				return jsonResult;
@@ -491,13 +492,8 @@ public class RequestController extends BaseController {
 		// Get request id
 		Long requestId = savedRequest.getId();
 
-		// Check whether pin is duplicated or not
-		String pin;
-		Matching duplicatedMat;
-		do {
-			pin = utils.getPin();
-			duplicatedMat = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
-		} while (duplicatedMat != null);
+		// Get unique pin
+		String pin = getUniquePin();
 
 		// Init matching instance
 		Matching matching = new Matching();
@@ -522,6 +518,18 @@ public class RequestController extends BaseController {
 		jsonResult.put("request_id", requestId);
 		jsonResult.put("created_at", now.getTime());
 		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
+
+	private String getUniquePin() {
+		// Check whether pin is duplicated or not
+		String pin;
+		Matching duplicatedMat;
+		do {
+			pin = utils.getPin();
+			duplicatedMat = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+		} while (duplicatedMat != null);
+
+		return pin;
 	}
 
 	@ApiOperation(value = "Receiver enter pin to get book", response = String.class)
@@ -574,11 +582,22 @@ public class RequestController extends BaseController {
 		matching.setBorrowerRequest(borrowingRequest);
 		matchingServices.updateMatching(matching);
 
+		// Submit transaction to BC
+		JSONObject jsonResult = submitTxToBC(matching, receiver);
+
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
+
+	// Add transaction to BC, used for MANUAL transfer
+	private JSONObject submitTxToBC(Matching matching, User receiver) throws Exception {
 		// Init data to submit transaction to BlockChain
 		Book book = matching.getBook();
 		User returner = matching.getReturnerRequest().getUser();
 		AtomicBoolean callback = new AtomicBoolean(false);
-		JSONObject jsonResult;
+		JSONObject jsonResult = new JSONObject();
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
 
 		// Update owner of book
 		book.setUser(receiver);
@@ -607,11 +626,11 @@ public class RequestController extends BaseController {
 				tran.setBorrower(receiver);
 				transactionServices.insertTransaction(tran);
 
+				// Response to client
+				jsonResult.put("message", "confirm book transfer successfully");
 
 				callback.set(true);
 			}, (transaction, response) -> { // failed
-				callback.set(true);
-
 				// Delete request + matching
 				matchingServices.deleteMatching(matching.getId());
 				requestServices.deleteRequest(matching.getReturnerRequest().getId());
@@ -621,6 +640,8 @@ public class RequestController extends BaseController {
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
+
+				callback.set(true);
 			}
 		);
 
@@ -628,12 +649,10 @@ public class RequestController extends BaseController {
 		Date now;
 		while (true) {
 			now = new Date();
-			duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-			if (duration > 30 || callback.get()) {
-				jsonResult = new JSONObject();
-				jsonResult.put("message", "confirm book transfer successfully");
-				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
+				return jsonResult;
 			}
 		}
 	}
