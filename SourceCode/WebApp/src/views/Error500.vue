@@ -34,9 +34,9 @@ export default {
     },
     doLogout: function() {
       this.$vs.loading({
-        type: "corners",
         color: "white",
-        background: "primary"
+        background: "darkorange",
+        text: "Đang đăng xuất"
       });
 
       setTimeout(
@@ -52,3 +52,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.title-loading {
+  color: white;
+}
+</style>

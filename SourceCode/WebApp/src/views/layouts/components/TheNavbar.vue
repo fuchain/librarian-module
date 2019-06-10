@@ -102,7 +102,12 @@
         ></feather-icon>-->
 
         <!-- NOTIFICATIONS -->
-        <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
+        <vs-dropdown
+          vs-custom-content
+          vs-trigger-click
+          class="cursor-pointer"
+          v-if="!$auth.isAdmin()"
+        >
           <feather-icon
             icon="BellIcon"
             class="cursor-pointer mt-1 ml-4"
@@ -156,7 +161,7 @@
             <p
               class="font-semibold"
               style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-            >{{ fullname }} {{ (email && !fullname) ? "Chưa có tên" : "" }}</p>
+            >{{ fullname }} {{ (email && !fullname) ? "Sinh viên FPTU" : "" }}</p>
             <p
               style="font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
             >{{ email }}</p>
@@ -218,8 +223,6 @@ import draggable from "vuedraggable";
 
 import { setTimeout } from "timers";
 
-import auth from "@auth";
-
 export default {
   name: "the-navbar",
   props: {
@@ -233,19 +236,7 @@ export default {
       navbarSearchAndPinList: this.$store.state.navbarSearchAndPinList,
       searchQuery: "",
       showFullSearch: false,
-      unreadNotifications: auth.isAdmin()
-        ? []
-        : [
-          {
-            index: 0,
-            title: "Japanese Elementary 3",
-            msg:
-                "Đã tìm thấy sinh viên trả sách Japanese Elementary 3, liên lạc để mượn lại",
-            icon: "PackageIcon",
-            time: "Thu May 16 2019 08:45:00 GMT+0700 (GMT)",
-            category: "success"
-          }
-        ],
+      unreadNotifications: [],
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,
@@ -375,9 +366,9 @@ export default {
     },
     doLogout: function() {
       this.$vs.loading({
-        type: "corners",
         color: "white",
-        background: "primary"
+        background: "darkorange",
+        text: "Đang đăng xuất"
       });
 
       setTimeout(
@@ -432,5 +423,9 @@ export default {
   @media (min-width: 320px) and (max-width: 480px) {
     max-width: 150px;
   }
+}
+
+.title-loading {
+  color: white;
 }
 </style>

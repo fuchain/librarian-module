@@ -105,7 +105,11 @@ export default {
         return;
       }
 
-      this.$vs.loading({});
+      this.$vs.loading({
+        background: "darkorange",
+        color: "white",
+        text: "Đang xác thực"
+      });
 
       this.$http
         .post(`${this.$http.baseUrl}/auth/login`, {
@@ -122,7 +126,6 @@ export default {
           await this.$store.dispatch("getProfile");
           await this.$store.dispatch("getNumOfBooks");
 
-          this.$vs.loading.close();
           this.$router.push("/");
         })
         .catch(() => {
@@ -132,7 +135,8 @@ export default {
             color: "danger",
             position: "top-right"
           });
-
+        })
+        .finally(() => {
           this.$vs.loading.close();
         });
     },
@@ -167,7 +171,11 @@ export default {
 
     const idToken = this.parseToken(window.location.hash);
     if (idToken) {
-      this.$vs.loading({});
+      this.$vs.loading({
+        background: "darkorange",
+        color: "white",
+        text: "Đang xác thực"
+      });
 
       this.$http
         .post(`${this.$http.baseUrl}/auth/google`, { token: idToken })
@@ -181,12 +189,10 @@ export default {
           await this.$store.dispatch("getProfile");
           await this.$store.dispatch("getNumOfBooks");
 
-          this.$vs.loading.close();
           this.$router.push("/");
         })
         .catch(err => {
           console.log(err);
-          this.$vs.loading.close();
 
           this.$vs.notify({
             title: "Không hợp lệ",
@@ -195,6 +201,9 @@ export default {
             color: "danger",
             position: "top-right"
           });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
         });
     }
   }
@@ -217,5 +226,9 @@ export default {
       background-color: #333;
     }
   }
+}
+
+.title-loading {
+  color: white;
 }
 </style>
