@@ -23,7 +23,7 @@ const adminMenu = [
     icon: "BookIcon"
   },
   {
-    url: "/librarian/users-manage",
+    url: "/librarian/user-manage",
     name: "Quản lí tài khoản",
     slug: "users-manage",
     icon: "UsersIcon"

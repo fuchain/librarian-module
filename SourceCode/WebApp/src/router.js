@@ -88,6 +88,11 @@ const router = new Router({
           path: "librarian/book-details-manage/:id",
           component: () =>
             import("@/modules/librarian/book-instance-manage/BookInstanceManage.vue")
+        },
+        {
+          path: "librarian/user-manage",
+          component: () =>
+            import("@/modules/librarian/user-manage/UserManage.vue")
         }
       ]
     },
