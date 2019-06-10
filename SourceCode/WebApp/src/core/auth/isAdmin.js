@@ -2,8 +2,8 @@ import jwtDecode from "jwt-decode";
 import getAccessToken from "./getAccessToken";
 
 export default function() {
-  const email = jwtDecode(getAccessToken()).sub;
-  if (email.includes("@fe.edu.vn")) {
+  const tokenObj = jwtDecode(getAccessToken());
+  if (tokenObj.roles && tokenObj.roles.length) {
     return true;
   }
 

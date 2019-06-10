@@ -9,11 +9,19 @@
         class="mx-auto mb-4"
         style="max-width: 250px"
       >
-      <h1 class="mb-12 pl-4 pr-4 text-5xl d-theme-heading-color">500 - Xảy ra lỗi trên ứng dụng!</h1>
+      <h1 class="mb-12 pl-4 pr-4 text-5xl d-theme-heading-color">Xảy ra lỗi trên ứng dụng!</h1>
       <p
         class="mb-16 d-theme-text-inverse ml-4 mr-8"
-      >Chúng tôi đã gửi mã lỗi này về cho nhóm phát triển, lỗi này sẽ được sửa sớm.</p>
-      <vs-button size="large" @click="doReload">Tải lại ứng dụng</vs-button>
+      >Chúng tôi đã gửi mã lỗi này về cho nhóm phát triển, lỗi này sẽ được khắc phục sớm.</p>
+      <vs-button size="large" type="relief" @click="doReload" icon="update">Tải lại ứng dụng</vs-button>
+      <vs-button
+        class="mt-4"
+        color="black"
+        size="large"
+        type="relief"
+        @click="doLogout"
+        icon="eject"
+      >Thoát tài khoản</vs-button>
     </div>
   </div>
 </template>
@@ -23,7 +31,30 @@ export default {
   methods: {
     doReload() {
       window.location.href = "/";
+    },
+    doLogout: function() {
+      this.$vs.loading({
+        color: "white",
+        background: "darkorange",
+        text: "Đang đăng xuất"
+      });
+
+      setTimeout(
+        function() {
+          this.$auth.clearAuth();
+          this.$router.push("/login");
+
+          this.$vs.loading.close();
+        }.bind(this),
+        500
+      );
     }
   }
 };
 </script>
+
+<style>
+.title-loading {
+  color: white;
+}
+</style>

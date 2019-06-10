@@ -1,5 +1,6 @@
 package com.fpt.edu.security;
 
+import com.fpt.edu.constant.Constant;
 import com.fpt.edu.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -14,56 +15,57 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@EnableWebSecurity
+@EnableWebSecurity()
 public class WebSecurity extends WebSecurityConfigurerAdapter {
-    private final UserDetailsServiceImpl userDetailsService;
+	private final UserDetailsServiceImpl userDetailsService;
 
-    public WebSecurity(UserDetailsServiceImpl userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+	public WebSecurity(UserDetailsServiceImpl userDetailsService) {
+		this.userDetailsService = userDetailsService;
+	}
 
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+	@Override
+	@Bean
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
-    }
+	@Override
+	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+	}
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        JWTAuthenticationFilter authenticationFilter = new JWTAuthenticationFilter(authenticationManager());
-        authenticationFilter.setFilterProcessesUrl("/auth/login");
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		JWTAuthenticationFilter authenticationFilter = new JWTAuthenticationFilter(authenticationManager());
+		authenticationFilter.setFilterProcessesUrl("/auth/login");
 
-        http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
+		http.cors().and().csrf().disable().authorizeRequests()
+			.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+			.antMatchers(HttpMethod.POST, "/auth/**").permitAll()
 //                .antMatchers(HttpMethod.GET, "/**").permitAll()
 //                .antMatchers(HttpMethod.POST,"/**").permitAll()
 //                .antMatchers(HttpMethod.PUT, "/**").permitAll()
 //                .antMatchers(HttpMethod.DELETE,"/**").permitAll()
-                .antMatchers("/","/static/**","/**.{js,json,css}").permitAll()
-                .antMatchers("/webjars/**", "/swagger-resources/**", "/v2/api-docs/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilter(authenticationFilter)
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
+			.antMatchers("/", "/static/**", "/**.{js,json,css}").permitAll()
+			.antMatchers("/webjars/**", "/swagger-resources/**", "/v2/api-docs/**").permitAll()
+			.antMatchers("/librarian/**").hasAnyAuthority(Constant.ROLES_LIBRARIAN)
+			.anyRequest().authenticated()
+			.and()
+			.addFilter(authenticationFilter)
+			.addFilter(new JWTAuthorizationFilter(authenticationManager()))
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	}
 
-    @Bean
-    public BCryptPasswordEncoder encoder(){
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public BCryptPasswordEncoder encoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/auth/**", new CorsConfiguration().applyPermitDefaultValues());
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/auth/**", new CorsConfiguration().applyPermitDefaultValues());
 
-        return source;
-    }
+		return source;
+	}
 }

@@ -1,9 +1,6 @@
 package com.fpt.edu.controller;
 
-import com.fpt.edu.common.ERequestStatus;
-import com.fpt.edu.common.ETransferType;
-import com.fpt.edu.common.EMatchingStatus;
-import com.fpt.edu.common.ERequestType;
+import com.fpt.edu.common.*;
 import com.fpt.edu.common.RequestQueueSimulate.Message;
 import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
 import com.fpt.edu.common.RequestQueueSimulate.RequestQueueManager;
@@ -130,10 +127,18 @@ public class RequestController extends BaseController {
 			// Get book id from Request Body
 			Long bookId = bodyObject.getLong("book_id");
 
+			// Update transfer status of book
+			Book book = bookServices.getBookById(bookId);
+			book.setTransferStatus(EBookTransferStatus.TRANSFERRING.getValue());
+			bookServices.updateBook(book);
+
 			request = getReturningRequest(type, user, bookId);
 		} else {
 			throw new TypeNotSupportedException("Type " + type + " is not supported");
 		}
+
+		// Set mode of request
+		request.setMode(ERequestMode.AUTOMATIC.getValue());
 
 		// Find the matching request
 		pairRequest(request);
@@ -368,11 +373,12 @@ public class RequestController extends BaseController {
 				requestServices.updateRequest(returnerRequest);
 				requestServices.updateRequest(receiverRequest);
 
-				//update status of matching
+				// Update status of matching
 				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
 				matchingServices.updateMatching(matching);
 
-				// Update book
+				// Update transfer status of book
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
 				//insert a transaction to DB Postgresql
@@ -386,6 +392,16 @@ public class RequestController extends BaseController {
 			},
 			(transaction, response) -> { //failed
 				callback.set(true);
+
+				// Delete request + matching
+				matchingServices.deleteMatching(matching.getId());
+				requestServices.deleteRequest(matching.getReturnerRequest().getId());
+				requestServices.deleteRequest(matching.getBorrowerRequest().getId());
+
+				// Update user in book
+				book.setUser(returner);
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+				bookServices.updateBook(book);
 			}
 		);
 
@@ -477,6 +493,7 @@ public class RequestController extends BaseController {
 		returningRequest.setUser(user);
 		returningRequest.setStatus(ERequestStatus.PENDING.getValue());
 		returningRequest.setType(ERequestType.RETURNING.getValue());
+		returningRequest.setMode(ERequestMode.MANUAL.getValue());
 		Request savedRequest = requestServices.saveRequest(returningRequest);
 
 		// Get request id
@@ -498,6 +515,10 @@ public class RequestController extends BaseController {
 		matching.setMatchingStartDate(now);
 		matching.setStatus(EMatchingStatus.PENDING.getValue());
 		matchingServices.saveMatching(matching);
+
+		// Update transfer status of book
+		book.setTransferStatus(EBookTransferStatus.TRANSFERRING.getValue());
+		bookServices.updateBook(book);
 
 		// Get matching id
 		Matching m = matchingServices.getByBookId(book.getId(), EMatchingStatus.CONFIRMED.getValue());
@@ -536,7 +557,9 @@ public class RequestController extends BaseController {
 		long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
 		if (duration > Constant.PIN_EXPIRED_MINUTE) {
 			// Delete returning request + matching
-			deleteRequestAndMatching(matching);
+			matchingServices.deleteMatching(matching.getId());
+			requestServices.deleteRequest(matching.getReturnerRequest().getId());
+
 			throw new PinExpiredException("Pin is expired");
 		}
 
@@ -546,6 +569,7 @@ public class RequestController extends BaseController {
 		borrowingRequest.setUser(receiver);
 		borrowingRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 		borrowingRequest.setType(ERequestType.BORROWING.getValue());
+		borrowingRequest.setMode(ERequestMode.MANUAL.getValue());
 		requestServices.saveRequest(borrowingRequest);
 
 		// Update returning request status to 'COMPLETED'
@@ -580,7 +604,8 @@ public class RequestController extends BaseController {
 				String transactionId = transaction.getId();
 				book.setLastTxId(transactionId);
 
-				// Update book
+				// Update transfer status of book
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
 				// Insert a transaction to DB Postgresql
@@ -590,15 +615,19 @@ public class RequestController extends BaseController {
 				tran.setBorrower(receiver);
 				transactionServices.insertTransaction(tran);
 
+
 				callback.set(true);
 			}, (transaction, response) -> { // failed
 				callback.set(true);
 
 				// Delete request + matching
-				deleteRequestAndMatching(matching);
+				matchingServices.deleteMatching(matching.getId());
+				requestServices.deleteRequest(matching.getReturnerRequest().getId());
+				requestServices.deleteRequest(matching.getBorrowerRequest().getId());
 
 				// Update user in book
 				book.setUser(returner);
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 			}
 		);
@@ -615,11 +644,6 @@ public class RequestController extends BaseController {
 				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 			}
 		}
-	}
-
-	private void deleteRequestAndMatching(Matching matching) {
-		matchingServices.deleteMatching(matching.getId());
-		requestServices.deleteRequest(matching.getReturnerRequest().getId());
 	}
 
 	@ApiOperation(value = "User cancels manually returning request", response = String.class)
@@ -648,6 +672,11 @@ public class RequestController extends BaseController {
 		Request returnRequest = matching.getReturnerRequest();
 		returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
 		requestServices.updateRequest(returnRequest);
+
+		// Update transfer status of book
+		Book book = matching.getBook();
+		book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+		bookServices.updateBook(book);
 
 		JSONObject jsonResult = new JSONObject();
 		jsonResult.put("message", "Canceled request sucessfully");

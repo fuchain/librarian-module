@@ -32,11 +32,11 @@ const router = new Router({
         },
         {
           path: "coin",
-          component: () => import("@/modules/coin/Coin.vue")
+          component: () => import("@/modules/student/coin/Coin.vue")
         },
         {
           path: "review-ux",
-          component: () => import("@/modules/review-ux/ReviewUX.vue")
+          component: () => import("@/modules/student/review-ux/ReviewUX.vue")
         },
         {
           path: "books/keeping",
@@ -130,6 +130,9 @@ router.beforeEach((to, from, next) => {
     if (!auth.isAuthenticated()) {
       next({ path: "/login" });
     } else {
+      if (to.path.includes("/librarian") && !auth.isAdmin()) {
+        next({ path: "/" });
+      }
       next();
     }
   }

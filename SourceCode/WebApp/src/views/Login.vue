@@ -41,7 +41,7 @@
                   <div class="flex flex-wrap justify-between my-5">
                     <vs-checkbox v-model="remember" class="mb-3">Lưu mật khẩu</vs-checkbox>
                   </div>
-                  <vs-button class="float-right">Đăng nhập</vs-button>
+                  <vs-button class="float-right" icon="fingerprint">Đăng nhập</vs-button>
                 </form>
 
                 <vs-divider>HOẶC</vs-divider>
@@ -106,8 +106,9 @@ export default {
       }
 
       this.$vs.loading({
-        type: "corners",
-        text: "Đang đăng nhập"
+        background: "darkorange",
+        color: "white",
+        text: "Đang xác thực"
       });
 
       this.$http
@@ -125,7 +126,6 @@ export default {
           await this.$store.dispatch("getProfile");
           await this.$store.dispatch("getNumOfBooks");
 
-          this.$vs.loading.close();
           this.$router.push("/");
         })
         .catch(() => {
@@ -135,7 +135,8 @@ export default {
             color: "danger",
             position: "top-right"
           });
-
+        })
+        .finally(() => {
           this.$vs.loading.close();
         });
     },
@@ -171,8 +172,9 @@ export default {
     const idToken = this.parseToken(window.location.hash);
     if (idToken) {
       this.$vs.loading({
-        type: "corners",
-        text: "Đang đăng nhập"
+        background: "darkorange",
+        color: "white",
+        text: "Đang xác thực"
       });
 
       this.$http
@@ -187,11 +189,10 @@ export default {
           await this.$store.dispatch("getProfile");
           await this.$store.dispatch("getNumOfBooks");
 
-          this.$vs.loading.close();
           this.$router.push("/");
         })
-        .catch(() => {
-          this.$vs.loading.close();
+        .catch(err => {
+          console.log(err);
 
           this.$vs.notify({
             title: "Không hợp lệ",
@@ -200,6 +201,9 @@ export default {
             color: "danger",
             position: "top-right"
           });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
         });
     }
   }
@@ -222,5 +226,9 @@ export default {
       background-color: #333;
     }
   }
+}
+
+.title-loading {
+  color: white;
 }
 </style>

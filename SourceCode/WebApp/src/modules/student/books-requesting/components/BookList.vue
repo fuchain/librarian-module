@@ -2,13 +2,7 @@
   <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">
       Sách đang yêu cầu
-      <vs-button
-        color="primary"
-        type="relief"
-        size="small"
-        class="ml-4"
-        @click="$router.go()"
-      >Làm mới</vs-button>
+      <vs-button color="primary" type="relief" size="small" class="ml-4" @click="callReload">Làm mới</vs-button>
     </h2>
     <vs-input
       size="large"
@@ -48,13 +42,13 @@
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               >
-                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4" v-if="!item.user"/>
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4" v-if="!item.user"/>
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4" v-if="item.user"/>
 
                 <span
                   class="text-sm font-semibold ml-2"
                   @click="triggerCall(item.user)"
-                >{{ item.user ? "LIÊN LẠC" : "CHI TIẾT" }}</span>
+                >{{ item.user ? "LIÊN LẠC" : "HỦY BỎ VIỆC YÊU CẦU SÁCH" }}</span>
               </div>
             </div>
           </template>
@@ -267,6 +261,9 @@ export default {
     },
     successUpload() {
       console.log("Success");
+    },
+    callReload() {
+      this.$emit("doReload");
     }
   }
 };
