@@ -273,13 +273,23 @@ public class RequestController extends BaseController {
 		// Check transfer type is returner or receiver
 		if (type == ETransferType.RETURNER.getValue()) {
 			jsonResult = returnBook(matching, sender);
+
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 		} else if (type == ETransferType.RECEIVER.getValue()) {
 			String pin = bodyObject.getString("pin");
 			jsonResult = receiveBook(matching, sender, pin);
+
+			// Check submit transaction to BC success or not
+			if (jsonResult.get("status_code").equals(HttpStatus.OK)) {
+				jsonResult.remove("status_code");
+				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+			} else {
+				jsonResult.remove("status_code");
+				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} else {
 			throw new TypeNotSupportedException("Type: " + type + " is not supported");
 		}
-		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
 
 	private JSONObject returnBook(Matching matching, User sender) throws EntityIdMismatchException {
@@ -344,7 +354,12 @@ public class RequestController extends BaseController {
 		User receiver = receiverRequest.getUser();
 		Date sendTime = new Date();
 		AtomicBoolean callback = new AtomicBoolean(false);
-		JSONObject jsonResult;
+		JSONObject jsonResult = new JSONObject();
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
+
 		// Update current_keeper
 		book.setUser(receiver);
 
@@ -381,11 +396,13 @@ public class RequestController extends BaseController {
 				tran.setBorrower(receiver);
 				transactionServices.insertTransaction(tran);
 
+				// Override value in response
+				jsonResult.put("message", "confirm book transfer successfully");
+				jsonResult.put("status_code", HttpStatus.OK);
+
 				callback.set(true);
 			},
 			(transaction, response) -> { //failed
-				callback.set(true);
-
 				// Delete request + matching
 				matchingServices.deleteMatching(matching.getId());
 				requestServices.deleteRequest(matching.getReturnerRequest().getId());
@@ -395,6 +412,8 @@ public class RequestController extends BaseController {
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
+
+				callback.set(true);
 			}
 		);
 
@@ -405,8 +424,6 @@ public class RequestController extends BaseController {
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
 			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
-				jsonResult = new JSONObject();
-				jsonResult.put("message", "confirm book transfer successfully");
 				return jsonResult;
 			}
 		}
@@ -585,7 +602,14 @@ public class RequestController extends BaseController {
 		// Submit transaction to BC
 		JSONObject jsonResult = submitTxToBC(matching, receiver);
 
-		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+		// Check submit transaction to DB success or not
+		if (jsonResult.get("status_code").equals(HttpStatus.OK)) {
+			jsonResult.remove("status_code");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+		} else {
+			jsonResult.remove("status_code");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	// Add transaction to BC, used for MANUAL transfer
@@ -598,6 +622,7 @@ public class RequestController extends BaseController {
 
 		// Set default value for response
 		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
 
 		// Update owner of book
 		book.setUser(receiver);
@@ -628,6 +653,7 @@ public class RequestController extends BaseController {
 
 				// Response to client
 				jsonResult.put("message", "confirm book transfer successfully");
+				jsonResult.put("status_code", HttpStatus.OK);
 
 				callback.set(true);
 			}, (transaction, response) -> { // failed
