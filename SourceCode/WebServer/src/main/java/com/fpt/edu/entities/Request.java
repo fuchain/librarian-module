@@ -16,86 +16,97 @@ import java.io.Serializable;
 @Table(name = "request")
 public class Request extends AbstractTimestampEntity implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book book;
+	@ManyToOne
+	@JoinColumn(name = "book_id")
+	private Book book;
 
-    @ManyToOne
-    @JoinColumn(name = "book_detail_id")
-    private BookDetail bookDetail;
+	@ManyToOne
+	@JoinColumn(name = "book_detail_id")
+	private BookDetail bookDetail;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	@JsonIgnore
+	private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "paired_user")
-    private User pairedUser;
+	@ManyToOne
+	@JoinColumn(name = "paired_user")
+	private User pairedUser;
 
-    @Column(name = "status")
-    private int status;
+	@Column(name = "status")
+	private int status;
 
-    @Column(name = "type")
-    private int type;
+	@Column(name = "type")
+	private int type;
 
-    public User getPairedUser() {
-        return pairedUser;
-    }
+	@Column(name = "mode")
+	private int mode;
 
-    public void setPairedUser(User pairedUser) {
-        this.pairedUser = pairedUser;
-    }
+	public int getMode() {
+		return mode;
+	}
 
-    public BookDetail getBookDetail() {
-        return bookDetail;
-    }
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
 
-    public int getType() {
-        return type;
-    }
+	public User getPairedUser() {
+		return pairedUser;
+	}
 
-    public void setType(int type) {
-        this.type = type;
-    }
+	public void setPairedUser(User pairedUser) {
+		this.pairedUser = pairedUser;
+	}
 
-    public void setBookDetail(BookDetail bookDetail) {
-        this.bookDetail = bookDetail;
-    }
+	public BookDetail getBookDetail() {
+		return bookDetail;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public int getType() {
+		return type;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setType(int type) {
+		this.type = type;
+	}
 
-    public Book getBook() {
-        return book;
-    }
+	public void setBookDetail(BookDetail bookDetail) {
+		this.bookDetail = bookDetail;
+	}
 
-    public void setBook(Book book) {
-        this.book = book;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public User getUser() {
-        return user;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+	public Book getBook() {
+		return book;
+	}
 
-    public int getStatus() {
-        return status;
-    }
+	public void setBook(Book book) {
+		this.book = book;
+	}
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
 }
