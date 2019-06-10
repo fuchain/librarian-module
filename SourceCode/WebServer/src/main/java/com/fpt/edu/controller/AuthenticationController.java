@@ -91,7 +91,7 @@ public class AuthenticationController {
 			.asJson();
 
 		try {
-			String email = jsonGoogleResponse.getBody().getObject().get("email").toString();
+			String email = jsonGoogleResponse.getBody().getObject().get("email").toString().toLowerCase();
 			String fullName = jsonGoogleResponse.getBody().getObject().get("name").toString();
 			String picture = jsonGoogleResponse.getBody().getObject().get("picture").toString();
 			Optional<User> loggedUser = userServices.findUserByEmail(email);
