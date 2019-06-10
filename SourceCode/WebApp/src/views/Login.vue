@@ -141,9 +141,14 @@ export default {
         });
     },
     loginWithGoogle: function() {
-      window.auth2.signIn({
-        ux_mode: "redirect"
-      });
+      const clientId =
+        "505153044223-3a6ohprurmp1ih0rr7tbupl8bjqa9qvv.apps.googleusercontent.com";
+      const hostname =
+        window.location.hostname === "localhost"
+          ? "http://localhost:3000/login"
+          : "https://library.fptu.tech/login";
+
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=profile&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri=${hostname}&response_type=token&client_id=${clientId}`;
     },
     parseToken: function(fragmentStr) {
       // Parse query string to see if page request is coming from OAuth 2.0 server.
@@ -154,23 +159,13 @@ export default {
         params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
       }
 
-      return params["id_token"];
+      return params["access_token"];
     }
   },
   mounted: function() {
-    window.gapi.load("auth2", function() {
-      window.auth2 = window.gapi.auth2.init({
-        client_id:
-          "292520951559-5fqe0olanvlto3bd06bt4u36dqsclnni.apps.googleusercontent.com",
-        fetch_basic_profile: true,
-        scope:
-          "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-        response_type: "token"
-      });
-    });
+    const accessToken = this.parseToken(window.location.hash);
 
-    const idToken = this.parseToken(window.location.hash);
-    if (idToken) {
+    if (accessToken) {
       this.$vs.loading({
         background: "darkorange",
         color: "white",
@@ -178,12 +173,13 @@ export default {
       });
 
       this.$http
-        .post(`${this.$http.baseUrl}/auth/google`, { token: idToken })
+        .post(`${this.$http.baseUrl}/auth/google`, { token: accessToken })
         .then(async response => {
           // Set data;
           const data = response.data;
           this.$auth.setAccessToken(data.token);
           this.$auth.setAccessTokenExpiresAt(data.expire.toString());
+          this.$localStorage.setItem("picture", data.picture);
 
           // Get profile
           await this.$store.dispatch("getProfile");

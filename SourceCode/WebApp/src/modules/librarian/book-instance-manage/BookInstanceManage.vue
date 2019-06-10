@@ -153,8 +153,6 @@ export default {
           this.historyList = data;
           this.historyPopup = true;
           this.historyId = item.id;
-
-          console.log(data);
         })
         .finally(() => {
           this.$vs.loading.close();
