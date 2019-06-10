@@ -13,8 +13,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -35,11 +33,9 @@ public class UserController extends BaseController {
 
 	@ApiOperation(value = "Get a list of current book")
 	@GetMapping("current_books")
-	public ResponseEntity<List<Book>> getCurrentBook() {
+	public ResponseEntity<List<Book>> getCurrentBook(Principal principal) {
 		// Get user information
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User user = userServices.getUserByEmail(email);
+		User user = userServices.getUserByEmail(principal.getName());
 
 		// Get current book list of user
 		List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
@@ -85,11 +81,9 @@ public class UserController extends BaseController {
 
 	@ApiOperation(value = "Update user profile", response = String.class)
 	@RequestMapping(value = "/update_profile", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<User> updateUser(@RequestBody String body) throws Exception {
+	public ResponseEntity<User> updateUser(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User user = userServices.getUserByEmail(email);
+		User user = userServices.getUserByEmail(principal.getName());
 
 		// Get full name and phone from Request Body
 		JSONObject bodyObject = new JSONObject(body);
@@ -121,10 +115,9 @@ public class UserController extends BaseController {
 
 	@ApiOperation(value = "Get user's book info", response = String.class)
 	@RequestMapping(value = "/book_infos", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> getUserBookInfo() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User user = userServices.getUserByEmail(email);
+	public ResponseEntity<String> getUserBookInfo(Principal principal) {
+
+		User user = userServices.getUserByEmail(principal.getName());
 		// Get number of current book list of user
 		int numberOfKeepingBook = userServices.countNumberOfBookThatUserKeep(user.getId());
 		// Get book list that is returning
@@ -134,7 +127,7 @@ public class UserController extends BaseController {
 		int numberOfReturnRequest = requestServices.countPendingRequestOfUser(user.getId(),
 			ERequestType.RETURNING.getValue(), ERequestStatus.COMPLETED.getValue());
 		JSONObject response = new JSONObject();
-		response.put(Constant.NUM_OF_KEEP_BOOK, numberOfKeepingBook-numberOfReturnRequest);
+		response.put(Constant.NUM_OF_KEEP_BOOK, numberOfKeepingBook - numberOfReturnRequest);
 		response.put(Constant.NUM_OF_RETURNING_BOOK, numberOfReturnRequest);
 		response.put(Constant.NUM_OF_REQUESTING_BOOK, numberOfBorrowRequest);
 		return new ResponseEntity<>(response.toString(), HttpStatus.OK);

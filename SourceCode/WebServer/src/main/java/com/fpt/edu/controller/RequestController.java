@@ -14,8 +14,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -63,11 +61,9 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Get a list of book request")
 	@GetMapping("/get_list")
 	@Transactional
-	public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type) {
+	public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type, Principal principal) {
 		// Get user information
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User user = userServices.getUserByEmail(email);
+		User user = userServices.getUserByEmail(principal.getName());
 
 		// Get book list of user, by default lazy loading is enable
 		Hibernate.initialize(user.getListBooks());
@@ -103,12 +99,10 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Create a book request", response = String.class)
 	@PostMapping("")
 	@Transactional
-	public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException,
+	public ResponseEntity<String> requestBook(@RequestBody String body, Principal principal) throws EntityNotFoundException,
 		TypeNotSupportedException, EntityAldreayExisted, NotFoundException {
 		// Get user information
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User user = userServices.getUserByEmail(email);
+		User user = userServices.getUserByEmail(principal.getName());
 
 		//Get type from Request Body
 		JSONObject bodyObject = new JSONObject(body);
@@ -258,11 +252,9 @@ public class RequestController extends BaseController {
 
 	@ApiOperation(value = "Transfer book for returner and receiver", response = String.class)
 	@PutMapping(value = "/transfer", produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> transferBook(@RequestBody String body) throws Exception {
+	public ResponseEntity<String> transferBook(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User sender = userServices.getUserByEmail(email);
+		User sender = userServices.getUserByEmail(principal.getName());
 
 		// Get data from Request Body
 		JSONObject bodyObject = new JSONObject(body);
