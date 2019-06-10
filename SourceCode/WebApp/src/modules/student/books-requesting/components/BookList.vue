@@ -48,13 +48,13 @@
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               >
-                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4" v-if="!item.user"/>
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4" v-if="!item.user"/>
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4" v-if="item.user"/>
 
                 <span
                   class="text-sm font-semibold ml-2"
                   @click="triggerCall(item.user)"
-                >{{ item.user ? "LIÊN LẠC" : "CHI TIẾT" }}</span>
+                >{{ item.user ? "LIÊN LẠC" : "HỦY BỎ VIỆC YÊU CẦU SÁCH" }}</span>
               </div>
             </div>
           </template>
