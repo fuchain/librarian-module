@@ -3,6 +3,7 @@ package com.fpt.edu.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fpt.edu.constant.Constant;
+import com.fpt.edu.entities.Role;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.services.UserServices;
 import com.mashape.unirest.http.HttpResponse;
@@ -14,9 +15,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import static com.fpt.edu.security.SecurityConstants.EXPIRATION_TIME;
@@ -44,11 +48,16 @@ public class AuthenticationController {
 		// Generate JWT token
 		long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
 		Date expireDate = new Date(expireDateUnixTime * 1000);
-
+		List<Role> roles =  user.getRoles();
+		String[] authorities = new String[roles.size()];
+		for (int i = 0; i < roles.size() ; i++) {
+			authorities[i]=roles.get(i).getName();
+		}
 		String responseToken = JWT.create()
 			.withClaim("id", user.getId())
 			.withSubject(user.getEmail())
 			.withExpiresAt(expireDate)
+			.withArrayClaim(Constant.AUTHORITIES_HEADER, authorities)
 			.sign(Algorithm.HMAC512(SECRET.getBytes()));
 
 		// Response token JSON

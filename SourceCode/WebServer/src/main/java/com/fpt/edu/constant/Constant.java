@@ -17,6 +17,6 @@ public class Constant {
 	public static final String NUM_OF_REQUESTING_BOOK = "num_of_requesting_book";
 	public static final int DEFAULT_PAGE = 1;
 	public static final int DEFAULT_OFFSET = 20;
-	public static final String AUTHORITIES_HEADER = "ROLES";
+	public static final String AUTHORITIES_HEADER = "roles";
 	public static final String ROLES_LIBRARIAN = "librarian";
 }
