@@ -2,13 +2,7 @@
   <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">
       Sách đang trả
-      <vs-button
-        color="primary"
-        type="relief"
-        size="small"
-        class="ml-4"
-        @click="$router.go()"
-      >Làm mới</vs-button>
+      <vs-button color="primary" type="relief" size="small" class="ml-4" @click="callReload">Làm mới</vs-button>
     </h2>
     <vs-input
       size="large"
@@ -255,6 +249,9 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+    },
+    callReload() {
+      this.$emit("doReload");
     }
   },
   beforeDestroy() {

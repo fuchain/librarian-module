@@ -1,5 +1,5 @@
 <template>
-  <book-list :books="books" v-if="loaded"/>
+  <book-list :books="books" v-if="loaded" @doReload="getList"/>
 </template>
 
 <script>
@@ -24,12 +24,16 @@ export default {
       this.$store.registerModule(STORE_KEY, store);
     }
   },
-  async mounted() {
-    this.$vs.loading();
-
-    await this.$store.dispatch(`${STORE_KEY}/getBooks`);
-
-    this.$vs.loading.close();
+  mounted() {
+    this.getList();
+  },
+  methods: {
+    async getList() {
+      this.$vs.loading();
+      await this.$store.dispatch(`${STORE_KEY}/getBooks`);
+      await this.$store.dispatch("getNumOfBooks");
+      this.$vs.loading.close();
+    }
   }
 };
 </script>
