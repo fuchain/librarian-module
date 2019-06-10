@@ -1,6 +1,29 @@
 <template>
   <div>
     <h2 class="mb-8">Báo cáo đánh giá của người dùng</h2>
+    <vx-card
+      :title="'Đánh giá UX của ' + reviews.length + ' người dùng'"
+      class="flex justify-center mb-8 w-full lg:w-1/2 mb-base bg-success-gradient"
+      style="color: white;"
+    >
+      <vs-list>
+        <vs-list-header icon="supervisor_account" :title="'Điểm trung bình: ' + avgPoint"></vs-list-header>
+        <vs-list-item icon="check" :title="detailAvg[0]" subtitle="Tốc độ tải trang và độ mượt"></vs-list-item>
+        <vs-list-item
+          icon="check"
+          :title="detailAvg[1]"
+          subtitle="Menu và các chỉ mục của ứng dụng"
+        ></vs-list-item>
+        <vs-list-item
+          icon="check"
+          :title="detailAvg[2]"
+          subtitle="Danh sách hiển thị rõ ràng hợp mắt"
+        ></vs-list-item>
+        <vs-list-item icon="check" :title="detailAvg[3]" subtitle="Các nút bấm được bố trí phù hợp"></vs-list-item>
+        <vs-list-item icon="check" :title="detailAvg[4]" subtitle="Trải nghiệm khi mượn / trả sách"></vs-list-item>
+      </vs-list>
+    </vx-card>
+    <vs-divider border-style="dashed" color="dark">báo cáo chi tiết</vs-divider>
     <div id="data-list-list-view" class="data-list-container">
       <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="reviews">
         <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
@@ -86,6 +109,26 @@ export default {
         return this.$refs.table.currentx;
       }
       return 0;
+    },
+    avgPoint() {
+      const avg = this.reviews.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.overall;
+      }, 0);
+
+      return (avg / this.reviews.length).toFixed(2);
+    },
+    detailAvg() {
+      let result = [];
+      for (let i = 0; i < 5; i++) {
+        const avg = this.reviews.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.details[i];
+        }, 0);
+
+        const detail = (avg / this.reviews.length).toFixed(2);
+        result.push(detail);
+      }
+
+      return result;
     }
   },
   methods: {},
@@ -201,5 +244,13 @@ export default {
       justify-content: center;
     }
   }
+}
+
+h4 {
+  color: white;
+}
+
+.vs-list--header {
+  color: white;
 }
 </style>
