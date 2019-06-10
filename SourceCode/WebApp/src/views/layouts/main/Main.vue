@@ -12,7 +12,7 @@
     <vx-sidebar
       :sidebarItems="sidebarItems"
       :logo="require('@/assets/images/logo/logo.png')"
-      title="Thư viện FU"
+      :title="$auth.isAdmin() === true ? 'Thủ thư FU' : 'Thư viện FU'"
       parent=".layout--main"
     />
 

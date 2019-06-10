@@ -10,6 +10,8 @@ import com.fpt.edu.services.BookDetailsServices;
 import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
 import io.swagger.annotations.ApiOperation;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
@@ -76,12 +79,24 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Get list of all book details", response = List.class)
 	@GetMapping("/book_details")
-	public ResponseEntity<List<BookDetail>> getListBookDetails(
+	@Transactional
+	public ResponseEntity<String> getListBookDetails(
 		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE + "") int page,
 		@RequestParam(name = "size", required = false, defaultValue = Constant.DEFAULT_OFFSET + "") int size
 	) {
 		Pageable pageable = PageRequest.of(page - 1, size);
-		return new ResponseEntity<>(bookDetailsServices.getAllBookDetails(pageable), HttpStatus.OK);
+		List<BookDetail> bookDetailList = bookDetailsServices.getAllBookDetails(pageable);
+		JSONArray arrResult = new JSONArray();
+		for (int i = 0; i < bookDetailList.size(); i++) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put(Constant.ID,bookDetailList.get(i).getId());
+			jsonObject.put(Constant.NAME,bookDetailList.get(i).getName());
+			jsonObject.put(Constant.UPDATE_DATE,String.valueOf(bookDetailList.get(i).getUpdateDate().getTime()/1000));
+			jsonObject.put(Constant.CREATE_DATE,String.valueOf(bookDetailList.get(i).getUpdateDate().getTime()/1000));
+			jsonObject.put("bookInstanceCount",bookDetailList.get(i).getBooks().size());
+			arrResult.put(jsonObject);
+		}
+		return new ResponseEntity<>(arrResult.toString(), HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "Get list instances of a book detail", response = List.class)
@@ -92,6 +107,7 @@ public class LibrarianController extends BaseController {
 		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE + "") int page,
 		@RequestParam(name = "size", required = false, defaultValue = Constant.DEFAULT_OFFSET + "") int size
 	) {
+
 		Pageable pageable = PageRequest.of(page - 1, size);
 		if (transferStatus == null) {
 			return new ResponseEntity<>(

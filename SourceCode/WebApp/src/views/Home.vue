@@ -178,7 +178,7 @@ export default {
   components: {},
   beforeMount() {
     if (this.$auth.isAdmin()) {
-      this.$router.push("/librarian/overview");
+      this.$router.push("/librarian/statistics");
     }
   }
 };

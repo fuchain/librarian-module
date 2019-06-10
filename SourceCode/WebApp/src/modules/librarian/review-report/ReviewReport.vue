@@ -1,16 +1,31 @@
 <template>
-  <vx-card>
+  <div>
     <h2 class="mb-8">Báo cáo đánh giá của người dùng</h2>
+    <vx-card
+      :title="'Đánh giá UX của ' + reviews.length + ' người dùng'"
+      class="flex justify-center mb-8 w-full lg:w-1/2 mb-base bg-success-gradient"
+      style="color: white;"
+    >
+      <vs-list>
+        <vs-list-header icon="supervisor_account" :title="'Điểm trung bình: ' + avgPoint"></vs-list-header>
+        <vs-list-item icon="check" :title="detailAvg[0]" subtitle="Tốc độ tải trang và độ mượt"></vs-list-item>
+        <vs-list-item
+          icon="check"
+          :title="detailAvg[1]"
+          subtitle="Menu và các chỉ mục của ứng dụng"
+        ></vs-list-item>
+        <vs-list-item
+          icon="check"
+          :title="detailAvg[2]"
+          subtitle="Danh sách hiển thị rõ ràng hợp mắt"
+        ></vs-list-item>
+        <vs-list-item icon="check" :title="detailAvg[3]" subtitle="Các nút bấm được bố trí phù hợp"></vs-list-item>
+        <vs-list-item icon="check" :title="detailAvg[4]" subtitle="Trải nghiệm khi mượn / trả sách"></vs-list-item>
+      </vs-list>
+    </vx-card>
+    <vs-divider border-style="dashed" color="dark">báo cáo chi tiết</vs-divider>
     <div id="data-list-list-view" class="data-list-container">
-      <vs-table
-        ref="table"
-        multiple
-        v-model="selected"
-        pagination
-        :max-items="itemsPerPage"
-        search
-        :data="reviews"
-      >
+      <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="reviews">
         <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
           <!-- ITEMS PER PAGE -->
           <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
@@ -76,18 +91,16 @@
         </template>
       </vs-table>
     </div>
-  </vx-card>
+  </div>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      selected: [],
       reviews: [],
       itemsPerPage: 10,
-      isMounted: false,
-      addNewDataSidebar: false
+      isMounted: false
     };
   },
   computed: {
@@ -96,33 +109,59 @@ export default {
         return this.$refs.table.currentx;
       }
       return 0;
+    },
+    avgPoint() {
+      const avg = this.reviews.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.overall;
+      }, 0);
+
+      return (avg / this.reviews.length).toFixed(2);
+    },
+    detailAvg() {
+      let result = [];
+      for (let i = 0; i < 5; i++) {
+        const avg = this.reviews.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.details[i];
+        }, 0);
+
+        const detail = (avg / this.reviews.length).toFixed(2);
+        result.push(detail);
+      }
+
+      return result;
     }
   },
   methods: {},
   mounted() {
-    this.isMounted = true;
+    this.$vs.loading();
 
-    this.$http.get(`${this.$http.betaUrl}/reviews`).then(response => {
-      const data = response.data;
+    this.$http
+      .get(`${this.$http.betaUrl}/reviews`)
+      .then(response => {
+        const data = response.data;
 
-      const reviews = data.reverse().map(e => {
-        const total = e.review.ratings.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue;
+        const reviews = data.reverse().map(e => {
+          const total = e.review.ratings.reduce((accumulator, currentValue) => {
+            return accumulator + currentValue;
+          });
+          const overall = total / e.review.ratings.length;
+
+          return {
+            email: e.email,
+            overall,
+            details: e.review.ratings,
+            note: e.review.note,
+            updatedAt: e.updatedAt,
+            userAgent: e.review.userAgent
+          };
         });
-        const overall = total / e.review.ratings.length;
 
-        return {
-          email: e.email,
-          overall,
-          details: e.review.ratings,
-          note: e.review.note,
-          updatedAt: e.updatedAt,
-          userAgent: e.review.userAgent
-        };
+        this.reviews = [].concat(reviews);
+      })
+      .finally(() => {
+        this.isMounted = true;
+        this.$vs.loading.close();
       });
-
-      this.reviews = [].concat(reviews);
-    });
   }
 };
 </script>
@@ -205,5 +244,13 @@ export default {
       justify-content: center;
     }
   }
+}
+
+h4 {
+  color: white;
+}
+
+.vs-list--header {
+  color: white;
 }
 </style>

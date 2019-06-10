@@ -44,7 +44,7 @@ public class AuthenticationController {
 		return UserController.getJSONResponseUserProfile(user);
 	}
 
-	private static String generateJwtTokenResponse(User user) {
+	private static String generateJwtTokenResponse(User user, String picture) {
 		// Generate JWT token
 		long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
 		Date expireDate = new Date(expireDateUnixTime * 1000);
@@ -65,6 +65,7 @@ public class AuthenticationController {
 		responseObj.put("token", responseToken);
 		responseObj.put("email", user.getEmail());
 		responseObj.put("fullname", user.getFullName());
+		responseObj.put("picture", picture);
 		responseObj.put("phone", user.getPhone());
 		responseObj.put("expire", expireDateUnixTime);
 
@@ -83,9 +84,16 @@ public class AuthenticationController {
 		String token = (String) jsonBody.get("token");
 
 		// Validate by Google API
-		HttpResponse<JsonNode> jsonGoogleResponse = Unirest.get(Constant.GOOGLE_AUTH_API + token).asJson();
+		String bearer = "Bearer " + token;
+		HttpResponse<JsonNode> jsonGoogleResponse = Unirest.get(Constant.GOOGLE_AUTH_API)
+			.header("Accept", "application/json")
+			.header("Authorization", bearer)
+			.asJson();
+
 		try {
-			String email = jsonGoogleResponse.getBody().getObject().get("email").toString();
+			String email = jsonGoogleResponse.getBody().getObject().get("email").toString().toLowerCase();
+			String fullName = jsonGoogleResponse.getBody().getObject().get("name").toString();
+			String picture = jsonGoogleResponse.getBody().getObject().get("picture").toString();
 			Optional<User> loggedUser = userServices.findUserByEmail(email);
 
 			// If email is not in database
@@ -93,14 +101,14 @@ public class AuthenticationController {
 
 			if (!loggedUser.isPresent()) {
 				if (getEmailDomain(email).equalsIgnoreCase("fpt.edu.vn")) {
-					User newUser = new User(email, null, null, null);
+					User newUser = new User(email, null, fullName, null);
 					userServices.addNewUser(newUser);
-					tokenResponse = generateJwtTokenResponse(newUser);
+					tokenResponse = generateJwtTokenResponse(newUser, picture);
 				} else {
 					return new ResponseEntity<>("Google account must be of FPT University", HttpStatus.BAD_REQUEST);
 				}
 			} else {
-				tokenResponse = generateJwtTokenResponse(loggedUser.get());
+				tokenResponse = generateJwtTokenResponse(loggedUser.get(), picture);
 			}
 
 			return new ResponseEntity<>(tokenResponse, HttpStatus.OK);

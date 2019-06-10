@@ -70,9 +70,29 @@ const router = new Router({
           component: () => import("@/modules/student/books-pair/BooksPair.vue")
         },
         {
+          path: "librarian/statistics",
+          component: () =>
+            import("@/modules/librarian/statistics/Statistics.vue")
+        },
+        {
           path: "librarian/review-report",
           component: () =>
             import("@/modules/librarian/review-report/ReviewReport.vue")
+        },
+        {
+          path: "librarian/book-details-manage",
+          component: () =>
+            import("@/modules/librarian/book-details-manage/BookDetailsManage.vue")
+        },
+        {
+          path: "librarian/book-details-manage/:id",
+          component: () =>
+            import("@/modules/librarian/book-instance-manage/BookInstanceManage.vue")
+        },
+        {
+          path: "librarian/user-manage",
+          component: () =>
+            import("@/modules/librarian/user-manage/UserManage.vue")
         }
       ]
     },
