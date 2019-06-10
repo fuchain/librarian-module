@@ -147,8 +147,9 @@ export default {
         window.location.hostname === "localhost"
           ? "http://localhost:3000/login"
           : "https://library.fptu.tech/login";
+      const scope = "profile email openid";
 
-      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=profile&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri=${hostname}&response_type=token&client_id=${clientId}`;
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=${scope}&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri=${hostname}&response_type=token&client_id=${clientId}`;
     },
     parseToken: function(fragmentStr) {
       // Parse query string to see if page request is coming from OAuth 2.0 server.
