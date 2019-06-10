@@ -41,7 +41,7 @@
                   <div class="flex flex-wrap justify-between my-5">
                     <vs-checkbox v-model="remember" class="mb-3">Lưu mật khẩu</vs-checkbox>
                   </div>
-                  <vs-button class="float-right">Đăng nhập</vs-button>
+                  <vs-button class="float-right" icon="fingerprint">Đăng nhập</vs-button>
                 </form>
 
                 <vs-divider>HOẶC</vs-divider>
@@ -105,10 +105,7 @@ export default {
         return;
       }
 
-      this.$vs.loading({
-        type: "corners",
-        text: "Đang đăng nhập"
-      });
+      this.$vs.loading({});
 
       this.$http
         .post(`${this.$http.baseUrl}/auth/login`, {
@@ -170,10 +167,7 @@ export default {
 
     const idToken = this.parseToken(window.location.hash);
     if (idToken) {
-      this.$vs.loading({
-        type: "corners",
-        text: "Đang đăng nhập"
-      });
+      this.$vs.loading({});
 
       this.$http
         .post(`${this.$http.baseUrl}/auth/google`, { token: idToken })
@@ -190,7 +184,8 @@ export default {
           this.$vs.loading.close();
           this.$router.push("/");
         })
-        .catch(() => {
+        .catch(err => {
+          console.log(err);
           this.$vs.loading.close();
 
           this.$vs.notify({

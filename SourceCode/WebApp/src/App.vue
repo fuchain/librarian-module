@@ -51,14 +51,41 @@ export default {
     if (this.$auth.isAuthenticated()) {
       this.$vs.loading({
         background: "primary",
-        color: "white"
+        color: "white",
+        scale: "1.5",
+        type: "sound"
       });
-      await this.$store.dispatch("getProfile");
-      await this.$store.dispatch("getNumOfBooks");
+      try {
+        await this.$store.dispatch("getProfile");
+        await this.$store.dispatch("getNumOfBooks");
+      } catch (e) {
+        // Catch error
+        console.log(e);
+
+        this.$router.push("/error");
+      }
+
       this.$vs.loading.close();
     }
   },
   errorCaptured(err, vm, info) {
+    // Log API
+    const metadata = {
+      err,
+      vm,
+      info
+    };
+    this.$http.post(`${this.$http.betaUrl}/logs`, {
+      type: "error",
+      source: "webapp",
+      metadata: JSON.stringify(metadata)
+    });
+
+    // Print log error
+    console.log("Error: ", err);
+    console.log("VM: ", vm);
+    console.log("Info: ", info);
+
     this.error = true;
 
     this.$vs.notify({
@@ -70,11 +97,6 @@ export default {
 
     this.$router.push("/error");
     if (this.$vs.loading) this.$vs.loading.close();
-
-    // Log error
-    console.log("Error: ", err);
-    console.log("VM: ", vm);
-    console.log("Info: ", info);
   }
 };
 </script>
