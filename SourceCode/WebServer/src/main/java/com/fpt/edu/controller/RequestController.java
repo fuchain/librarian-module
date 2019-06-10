@@ -689,6 +689,9 @@ public class RequestController extends BaseController {
 		// Get user information
 		User sender = userServices.getUserByEmail(principal.getName());
 
+		// Init response to return for client
+		JSONObject jsonResult = new JSONObject();
+
 		// Get request
 		JSONObject jsonBody = new JSONObject(body);
 		Long requestId = jsonBody.getLong("request_id");
@@ -696,28 +699,75 @@ public class RequestController extends BaseController {
 
 		// Check sender is the returner or not
 		if (!sender.getId().equals(request.getUser().getId())) {
-			throw new Exception("User id: " + sender + " is not the returner of the request");
+			throw new Exception("User id: " + sender + " is not the owner of the request");
 		}
-		// Get matching by return request
-		Matching matching = matchingServices.getByReturnRequestId(requestId, EMatchingStatus.CONFIRMED.getValue());
 
-		// Update matching status to 'CANCELED'
-		matching.setStatus(EMatchingStatus.CANCELED.getValue());
-		matchingServices.updateMatching(matching);
+		// Check request mode to cancel
+		if (request.getMode() == ERequestMode.AUTOMATIC.getValue()) {
+			cancelAutoRequest(request);
+		} else if (request.getMode() == ERequestMode.MANUAL.getValue()) {
+			cancelManualRequest(request);
+		} else {
+			throw new TypeNotSupportedException("Request mode: " + request.getMode() + " is not supported");
+		}
+
+		// Update transfer status of book
+		Book book = request.getBook();
+		book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+		bookServices.updateBook(book);
+
+		//Return response to client
+		jsonResult.put("message", "Cancel request successfully");
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
+
+	private void cancelAutoRequest(Request request) throws Exception {
+		if (request.getStatus() == ERequestStatus.PENDING.getValue()) {
+			// Update request status to 'CANCELED'
+			request.setStatus(ERequestStatus.CANCELED.getValue());
+			requestServices.updateRequest(request);
+
+		} else if (request.getStatus() == ERequestStatus.MATCHING.getValue()) {
+			// Update matching status to 'CANCELED'
+			Matching matching;
+			Request pairedRequest;
+			if (request.getType() == ERequestType.RETURNING.getValue()) {
+				matching = matchingServices.getByReturnRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+
+				// Get paired request
+				pairedRequest = matching.getBorrowerRequest();
+			} else if (request.getType() == ERequestType.BORROWING.getValue()) {
+				matching = matchingServices.getByReceiveRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+
+				// Get paired request
+				pairedRequest = matching.getReturnerRequest();
+			} else {
+				throw new Exception("Request with type: " + request.getType() + " is not supported");
+			}
+			matching.setStatus(EMatchingStatus.CANCELED.getValue());
+			matchingServices.updateMatching(matching);
+
+			// Update paired request status from 'MATCHING' to 'PENDING'
+			pairedRequest.setStatus(ERequestStatus.PENDING.getValue());
+
+			// Update request status to 'CANCELED'
+			request.setStatus(ERequestStatus.CANCELED.getValue());
+			requestServices.updateRequest(request);
+		}
+	}
+
+	private void cancelManualRequest(Request request) {
+		// Get matching by return request
+		Matching matching = matchingServices.getByReturnRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+		if (matching != null) {
+			// Update matching status to 'CANCELED'
+			matching.setStatus(EMatchingStatus.CANCELED.getValue());
+			matchingServices.updateMatching(matching);
+		}
 
 		// Update request status to 'CANCELED'
 		Request returnRequest = matching.getReturnerRequest();
 		returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
 		requestServices.updateRequest(returnRequest);
-
-		// Update transfer status of book
-		Book book = matching.getBook();
-		book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
-		bookServices.updateBook(book);
-
-		JSONObject jsonResult = new JSONObject();
-		jsonResult.put("message", "Canceled request sucessfully");
-
-		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
 }
