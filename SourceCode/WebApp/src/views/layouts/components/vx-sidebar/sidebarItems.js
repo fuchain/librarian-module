@@ -9,7 +9,7 @@ export default function(numOfBooks, coin = 0) {
 
 const adminMenu = [
   {
-    url: "/librarian/overview",
+    url: "/librarian/statistics",
     name: "Thống kê",
     slug: "home",
     icon: "BarChartIcon",
@@ -17,16 +17,10 @@ const adminMenu = [
     tagColor: "darkorange"
   },
   {
-    url: "/librarian/books",
-    name: "Tình trạng sách",
-    slug: "book-search",
+    url: "/librarian/book-details-manage",
+    name: "Quản lí đầu sách",
+    slug: "book-manage",
     icon: "BookIcon"
-  },
-  {
-    url: "/librarian/book-return-request",
-    name: "Thu hồi sách",
-    slug: "book-return-request",
-    icon: "ArchiveIcon"
   },
   {
     url: "/librarian/users-manage",
