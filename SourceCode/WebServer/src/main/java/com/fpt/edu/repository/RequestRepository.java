@@ -27,7 +27,7 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
 								@Param("book_detail_id") Long book_detail_id,
 								@Param("book_id") Long book_id);
 
-	@Query(value = "SELECT req from Request  req WHERE req.status=1 order by req.createDate asc")
+	@Query(value = "SELECT req from Request  req WHERE req.status=1 and req.mode=1 order by req.createDate asc")
 	List<Request> getListOfPendingRequest();
 
 
