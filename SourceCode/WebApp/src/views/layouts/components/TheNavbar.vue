@@ -169,7 +169,7 @@
           <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
             <div class="con-img ml-3">
               <img
-                :src="require(`@/assets/images/avatar/avatar.png`)"
+                :src="$localStorage.getItem('picture') || require(`@/assets/images/avatar/avatar.png`)"
                 alt
                 width="40"
                 height="40"
