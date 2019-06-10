@@ -1,16 +1,8 @@
 <template>
-  <vx-card>
+  <div>
     <h2 class="mb-8">Báo cáo đánh giá của người dùng</h2>
     <div id="data-list-list-view" class="data-list-container">
-      <vs-table
-        ref="table"
-        multiple
-        v-model="selected"
-        pagination
-        :max-items="itemsPerPage"
-        search
-        :data="reviews"
-      >
+      <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="reviews">
         <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
           <!-- ITEMS PER PAGE -->
           <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
@@ -76,18 +68,16 @@
         </template>
       </vs-table>
     </div>
-  </vx-card>
+  </div>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      selected: [],
       reviews: [],
       itemsPerPage: 10,
-      isMounted: false,
-      addNewDataSidebar: false
+      isMounted: false
     };
   },
   computed: {
@@ -100,29 +90,35 @@ export default {
   },
   methods: {},
   mounted() {
-    this.isMounted = true;
+    this.$vs.loading();
 
-    this.$http.get(`${this.$http.betaUrl}/reviews`).then(response => {
-      const data = response.data;
+    this.$http
+      .get(`${this.$http.betaUrl}/reviews`)
+      .then(response => {
+        const data = response.data;
 
-      const reviews = data.reverse().map(e => {
-        const total = e.review.ratings.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue;
+        const reviews = data.reverse().map(e => {
+          const total = e.review.ratings.reduce((accumulator, currentValue) => {
+            return accumulator + currentValue;
+          });
+          const overall = total / e.review.ratings.length;
+
+          return {
+            email: e.email,
+            overall,
+            details: e.review.ratings,
+            note: e.review.note,
+            updatedAt: e.updatedAt,
+            userAgent: e.review.userAgent
+          };
         });
-        const overall = total / e.review.ratings.length;
 
-        return {
-          email: e.email,
-          overall,
-          details: e.review.ratings,
-          note: e.review.note,
-          updatedAt: e.updatedAt,
-          userAgent: e.review.userAgent
-        };
+        this.reviews = [].concat(reviews);
+      })
+      .finally(() => {
+        this.isMounted = true;
+        this.$vs.loading.close();
       });
-
-      this.reviews = [].concat(reviews);
-    });
   }
 };
 </script>
