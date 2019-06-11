@@ -112,6 +112,11 @@ public class RequestController extends BaseController {
 
 		// Fill data for request
 		if (type == ERequestType.BORROWING.getValue()) {
+			// Check user is active or not
+			if (user.isDisabled()) {
+				throw new Exception("User id: " + user.getId() + " is not active. Cannot make borrow request");
+			}
+
 			// Get book name from Request Body
 			String bookName = bodyObject.getString("book_name");
 
@@ -559,8 +564,11 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Receiver verify the book information", response = Book.class)
 	@GetMapping("/manually/verify")
 	public ResponseEntity<Book> verifyBookManually(@RequestParam String pin, Principal principal) throws Exception {
-		// Get returner information
+		// Check the receiver is active or not
 		User receiver = userServices.getUserByEmail(principal.getName());
+		if (receiver.isDisabled()) {
+			throw new Exception("User id: " + receiver.getId() + " is not active. Cannot make borrow request");
+		}
 
 		// Check pin from client with matching
 		Matching matching = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
@@ -592,8 +600,11 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Receiver enter pin to get book", response = String.class)
 	@PutMapping(value = "/manually/confirm", produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<String> confirmBookManually(@RequestBody String body, Principal principal) throws Exception {
-		// Get user information
+		// Check receiver is active or not
 		User receiver = userServices.getUserByEmail(principal.getName());
+		if (receiver.isDisabled()) {
+			throw new Exception("User id: " + receiver.getId() + " is not active. Cannot make borrow request");
+		}
 
 		// Get pin from Request Body
 		JSONObject bodyObject = new JSONObject(body);
