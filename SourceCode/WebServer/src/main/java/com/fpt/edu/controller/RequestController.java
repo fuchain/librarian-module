@@ -699,7 +699,7 @@ public class RequestController extends BaseController {
 
 		// Check sender is the returner or not
 		if (!sender.getId().equals(request.getUser().getId())) {
-			throw new Exception("User id: " + sender + " is not the owner of the request");
+			throw new Exception("User id: " + sender.getId() + " is not the owner of the request");
 		}
 
 		// Check request mode to cancel
@@ -749,6 +749,7 @@ public class RequestController extends BaseController {
 
 			// Update paired request status from 'MATCHING' to 'PENDING'
 			pairedRequest.setStatus(ERequestStatus.PENDING.getValue());
+			requestServices.updateRequest(pairedRequest);
 
 			// Update request status to 'CANCELED'
 			request.setStatus(ERequestStatus.CANCELED.getValue());
