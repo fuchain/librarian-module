@@ -556,9 +556,42 @@ public class RequestController extends BaseController {
 		return pin;
 	}
 
+	@ApiOperation(value = "Receiver verify the book information", response = Book.class)
+	@GetMapping("/manually/verify")
+	public ResponseEntity<Book> verifyBookManually(@RequestParam String pin, Principal principal) throws Exception {
+		// Get returner information
+		User receiver = userServices.getUserByEmail(principal.getName());
+
+		// Check pin from client with matching
+		Matching matching = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+		if (matching == null) {
+			throw new EntityNotFoundException("Pin: " + pin + " is invalid, could not find any matching with pin");
+		}
+
+		// Check returner returns book for himself or not
+		if (matching.getReturnerRequest().getUser().getId().equals(receiver.getId())) {
+			throw new Exception("Returner id: " + matching.getReturnerRequest().getId() + " can not return for himself");
+		}
+
+		// Check expired time of pin
+		long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
+		if (duration > Constant.PIN_EXPIRED_MINUTE) {
+			// Delete returning request + matching
+			matchingServices.deleteMatching(matching.getId());
+			requestServices.deleteRequest(matching.getReturnerRequest().getId());
+
+			throw new PinExpiredException("Pin is expired");
+		}
+
+		// Get book info from matching
+		Book book = matching.getBook();
+
+		return new ResponseEntity<>(book, HttpStatus.OK);
+	}
+
 	@ApiOperation(value = "Receiver enter pin to get book", response = String.class)
-	@PutMapping(value = "/manually/verify", produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> verifyBookManually(@RequestBody String body, Principal principal) throws Exception {
+	@PutMapping(value = "/manually/confirm", produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> confirmBookManually(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
 		User receiver = userServices.getUserByEmail(principal.getName());
 
