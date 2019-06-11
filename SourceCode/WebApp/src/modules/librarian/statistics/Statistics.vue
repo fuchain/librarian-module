@@ -1,7 +1,7 @@
 <template>
   <div class="vx-row">
     <!-- CARD 1: CONGRATS -->
-    <div class="vx-col w-full lg:w-full mb-base">
+    <div class="vx-col w-full lg:w-1/2 mb-base">
       <vx-card slot="no-body" class="text-center bg-primary-gradient greet-user">
         <img
           src="@/assets/images/elements/decore-left.png"

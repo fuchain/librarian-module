@@ -1,6 +1,6 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <h2 class="mb-8 ml-4">Quản lí đầu sách</h2>
+    <h2 class="mb-8 ml-4">Quản lí người dùng</h2>
 
     <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
@@ -48,12 +48,12 @@
 
       <template slot="thead">
         <vs-th>ID</vs-th>
-        <vs-th></vs-th>
-        <vs-th>Tên đầu sách</vs-th>
-        <vs-th>Mã môn</vs-th>
+        <vs-th>Email</vs-th>
+        <vs-th>Họ tên</vs-th>
+        <vs-th>Số điện thoại</vs-th>
         <vs-th>Cập nhật</vs-th>
-        <vs-th>Số lượng sách</vs-th>
-        <ts-th></ts-th>
+        <vs-th>Vô hiệu hóa</vs-th>
+        <vs-th></vs-th>
       </template>
 
       <template slot-scope="{data}">
@@ -68,16 +68,16 @@
               <p>{{ tr.id }}</p>
             </vs-td>
 
-            <vs-td class="img-container">
-              <img src="/images/book-thumbnail.jpg" class="product-img">
+            <vs-td>
+              <p class="font-medium">{{ tr.email }}</p>
             </vs-td>
 
             <vs-td>
-              <p class="font-medium">{{ tr.name }}</p>
+              <p class="font-medium">{{ tr.fullName }}</p>
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.name.substring(0, 3).toUpperCase() + "101" }}</p>
+              <p>{{ tr.phone }}</p>
             </vs-td>
 
             <vs-td>
@@ -85,20 +85,50 @@
             </vs-td>
 
             <vs-td>
-              <p class="font-medium">{{ tr.bookInstanceCount }} cuốn</p>
+              <p>
+                <vs-switch value="tr.disabled"/>
+              </p>
             </vs-td>
 
             <vs-td>
-              <vs-button
-                icon="pageview"
-                @click="openBookDataList(tr)"
-                v-if="tr.bookInstanceCount > 0"
-              >Xem sách của đầu sách này</vs-button>
+              <vs-button icon="pageview" @click="openKeepingBook(tr)">Xem sách đang giữ</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>
       </template>
     </vs-table>
+
+    <vs-popup
+      :fullscreen="keepingList && keepingList.length"
+      :title="'Sách đang giữ của ' + keepingName"
+      :active.sync="keepingPopup"
+    >
+      <vs-table :data="keepingList" v-if="keepingList && keepingList.length">
+        <template slot="thead">
+          <vs-th>ID sách</vs-th>
+          <vs-th>ID đầu sách</vs-th>
+          <vs-th>Tên sách</vs-th>
+          <vs-th>Tình trạng</vs-th>
+          <vs-th>Trạng thái</vs-th>
+          <vs-th>Cập nhật</vs-th>
+        </template>
+
+        <template slot-scope="{data}">
+          <vs-tr :key="indextr" v-for="(tr, indextr) in data">
+            <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
+            <vs-td :data="data[indextr].bookDetail.id">{{data[indextr].bookDetail.id}}</vs-td>
+            <vs-td :data="data[indextr].bookDetail.name">{{data[indextr].bookDetail.name}}</vs-td>
+            <vs-td :data="data[indextr].status">{{data[indextr].status}}</vs-td>
+            <vs-td :data="data[indextr].transferStatus">{{data[indextr].transferStatus}}</vs-td>
+
+            <vs-td
+              :data="data[indextr].updateDate"
+            >{{ parseInt(data[indextr].updateDate) * 1000 | moment("from") }}</vs-td>
+          </vs-tr>
+        </template>
+      </vs-table>
+      <p v-else>Sinh viên này đang không giữ cuốn sách nào cả</p>
+    </vs-popup>
   </div>
 </template>
 
@@ -108,7 +138,8 @@ export default {
     return {
       itemsPerPage: 10,
       isMounted: false,
-      addNewDataSidebar: false
+      keepingPopup: false,
+      keepingName: ""
     };
   },
   props: {
@@ -126,8 +157,21 @@ export default {
     }
   },
   methods: {
-    openBookDataList(item) {
-      this.$router.push(`/librarian/book-details-manage/${item.id}`);
+    openKeepingBook(item) {
+      this.$vs.loading();
+
+      this.$http
+        .get(`${this.$http.baseUrl}/librarian/users/${item.id}/books`)
+        .then(response => {
+          const data = response.data;
+
+          this.keepingList = data;
+          this.keepingPopup = true;
+          this.keepingName = item.email;
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   },
   mounted() {
