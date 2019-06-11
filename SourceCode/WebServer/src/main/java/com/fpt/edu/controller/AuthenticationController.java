@@ -18,10 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.fpt.edu.security.SecurityConstants.EXPIRATION_TIME;
 import static com.fpt.edu.security.SecurityConstants.SECRET;
@@ -48,11 +45,19 @@ public class AuthenticationController {
 		// Generate JWT token
 		long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
 		Date expireDate = new Date(expireDateUnixTime * 1000);
-		List<Role> roles =  user.getRoles();
+
+		List<Role> roles;
+		if (user.getRoles() == null) {
+			roles = new ArrayList<>();
+		} else {
+			roles = user.getRoles();
+		}
+
 		String[] authorities = new String[roles.size()];
 		for (int i = 0; i < roles.size() ; i++) {
-			authorities[i]=roles.get(i).getName();
+			authorities[i] = roles.get(i).getName();
 		}
+
 		String responseToken = JWT.create()
 			.withClaim("id", user.getId())
 			.withSubject(user.getEmail())
@@ -101,8 +106,7 @@ public class AuthenticationController {
 
 			if (!loggedUser.isPresent()) {
 				if (getEmailDomain(email).equalsIgnoreCase("fpt.edu.vn")) {
-					User newUser = new User(email, null, fullName, null);
-					userServices.addNewUser(newUser);
+					User newUser = userServices.addNewUser(new User(email, null, fullName, null));
 					tokenResponse = generateJwtTokenResponse(newUser, picture);
 				} else {
 					return new ResponseEntity<>("Google account must be of FPT University", HttpStatus.BAD_REQUEST);

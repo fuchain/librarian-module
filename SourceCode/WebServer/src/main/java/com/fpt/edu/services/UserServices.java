@@ -34,14 +34,14 @@ public class UserServices {
 		this.bookRepository = bookRepository;
 	}
 
-	public void addNewUser(User user) {
+	public User addNewUser(User user) {
 		if (user.getPassword() != null) {
 			user.setPassword(encoder.encode(user.getPassword()));
 		} else {
 			user.setPassword(null);
 		}
 
-		userRepository.save(user);
+		return userRepository.save(user);
 	}
 
 	public Optional<User> findUserByEmail(String email) {
