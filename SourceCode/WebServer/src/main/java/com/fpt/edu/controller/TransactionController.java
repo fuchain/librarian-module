@@ -1,5 +1,7 @@
 package com.fpt.edu.controller;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.fpt.edu.entities.Transaction;
 import com.fpt.edu.services.TransactionServices;
 import io.swagger.annotations.ApiOperation;
@@ -7,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @RestController
 @RequestMapping("transaction")
@@ -28,8 +33,16 @@ public class TransactionController extends BaseController {
     @PostMapping("")
     public ResponseEntity<Transaction> insertTransaction(@RequestBody Transaction transaction) {
         Transaction transactionResult = transactionServices.insertTransaction(transaction);
-
         return new ResponseEntity<>(transactionResult, HttpStatus.CREATED);
     }
+
+	@Autowired
+	AmazonS3 s3Client;
+	@ApiOperation(value = "Create a transaction", response = Transaction.class)
+	@PostMapping("/upload")
+	public ResponseEntity<String> testUploadFile(@RequestParam("file")MultipartFile file) {
+		utils.uploadFile(file);
+		return new ResponseEntity<>("", HttpStatus.CREATED);
+	}
 
 }
