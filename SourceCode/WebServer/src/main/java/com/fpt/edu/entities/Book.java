@@ -16,10 +16,21 @@ import java.util.TreeMap;
 
 import javax.persistence.*;
 
+@SuppressWarnings("unchecked")
 @Entity
 @Table(name = "book")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Book extends AbstractTimestampEntity implements Serializable {
+
+	private static final String BC_CURRENT_KEEPER = "current_keeper";
+	private static final String BC_BOOK_STATUS = "status";
+	private static final String BC_TX_TIMESTAMP = "transaction_timestamp";
+	private static final String BC_REJECT_COUNT = "reject_count";
+	private static final String BC_REJECT_REASON = "reject_reason";
+	private static final String BC_IMAGE_HASH = "img_hash";
+
+	private static final int BC_MAX_REJECT_COUNT = 5;
+	private static final int BC_MIN_REJECT_COUNT = 0;
 
     @Id
     private Long id;
@@ -51,39 +62,45 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     private String lastTxId;
 
     @Column(name = "status")
-    private String status = EBookStatus.IN_USE.getValue();
+    private String status;
 
     @Column(name = "transfer_status")
     @JsonSerialize
-	private String transferStatus = EBookTransferStatus.TRANSFERRED.getValue();
+	private String transferStatus;
 
     @Transient
     @JsonIgnore
-    private Map<String, String> asset;
+    private final Map<String, String> asset;
 
     @Transient
     @JsonIgnore
-    private Map<String, String> metadata;
+    private final Map<String, String> metadata;
 
     @Transient
 	@JsonSerialize
-	private List bcTransactions;
+	private final List bcTransactions;
 
-    public Map<String, String> getAsset() {
-        if (this.asset == null) {
-            this.asset = new TreeMap<>();
-        }
+	public Book() {
+		this.status = EBookStatus.IN_USE.getValue();
+		this.transferStatus = EBookTransferStatus.TRANSFERRED.getValue();
+		this.asset = new TreeMap<>();
+		this.metadata = new TreeMap<>();
+		this.bcTransactions = new ArrayList();
+	}
+
+	public Map<String, String> getAsset() {
         this.asset.put("book_id", String.valueOf(this.id));
         return this.asset;
     }
 
     public Map<String, String> getMetadata() {
-        if (this.metadata == null) {
-            this.metadata = new TreeMap<>();
-        }
-        this.metadata.put("current_keeper", this.user.getEmail());
-        this.metadata.put("status", this.status);
-        this.metadata.put("transaction_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+        this.metadata.put(BC_CURRENT_KEEPER, this.user.getEmail());
+        this.metadata.put(BC_BOOK_STATUS, this.status);
+        this.metadata.put(BC_TX_TIMESTAMP, String.valueOf(System.currentTimeMillis() / 1000));
+        this.metadata.put(BC_REJECT_COUNT, String.valueOf(BC_MIN_REJECT_COUNT));
+        this.metadata.put(BC_REJECT_REASON, "");
+        this.metadata.put(BC_IMAGE_HASH, "");
+
         return this.metadata;
     }
 
@@ -92,13 +109,28 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public void setBcTransactions(Transactions bcTransactions) {
-    	if (this.bcTransactions == null) {
-    		this.bcTransactions = new ArrayList();
-		}
     	this.bcTransactions.clear();
 		for (com.bigchaindb.model.Transaction bcTransaction : bcTransactions.getTransactions()) {
 			this.bcTransactions.add(bcTransaction.getMetaData());
 		}
+	}
+
+	public boolean isRejectCountOver() {
+		int rejectCount = Integer.parseInt(this.metadata.get(BC_REJECT_COUNT));
+		return rejectCount >= BC_MAX_REJECT_COUNT;
+	}
+
+	public void setRejectCount() {
+		int rejectCount = Integer.parseInt(this.metadata.get(BC_REJECT_COUNT));
+		this.metadata.put(BC_REJECT_COUNT, String.valueOf(rejectCount + 1));
+	}
+
+	public void setRejectReason(String reason) {
+    	this.metadata.put(BC_REJECT_REASON, reason);
+	}
+
+	public void setRejectImage(String hash) {
+		this.metadata.put(BC_IMAGE_HASH, hash);
 	}
 
 	public String getAssetId() {
