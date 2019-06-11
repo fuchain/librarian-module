@@ -14,8 +14,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -63,11 +61,9 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Get a list of book request")
 	@GetMapping("/get_list")
 	@Transactional
-	public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type) {
+	public ResponseEntity<List<Request>> getBookRequestList(@RequestParam int type, Principal principal) {
 		// Get user information
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User user = userServices.getUserByEmail(email);
+		User user = userServices.getUserByEmail(principal.getName());
 
 		// Get book list of user, by default lazy loading is enable
 		Hibernate.initialize(user.getListBooks());
@@ -103,12 +99,9 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Create a book request", response = String.class)
 	@PostMapping("")
 	@Transactional
-	public ResponseEntity<String> requestBook(@RequestBody String body) throws EntityNotFoundException,
-		TypeNotSupportedException, EntityAldreayExisted, NotFoundException {
+	public ResponseEntity<String> requestBook(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User user = userServices.getUserByEmail(email);
+		User user = userServices.getUserByEmail(principal.getName());
 
 		//Get type from Request Body
 		JSONObject bodyObject = new JSONObject(body);
@@ -150,18 +143,26 @@ public class RequestController extends BaseController {
 	}
 
 	private Request getBorrowingRequest(int type, User user, String bookName)
-		throws EntityNotFoundException, EntityAldreayExisted {
+		throws Exception {
 		// Get book detail object from DB
 		BookDetail bookDetail = bookDetailsServices.getBookDetailByName(bookName);
 		if (bookDetail == null) {
 			throw new EntityNotFoundException("Book name: " + bookName + " not found");
 		}
 
-		//check existed request based on request type, user id, book detail, with request status is not completed
+		// Check existed request based on request type, user id, book detail, with request status is not completed
 		boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
 			bookDetail.getId(), (long) 0);
 		if (existed) {
 			throw new EntityAldreayExisted("Request's already existed");
+		}
+
+		// Check user is making a request to borrow books that the user currently has
+		List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
+		for (Book b : currentBookList) {
+			if (b.getBookDetail().getName().equals(bookName)) {
+				throw new Exception("You currently have " + bookName + ". You cannot make a borrow request for this book");
+			}
 		}
 
 		//create a request and fill data
@@ -258,11 +259,9 @@ public class RequestController extends BaseController {
 
 	@ApiOperation(value = "Transfer book for returner and receiver", response = String.class)
 	@PutMapping(value = "/transfer", produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> transferBook(@RequestBody String body) throws Exception {
+	public ResponseEntity<String> transferBook(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal();
-		User sender = userServices.getUserByEmail(email);
+		User sender = userServices.getUserByEmail(principal.getName());
 
 		// Get data from Request Body
 		JSONObject bodyObject = new JSONObject(body);
@@ -281,13 +280,23 @@ public class RequestController extends BaseController {
 		// Check transfer type is returner or receiver
 		if (type == ETransferType.RETURNER.getValue()) {
 			jsonResult = returnBook(matching, sender);
+
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 		} else if (type == ETransferType.RECEIVER.getValue()) {
 			String pin = bodyObject.getString("pin");
 			jsonResult = receiveBook(matching, sender, pin);
+
+			// Check submit transaction to BC success or not
+			if (jsonResult.get("status_code").equals(HttpStatus.OK)) {
+				jsonResult.remove("status_code");
+				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+			} else {
+				jsonResult.remove("status_code");
+				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} else {
 			throw new TypeNotSupportedException("Type: " + type + " is not supported");
 		}
-		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
 
 	private JSONObject returnBook(Matching matching, User sender) throws EntityIdMismatchException {
@@ -342,6 +351,7 @@ public class RequestController extends BaseController {
 		return addTransferTxToBC(matching);
 	}
 
+	// Add transaction to BC, used for AUTOMATIC transfer
 	private JSONObject addTransferTxToBC(Matching matching) throws Exception {
 		// Init data to submit transaction to BlockChain
 		Book book = bookServices.getBookById(matching.getBook().getId());
@@ -351,7 +361,12 @@ public class RequestController extends BaseController {
 		User receiver = receiverRequest.getUser();
 		Date sendTime = new Date();
 		AtomicBoolean callback = new AtomicBoolean(false);
-		JSONObject jsonResult;
+		JSONObject jsonResult = new JSONObject();
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
+
 		// Update current_keeper
 		book.setUser(receiver);
 
@@ -388,11 +403,13 @@ public class RequestController extends BaseController {
 				tran.setBorrower(receiver);
 				transactionServices.insertTransaction(tran);
 
+				// Override value in response
+				jsonResult.put("message", "confirm book transfer successfully");
+				jsonResult.put("status_code", HttpStatus.OK);
+
 				callback.set(true);
 			},
 			(transaction, response) -> { //failed
-				callback.set(true);
-
 				// Delete request + matching
 				matchingServices.deleteMatching(matching.getId());
 				requestServices.deleteRequest(matching.getReturnerRequest().getId());
@@ -402,6 +419,8 @@ public class RequestController extends BaseController {
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
+
+				callback.set(true);
 			}
 		);
 
@@ -411,9 +430,7 @@ public class RequestController extends BaseController {
 			now = new Date();
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-			if (duration > 30 || callback.get()) {
-				jsonResult = new JSONObject();
-				jsonResult.put("message", "confirm book transfer successfully");
+			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
 				return jsonResult;
 			}
 		}
@@ -499,13 +516,8 @@ public class RequestController extends BaseController {
 		// Get request id
 		Long requestId = savedRequest.getId();
 
-		// Check whether pin is duplicated or not
-		String pin;
-		Matching duplicatedMat;
-		do {
-			pin = utils.getPin();
-			duplicatedMat = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
-		} while (duplicatedMat != null);
+		// Get unique pin
+		String pin = getUniquePin();
 
 		// Init matching instance
 		Matching matching = new Matching();
@@ -532,9 +544,54 @@ public class RequestController extends BaseController {
 		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
 
+	private String getUniquePin() {
+		// Check whether pin is duplicated or not
+		String pin;
+		Matching duplicatedMat;
+		do {
+			pin = utils.getPin();
+			duplicatedMat = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+		} while (duplicatedMat != null);
+
+		return pin;
+	}
+
+	@ApiOperation(value = "Receiver verify the book information", response = Book.class)
+	@GetMapping("/manually/verify")
+	public ResponseEntity<Book> verifyBookManually(@RequestParam String pin, Principal principal) throws Exception {
+		// Get returner information
+		User receiver = userServices.getUserByEmail(principal.getName());
+
+		// Check pin from client with matching
+		Matching matching = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+		if (matching == null) {
+			throw new EntityNotFoundException("Pin: " + pin + " is invalid, could not find any matching with pin");
+		}
+
+		// Check returner returns book for himself or not
+		if (matching.getReturnerRequest().getUser().getId().equals(receiver.getId())) {
+			throw new Exception("Returner id: " + matching.getReturnerRequest().getId() + " can not return for himself");
+		}
+
+		// Check expired time of pin
+		long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
+		if (duration > Constant.PIN_EXPIRED_MINUTE) {
+			// Delete returning request + matching
+			matchingServices.deleteMatching(matching.getId());
+			requestServices.deleteRequest(matching.getReturnerRequest().getId());
+
+			throw new PinExpiredException("Pin is expired");
+		}
+
+		// Get book info from matching
+		Book book = matching.getBook();
+
+		return new ResponseEntity<>(book, HttpStatus.OK);
+	}
+
 	@ApiOperation(value = "Receiver enter pin to get book", response = String.class)
-	@PutMapping(value = "/manually/verify", produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> verifyBookManually(@RequestBody String body, Principal principal) throws Exception {
+	@PutMapping(value = "/manually/confirm", produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> confirmBookManually(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
 		User receiver = userServices.getUserByEmail(principal.getName());
 
@@ -582,11 +639,30 @@ public class RequestController extends BaseController {
 		matching.setBorrowerRequest(borrowingRequest);
 		matchingServices.updateMatching(matching);
 
+		// Submit transaction to BC
+		JSONObject jsonResult = submitTxToBC(matching, receiver);
+
+		// Check submit transaction to DB success or not
+		if (jsonResult.get("status_code").equals(HttpStatus.OK)) {
+			jsonResult.remove("status_code");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+		} else {
+			jsonResult.remove("status_code");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Add transaction to BC, used for MANUAL transfer
+	private JSONObject submitTxToBC(Matching matching, User receiver) throws Exception {
 		// Init data to submit transaction to BlockChain
 		Book book = matching.getBook();
 		User returner = matching.getReturnerRequest().getUser();
 		AtomicBoolean callback = new AtomicBoolean(false);
-		JSONObject jsonResult;
+		JSONObject jsonResult = new JSONObject();
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
 
 		// Update owner of book
 		book.setUser(receiver);
@@ -615,11 +691,12 @@ public class RequestController extends BaseController {
 				tran.setBorrower(receiver);
 				transactionServices.insertTransaction(tran);
 
+				// Response to client
+				jsonResult.put("message", "confirm book transfer successfully");
+				jsonResult.put("status_code", HttpStatus.OK);
 
 				callback.set(true);
 			}, (transaction, response) -> { // failed
-				callback.set(true);
-
 				// Delete request + matching
 				matchingServices.deleteMatching(matching.getId());
 				requestServices.deleteRequest(matching.getReturnerRequest().getId());
@@ -629,6 +706,8 @@ public class RequestController extends BaseController {
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
+
+				callback.set(true);
 			}
 		);
 
@@ -636,21 +715,22 @@ public class RequestController extends BaseController {
 		Date now;
 		while (true) {
 			now = new Date();
-			duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-			if (duration > 30 || callback.get()) {
-				jsonResult = new JSONObject();
-				jsonResult.put("message", "confirm book transfer successfully");
-				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
+				return jsonResult;
 			}
 		}
 	}
 
 	@ApiOperation(value = "User cancels manually returning request", response = String.class)
-	@PutMapping(value = "/manually/cancel", produces = Constant.APPLICATION_JSON)
+	@PutMapping(value = "/cancel", produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<String> removeRequestManually(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
 		User sender = userServices.getUserByEmail(principal.getName());
+
+		// Init response to return for client
+		JSONObject jsonResult = new JSONObject();
 
 		// Get request
 		JSONObject jsonBody = new JSONObject(body);
@@ -659,28 +739,83 @@ public class RequestController extends BaseController {
 
 		// Check sender is the returner or not
 		if (!sender.getId().equals(request.getUser().getId())) {
-			throw new Exception("User id: " + sender + " is not the returner of the request");
+			throw new Exception("User id: " + sender.getId() + " is not the owner of the request");
 		}
-		// Get matching by return request
-		Matching matching = matchingServices.getByReturnRequestId(requestId, EMatchingStatus.CONFIRMED.getValue());
 
-		// Update matching status to 'CANCELED'
-		matching.setStatus(EMatchingStatus.CANCELED.getValue());
-		matchingServices.updateMatching(matching);
+		// Check request mode to cancel
+		if (request.getMode() == ERequestMode.AUTOMATIC.getValue()) {
+			cancelAutoRequest(request);
+		} else if (request.getMode() == ERequestMode.MANUAL.getValue()) {
+			cancelManualRequest(request);
+		} else {
+			throw new TypeNotSupportedException("Request mode: " + request.getMode() + " is not supported");
+		}
+
+		// Update transfer status of book
+		if (request.getType() == ERequestType.RETURNING.getValue()) {
+			Book book = request.getBook();
+			book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+			bookServices.updateBook(book);
+		}
+
+		//Return response to client
+		jsonResult.put("message", "Cancel request successfully");
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
+
+	private void cancelAutoRequest(Request request) throws Exception {
+		if (request.getStatus() == ERequestStatus.PENDING.getValue()) {
+			// Update request status to 'CANCELED'
+			request.setStatus(ERequestStatus.CANCELED.getValue());
+			requestServices.updateRequest(request);
+
+			// Remove request out of the queue
+			requestQueueManager.removeRequestOutTheQueue(request);
+		} else if (request.getStatus() == ERequestStatus.MATCHING.getValue()) {
+			// Update matching status to 'CANCELED'
+			Matching matching;
+			Request pairedRequest;
+			if (request.getType() == ERequestType.RETURNING.getValue()) {
+				matching = matchingServices.getByReturnRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+
+				// Get paired request
+				pairedRequest = matching.getBorrowerRequest();
+			} else if (request.getType() == ERequestType.BORROWING.getValue()) {
+				matching = matchingServices.getByReceiveRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+
+				// Get paired request
+				pairedRequest = matching.getReturnerRequest();
+			} else {
+				throw new Exception("Request with type: " + request.getType() + " is not supported");
+			}
+			matching.setStatus(EMatchingStatus.CANCELED.getValue());
+			matchingServices.updateMatching(matching);
+
+			// Update paired request status from 'MATCHING' to 'PENDING'
+			pairedRequest.setStatus(ERequestStatus.PENDING.getValue());
+			requestServices.updateRequest(pairedRequest);
+
+			// Find the match for paired request.
+			pairRequest(pairedRequest);
+
+			// Update request status to 'CANCELED'
+			request.setStatus(ERequestStatus.CANCELED.getValue());
+			requestServices.updateRequest(request);
+		}
+	}
+
+	private void cancelManualRequest(Request request) {
+		// Get matching by return request
+		Matching matching = matchingServices.getByReturnRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+		if (matching != null) {
+			// Update matching status to 'CANCELED'
+			matching.setStatus(EMatchingStatus.CANCELED.getValue());
+			matchingServices.updateMatching(matching);
+		}
 
 		// Update request status to 'CANCELED'
 		Request returnRequest = matching.getReturnerRequest();
 		returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
 		requestServices.updateRequest(returnRequest);
-
-		// Update transfer status of book
-		Book book = matching.getBook();
-		book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
-		bookServices.updateBook(book);
-
-		JSONObject jsonResult = new JSONObject();
-		jsonResult.put("message", "Canceled request sucessfully");
-
-		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
 }
