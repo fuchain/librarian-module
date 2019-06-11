@@ -13,12 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
-@Query(value = "SELECT u FROM User u WHERE  lower(u.email) = :email  and (u.isDisabled=false or u.isDisabled =null)")
+@Query(value = "SELECT u FROM User u WHERE  lower(u.email) = :email")
 	Optional<User> findByEmail(@Param("email") String email);
 
-
-
-
-//	@Query(value = "SELECT u FROM User u WHERE  lower(u.email) = :email")
-//	Page<User> findByEmail(@Param("email") String email);
 }
