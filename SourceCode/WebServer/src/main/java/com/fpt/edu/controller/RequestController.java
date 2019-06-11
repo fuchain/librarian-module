@@ -5,6 +5,7 @@ import com.fpt.edu.common.RequestQueueSimulate.Message;
 import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
 import com.fpt.edu.common.RequestQueueSimulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
+import org.springframework.http.MediaType;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.exception.*;
 import com.fpt.edu.services.*;
@@ -15,8 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -828,5 +834,31 @@ public class RequestController extends BaseController {
 		Request returnRequest = matching.getReturnerRequest();
 		returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
 		requestServices.updateRequest(returnRequest);
+	}
+
+	@ApiOperation("Receiver rejects to receive book")
+	@PostMapping(value = "/reject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> rejectBook(@RequestParam("file") MultipartFile file,
+											 @RequestParam("matching_id") Long matchingId,
+											 @RequestParam("reason") String reason) throws IOException {
+
+		// Upload image file to AWS S3
+
+		// Hash image file
+
+		// Submit transaction to BC
+
+		// Notify returner that receiver rejected the book
+
+		// Update matching status to 'Completed'
+
+		// Handle borrow request
+
+		// Handle return request
+
+		// Check reject count of the book
+
+		JSONObject jsonResult = new JSONObject();
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
 }
