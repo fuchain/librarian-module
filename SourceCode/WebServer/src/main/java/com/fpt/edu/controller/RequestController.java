@@ -684,7 +684,7 @@ public class RequestController extends BaseController {
 	}
 
 	@ApiOperation(value = "User cancels manually returning request", response = String.class)
-	@PutMapping(value = "/manually/cancel", produces = Constant.APPLICATION_JSON)
+	@PutMapping(value = "/cancel", produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<String> removeRequestManually(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
 		User sender = userServices.getUserByEmail(principal.getName());
@@ -712,9 +712,11 @@ public class RequestController extends BaseController {
 		}
 
 		// Update transfer status of book
-		Book book = request.getBook();
-		book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
-		bookServices.updateBook(book);
+		if (request.getType() == ERequestType.RETURNING.getValue()) {
+			Book book = request.getBook();
+			book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+			bookServices.updateBook(book);
+		}
 
 		//Return response to client
 		jsonResult.put("message", "Cancel request successfully");
@@ -727,6 +729,8 @@ public class RequestController extends BaseController {
 			request.setStatus(ERequestStatus.CANCELED.getValue());
 			requestServices.updateRequest(request);
 
+			// Remove request out of the queue
+			requestQueueManager.removeRequestOutTheQueue(request);
 		} else if (request.getStatus() == ERequestStatus.MATCHING.getValue()) {
 			// Update matching status to 'CANCELED'
 			Matching matching;
@@ -750,6 +754,9 @@ public class RequestController extends BaseController {
 			// Update paired request status from 'MATCHING' to 'PENDING'
 			pairedRequest.setStatus(ERequestStatus.PENDING.getValue());
 			requestServices.updateRequest(pairedRequest);
+
+			// Find the match for paired request.
+			pairRequest(pairedRequest);
 
 			// Update request status to 'CANCELED'
 			request.setStatus(ERequestStatus.CANCELED.getValue());
