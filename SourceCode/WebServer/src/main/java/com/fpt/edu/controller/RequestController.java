@@ -99,8 +99,7 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Create a book request", response = String.class)
 	@PostMapping("")
 	@Transactional
-	public ResponseEntity<String> requestBook(@RequestBody String body, Principal principal) throws EntityNotFoundException,
-		TypeNotSupportedException, EntityAldreayExisted, NotFoundException {
+	public ResponseEntity<String> requestBook(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
 		User user = userServices.getUserByEmail(principal.getName());
 
@@ -144,18 +143,26 @@ public class RequestController extends BaseController {
 	}
 
 	private Request getBorrowingRequest(int type, User user, String bookName)
-		throws EntityNotFoundException, EntityAldreayExisted {
+		throws Exception {
 		// Get book detail object from DB
 		BookDetail bookDetail = bookDetailsServices.getBookDetailByName(bookName);
 		if (bookDetail == null) {
 			throw new EntityNotFoundException("Book name: " + bookName + " not found");
 		}
 
-		//check existed request based on request type, user id, book detail, with request status is not completed
+		// Check existed request based on request type, user id, book detail, with request status is not completed
 		boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
 			bookDetail.getId(), (long) 0);
 		if (existed) {
 			throw new EntityAldreayExisted("Request's already existed");
+		}
+
+		// Check user is making a request to borrow books that the user currently has
+		List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
+		for (Book b : currentBookList) {
+			if (b.getBookDetail().getName().equals(bookName)) {
+				throw new Exception("You currently have " + bookName + ". You cannot make a borrow request for this book");
+			}
 		}
 
 		//create a request and fill data
