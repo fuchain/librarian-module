@@ -5,6 +5,7 @@ import com.fpt.edu.common.*;
 import com.fpt.edu.common.RequestQueueSimulate.Message;
 import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
 import com.fpt.edu.common.RequestQueueSimulate.RequestQueueManager;
+import com.fpt.edu.common.helper.ImageHelper;
 import com.fpt.edu.constant.Constant;
 import org.springframework.http.MediaType;
 import com.fpt.edu.entities.*;
@@ -886,9 +887,11 @@ public class RequestController extends BaseController {
 		if (!isImageFile) {
 			throw new Exception("File is not a image");
 		}
-//		String fileUrl = utils.uploadFile(multipartFile);
+		String fileUrl = utils.uploadFile(multipartFile);
 
 		// Hash image file
+//		String hashValue = ImageHelper.hashFromUrl(fileUrl);
+		String hashValue = ImageHelper.hashFromUrl("https://fpt-library-modules.s3-ap-southeast-1.amazonaws.com/1560318639453-1.png");
 
 		// Init data so submit transaction to BC
 		Book book = matching.getBook();
@@ -902,9 +905,6 @@ public class RequestController extends BaseController {
 		// Set default value for response
 		jsonResult.put("message", "failed to submit transaction");
 		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
-
-		// Update current_keeper
-		book.setUser(receiver);
 
 		// Submit transaction to BC
 		BigchainTransactionServices services = new BigchainTransactionServices();
@@ -926,7 +926,9 @@ public class RequestController extends BaseController {
 
 				// Handle return request
 				// If reject count < 5
+				//increaseRejectCount
 				// If reject count > 5
+				//isRejectCountOver()
 
 				// Override value in response
 				jsonResult.put("message", "confirm book transfer successfully");
@@ -963,6 +965,9 @@ public class RequestController extends BaseController {
 				return new ResponseEntity<>(jsonResult, HttpStatus.OK);
 			}
 		}
+
+//		JSONObject jsonResult = new JSONObject();
+//		return new ResponseEntity<>(jsonResult, HttpStatus.OK);
 	}
 
 	// Check if the file is an image or not
