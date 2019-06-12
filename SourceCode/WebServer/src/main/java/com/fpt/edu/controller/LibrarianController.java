@@ -1,11 +1,9 @@
 package com.fpt.edu.controller;
 
-import com.bigchaindb.constants.Operations;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.entities.User;
-import com.fpt.edu.services.BigchainTransactionServices;
 import com.fpt.edu.services.BookDetailsServices;
 import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
@@ -28,17 +26,14 @@ public class LibrarianController extends BaseController {
 	private final UserServices userServices;
 	private final BookDetailsServices bookDetailsServices;
 	private final BookServices bookServices;
-	private final BigchainTransactionServices bigchainTransactionServices;
 
 	@Autowired
 	public LibrarianController(UserServices userServices,
 	                           BookDetailsServices bookDetailsServices,
-	                           BookServices bookServices,
-	                           BigchainTransactionServices bigchainTransactionServices) {
+	                           BookServices bookServices) {
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
 		this.bookServices = bookServices;
-		this.bigchainTransactionServices = bigchainTransactionServices;
 
 	}
 
@@ -87,13 +82,13 @@ public class LibrarianController extends BaseController {
 		Pageable pageable = PageRequest.of(page - 1, size);
 		List<BookDetail> bookDetailList = bookDetailsServices.getAllBookDetails(pageable);
 		JSONArray arrResult = new JSONArray();
-		for (int i = 0; i < bookDetailList.size(); i++) {
+		for (BookDetail bookDetail : bookDetailList) {
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put(Constant.ID,bookDetailList.get(i).getId());
-			jsonObject.put(Constant.NAME,bookDetailList.get(i).getName());
-			jsonObject.put(Constant.UPDATE_DATE,String.valueOf(bookDetailList.get(i).getUpdateDate().getTime()/1000));
-			jsonObject.put(Constant.CREATE_DATE,String.valueOf(bookDetailList.get(i).getUpdateDate().getTime()/1000));
-			jsonObject.put("bookInstanceCount",bookDetailList.get(i).getBooks().size());
+			jsonObject.put(Constant.ID, bookDetail.getId());
+			jsonObject.put(Constant.NAME, bookDetail.getName());
+			jsonObject.put(Constant.UPDATE_DATE, String.valueOf(bookDetail.getUpdateDate().getTime() / 1000));
+			jsonObject.put(Constant.CREATE_DATE, String.valueOf(bookDetail.getUpdateDate().getTime() / 1000));
+			jsonObject.put("bookInstanceCount", bookDetail.getBooks().size());
 			arrResult.put(jsonObject);
 		}
 		return new ResponseEntity<>(arrResult.toString(), HttpStatus.OK);
@@ -128,11 +123,7 @@ public class LibrarianController extends BaseController {
 		@PathVariable("book_id") Long bookId
 	) throws Exception {
 		Book book = bookServices.getBookById(bookId);
-		book.setBcTransactions(
-			bigchainTransactionServices.getTransactionsByAssetId(
-				book.getAssetId(),
-				Operations.TRANSFER
-			));
+		bookServices.getListTransactionsFromBigchain(book);
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
 }
