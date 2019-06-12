@@ -2,17 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('init') {
+        stage('Initial') {
             steps {
                 script {
                     def scmVars = checkout scm
                     env.MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
-
-                    echo "Previous git commit: ${env.MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
                 }
             }
         }
-        stage('build-webapp-staging') {
+        stage('Build WebApp') {
             when {
                 expression {
                     matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebServer'")
@@ -23,7 +21,7 @@ pipeline {
                 build 'webapp-staging'
             }
         }
-        stage('build-webserver-staging') {
+        stage('Build Server') {
             when {
                 expression {
                     matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebApp'")
