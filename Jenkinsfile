@@ -2,6 +2,14 @@ pipeline {
     agent any
 
     stages {
+        stage('init') {
+            steps {
+                script {
+                    def scmVars = checkout scm
+                    env.MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
+                }
+            }
+        }
         stage('build-webapp-staging') {
             when {
                 expression {
