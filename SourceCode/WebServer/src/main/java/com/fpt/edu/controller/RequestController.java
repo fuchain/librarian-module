@@ -428,10 +428,15 @@ public class RequestController extends BaseController {
 				callback.set(true);
 			},
 			(transaction, response) -> { //failed
-				// Delete request + matching
-				matchingServices.deleteMatching(matching.getId());
-				requestServices.deleteRequest(matching.getReturnerRequest().getId());
-				requestServices.deleteRequest(matching.getBorrowerRequest().getId());
+				// Update request + matching status to 'Canceled'
+				matching.setStatus(EMatchingStatus.CANCELED.getValue());
+				matchingServices.updateMatching(matching);
+
+				returnerRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				receiverRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				requestServices.updateRequest(returnerRequest);
+				requestServices.updateRequest(receiverRequest);
+
 
 				// Update user in book
 				book.setUser(returner);
@@ -590,16 +595,20 @@ public class RequestController extends BaseController {
 		}
 
 		// Check returner returns book for himself or not
-		if (matching.getReturnerRequest().getUser().getId().equals(receiver.getId())) {
-			throw new Exception("Returner id: " + matching.getReturnerRequest().getId() + " can not return for himself");
+		Request returnRequest = matching.getReturnerRequest();
+		if (returnRequest.getUser().getId().equals(receiver.getId())) {
+			throw new Exception("Returner id: " + returnRequest.getId() + " can not return for himself");
 		}
 
 		// Check expired time of pin
 		long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
 		if (duration > Constant.PIN_EXPIRED_MINUTE) {
-			// Delete returning request + matching
-			matchingServices.deleteMatching(matching.getId());
-			requestServices.deleteRequest(matching.getReturnerRequest().getId());
+			// Update returning request + matching status to 'Canceled'
+			matching.setStatus(ERequestStatus.CANCELED.getValue());
+			matchingServices.updateMatching(matching);
+
+			returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+			requestServices.updateRequest(returnRequest);
 
 			throw new PinExpiredException("Pin is expired");
 		}
@@ -630,16 +639,20 @@ public class RequestController extends BaseController {
 		}
 
 		// Check returner returns book for himself or not
-		if (matching.getReturnerRequest().getUser().getId().equals(receiver.getId())) {
-			throw new Exception("Returner id: " + matching.getReturnerRequest().getId() + " can not return for himself");
+		Request returnRequest = matching.getReturnerRequest();
+		if (returnRequest.getUser().getId().equals(receiver.getId())) {
+			throw new Exception("Returner id: " + returnRequest.getId() + " can not return for himself");
 		}
 
 		// Check expired time of pin
 		long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
 		if (duration > Constant.PIN_EXPIRED_MINUTE) {
-			// Delete returning request + matching
-			matchingServices.deleteMatching(matching.getId());
-			requestServices.deleteRequest(matching.getReturnerRequest().getId());
+			// Update returning request + matching status to 'Canceled'
+			matching.setStatus(EMatchingStatus.CANCELED.getValue());
+			matchingServices.updateMatching(matching);
+
+			returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+			requestServices.updateRequest(returnRequest);
 
 			throw new PinExpiredException("Pin is expired");
 		}
@@ -680,6 +693,8 @@ public class RequestController extends BaseController {
 	private JSONObject submitTxToBC(Matching matching, User receiver) throws Exception {
 		// Init data to submit transaction to BlockChain
 		Book book = matching.getBook();
+		Request returnRequest = matching.getReturnerRequest();
+		Request receiveRequest = matching.getBorrowerRequest();
 		User returner = matching.getReturnerRequest().getUser();
 		AtomicBoolean callback = new AtomicBoolean(false);
 		JSONObject jsonResult = new JSONObject();
@@ -721,10 +736,14 @@ public class RequestController extends BaseController {
 
 				callback.set(true);
 			}, (transaction, response) -> { // failed
-				// Delete request + matching
-				matchingServices.deleteMatching(matching.getId());
-				requestServices.deleteRequest(matching.getReturnerRequest().getId());
-				requestServices.deleteRequest(matching.getBorrowerRequest().getId());
+				// Update request + matching status to 'Canceled'
+				matching.setStatus(EMatchingStatus.CANCELED.getValue());
+				matchingServices.updateMatching(matching);
+
+				returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				requestServices.updateRequest(returnRequest);
+				requestServices.updateRequest(receiveRequest);
 
 				// Update user in book
 				book.setUser(returner);
@@ -874,7 +893,7 @@ public class RequestController extends BaseController {
 		// Init data so submit transaction to BC
 		Book book = matching.getBook();
 		Request returnRequest = matching.getReturnerRequest();
-		Request borrowRequest = matching.getBorrowerRequest();
+		Request receiveRequest = matching.getBorrowerRequest();
 		User returner = returnRequest.getUser();
 		Date sendTime = new Date();
 		AtomicBoolean callback = new AtomicBoolean(false);
@@ -902,8 +921,8 @@ public class RequestController extends BaseController {
 				matchingServices.updateMatching(matching);
 
 				// Update borrow request status to 'Completed'
-				borrowRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-				requestServices.updateRequest(borrowRequest);
+				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				requestServices.updateRequest(receiveRequest);
 
 				// Handle return request
 				// If reject count < 5
@@ -916,10 +935,14 @@ public class RequestController extends BaseController {
 				callback.set(true);
 			},
 			(transaction, response) -> { // failed
-				// Delete request + matching
-				matchingServices.deleteMatching(matching.getId());
-				requestServices.deleteRequest(matching.getReturnerRequest().getId());
-				requestServices.deleteRequest(matching.getBorrowerRequest().getId());
+				// Update request + matching status to 'Canceled'
+				matching.setStatus(EMatchingStatus.CANCELED.getValue());
+				matchingServices.updateMatching(matching);
+
+				returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				requestServices.updateRequest(returnRequest);
+				requestServices.updateRequest(receiveRequest);
 
 				// Update user in book
 				book.setUser(returner);
