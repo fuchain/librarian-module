@@ -55,7 +55,7 @@ public class BookServices {
 		return bookRepository.findBookListByBookDetailId(bookDetailId, pageable).getContent();
 	}
 
-	public List<Transaction> getListTransaction(Book book) throws Exception {
+	public List<Transaction> getListTransactionsFromBigchain(Book book) throws Exception {
 		book.setBcTransactionList(
 			bigchainTransactionServices.getTransactionsByAssetId(
 				book.getAssetId(), Operations.TRANSFER
@@ -64,7 +64,7 @@ public class BookServices {
 		return book.getBcTransactionList();
 	}
 
-	public Transaction getLastTransaction(Book book) throws Exception {
+	public Transaction getLastTransactionFromBigchain(Book book) throws Exception {
 		book.setBcLastTransaction(bigchainTransactionServices.getTransactionById(book.getLastTxId()));
 		return book.getBcLastTransaction();
 	}
