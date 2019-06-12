@@ -36,5 +36,5 @@ EXPOSE 3000
 
 ENTRYPOINT ["node","./dist/server.js"]
 
-# docker build -t librarian-betaserver .
-# docker run -d --name librarian-betaserver -p 5002:3000 librarian-betaserver:latest
+# docker build -t librarian-nodeserver .
+# docker run -d --name librarian-nodeserver -p 5002:3000 librarian-nodeserver:latest
