@@ -89,5 +89,5 @@ export default {
   put: doPutRequest,
   delete: doDeleteRequest,
   baseUrl: endpoints.baseUrl,
-  betaUrl: endpoints.betaUrl
+  nodeUrl: endpoints.nodeUrl
 };

@@ -136,7 +136,7 @@ export default {
     this.$vs.loading();
 
     this.$http
-      .get(`${this.$http.betaUrl}/reviews`)
+      .get(`${this.$http.nodeUrl}/reviews`)
       .then(response => {
         const data = response.data;
 
