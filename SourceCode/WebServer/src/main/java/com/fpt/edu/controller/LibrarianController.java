@@ -128,11 +128,7 @@ public class LibrarianController extends BaseController {
 		@PathVariable("book_id") Long bookId
 	) throws Exception {
 		Book book = bookServices.getBookById(bookId);
-		book.setBcTransactions(
-			bigchainTransactionServices.getTransactionsByAssetId(
-				book.getAssetId(),
-				Operations.TRANSFER
-			));
+		book.getTransactionList();
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
 }
