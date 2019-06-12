@@ -22,5 +22,5 @@ public class Constant {
 	public static final int DEFAULT_OFFSET = 20;
 	public static final String AUTHORITIES_HEADER = "roles";
 	public static final String ROLES_LIBRARIAN = "librarian";
-	public static final int BIGCHAINDB_REQUEST_TIMEOUT = 30;
+	public static final int BIGCHAINDB_REQUEST_TIMEOUT = 60;
 }

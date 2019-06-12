@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
 	private String bucketName;
 	private AmazonS3 s3Client;
+	private static final String SHA_256_HASH = "SHA-256";
 
 	@Autowired
 	public Utils(AmazonS3 s3Client, @Value("${aws.s3.bucket.name}") String bucketName) {
@@ -155,6 +156,7 @@ public class Utils {
 		S3Object s3Object = s3Client.getObject(amazonS3URI.getBucket(), amazonS3URI.getKey());
 		S3ObjectInputStream inputStream = s3Object.getObjectContent();
 		InputStreamResource resource = new InputStreamResource(inputStream.getDelegateStream());
+
 		return resource;
 	}
 

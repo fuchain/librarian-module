@@ -25,11 +25,21 @@ public class Transaction extends AbstractTimestampEntity implements Serializable
 	@JoinColumn(name = "returner_id")
 	private User returner;
 
+	private int type;
+
 	@Column(name = "bc_transaction_id")
 	private String bcTxId;
 
 	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "transaction")
 	private List<Image> images;
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
 
 	public Long getId() {
 		return id;

@@ -7,6 +7,8 @@ import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
 import com.fpt.edu.common.RequestQueueSimulate.RequestQueueManager;
 import com.fpt.edu.common.helper.ImageHelper;
 import com.fpt.edu.constant.Constant;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.exception.*;
@@ -865,11 +867,11 @@ public class RequestController extends BaseController {
 	}
 
 	@ApiOperation(value = "Receiver rejects to receive book", response = JSONObject.class)
-	@PostMapping(value = "/reject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<JSONObject> rejectBook(@RequestParam("file") MultipartFile multipartFile,
-												 @RequestParam("matching_id") Long matchingId,
-												 @RequestParam("reason") String reason,
-												 Principal principal) throws Exception {
+	@PostMapping(value = "/reject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> rejectBook(@RequestParam("file") MultipartFile multipartFile,
+											 @RequestParam("matching_id") Long matchingId,
+											 @RequestParam("reason") String reason,
+											 Principal principal) throws Exception {
 		// Get receiver information
 		User receiver = userServices.getUserByEmail(principal.getName());
 
@@ -886,13 +888,13 @@ public class RequestController extends BaseController {
 		File imageFile = utils.convertMultiPartToFile(multipartFile);
 		boolean isImageFile = checkImageFile(imageFile);
 		if (!isImageFile) {
-			throw new Exception("File is not a image");
+			throw new Exception("File is not an image");
 		}
-//		String fileUrl = utils.uploadFile(multipartFile);
+		String fileUrl = utils.uploadFile(multipartFile);
 
-		// Hash image file
-//		String hashValue = ImageHelper.hashFromUrl(fileUrl);
-		String hashValue = ImageHelper.hashFromUrl("https://fpt-library-modules.s3-ap-southeast-1.amazonaws.com/1560318639453-1.png");
+		// Get hash value
+		InputStreamResource resource = utils.downloadFileTos3bucket(fileUrl);
+		String hashValue = ImageHelper.hashFromUrl(resource);
 
 		// Init data so submit transaction to BC
 		Book book = matching.getBook();
@@ -914,29 +916,46 @@ public class RequestController extends BaseController {
 		book.setRejectReason(reason);
 		book.setRejectImage(hashValue);
 
+		// Update reject count
+		book.increaseRejectCount();
+
 		// Submit transaction to BC
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
 			book.getLastTxId(),
 			book.getAssetId(), book.getMetadata(),
-			returner.getEmail(), receiver.getEmail(),
+			returner.getEmail(), returner.getEmail(),
 			(transaction, response) -> { // success
+
+				// Update last transaction id for book
+				String trasactionId = transaction.getId();
+				book.setLastTxId(trasactionId);
 
 				// Notify returner that receiver rejected the book
 
-				// Update matching status to 'Completed'
-//				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
-//				matchingServices.updateMatching(matching);
-//
-//				// Update borrow request status to 'Completed'
-//				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-//				requestServices.updateRequest(receiveRequest);
+				// Update matching status to 'Confirmed'
+				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+				matchingServices.updateMatching(matching);
 
-				// Handle return request
-				// If reject count < 5
-				//increaseRejectCount
-				// If reject count > 5
-				//isRejectCountOver()
+				// Update borrow request status to 'Completed'
+				returnRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				requestServices.updateRequest(returnRequest);
+				requestServices.updateRequest(receiveRequest);
+
+				// Update transfer status of book
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+				bookServices.updateBook(book);
+
+				//insert a transaction to DB Postgresql
+				Transaction tran = new Transaction();
+				tran.setBook(book);
+				tran.setType(ETransactionType.REJECTED.getValue());
+				transactionServices.insertTransaction(tran);
+
+				if (book.isRejectCountOver()) {// If reject count > 5
+
+				}
 
 				// Override value in response
 				jsonResult.put("message", "confirm book transfer successfully");
@@ -946,18 +965,18 @@ public class RequestController extends BaseController {
 			},
 			(transaction, response) -> { // failed
 				// Update request + matching status to 'Canceled'
-//				matching.setStatus(EMatchingStatus.CANCELED.getValue());
-//				matchingServices.updateMatching(matching);
-//
-//				returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
-//				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
-//				requestServices.updateRequest(returnRequest);
-//				requestServices.updateRequest(receiveRequest);
-//
-//				// Update user in book
-//				book.setUser(returner);
-//				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
-//				bookServices.updateBook(book);
+				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+				matchingServices.updateMatching(matching);
+
+				returnRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				requestServices.updateRequest(returnRequest);
+				requestServices.updateRequest(receiveRequest);
+
+				// Update user in book
+				book.setUser(returner);
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+				bookServices.updateBook(book);
 
 				callback.set(true);
 			}
@@ -970,12 +989,9 @@ public class RequestController extends BaseController {
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
 			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
-				return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 			}
 		}
-
-//		JSONObject jsonResult = new JSONObject();
-//		return new ResponseEntity<>(jsonResult, HttpStatus.OK);
 	}
 
 	// Check if the file is an image or not
