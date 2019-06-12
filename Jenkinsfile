@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Initial') {
+        stage('Initial environment') {
             steps {
                 script {
                     def scmVars = checkout scm
@@ -13,6 +13,17 @@ pipeline {
         stage('Build WebApp') {
             when {
                 expression {
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebApp'")
+                    return !matches
+                }
+            }
+            steps {
+                build 'webapp-staging'
+            }
+        }
+        stage('Build Java') {
+            when {
+                expression {
                     matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebServer'")
                     return !matches
                 }
@@ -21,15 +32,15 @@ pipeline {
                 build 'webserver-staging'
             }
         }
-        stage('Build Server') {
+        stage('Build Node') {
             when {
                 expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebApp'")
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/NodeServer'")
                     return !matches
                 }
             }
             steps {
-                build 'webapp-staging'
+                build 'nodeserver-staging'
             }
         }
     }

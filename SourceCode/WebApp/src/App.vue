@@ -75,7 +75,7 @@ export default {
       vm,
       info
     };
-    this.$http.post(`${this.$http.betaUrl}/logs`, {
+    this.$http.post(`${this.$http.nodeUrl}/logs`, {
       type: "error",
       source: "webapp",
       metadata: JSON.stringify(metadata)
