@@ -8,7 +8,6 @@ pipeline {
                     def scmVars = checkout scm
                     env.MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
 
-                    echo "Build branch: ${env.BRANCH_NAME}"
                     echo "Previous git commit: ${env.MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
                 }
             }
