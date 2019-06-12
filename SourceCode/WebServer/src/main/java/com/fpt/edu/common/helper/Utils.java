@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -146,13 +148,14 @@ public class Utils {
 
 	}
 
-	public String downloadFileTos3bucket(String fileUrl) throws URISyntaxException {
+	// not completed yet
+	public InputStreamResource downloadFileTos3bucket(String fileUrl) throws URISyntaxException {
 		URI fileToBeDownloaded = new URI(fileUrl);
 		AmazonS3URI amazonS3URI = new AmazonS3URI(fileToBeDownloaded);
 		S3Object s3Object = s3Client.getObject(amazonS3URI.getBucket(), amazonS3URI.getKey());
 		S3ObjectInputStream inputStream = s3Object.getObjectContent();
-//		return FileUtils
-		return null;
+		InputStreamResource resource = new InputStreamResource(inputStream.getDelegateStream());
+		return resource;
 	}
 
 }
