@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -887,7 +888,7 @@ public class RequestController extends BaseController {
 		if (!isImageFile) {
 			throw new Exception("File is not a image");
 		}
-		String fileUrl = utils.uploadFile(multipartFile);
+//		String fileUrl = utils.uploadFile(multipartFile);
 
 		// Hash image file
 //		String hashValue = ImageHelper.hashFromUrl(fileUrl);
@@ -906,6 +907,13 @@ public class RequestController extends BaseController {
 		jsonResult.put("message", "failed to submit transaction");
 		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
 
+		com.bigchaindb.model.Transaction lastTran = bookServices.getLastTransactionFromBigchain(book);
+		bookServices.getAssetFromBigchain(book, lastTran);
+		bookServices.getMetadataFromBigchain(book, lastTran);
+
+		book.setRejectReason(reason);
+		book.setRejectImage(hashValue);
+
 		// Submit transaction to BC
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
@@ -917,12 +925,12 @@ public class RequestController extends BaseController {
 				// Notify returner that receiver rejected the book
 
 				// Update matching status to 'Completed'
-				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
-				matchingServices.updateMatching(matching);
-
-				// Update borrow request status to 'Completed'
-				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-				requestServices.updateRequest(receiveRequest);
+//				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+//				matchingServices.updateMatching(matching);
+//
+//				// Update borrow request status to 'Completed'
+//				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+//				requestServices.updateRequest(receiveRequest);
 
 				// Handle return request
 				// If reject count < 5
@@ -938,18 +946,18 @@ public class RequestController extends BaseController {
 			},
 			(transaction, response) -> { // failed
 				// Update request + matching status to 'Canceled'
-				matching.setStatus(EMatchingStatus.CANCELED.getValue());
-				matchingServices.updateMatching(matching);
-
-				returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
-				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
-				requestServices.updateRequest(returnRequest);
-				requestServices.updateRequest(receiveRequest);
-
-				// Update user in book
-				book.setUser(returner);
-				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
-				bookServices.updateBook(book);
+//				matching.setStatus(EMatchingStatus.CANCELED.getValue());
+//				matchingServices.updateMatching(matching);
+//
+//				returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+//				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
+//				requestServices.updateRequest(returnRequest);
+//				requestServices.updateRequest(receiveRequest);
+//
+//				// Update user in book
+//				book.setUser(returner);
+//				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+//				bookServices.updateBook(book);
 
 				callback.set(true);
 			}
