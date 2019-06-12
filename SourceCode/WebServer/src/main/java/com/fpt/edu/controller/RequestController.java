@@ -1,5 +1,6 @@
 package com.fpt.edu.controller;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.fpt.edu.common.*;
 import com.fpt.edu.common.RequestQueueSimulate.Message;
 import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
@@ -18,7 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.MimetypesFileTypeMap;
+import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,6 +44,9 @@ public class RequestController extends BaseController {
 	private final TransactionServices transactionServices;
 	private final PublishSubscribe publishSubscribe;
 	private final RequestQueueManager requestQueueManager;
+
+	@Autowired
+	private AmazonS3 s3Client;
 
 	@Autowired
 	public RequestController(RequestServices requestServices, UserServices userServices,
@@ -836,29 +843,115 @@ public class RequestController extends BaseController {
 		requestServices.updateRequest(returnRequest);
 	}
 
-	@ApiOperation("Receiver rejects to receive book")
+	@ApiOperation(value = "Receiver rejects to receive book", response = JSONObject.class)
 	@PostMapping(value = "/reject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> rejectBook(@RequestParam("file") MultipartFile file,
-											 @RequestParam("matching_id") Long matchingId,
-											 @RequestParam("reason") String reason) throws IOException {
+	public ResponseEntity<JSONObject> rejectBook(@RequestParam("file") MultipartFile multipartFile,
+												 @RequestParam("matching_id") Long matchingId,
+												 @RequestParam("reason") String reason,
+												 Principal principal) throws Exception {
+		// Get receiver information
+		User receiver = userServices.getUserByEmail(principal.getName());
+
+		// Check receiver is the sender
+		Matching matching = matchingServices.getMatchingById(matchingId);
+		if (matching == null) {
+			throw new Exception("Matching id: " + matchingId + " not found");
+		}
+		if (!matching.getBorrowerRequest().getUser().getId().equals(receiver.getId())) {
+			throw new Exception("User id: " + receiver.getId() + " is not the receiver");
+		}
 
 		// Upload image file to AWS S3
+		File imageFile = utils.convertMultiPartToFile(multipartFile);
+		boolean isImageFile = checkImageFile(imageFile);
+		if (!isImageFile) {
+			throw new Exception("File is not a image");
+		}
+//		String fileUrl = utils.uploadFile(multipartFile);
 
 		// Hash image file
 
-		// Submit transaction to BC
-
-		// Notify returner that receiver rejected the book
-
-		// Update matching status to 'Completed'
-
-		// Handle borrow request
-
-		// Handle return request
-
-		// Check reject count of the book
-
+		// Init data so submit transaction to BC
+		Book book = matching.getBook();
+		Request returnRequest = matching.getReturnerRequest();
+		Request borrowRequest = matching.getBorrowerRequest();
+		User returner = returnRequest.getUser();
+		Date sendTime = new Date();
+		AtomicBoolean callback = new AtomicBoolean(false);
 		JSONObject jsonResult = new JSONObject();
-		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		// Update current_keeper
+		book.setUser(receiver);
+
+		// Submit transaction to BC
+		BigchainTransactionServices services = new BigchainTransactionServices();
+		services.doTransfer(
+			book.getLastTxId(),
+			book.getAssetId(), book.getMetadata(),
+			returner.getEmail(), receiver.getEmail(),
+			(transaction, response) -> { // success
+
+				// Notify returner that receiver rejected the book
+
+				// Update matching status to 'Completed'
+				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+				matchingServices.updateMatching(matching);
+
+				// Update borrow request status to 'Completed'
+				borrowRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				requestServices.updateRequest(borrowRequest);
+
+				// Handle return request
+				// If reject count < 5
+				// If reject count > 5
+
+				// Override value in response
+				jsonResult.put("message", "confirm book transfer successfully");
+				jsonResult.put("status_code", HttpStatus.OK);
+
+				callback.set(true);
+			},
+			(transaction, response) -> { // failed
+				// Delete request + matching
+				matchingServices.deleteMatching(matching.getId());
+				requestServices.deleteRequest(matching.getReturnerRequest().getId());
+				requestServices.deleteRequest(matching.getBorrowerRequest().getId());
+
+				// Update user in book
+				book.setUser(returner);
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+				bookServices.updateBook(book);
+
+				callback.set(true);
+			}
+		);
+
+		// Wait until the BigchainTransactionServices has callback or request is timeout
+		Date now;
+		while (true) {
+			now = new Date();
+			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+
+			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
+				return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+			}
+		}
+	}
+
+	// Check if the file is an image or not
+	private boolean checkImageFile(File imageFile) {
+		try {
+			BufferedImage image = ImageIO.read(imageFile);
+			if (image == null) {
+				return false;
+			}
+		} catch (IOException ex) {
+			return false;
+		}
+		return true;
 	}
 }

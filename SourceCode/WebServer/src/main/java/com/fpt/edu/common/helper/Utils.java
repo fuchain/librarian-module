@@ -112,7 +112,7 @@ public class Utils {
 	}
 
 
-	private File convertMultiPartToFile(MultipartFile file) throws IOException {
+	public File convertMultiPartToFile(MultipartFile file) throws IOException {
 		File convFile = new File(generateFileName(file));
 		FileOutputStream fos = new FileOutputStream(convFile);
 		fos.write(file.getBytes());
