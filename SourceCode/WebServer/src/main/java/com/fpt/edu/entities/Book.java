@@ -143,26 +143,37 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     }
 
 	public int getRejectCount()  {
-		return Integer.parseInt(this.getMetadata().get(BC_REJECT_COUNT));
+		String strRejectCount = this.getMetadata().get(BC_REJECT_COUNT);
+		return strRejectCount == null ? BC_MIN_REJECT_COUNT : Integer.parseInt(strRejectCount);
 	}
 
-	public boolean isRejectCountOver() {
+	public boolean isLastRejectCountOver() {
 		return this.getRejectCount() >= BC_MAX_REJECT_COUNT;
 	}
 
-	public void increaseRejectCount() {
+	public void increaseLastRejectCount() {
 		this.getMetadata().put(
 			BC_REJECT_COUNT,
 			String.valueOf(this.getRejectCount() + 1)
 		);
 	}
 
-	public void setRejectReason(String reason) {
+	public void setLastRejectReason(String reason) {
     	this.getMetadata().put(BC_REJECT_REASON, reason);
 	}
 
-	public void setRejectImage(String hash) {
+	public String getLastRejectReason() {
+		String metadata = this.getMetadata().get(BC_REJECT_REASON);
+		return metadata == null ? "" : metadata;
+	}
+
+	public void setLastRejectImage(String hash) {
 		this.getMetadata().put(BC_IMAGE_HASH, hash);
+	}
+
+	public String getLastImageHash() {
+		String imgHash = this.getMetadata().get(BC_IMAGE_HASH);
+		return imgHash == null ? "" : imgHash;
 	}
 
 	public String getAssetId() {
