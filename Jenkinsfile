@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        node {
-            label 'common-ws-agent'
-            customWorkspace 'librarian-staging'
-        }
-    }
+    agent any
 
     stages {
         stage('build-webapp-staging') {
