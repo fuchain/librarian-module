@@ -130,7 +130,7 @@ export default {
       setTimeout(
         async function() {
           try {
-            await this.$http.post(`${this.$http.betaUrl}/reviews`, data);
+            await this.$http.post(`${this.$http.nodeUrl}/reviews`, data);
           } catch (e) {
             // Catch error
             console.log(e);

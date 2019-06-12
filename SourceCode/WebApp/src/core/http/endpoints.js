@@ -6,5 +6,5 @@ const API_BETA_URL =
 
 export default {
   baseUrl: API_BASE_URL + "/api/v1",
-  betaUrl: API_BETA_URL + "/api/v1"
+  nodeUrl: API_BETA_URL + "/api/v1"
 };
