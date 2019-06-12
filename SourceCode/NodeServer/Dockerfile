@@ -9,12 +9,9 @@ RUN mkdir -p /root/src/app
 WORKDIR /root/src/app
 ENV PATH /root/src/app/node_modules/.bin:$PATH
 
-# Copy package.json and yarn.lock
 COPY package.json yarn.lock ./
-# Fetch dependencies
 RUN yarn --pure-lockfile
 
-# Copy source code and build
 COPY . .
 RUN yarn build
 
@@ -39,8 +36,5 @@ EXPOSE 3000
 
 ENTRYPOINT ["node","./dist/server.js"]
 
-# This is docker build command: 
 # docker build -t librarian-betaserver .
-
-# This is docker run command:
 # docker run -d --name librarian-betaserver -p 5002:3000 librarian-betaserver:latest

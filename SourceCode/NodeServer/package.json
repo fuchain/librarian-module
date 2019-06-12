@@ -1,7 +1,7 @@
 {
-    "name": "beta-server",
+    "name": "node-server",
     "version": "1.0.0",
-    "description": "Beta server for Librarian Module",
+    "description": "Node server for Librarian Module",
     "main": "./src/server.js",
     "author": "Huynh Minh Tu",
     "license": "MIT",
