@@ -152,7 +152,7 @@ public class Utils {
 		S3Object s3Object = s3Client.getObject(amazonS3URI.getBucket(), amazonS3URI.getKey());
 		S3ObjectInputStream inputStream = s3Object.getObjectContent();
 //		return FileUtils
-		return null;s
+		return null;
 	}
 
 }
