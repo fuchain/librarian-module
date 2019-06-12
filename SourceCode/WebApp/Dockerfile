@@ -1,20 +1,15 @@
 FROM node:10.16.0 as builder
 
-# Create working directory
 RUN mkdir -p /root/src/app
 WORKDIR /root/src/app
 ENV PATH /root/src/app/node_modules/.bin:$PATH
 
-# Copy package.json and yarn.lock
 COPY package.json yarn.lock ./
-# Fetch dependencies
 RUN yarn --pure-lockfile
 
-# Copy source code and build
 COPY . .
 RUN yarn build
 
-# Copy files to machine
 FROM nginx:alpine
 
 WORKDIR /root/src/app
@@ -22,13 +17,9 @@ WORKDIR /root/src/app
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /root/src/app/dist /var/www/html
 
-# Datadog Log Monitoring
 LABEL "com.datadoghq.ad.check_names"='["vue"]'
 LABEL "com.datadoghq.ad.init_configs"='[{}]'
 LABEL "com.datadoghq.ad.logs"='[{"source": "vue", "service": "webapp"}]'
 
-# This is docker build command: 
 # docker build -t librarian-webapp .
-
-# This is docker run command:
 # docker run -d --name librarian-webapp -p 3000:80 librarian-webapp:latest
