@@ -1,13 +1,11 @@
 package com.fpt.edu.entities;
 
 
-import com.bigchaindb.constants.Operations;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fpt.edu.common.EBookStatus;
 import com.fpt.edu.common.EBookTransferStatus;
-import com.fpt.edu.services.BigchainTransactionServices;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -97,24 +95,24 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 		return this.assetId == null && this.lastTxId == null;
 	}
 
-	public Map<String, String> getAsset() throws Exception {
+	public void setAsset(Map<String, String> asset) {
+		this.asset = asset;
+	}
+
+	public Map<String, String> getAsset() {
 		if (this.isNew() && this.asset.isEmpty()) {
 			// This is default value of asset
 			this.asset.put(BC_BOOK_ID, String.valueOf(this.id));
-		} else if (this.asset.isEmpty()) {
-			this.getAssetFromBigchain();
 		}
 
         return this.asset;
     }
 
-	private Map<String, String> getAssetFromBigchain() throws Exception {
-		BigchainTransactionServices services = new BigchainTransactionServices();
-		com.bigchaindb.model.Transaction transaction = services.getTransactionById(this.lastTxId);
-		return (Map<String, String>) transaction.getAsset();
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 
-    public Map<String, String> getMetadata() throws Exception {
+    public Map<String, String> getMetadata() {
 		if (this.isNew() && this.metadata.isEmpty()) {
 			// These are default values of metadata
 			this.metadata.put(BC_CURRENT_KEEPER, this.user.getEmail());
@@ -123,68 +121,47 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 			this.metadata.put(BC_REJECT_COUNT, String.valueOf(BC_MIN_REJECT_COUNT));
 			this.metadata.put(BC_REJECT_REASON, "");
 			this.metadata.put(BC_IMAGE_HASH, "");
-		} else if (this.metadata.isEmpty()) {
-			this.metadata = this.getMetadataFromBigchain();
 		}
 
         return this.metadata;
     }
 
-	private Map<String, String> getMetadataFromBigchain() throws Exception {
-		BigchainTransactionServices services = new BigchainTransactionServices();
-		com.bigchaindb.model.Transaction transaction = services.getTransactionById(this.lastTxId);
-		return (Map<String, String>) transaction.getMetaData();
+	public void setBcTransactionList(List<com.bigchaindb.model.Transaction> bcTransactionList) {
+		this.bcTransactionList = bcTransactionList;
 	}
 
-	public List<com.bigchaindb.model.Transaction> getTransactionList() throws Exception {
-		if (this.bcTransactionList.isEmpty()) {
-			this.bcTransactionList = getTransactionListFromBigchain();
-		}
-
+	public List<com.bigchaindb.model.Transaction> getBcTransactionList() {
 		return this.bcTransactionList;
 	}
 
-	private List<com.bigchaindb.model.Transaction> getTransactionListFromBigchain() throws Exception {
-		BigchainTransactionServices services = new BigchainTransactionServices();
-		return services.getTransactionsByAssetId(
-			this.getAssetId(),
-			Operations.TRANSFER
-		).getTransactions();
+	public void setBcLastTransaction(com.bigchaindb.model.Transaction lastTransaction) {
+		this.bcLastTransaction = lastTransaction;
 	}
 
-	public com.bigchaindb.model.Transaction getLastTransaction() throws Exception {
-		if (this.bcLastTransaction == null) {
-			this.bcLastTransaction = getLastTransactionFromBigchain();
-		}
-
+	public com.bigchaindb.model.Transaction getBcLastTransaction() {
 		return this.bcLastTransaction;
     }
 
-	private com.bigchaindb.model.Transaction getLastTransactionFromBigchain() throws Exception {
-		BigchainTransactionServices services = new BigchainTransactionServices();
-		return services.getTransactionById(this.lastTxId);
-	}
-
-	public int getRejecCount() throws Exception {
+	public int getRejectCount()  {
 		return Integer.parseInt(this.getMetadata().get(BC_REJECT_COUNT));
 	}
 
-	public boolean isRejectCountOver() throws Exception {
-		return this.getRejecCount() >= BC_MAX_REJECT_COUNT;
+	public boolean isRejectCountOver() {
+		return this.getRejectCount() >= BC_MAX_REJECT_COUNT;
 	}
 
-	public void increaseRejectCount() throws Exception {
+	public void increaseRejectCount() {
 		this.getMetadata().put(
 			BC_REJECT_COUNT,
-			String.valueOf(this.getRejecCount() + 1)
+			String.valueOf(this.getRejectCount() + 1)
 		);
 	}
 
-	public void setRejectReason(String reason) throws Exception {
+	public void setRejectReason(String reason) {
     	this.getMetadata().put(BC_REJECT_REASON, reason);
 	}
 
-	public void setRejectImage(String hash) throws Exception {
+	public void setRejectImage(String hash) {
 		this.getMetadata().put(BC_IMAGE_HASH, hash);
 	}
 
