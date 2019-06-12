@@ -18,7 +18,7 @@ pipeline {
                 }
             }
             steps {
-                build 'webapp-staging'
+                build 'webserver-staging'
             }
         }
         stage('Build Server') {
@@ -29,7 +29,7 @@ pipeline {
                 }
             }
             steps {
-                build 'webserver-staging'
+                build 'webapp-staging'
             }
         }
     }
