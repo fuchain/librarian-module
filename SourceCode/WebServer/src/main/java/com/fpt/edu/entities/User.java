@@ -38,7 +38,7 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	private List<Book> listBooks;
 
 	@Column(name = "isDisabled")
-	private boolean isDisabled;
+	private Boolean isDisabled;
 
 	public User() {
 	}
@@ -54,11 +54,11 @@ public class User extends AbstractTimestampEntity implements Serializable {
 		return listBooks;
 	}
 
-	public boolean isDisabled() {
+	public Boolean isDisabled() {
 		return isDisabled;
 	}
 
-	public void setDisabled(boolean disabled) {
+	public void setDisabled(Boolean disabled) {
 		isDisabled = disabled;
 	}
 

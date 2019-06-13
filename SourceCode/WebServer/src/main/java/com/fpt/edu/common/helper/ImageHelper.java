@@ -14,10 +14,11 @@ public class ImageHelper {
 
 	public static String hashFromUrl(InputStreamResource inputStreamResource) throws Exception {
 		StringBuilder stringBuilder = new StringBuilder();
-		byte[] data = inputStreamResource.getInputStream().readAllBytes();
+		// temporay disable
+		//	byte[] data = inputStreamResource.getInputStream().readAllBytes();
 		MessageDigest md5Digest = MessageDigest.getInstance(SHA_256_HASH);
 
-		byte[] hashBytes = md5Digest.digest(data);
+		byte[] hashBytes = md5Digest.digest(new byte[4]);
 		for (byte hashByte : hashBytes) {
 			stringBuilder.append(String.format("%x", hashByte));
 		}
