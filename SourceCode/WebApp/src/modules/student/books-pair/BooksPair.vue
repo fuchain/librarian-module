@@ -5,7 +5,7 @@
         <vs-input size="large" class="w-full" placeholder="Mã PIN xác nhận" v-model="pin"/>
       </div>
       <div>
-        <vs-button class="w-full" @click="confirm" icon="done">Xác nhận đã nhận sách</vs-button>
+        <vs-button class="w-full" @click="verify" icon="done">Xác nhận đã nhận sách</vs-button>
       </div>
     </vx-card>
   </div>
@@ -30,6 +30,34 @@ export default {
           customTime || 500
         );
       });
+    },
+    async verify() {
+      this.$vs.loading();
+
+      this.$http
+        .put(`${this.$http.baseUrl}/requests/manually/confirm`, {
+          pin: this.pin
+        })
+        .then(response => {
+          const data = response.data;
+
+          // Log
+          console.log(data);
+        })
+        .catch(e => {
+          // Catch error
+          console.log(e);
+
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Mã PIN không hợp lệ",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     },
     async confirm() {
       this.$vs.loading();
