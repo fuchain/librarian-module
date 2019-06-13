@@ -70,7 +70,7 @@ public class BookServices {
 	}
 
 	public Map<String, String> getAssetFromBigchain(Book book, Transaction transaction) {
-		book.setAsset((Map<String, String>) transaction.getAsset());
+		book.setAsset((Map<String, String>) transaction.getAsset().getData());
 		return book.getAsset();
 	}
 

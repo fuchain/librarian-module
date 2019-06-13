@@ -1,5 +1,7 @@
 package com.fpt.edu.common.helper;
 
+import org.springframework.core.io.InputStreamResource;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -10,21 +12,14 @@ public class ImageHelper {
 
 	private static final String SHA_256_HASH = "SHA-256";
 
-	public static String hashFromUrl(String imgUrl) throws Exception {
+	public static String hashFromUrl(InputStreamResource inputStreamResource) throws Exception {
 		StringBuilder stringBuilder = new StringBuilder();
-		BufferedImage bufferedImage = ImageIO.read(new URL(imgUrl));
-
-		String imgType = imgUrl
-			.substring(imgUrl.length() - 3, imgUrl.length())
-			.toLowerCase();
-
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		ImageIO.write(bufferedImage, imgType, outputStream);
-		byte[] data = outputStream.toByteArray();
-
+		// temporay disable
+		//	byte[] data = inputStreamResource.getInputStream().readAllBytes();
 		MessageDigest md5Digest = MessageDigest.getInstance(SHA_256_HASH);
-		byte[] hashBytes = md5Digest.digest(data);
-		for (byte hashByte : hashBytes){
+
+		byte[] hashBytes = md5Digest.digest(new byte[4]);
+		for (byte hashByte : hashBytes) {
 			stringBuilder.append(String.format("%x", hashByte));
 		}
 

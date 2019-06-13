@@ -1,10 +1,15 @@
 package com.fpt.edu.controller;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.fpt.edu.common.*;
 import com.fpt.edu.common.RequestQueueSimulate.Message;
 import com.fpt.edu.common.RequestQueueSimulate.PublishSubscribe;
 import com.fpt.edu.common.RequestQueueSimulate.RequestQueueManager;
+import com.fpt.edu.common.helper.ImageHelper;
 import com.fpt.edu.constant.Constant;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.exception.*;
 import com.fpt.edu.services.*;
@@ -15,11 +20,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.MimetypesFileTypeMap;
+import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,6 +48,9 @@ public class RequestController extends BaseController {
 	private final TransactionServices transactionServices;
 	private final PublishSubscribe publishSubscribe;
 	private final RequestQueueManager requestQueueManager;
+
+	@Autowired
+	private AmazonS3 s3Client;
 
 	@Autowired
 	public RequestController(RequestServices requestServices, UserServices userServices,
@@ -112,6 +129,11 @@ public class RequestController extends BaseController {
 
 		// Fill data for request
 		if (type == ERequestType.BORROWING.getValue()) {
+			// Check user is active or not
+			if (user.isDisabled()) {
+				throw new Exception("User id: " + user.getId() + " is not active. Cannot make borrow request");
+			}
+
 			// Get book name from Request Body
 			String bookName = bodyObject.getString("book_name");
 
@@ -410,10 +432,15 @@ public class RequestController extends BaseController {
 				callback.set(true);
 			},
 			(transaction, response) -> { //failed
-				// Delete request + matching
-				matchingServices.deleteMatching(matching.getId());
-				requestServices.deleteRequest(matching.getReturnerRequest().getId());
-				requestServices.deleteRequest(matching.getBorrowerRequest().getId());
+				// Update request + matching status to 'Canceled'
+				matching.setStatus(EMatchingStatus.CANCELED.getValue());
+				matchingServices.updateMatching(matching);
+
+				returnerRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				receiverRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				requestServices.updateRequest(returnerRequest);
+				requestServices.updateRequest(receiverRequest);
+
 
 				// Update user in book
 				book.setUser(returner);
@@ -559,8 +586,11 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Receiver verify the book information", response = Book.class)
 	@GetMapping("/manually/verify")
 	public ResponseEntity<Book> verifyBookManually(@RequestParam String pin, Principal principal) throws Exception {
-		// Get returner information
+		// Check the receiver is active or not
 		User receiver = userServices.getUserByEmail(principal.getName());
+		if (receiver.isDisabled()) {
+			throw new Exception("User id: " + receiver.getId() + " is not active. Cannot make borrow request");
+		}
 
 		// Check pin from client with matching
 		Matching matching = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
@@ -569,16 +599,20 @@ public class RequestController extends BaseController {
 		}
 
 		// Check returner returns book for himself or not
-		if (matching.getReturnerRequest().getUser().getId().equals(receiver.getId())) {
-			throw new Exception("Returner id: " + matching.getReturnerRequest().getId() + " can not return for himself");
+		Request returnRequest = matching.getReturnerRequest();
+		if (returnRequest.getUser().getId().equals(receiver.getId())) {
+			throw new Exception("Returner id: " + returnRequest.getId() + " can not return for himself");
 		}
 
 		// Check expired time of pin
 		long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
 		if (duration > Constant.PIN_EXPIRED_MINUTE) {
-			// Delete returning request + matching
-			matchingServices.deleteMatching(matching.getId());
-			requestServices.deleteRequest(matching.getReturnerRequest().getId());
+			// Update returning request + matching status to 'Canceled'
+			matching.setStatus(ERequestStatus.CANCELED.getValue());
+			matchingServices.updateMatching(matching);
+
+			returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+			requestServices.updateRequest(returnRequest);
 
 			throw new PinExpiredException("Pin is expired");
 		}
@@ -592,8 +626,11 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Receiver enter pin to get book", response = String.class)
 	@PutMapping(value = "/manually/confirm", produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<String> confirmBookManually(@RequestBody String body, Principal principal) throws Exception {
-		// Get user information
+		// Check receiver is active or not
 		User receiver = userServices.getUserByEmail(principal.getName());
+		if (receiver.isDisabled()) {
+			throw new Exception("User id: " + receiver.getId() + " is not active. Cannot make borrow request");
+		}
 
 		// Get pin from Request Body
 		JSONObject bodyObject = new JSONObject(body);
@@ -606,16 +643,20 @@ public class RequestController extends BaseController {
 		}
 
 		// Check returner returns book for himself or not
-		if (matching.getReturnerRequest().getUser().getId().equals(receiver.getId())) {
-			throw new Exception("Returner id: " + matching.getReturnerRequest().getId() + " can not return for himself");
+		Request returnRequest = matching.getReturnerRequest();
+		if (returnRequest.getUser().getId().equals(receiver.getId())) {
+			throw new Exception("Returner id: " + returnRequest.getId() + " can not return for himself");
 		}
 
 		// Check expired time of pin
 		long duration = utils.getDuration(matching.getMatchingStartDate(), new Date(), TimeUnit.MINUTES);
 		if (duration > Constant.PIN_EXPIRED_MINUTE) {
-			// Delete returning request + matching
-			matchingServices.deleteMatching(matching.getId());
-			requestServices.deleteRequest(matching.getReturnerRequest().getId());
+			// Update returning request + matching status to 'Canceled'
+			matching.setStatus(EMatchingStatus.CANCELED.getValue());
+			matchingServices.updateMatching(matching);
+
+			returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+			requestServices.updateRequest(returnRequest);
 
 			throw new PinExpiredException("Pin is expired");
 		}
@@ -656,6 +697,8 @@ public class RequestController extends BaseController {
 	private JSONObject submitTxToBC(Matching matching, User receiver) throws Exception {
 		// Init data to submit transaction to BlockChain
 		Book book = matching.getBook();
+		Request returnRequest = matching.getReturnerRequest();
+		Request receiveRequest = matching.getBorrowerRequest();
 		User returner = matching.getReturnerRequest().getUser();
 		AtomicBoolean callback = new AtomicBoolean(false);
 		JSONObject jsonResult = new JSONObject();
@@ -697,10 +740,14 @@ public class RequestController extends BaseController {
 
 				callback.set(true);
 			}, (transaction, response) -> { // failed
-				// Delete request + matching
-				matchingServices.deleteMatching(matching.getId());
-				requestServices.deleteRequest(matching.getReturnerRequest().getId());
-				requestServices.deleteRequest(matching.getBorrowerRequest().getId());
+				// Update request + matching status to 'Canceled'
+				matching.setStatus(EMatchingStatus.CANCELED.getValue());
+				matchingServices.updateMatching(matching);
+
+				returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				requestServices.updateRequest(returnRequest);
+				requestServices.updateRequest(receiveRequest);
 
 				// Update user in book
 				book.setUser(returner);
@@ -817,5 +864,146 @@ public class RequestController extends BaseController {
 		Request returnRequest = matching.getReturnerRequest();
 		returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
 		requestServices.updateRequest(returnRequest);
+	}
+
+	@ApiOperation(value = "Receiver rejects to receive book", response = JSONObject.class)
+	@PostMapping(value = "/reject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> rejectBook(@RequestParam("file") MultipartFile multipartFile,
+											 @RequestParam("matching_id") Long matchingId,
+											 @RequestParam("reason") String reason,
+											 Principal principal) throws Exception {
+		// Get receiver information
+		User receiver = userServices.getUserByEmail(principal.getName());
+
+		// Check receiver is the sender
+		Matching matching = matchingServices.getMatchingById(matchingId);
+		if (matching == null) {
+			throw new Exception("Matching id: " + matchingId + " not found");
+		}
+		if (!matching.getBorrowerRequest().getUser().getId().equals(receiver.getId())) {
+			throw new Exception("User id: " + receiver.getId() + " is not the receiver");
+		}
+
+		// Upload image file to AWS S3
+		File imageFile = utils.convertMultiPartToFile(multipartFile);
+		boolean isImageFile = checkImageFile(imageFile);
+		if (!isImageFile) {
+			throw new Exception("File is not an image");
+		}
+		String fileUrl = utils.uploadFile(multipartFile);
+
+		// Get hash value
+		InputStreamResource resource = utils.downloadFileTos3bucket(fileUrl);
+		String hashValue = ImageHelper.hashFromUrl(resource);
+
+		// Init data so submit transaction to BC
+		Book book = matching.getBook();
+		Request returnRequest = matching.getReturnerRequest();
+		Request receiveRequest = matching.getBorrowerRequest();
+		User returner = returnRequest.getUser();
+		Date sendTime = new Date();
+		AtomicBoolean callback = new AtomicBoolean(false);
+		JSONObject jsonResult = new JSONObject();
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		com.bigchaindb.model.Transaction lastTran = bookServices.getLastTransactionFromBigchain(book);
+		bookServices.getAssetFromBigchain(book, lastTran);
+		bookServices.getMetadataFromBigchain(book, lastTran);
+
+		book.setLastRejectReason(reason);
+		book.setLastRejectImage(hashValue);
+
+		// Update reject count
+		book.increaseLastRejectCount();
+
+		// Submit transaction to BC
+		BigchainTransactionServices services = new BigchainTransactionServices();
+		services.doTransfer(
+			book.getLastTxId(),
+			book.getAssetId(), book.getMetadata(),
+			returner.getEmail(), returner.getEmail(),
+			(transaction, response) -> { // success
+
+				// Update last transaction id for book
+				String trasactionId = transaction.getId();
+				book.setLastTxId(trasactionId);
+
+				// Notify returner that receiver rejected the book
+
+				// Update matching status to 'Confirmed'
+				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+				matchingServices.updateMatching(matching);
+
+				// Update borrow request status to 'Completed'
+				returnRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				requestServices.updateRequest(returnRequest);
+				requestServices.updateRequest(receiveRequest);
+
+				// Update transfer status of book
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+				bookServices.updateBook(book);
+
+				//insert a transaction to DB Postgresql
+				Transaction tran = new Transaction();
+				tran.setBook(book);
+				tran.setType(ETransactionType.REJECTED.getValue());
+				transactionServices.insertTransaction(tran);
+
+				if (book.isLastRejectCountOver()) {// If reject count > 5
+
+				}
+
+				// Override value in response
+				jsonResult.put("message", "confirm book transfer successfully");
+				jsonResult.put("status_code", HttpStatus.OK);
+
+				callback.set(true);
+			},
+			(transaction, response) -> { // failed
+				// Update request + matching status to 'Canceled'
+				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+				matchingServices.updateMatching(matching);
+
+				returnRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				requestServices.updateRequest(returnRequest);
+				requestServices.updateRequest(receiveRequest);
+
+				// Update user in book
+				book.setUser(returner);
+				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+				bookServices.updateBook(book);
+
+				callback.set(true);
+			}
+		);
+
+		// Wait until the BigchainTransactionServices has callback or request is timeout
+		Date now;
+		while (true) {
+			now = new Date();
+			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+
+			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
+				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+			}
+		}
+	}
+
+	// Check if the file is an image or not
+	private boolean checkImageFile(File imageFile) {
+		try {
+			BufferedImage image = ImageIO.read(imageFile);
+			if (image == null) {
+				return false;
+			}
+		} catch (IOException ex) {
+			return false;
+		}
+		return true;
 	}
 }

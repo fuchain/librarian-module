@@ -53,8 +53,8 @@ public class MatchingServices {
 		return matchingRepository.save(matching);
 	}
 
-	public void deleteMatching(Long matchingId){
-		matchingRepository.deleteById(matchingId);
-	}
+//	public void deleteMatching(Long matchingId){
+//		matchingRepository.deleteById(matchingId);
+//	}
 
 }
