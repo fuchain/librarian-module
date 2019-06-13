@@ -1,6 +1,7 @@
 package com.fpt.edu.constant;
 
 public class Constant {
+
 	public static final String APPLICATION_JSON = "application/json";
 	public static final String APPLICATION_XML = "application/xml";
 	public static final String ITEMS = "items";
@@ -22,5 +23,21 @@ public class Constant {
 	public static final int DEFAULT_OFFSET = 20;
 	public static final String AUTHORITIES_HEADER = "roles";
 	public static final String ROLES_LIBRARIAN = "librarian";
-	public static final int BIGCHAINDB_REQUEST_TIMEOUT = 60;
+	public static final int BIGCHAIN_REQUEST_TIMEOUT = 60;
+	public static final String EMPTY_VALUE = "";
+
+	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
+
+	// Asset
+	public static final String BC_BOOK_ID = "book_id";
+
+	// Metadata
+	public static final String CURRENT_KEEPER = "current_keeper";
+	public static final String BOOK_STATUS = "status";
+	public static final String TX_TIMESTAMP = "transaction_timestamp";
+	public static final String REJECT_COUNT = "reject_count";
+	public static final String REJECT_REASON = "reject_reason";
+	public static final String IMAGE_HASH = "img_hash";
+	public static final int BC_MAX_REJECT_COUNT = 5;
+	public static final int BC_MIN_REJECT_COUNT = 0;
 }

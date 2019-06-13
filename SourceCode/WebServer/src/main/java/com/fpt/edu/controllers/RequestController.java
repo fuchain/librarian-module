@@ -1,14 +1,12 @@
 package com.fpt.edu.controllers;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.fpt.edu.common.enums.*;
+import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.common.request_queue_simulate.Message;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
-import com.fpt.edu.common.enums.*;
-import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.constant.Constant;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.exceptions.*;
 import com.fpt.edu.services.*;
@@ -16,7 +14,9 @@ import io.swagger.annotations.ApiOperation;
 import org.hibernate.Hibernate;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -44,14 +45,13 @@ public class RequestController extends BaseController {
 	private final PublishSubscribe publishSubscribe;
 	private final RequestQueueManager requestQueueManager;
 
-	@Autowired
-	private AmazonS3 s3Client;
+	private final AmazonS3 s3Client;
 
 	@Autowired
 	public RequestController(RequestServices requestServices, UserServices userServices,
-							 BookDetailsServices bookDetailsServices, BookServices bookServices,
-							 MatchingServices matchingServices, TransactionServices transactionServices,
-							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+	                         BookDetailsServices bookDetailsServices, BookServices bookServices,
+	                         MatchingServices matchingServices, TransactionServices transactionServices,
+	                         PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, AmazonS3 s3Client) {
 		this.requestServices = requestServices;
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
@@ -60,6 +60,7 @@ public class RequestController extends BaseController {
 		this.transactionServices = transactionServices;
 		this.publishSubscribe = publishSubscribe;
 		this.requestQueueManager = requestQueueManager;
+		this.s3Client = s3Client;
 	}
 
 	@ApiOperation(value = "Get a request by its id")
@@ -240,7 +241,7 @@ public class RequestController extends BaseController {
 
 		Request matchRequest = requestQueueManager.findTheMatch(request);
 		if (matchRequest != null) {
-			//remove reqyuest
+			//remove request
 			requestQueueManager.removeRequestOutTheQueue(request);
 			// update for request
 			message.setAction(Constant.ACTION_UPDATE);
@@ -396,8 +397,8 @@ public class RequestController extends BaseController {
 			(transaction, response) -> { // Success
 
 				// Update last transaction id for book
-				String tracsactionId = transaction.getId();
-				book.setLastTxId(tracsactionId);
+				String transactionId = transaction.getId();
+				book.setLastTxId(transactionId);
 
 				// Update status of request to "completed"
 				returnerRequest.setStatus(ERequestStatus.COMPLETED.getValue());
@@ -452,7 +453,7 @@ public class RequestController extends BaseController {
 			now = new Date();
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
+			if (duration > Constant.BIGCHAIN_REQUEST_TIMEOUT || callback.get()) {
 				return jsonResult;
 			}
 		}
@@ -759,7 +760,7 @@ public class RequestController extends BaseController {
 			now = new Date();
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
+			if (duration > Constant.BIGCHAIN_REQUEST_TIMEOUT || callback.get()) {
 				return jsonResult;
 			}
 		}
@@ -856,7 +857,7 @@ public class RequestController extends BaseController {
 		}
 
 		// Update request status to 'CANCELED'
-		Request returnRequest = matching.getReturnerRequest();
+		Request returnRequest = Objects.requireNonNull(matching).getReturnerRequest();
 		returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
 		requestServices.updateRequest(returnRequest);
 	}
@@ -864,9 +865,9 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Receiver rejects to receive book", response = JSONObject.class)
 	@PostMapping(value = "/reject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<String> rejectBook(@RequestParam("file") MultipartFile multipartFile,
-											 @RequestParam("matching_id") Long matchingId,
-											 @RequestParam("reason") String reason,
-											 Principal principal) throws Exception {
+	                                         @RequestParam("matching_id") Long matchingId,
+	                                         @RequestParam("reason") String reason,
+	                                         Principal principal) throws Exception {
 		// Get receiver information
 		User receiver = userServices.getUserByEmail(principal.getName());
 
@@ -904,15 +905,14 @@ public class RequestController extends BaseController {
 		jsonResult.put("message", "failed to submit transaction");
 		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
 
-		com.bigchaindb.model.Transaction lastTran = bookServices.getLastTransactionFromBigchain(book);
-		bookServices.getAssetFromBigchain(book, lastTran);
-		bookServices.getMetadataFromBigchain(book, lastTran);
+		bookServices.getLastTransactionFromBigchain(book);
+		BookMetadata bookMetadata = book.getMetadata();
 
-		book.setLastRejectReason(reason);
-		book.setLastRejectImage(hashValue);
+		bookMetadata.setRejectReason(reason);
+		bookMetadata.setImgHash(hashValue);
 
 		// Update reject count
-		book.increaseLastRejectCount();
+		bookMetadata.increaseLastRejectCount();
 
 		// Submit transaction to BC
 		BigchainTransactionServices services = new BigchainTransactionServices();
@@ -923,8 +923,8 @@ public class RequestController extends BaseController {
 			(transaction, response) -> { // success
 
 				// Update last transaction id for book
-				String trasactionId = transaction.getId();
-				book.setLastTxId(trasactionId);
+				String transactionId = transaction.getId();
+				book.setLastTxId(transactionId);
 
 				// Notify returner that receiver rejected the book
 
@@ -948,7 +948,7 @@ public class RequestController extends BaseController {
 				tran.setType(ETransactionType.REJECTED.getValue());
 				transactionServices.insertTransaction(tran);
 
-				if (book.isLastRejectCountOver()) {// If reject count > 5
+				if (bookMetadata.isLastRejectCountOver()) { // If reject count > 5
 
 				}
 
@@ -983,7 +983,7 @@ public class RequestController extends BaseController {
 			now = new Date();
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 
-			if (duration > Constant.BIGCHAINDB_REQUEST_TIMEOUT || callback.get()) {
+			if (duration > Constant.BIGCHAIN_REQUEST_TIMEOUT || callback.get()) {
 				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 			}
 		}

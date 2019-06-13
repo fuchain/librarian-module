@@ -65,17 +65,10 @@ public class BookServices {
 	}
 
 	public Transaction getLastTransactionFromBigchain(Book book) throws Exception {
-		book.setBcLastTransaction(bigchainTransactionServices.getTransactionById(book.getLastTxId()));
+		Transaction transaction = bigchainTransactionServices.getTransactionById(book.getLastTxId());
+		book.setBcLastTransaction(transaction);
+		book.getAsset().setData((Map<String, String>) transaction.getAsset().getData());
+		book.getMetadata().setData((Map<String, String>) transaction.getMetaData());
 		return book.getBcLastTransaction();
-	}
-
-	public Map<String, String> getAssetFromBigchain(Book book, Transaction transaction) {
-		book.setAsset((Map<String, String>) transaction.getAsset().getData());
-		return book.getAsset();
-	}
-
-	public Map<String, String> getMetadataFromBigchain(Book book, Transaction transaction) {
-		book.setMetadata((Map<String, String>) transaction.getMetaData());
-		return book.getMetadata();
 	}
 }
