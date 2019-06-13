@@ -392,7 +392,7 @@ public class RequestController extends BaseController {
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
 			book.getLastTxId(),
-			book.getAssetId(), book.getMetadata(),
+			book.getAssetId(), book.getMetadata().getData() ,
 			String.valueOf(returner.getEmail()), String.valueOf(receiver.getEmail()),
 			(transaction, response) -> { // Success
 
@@ -711,7 +711,7 @@ public class RequestController extends BaseController {
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
 			book.getLastTxId(),
-			book.getAssetId(), book.getMetadata(),
+			book.getAssetId(), book.getMetadata().getData(),
 			returner.getEmail(), receiver.getEmail(),
 			(transaction, response) -> { //success
 
@@ -918,7 +918,7 @@ public class RequestController extends BaseController {
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
 			book.getLastTxId(),
-			book.getAssetId(), book.getMetadata(),
+			book.getAssetId(), book.getMetadata().getData(),
 			returner.getEmail(), returner.getEmail(),
 			(transaction, response) -> { // success
 
