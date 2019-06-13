@@ -913,11 +913,11 @@ public class RequestController extends BaseController {
 		bookServices.getAssetFromBigchain(book, lastTran);
 		bookServices.getMetadataFromBigchain(book, lastTran);
 
-		book.setRejectReason(reason);
-		book.setRejectImage(hashValue);
+		book.setLastRejectReason(reason);
+		book.setLastRejectImage(hashValue);
 
 		// Update reject count
-		book.increaseRejectCount();
+		book.increaseLastRejectCount();
 
 		// Submit transaction to BC
 		BigchainTransactionServices services = new BigchainTransactionServices();
@@ -953,7 +953,7 @@ public class RequestController extends BaseController {
 				tran.setType(ETransactionType.REJECTED.getValue());
 				transactionServices.insertTransaction(tran);
 
-				if (book.isRejectCountOver()) {// If reject count > 5
+				if (book.isLastRejectCountOver()) {// If reject count > 5
 
 				}
 
