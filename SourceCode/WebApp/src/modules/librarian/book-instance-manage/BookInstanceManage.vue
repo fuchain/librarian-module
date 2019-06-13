@@ -148,7 +148,7 @@ export default {
       this.$http
         .get(`${this.$http.baseUrl}/librarian/books/${item.id}`)
         .then(response => {
-          const data = response.data.bcTransactions;
+          const data = response.data.bcTransactionList;
 
           this.historyList = data;
           this.historyPopup = true;
