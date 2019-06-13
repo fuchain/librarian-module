@@ -101,6 +101,7 @@
           @on-error="failUpload"
           text="Up ảnh bằng chứng"
           limit="1"
+          :automatic="true"
         />
       </div>
       <div class="mt-2">
@@ -108,7 +109,7 @@
           color="danger"
           class="w-full"
           @click="confirmReject"
-          :disabled="!reason.trim()"
+          :disabled="!reason.trim() || !imageUrl"
         >Từ chối nhận sách</vs-button>
       </div>
     </vs-popup>
@@ -131,7 +132,9 @@ export default {
       requestId: 0,
       matchingId: 0,
       showMatched: true,
-      searchText: ""
+      searchText: "",
+      // Reject
+      imageUrl: ""
     };
   },
   props: {
@@ -169,8 +172,7 @@ export default {
     },
     uploadHeader() {
       return {
-        Authorization:
-          "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dWhtc2U2MjUzMUBmcHQuZWR1LnZuIiwicm9sZXMiOltdLCJpZCI6MiwiZXhwIjoxNTYwNTE3MzkxfQ.5cKiIaREKcb2VKqB2hh7ftvw262qkVmpr8NiQlsCL86fnVb4uqfjxSpvQew1tVIRFnNcBajprWcTlR3NcsQJdg"
+        Authorization: `Bearer ${this.$auth.getAccessToken()}`
       };
     }
   },
@@ -178,18 +180,6 @@ export default {
     triggerCall(user) {
       if (!user) return;
       window.location.href = `tel:${user.phone}`;
-    },
-    async fakeLoad() {
-      return new Promise((resolve, reject) => {
-        this.$vs.loading();
-        setTimeout(
-          function() {
-            this.$vs.loading.close();
-            resolve();
-          }.bind(this),
-          3000
-        );
-      });
     },
     async beginConfirm(item) {
       this.$vs.loading();
@@ -252,22 +242,48 @@ export default {
       this.rejectPopup = true;
     },
     async confirmReject() {
-      await this.fakeLoad();
+      this.$vs.loading();
 
-      this.$vs.notify({
-        title: "Thành công",
-        text: "Từ chối nhận sách thành công",
-        color: "primary",
-        position: "top-center"
-      });
-      this.rejectPopup = false;
-      this.reason = "";
+      this.$http
+        .post(`${this.$http.baseUrl}/requests/reject`, {
+          image_url: this.imageUrl,
+          matching_id: this.matchingId,
+          reason: this.reason
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Từ chối nhận sách thành công",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.rejectPopup = false;
+          this.reason = "";
+          this.imageUrl = "";
+
+          this.callReload();
+        })
+        .catch(err => {
+          // Catch error
+          console.log(err);
+
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Có lỗi xảy ra, chưa thể từ chối nhận sách",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     },
     successUpload(e) {
       const response = JSON.parse(e.target.response);
       const url = response.url;
 
-      console.log(url);
+      this.imageUrl = url;
     },
     failUpload(e) {
       console.log(e);
