@@ -194,7 +194,7 @@ export default {
           // Catch
           console.log(err);
 
-          const status = err.reponse.data.status;
+          const status = err.response.status;
           if (status !== 412) {
             this.$vs.notify({
               title: "Thất bại",
@@ -204,7 +204,15 @@ export default {
             });
 
             this.popupActive = false;
-            this.callReload();
+
+            this.$store.dispatch("getNumOfBooks");
+
+            setTimeout(
+              function() {
+                this.$router.push("/books/keeping");
+              }.bind(this),
+              500
+            );
           }
         })
         .finally(() => {});
