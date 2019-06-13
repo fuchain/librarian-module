@@ -392,7 +392,7 @@ public class RequestController extends BaseController {
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
 			book.getLastTxId(),
-			book.getAssetId(), book.getMetadata().getData() ,
+			book.getAssetId(), book.getMetadata().getData(),
 			String.valueOf(returner.getEmail()), String.valueOf(receiver.getEmail()),
 			(transaction, response) -> { // Success
 
@@ -863,15 +863,18 @@ public class RequestController extends BaseController {
 	}
 
 	@ApiOperation(value = "Receiver rejects to receive book", response = JSONObject.class)
-	@PostMapping(value = "/reject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> rejectBook(@RequestParam("file") MultipartFile multipartFile,
-											 @RequestParam("matching_id") Long matchingId,
-											 @RequestParam("reason") String reason,
-											 Principal principal) throws Exception {
+	@PostMapping(value = "/reject", produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> rejectBook(@RequestBody String body, Principal principal) throws Exception {
 		// Get receiver information
 		User receiver = userServices.getUserByEmail(principal.getName());
 
 		// Check receiver is the sender
+		JSONObject bodyObject = new JSONObject(body);
+		String imageUrl = bodyObject.getString("image_url");
+		Long matchingId = bodyObject.getLong("matching_id");
+		String reason = bodyObject.getString("reason");
+
+
 		Matching matching = matchingServices.getMatchingById(matchingId);
 		if (matching == null) {
 			throw new Exception("Matching id: " + matchingId + " not found");
@@ -879,17 +882,13 @@ public class RequestController extends BaseController {
 		if (!matching.getBorrowerRequest().getUser().getId().equals(receiver.getId())) {
 			throw new Exception("User id: " + receiver.getId() + " is not the receiver");
 		}
-
-		// Upload image file to AWS S3
-		File imageFile = utils.convertMultiPartToFile(multipartFile);
-		boolean isImageFile = checkImageFile(imageFile);
-		if (!isImageFile) {
-			throw new Exception("File is not an image");
+		if (matching.getStatus() != EMatchingStatus.PENDING.getValue()) {
+			throw new Exception("Cannot reject matching with status: " + matching.getStatus());
 		}
-		String fileUrl = utils.uploadFile(multipartFile);
+
 
 		// Get hash value
-		InputStreamResource resource = utils.downloadFileTos3bucket(fileUrl);
+		InputStreamResource resource = utils.downloadFileTos3bucket(imageUrl);
 		String hashValue = ImageHelper.hashFromUrl(resource);
 
 		// Init data so submit transaction to BC
