@@ -26,7 +26,7 @@
     </div>
     <div class="vx-row">
       <div class="vx-col sm:w-2/3 w-full ml-auto">
-        <vs-button class="mr-3 mb-2" @click="submit">Cập nhật thông tin</vs-button>
+        <vs-button class="mr-3 mb-2" @click="submit" icon="check">Cập nhật thông tin</vs-button>
       </div>
     </div>
   </vx-card>
