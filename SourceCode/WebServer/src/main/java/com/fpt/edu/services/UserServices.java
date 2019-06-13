@@ -30,14 +30,13 @@ public class UserServices {
 		this.userRepository = userRepository;
 		this.bookRepository = bookRepository;
 	}
-
 	public User addNewUser(User user) {
+		user.setDisabled(false);
 		if (user.getPassword() != null) {
 			user.setPassword(encoder.encode(user.getPassword()));
 		} else {
 			user.setPassword(null);
 		}
-
 		return userRepository.save(user);
 	}
 
