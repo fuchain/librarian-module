@@ -51,7 +51,6 @@
         <vs-th>Email</vs-th>
         <vs-th>Họ tên</vs-th>
         <vs-th>Số điện thoại</vs-th>
-        <vs-th>Cập nhật</vs-th>
         <vs-th>Vô hiệu hóa</vs-th>
         <vs-th></vs-th>
       </template>
@@ -73,15 +72,11 @@
             </vs-td>
 
             <vs-td>
-              <p class="font-medium">{{ tr.fullName }}</p>
+              <p class="font-medium">{{ tr.fullName || "Chưa cập nhật" }}</p>
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.phone }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p>{{ parseInt(tr.updateDate) * 1000 | moment("from") }}</p>
+              <p>{{ tr.phone || "Chưa cập nhật" }}</p>
             </vs-td>
 
             <vs-td>
@@ -99,7 +94,7 @@
     </vs-table>
 
     <vs-popup
-      :fullscreen="keepingList && keepingList.length"
+      :fullscreen="keepingList && keepingList.length ? true : false"
       :title="'Sách đang giữ của ' + keepingName"
       :active.sync="keepingPopup"
     >
@@ -123,7 +118,7 @@
 
             <vs-td
               :data="data[indextr].updateDate"
-            >{{ parseInt(data[indextr].updateDate) * 1000 | moment("from") }}</vs-td>
+            >{{ parseInt(data[indextr].updateDate) * 1000 | moment("dddd, Do MMMM YYYY, h:mm:ss a")}}</vs-td>
           </vs-tr>
         </template>
       </vs-table>
@@ -139,7 +134,8 @@ export default {
       itemsPerPage: 10,
       isMounted: false,
       keepingPopup: false,
-      keepingName: ""
+      keepingName: "",
+      keepingList: []
     };
   },
   props: {

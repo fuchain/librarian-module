@@ -1,7 +1,7 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
     <h2 class="mb-8 ml-4">
-      Quản lí sách của đầu sách #{{ $route.params.id }}
+      Quản lí sách của đầu sách {{ $route.query.name || "Chưa có tên" }} (ID: {{ $route.params.id }})
       <vs-button
         size="small"
         class="ml-4"
@@ -112,7 +112,7 @@
 
             <vs-td
               :data="data[indextr].transaction_timestamp"
-            >{{ parseInt(data[indextr].transaction_timestamp) * 1000 | moment("from") }}</vs-td>
+            >{{ parseInt(data[indextr].transaction_timestamp) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }}</vs-td>
           </vs-tr>
         </template>
       </vs-table>

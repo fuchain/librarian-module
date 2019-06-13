@@ -91,6 +91,7 @@
             <vs-td>
               <vs-button
                 icon="pageview"
+                type="border"
                 @click="openBookDataList(tr)"
                 v-if="tr.bookInstanceCount > 0"
               >Xem sách của đầu sách này</vs-button>
@@ -127,7 +128,9 @@ export default {
   },
   methods: {
     openBookDataList(item) {
-      this.$router.push(`/librarian/book-details-manage/${item.id}`);
+      this.$router.push(
+        `/librarian/book-details-manage/${item.id}?name=${item.name}`
+      );
     }
   },
   mounted() {
