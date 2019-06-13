@@ -99,7 +99,7 @@ public class SimulateDataController extends BaseController {
 
 			// Init 10 book instance
 			List<Book> bookList = new ArrayList<>();
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 10; i++) {
 				Book book = new Book();
 				book.setId(Long.valueOf(count));
 				book.setBookDetail(bookDetail);
