@@ -175,12 +175,7 @@ export default {
     }
   },
   methods: {},
-  components: {},
-  beforeMount() {
-    if (this.$auth.isAdmin()) {
-      this.$router.push("/librarian/statistics");
-    }
-  }
+  components: {}
 };
 </script>
 

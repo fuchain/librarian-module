@@ -54,7 +54,7 @@ public class User extends AbstractTimestampEntity implements Serializable {
 		return listBooks;
 	}
 
-	public Boolean getDisabled() {
+	public Boolean isDisabled() {
 		return isDisabled;
 	}
 

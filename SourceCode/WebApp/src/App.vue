@@ -57,7 +57,7 @@ export default {
       });
       try {
         await this.$store.dispatch("getProfile");
-        await this.$store.dispatch("getNumOfBooks");
+        !this.$auth.isAdmin() && (await this.$store.dispatch("getNumOfBooks"));
       } catch (e) {
         // Catch error
         console.log(e);
@@ -75,7 +75,7 @@ export default {
       vm,
       info
     };
-    this.$http.post(`${this.$http.betaUrl}/logs`, {
+    this.$http.post(`${this.$http.nodeUrl}/logs`, {
       type: "error",
       source: "webapp",
       metadata: JSON.stringify(metadata)

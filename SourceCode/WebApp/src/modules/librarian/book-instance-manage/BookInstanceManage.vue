@@ -1,7 +1,7 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
     <h2 class="mb-8 ml-4">
-      Quản lí sách của đầu sách #{{ $route.params.id }}
+      Quản lí sách của đầu sách {{ $route.query.name || "Chưa có tên" }} (ID: {{ $route.params.id }})
       <vs-button
         size="small"
         class="ml-4"
@@ -74,7 +74,7 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.status }}</p>
+              <p>{{ tr.status || "transfer failed" }}</p>
             </vs-td>
 
             <vs-td>
@@ -99,6 +99,7 @@
           <vs-th>Thứ tự</vs-th>
           <vs-th>Người đang giữ sách</vs-th>
           <vs-th>Trạng thái</vs-th>
+          <vs-th>Bị từ chối</vs-th>
           <vs-th>Thời gian</vs-th>
         </template>
 
@@ -108,11 +109,13 @@
 
             <vs-td :data="data[indextr].current_keeper">{{data[indextr].current_keeper}}</vs-td>
 
-            <vs-td :data="data[indextr].status">{{data[indextr].status}}</vs-td>
+            <vs-td :data="data[indextr].status">{{data[indextr].status || "rejected"}}</vs-td>
+
+            <vs-td :data="data[indextr].reject_count">{{data[indextr].reject_count || "0"}} lần</vs-td>
 
             <vs-td
               :data="data[indextr].transaction_timestamp"
-            >{{ parseInt(data[indextr].transaction_timestamp) * 1000 | moment("from") }}</vs-td>
+            >{{ parseInt(data[indextr].transaction_timestamp) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }}</vs-td>
           </vs-tr>
         </template>
       </vs-table>
@@ -148,7 +151,7 @@ export default {
       this.$http
         .get(`${this.$http.baseUrl}/librarian/books/${item.id}`)
         .then(response => {
-          const data = response.data.bcTransactions;
+          const data = response.data.bcTransactionList;
 
           this.historyList = data;
           this.historyPopup = true;
@@ -175,6 +178,11 @@ export default {
       )
       .then(response => {
         const data = response.data;
+
+        // Sort
+        data.sort((a, b) => {
+          return parseInt(b.updateDate) - parseInt(a.updateDate);
+        });
 
         this.dataList = [].concat(data);
       })

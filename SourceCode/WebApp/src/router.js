@@ -150,9 +150,16 @@ router.beforeEach((to, from, next) => {
     if (!auth.isAuthenticated()) {
       next({ path: "/login" });
     } else {
-      if (to.path.includes("/librarian") && !auth.isAdmin()) {
-        next({ path: "/" });
+      if (!auth.isAdmin()) {
+        if (to.path.includes("/librarian")) {
+          next({ path: "/" });
+        }
+      } else {
+        if (to.path === "/") {
+          next({ path: "/librarian/statistics" });
+        }
       }
+
       next();
     }
   }

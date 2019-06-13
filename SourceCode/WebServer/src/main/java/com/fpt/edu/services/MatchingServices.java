@@ -1,14 +1,11 @@
 package com.fpt.edu.services;
 
 import com.fpt.edu.entities.Matching;
-import com.fpt.edu.repository.MatchingRepository;
+import com.fpt.edu.repositories.MatchingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.fpt.edu.common.EMatchingStatus;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MatchingServices {
@@ -53,8 +50,8 @@ public class MatchingServices {
 		return matchingRepository.save(matching);
 	}
 
-	public void deleteMatching(Long matchingId){
-		matchingRepository.deleteById(matchingId);
-	}
+//	public void deleteMatching(Long matchingId){
+//		matchingRepository.deleteById(matchingId);
+//	}
 
 }

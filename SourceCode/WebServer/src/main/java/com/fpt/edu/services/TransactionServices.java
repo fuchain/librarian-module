@@ -1,12 +1,11 @@
 package com.fpt.edu.services;
 
 import com.fpt.edu.entities.Transaction;
-import com.fpt.edu.repository.TransactionRepository;
+import com.fpt.edu.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
 
 @Service
 public class TransactionServices {

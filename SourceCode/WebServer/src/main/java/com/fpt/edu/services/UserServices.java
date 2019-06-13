@@ -1,8 +1,5 @@
 package com.fpt.edu.services;
 
-import com.fpt.edu.repository.RequestRepository;
-import org.apache.commons.collections.IteratorUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -13,10 +10,10 @@ import javax.transaction.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
-import com.fpt.edu.repository.BookRepository;
+import com.fpt.edu.repositories.BookRepository;
 
 import com.fpt.edu.entities.User;
-import com.fpt.edu.repository.UserRepository;
+import com.fpt.edu.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,15 +30,14 @@ public class UserServices {
 		this.userRepository = userRepository;
 		this.bookRepository = bookRepository;
 	}
-
-	public void addNewUser(User user) {
+	public User addNewUser(User user) {
+		user.setDisabled(false);
 		if (user.getPassword() != null) {
 			user.setPassword(encoder.encode(user.getPassword()));
 		} else {
 			user.setPassword(null);
 		}
-
-		userRepository.save(user);
+		return userRepository.save(user);
 	}
 
 	public Optional<User> findUserByEmail(String email) {

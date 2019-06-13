@@ -1,121 +1,144 @@
 package com.fpt.edu.entities;
 
-
-import com.bigchaindb.model.Transactions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fpt.edu.common.EBookStatus;
-import com.fpt.edu.common.EBookTransferStatus;
+import com.fpt.edu.common.enums.EBookStatus;
+import com.fpt.edu.common.enums.EBookTransferStatus;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-import javax.persistence.*;
-
+@SuppressWarnings("unchecked")
 @Entity
 @Table(name = "book")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Book extends AbstractTimestampEntity implements Serializable {
 
-    @Id
-    private Long id;
+	private static final String BC_BOOK_ID = "book_id";
+	private static final String BC_CURRENT_KEEPER = "current_keeper";
+	private static final String BC_BOOK_STATUS = "status";
+	private static final String BC_TX_TIMESTAMP = "transaction_timestamp";
+	private static final String BC_REJECT_COUNT = "reject_count";
+	private static final String BC_REJECT_REASON = "reject_reason";
+	private static final String BC_IMAGE_HASH = "img_hash";
 
-    @ManyToOne()
-    @JoinColumn(name = "bookdetail_id")
-    private BookDetail bookDetail;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Transaction> transactions;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Request> requests;
-
-    // current keeper of the book
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
-
-    @Column(name = "asset_id", updatable = false)
-    @JsonIgnore
-    private String assetId;
-
-    @Column(name = "last_tx_id")
-    @JsonIgnore
-    private String lastTxId;
-
-    @Column(name = "status")
-    private String status = EBookStatus.IN_USE.getValue();
-
-    @Column(name = "transfer_status")
-    @JsonSerialize
-	private String transferStatus = EBookTransferStatus.TRANSFERRED.getValue();
-
-    @Transient
-    @JsonIgnore
-    private Map<String, String> asset;
-
-    @Transient
-    @JsonIgnore
-    private Map<String, String> metadata;
-
-    @Transient
+	private static final int BC_MAX_REJECT_COUNT = 5;
+	private static final int BC_MIN_REJECT_COUNT = 0;
+	@Transient
 	@JsonSerialize
-	private List bcTransactions;
+	private final List bcTransactionList;
+	@Id
+	private Long id;
+	@ManyToOne()
+	@JoinColumn(name = "bookdetail_id")
+	private BookDetail bookDetail;
+	@OneToMany(cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Transaction> transactions;
+	@OneToMany(cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Request> requests;
+	// current keeper of the book
+	@ManyToOne(cascade = {CascadeType.ALL})
+	@JoinColumn(name = "user_id")
+	@JsonIgnore
+	private User user;
+	@Column(name = "asset_id", updatable = false)
+	@JsonIgnore
+	private String assetId;
+	@Column(name = "last_tx_id")
+	@JsonIgnore
+	private String lastTxId;
+	@Column(name = "status")
+	private String status;
+	@Column(name = "transfer_status")
+	@JsonSerialize
+	private String transferStatus;
+	@Transient
+	@JsonIgnore
+	private BookAsset bookAsset;
+	@Transient
+	@JsonIgnore
+	private BookMetadata bookMetadata;
+	@Transient
+	@JsonSerialize
+	private com.bigchaindb.model.Transaction bcLastTransaction;
 
-    public Map<String, String> getAsset() {
-        if (this.asset == null) {
-            this.asset = new TreeMap<>();
-        }
-        this.asset.put("book_id", String.valueOf(this.id));
-        return this.asset;
-    }
-
-    public Map<String, String> getMetadata() {
-        if (this.metadata == null) {
-            this.metadata = new TreeMap<>();
-        }
-        this.metadata.put("current_keeper", this.user.getEmail());
-        this.metadata.put("status", this.status);
-        this.metadata.put("transaction_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
-        return this.metadata;
-    }
-
-	public List getBcTransactions() {
-		return bcTransactions;
+	public Book() {
+		this.status = EBookStatus.IN_USE.getValue();
+		this.transferStatus = EBookTransferStatus.TRANSFERRED.getValue();
+		this.bcTransactionList = new ArrayList();
+		if (this.isNewToBigchain()) {
+			this.bookAsset = new BookAsset();
+			this.bookMetadata = new BookMetadata();
+		} else {
+			this.bookAsset = new BookAsset(String.valueOf(this.id));
+			this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
+		}
 	}
 
-	public void setBcTransactions(Transactions bcTransactions) {
-    	if (this.bcTransactions == null) {
-    		this.bcTransactions = new ArrayList();
+	private boolean isNewToBigchain() {
+		return this.assetId == null;
+	}
+
+	public BookAsset getAsset() {
+		if (this.bookAsset == null) {
+			this.bookAsset = new BookAsset(String.valueOf(this.id));
 		}
-    	this.bcTransactions.clear();
-		for (com.bigchaindb.model.Transaction bcTransaction : bcTransactions.getTransactions()) {
-			this.bcTransactions.add(bcTransaction.getMetaData());
+
+		return this.bookAsset;
+	}
+
+	public void setAsset(BookAsset bookAsset) {
+		this.bookAsset = bookAsset;
+	}
+
+	public BookMetadata getMetadata() {
+		this.bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+		return this.bookMetadata;
+	}
+
+	public void setMetadata(BookMetadata bookMetadata) {
+		this.bookMetadata = bookMetadata;
+	}
+
+	public List<com.bigchaindb.model.Transaction> getBcTransactionList() {
+		return this.bcTransactionList;
+	}
+
+	public void setBcTransactionList(List<com.bigchaindb.model.Transaction> bcTransactionList) {
+		this.bcTransactionList.clear();
+		for (com.bigchaindb.model.Transaction bcTransaction : bcTransactionList) {
+			this.bcTransactionList.add(bcTransaction.getMetaData());
 		}
+	}
+
+	public com.bigchaindb.model.Transaction getBcLastTransaction() {
+		return this.bcLastTransaction;
+	}
+
+	public void setBcLastTransaction(com.bigchaindb.model.Transaction lastTransaction) {
+		this.bcLastTransaction = lastTransaction;
 	}
 
 	public String getAssetId() {
-        return assetId;
-    }
+		return assetId;
+	}
 
-    public void setAssetId(String assetId) {
-        this.assetId = assetId;
-    }
+	public void setAssetId(String assetId) {
+		this.assetId = assetId;
+	}
 
-    public String getLastTxId() {
-        return lastTxId;
-    }
+	public String getLastTxId() {
+		return lastTxId;
+	}
 
-    public void setLastTxId(String lastTxId) {
-        this.lastTxId = lastTxId;
-    }
+	public void setLastTxId(String lastTxId) {
+		this.lastTxId = lastTxId;
+	}
 
 	public String getStatus() {
 		return status;
@@ -123,6 +146,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+		this.bookMetadata.setStatus(status);
 	}
 
 	public String getTransferStatus() {
@@ -134,42 +158,43 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public User getUser() {
-        return user;
-    }
+		return user;
+	}
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+	public void setUser(User user) {
+		this.user = user;
+		this.bookMetadata.setCurrentKeeper(user.getEmail());
+	}
 
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
 
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
+	}
 
-    public List<Request> getRequests() {
-        return requests;
-    }
+	public List<Request> getRequests() {
+		return requests;
+	}
 
-    public void setRequests(List<Request> requests) {
-        this.requests = requests;
-    }
+	public void setRequests(List<Request> requests) {
+		this.requests = requests;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public BookDetail getBookDetail() {
-        return bookDetail;
-    }
+	public BookDetail getBookDetail() {
+		return bookDetail;
+	}
 
-    public void setBookDetail(BookDetail bookDetail) {
-        this.bookDetail = bookDetail;
-    }
+	public void setBookDetail(BookDetail bookDetail) {
+		this.bookDetail = bookDetail;
+	}
 }
