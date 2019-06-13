@@ -1,9 +1,8 @@
 package com.fpt.edu.services;
 
-import com.fpt.edu.common.helper.ReflectionHelper;
+import com.fpt.edu.common.helpers.ReflectionHelper;
 import com.fpt.edu.entities.BookDetail;
-import com.fpt.edu.repository.BookDetailRepository;
-import org.apache.commons.collections4.IteratorUtils;
+import com.fpt.edu.repositories.BookDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

@@ -3,7 +3,7 @@ package com.fpt.edu.services;
 import com.bigchaindb.constants.Operations;
 import com.bigchaindb.model.Transaction;
 import com.fpt.edu.entities.Book;
-import com.fpt.edu.repository.BookRepository;
+import com.fpt.edu.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

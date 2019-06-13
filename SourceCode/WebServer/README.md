@@ -12,9 +12,9 @@
 
 | package                | Responsibility                                                                |
 | ---------------------- | ----------------------------------------------------------------------------- |
-| com.fpt.edu.controller | Store all of controller                                                       |
+| com.fpt.edu.controllers | Store all of controller                                                       |
 | com.fpt.edu.services   | contain all of services class that help us do our business logic              |
-| com.fpt.edu.repository | contain all of our repository (DAO) that allow us to manipulate with Database |
+| com.fpt.edu.repositories | contain all of our repository (DAO) that allow us to manipulate with Database |
 | com.fpt.edu.entities   | contain all of our entity or Domain object                                    |
 | _.config, _.common     | Contain Spring config and some common function                                |
 | com.fpt.edu.app        | contain application app that will help to start the server                    |
