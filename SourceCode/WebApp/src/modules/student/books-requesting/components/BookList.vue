@@ -88,20 +88,19 @@
     </vs-popup>
 
     <vs-popup title="Từ chối nhận sách" :active.sync="rejectPopup">
-      <p>
-        Vui lòng nhập lí do từ chối nhận sách của
-        <strong>PhongDVSE12345</strong> và xác nhận từ chối nhận sách:
-      </p>
+      <p>Vui lòng nhập lí do từ chối nhận sách và xác nhận từ chối nhận sách:</p>
       <div class="mt-2">
         <vs-textarea label="Lí do từ chối nhận sách" v-model="reason"></vs-textarea>
       </div>
       <div class="mt-2">
         <vs-upload
-          action="https://jsonplaceholder.typicode.com/posts/"
+          :action="$http.baseUrl + '/transaction/upload' "
+          fileName="file"
+          :headers="uploadHeader"
           @on-success="successUpload"
+          @on-error="failUpload"
           text="Up ảnh bằng chứng"
-          :automatic="true"
-          limit="2"
+          limit="1"
         />
       </div>
       <div class="mt-2">
@@ -167,6 +166,12 @@ export default {
       return showMatchedBooks.filter(e =>
         e.name.toLowerCase().includes(this.searchText.trim().toLowerCase())
       );
+    },
+    uploadHeader() {
+      return {
+        Authorization:
+          "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dWhtc2U2MjUzMUBmcHQuZWR1LnZuIiwicm9sZXMiOltdLCJpZCI6MiwiZXhwIjoxNTYwNTE3MzkxfQ.5cKiIaREKcb2VKqB2hh7ftvw262qkVmpr8NiQlsCL86fnVb4uqfjxSpvQew1tVIRFnNcBajprWcTlR3NcsQJdg"
+      };
     }
   },
   methods: {
@@ -255,12 +260,17 @@ export default {
         color: "primary",
         position: "top-center"
       });
-
       this.rejectPopup = false;
       this.reason = "";
     },
-    successUpload() {
-      console.log("Success");
+    successUpload(e) {
+      const response = JSON.parse(e.target.response);
+      const url = response.url;
+
+      console.log(url);
+    },
+    failUpload(e) {
+      console.log(e);
     },
     callReload() {
       this.$emit("doReload");

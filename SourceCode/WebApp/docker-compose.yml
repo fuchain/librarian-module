@@ -13,4 +13,5 @@ services:
     volumes:
       - ./public:/root/src/app/public
       - ./src:/root/src/app/src
+      - ./.env:/root/src/app/src/.env
     tty: true

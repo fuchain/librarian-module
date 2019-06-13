@@ -223,7 +223,7 @@ export default {
       this.$vs.loading();
 
       this.$http
-        .put(`${this.$http.baseUrl}/requests/manually/cancel`, {
+        .put(`${this.$http.baseUrl}/requests/cancel`, {
           request_id: item.requestId
         })
         .then(() => {

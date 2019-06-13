@@ -25,4 +25,4 @@ LABEL "com.datadoghq.ad.logs"='[{"source": "java", "service": "webserver"}]'
 ENTRYPOINT ["java","-jar","LibrarianModule.jar","--spring.profiles.active=prod"]
 
 # docker build -t librarian-webserver .
-# docker run -d --name librarian-webserver -p 5000:8080 librarian-webserver:latest
+# docker run -d --name librarian-webserver --network=host -p 5000:8080 librarian-webserver:latest
