@@ -6,6 +6,6 @@ ssh root@ssh.fptu.tech <<EOF
     docker build -t librarian-webserver . || exit 1
     docker stop librarian-webserver || exit 1
     docker rm librarian-webserver || exit 1
-    docker run -d --name librarian-webserver -p 5000:8080 librarian-webserver:latest || exit 1
+    docker run -d --name librarian-webserver --network=host -p 5000:8080 librarian-webserver:latest || exit 1
     exit
 EOF
