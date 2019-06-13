@@ -74,7 +74,7 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.status }}</p>
+              <p>{{ tr.status || "transfer failed" }}</p>
             </vs-td>
 
             <vs-td>
@@ -99,6 +99,7 @@
           <vs-th>Thứ tự</vs-th>
           <vs-th>Người đang giữ sách</vs-th>
           <vs-th>Trạng thái</vs-th>
+          <vs-th>Bị từ chối</vs-th>
           <vs-th>Thời gian</vs-th>
         </template>
 
@@ -108,7 +109,9 @@
 
             <vs-td :data="data[indextr].current_keeper">{{data[indextr].current_keeper}}</vs-td>
 
-            <vs-td :data="data[indextr].status">{{data[indextr].status}}</vs-td>
+            <vs-td :data="data[indextr].status">{{data[indextr].status || "rejected"}}</vs-td>
+
+            <vs-td :data="data[indextr].reject_count">{{data[indextr].reject_count || "0"}} lần</vs-td>
 
             <vs-td
               :data="data[indextr].transaction_timestamp"
@@ -175,6 +178,11 @@ export default {
       )
       .then(response => {
         const data = response.data;
+
+        // Sort
+        data.sort((a, b) => {
+          return parseInt(b.updateDate) - parseInt(a.updateDate);
+        });
 
         this.dataList = [].concat(data);
       })
