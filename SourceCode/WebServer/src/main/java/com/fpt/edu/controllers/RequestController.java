@@ -886,7 +886,6 @@ public class RequestController extends BaseController {
 			throw new Exception("Cannot reject matching with status: " + matching.getStatus());
 		}
 
-
 		// Get hash value
 		InputStreamResource resource = utils.downloadFileTos3bucket(imageUrl);
 		String hashValue = ImageHelper.hashFromUrl(resource);
@@ -925,10 +924,9 @@ public class RequestController extends BaseController {
 				String transactionId = transaction.getId();
 				book.setLastTxId(transactionId);
 
-				// Notify returner that receiver rejected the book
 
 				// Update matching status to 'Confirmed'
-				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+				matching.setStatus(EMatchingStatus.REJECTED.getValue());
 				matchingServices.updateMatching(matching);
 
 				// Update borrow request status to 'Completed'
@@ -959,11 +957,11 @@ public class RequestController extends BaseController {
 			},
 			(transaction, response) -> { // failed
 				// Update request + matching status to 'Canceled'
-				matching.setStatus(EMatchingStatus.CONFIRMED.getValue());
+				matching.setStatus(EMatchingStatus.CANCELED.getValue());
 				matchingServices.updateMatching(matching);
 
-				returnRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+				returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
+				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
 				requestServices.updateRequest(returnRequest);
 				requestServices.updateRequest(receiveRequest);
 
