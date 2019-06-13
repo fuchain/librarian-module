@@ -125,7 +125,7 @@ public class RequestController extends BaseController {
 		// Fill data for request
 		if (type == ERequestType.BORROWING.getValue()) {
 			// Check user is active or not
-			if (user.isDisabled()) {
+			if (user.isDisabled() == null || user.isDisabled()) {
 				throw new Exception("User id: " + user.getId() + " is not active. Cannot make borrow request");
 			}
 
