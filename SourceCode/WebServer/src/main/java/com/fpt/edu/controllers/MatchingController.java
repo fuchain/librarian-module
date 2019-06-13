@@ -45,10 +45,17 @@ public class MatchingController extends BaseController {
 				"User id of matching: " + matchingUser.getId() + " does not match to user id from authentication"
 			);
 		}
+
 		// Receiver has not imported pin yet
-		if (matching.getStatus() != EMatchingStatus.CONFIRMED.getValue()) {
+		if (matching.getStatus() == EMatchingStatus.PENDING.getValue()) {
 			throw new EntityIdMismatchException("Receiver has not imported pin yet");
 		}
+
+		// Check the receiver rejected or not
+		if (matching.getStatus() == EMatchingStatus.REJECTED.getValue()) {
+			return new ResponseEntity<>("Receiver has rejected to the book", HttpStatus.EXPECTATION_FAILED);
+		}
+
 		// Return message
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("message", "confirmed");

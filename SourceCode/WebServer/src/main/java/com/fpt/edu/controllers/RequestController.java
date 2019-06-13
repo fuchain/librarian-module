@@ -295,11 +295,6 @@ public class RequestController extends BaseController {
 			throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
 		}
 
-		// Check the receiver rejected or not
-		if (matching.getStatus() == EMatchingStatus.REJECTED.getValue()) {
-			return new ResponseEntity<>("Receiver has rejected to the book", HttpStatus.EXPECTATION_FAILED);
-		}
-
 		// Check transfer type is returner or receiver
 		if (type == ETransferType.RETURNER.getValue()) {
 			jsonResult = returnBook(matching, sender);
