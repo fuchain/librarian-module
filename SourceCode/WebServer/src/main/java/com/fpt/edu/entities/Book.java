@@ -90,7 +90,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 		this.bcTransactionList = new ArrayList();
 	}
 
-	private boolean isNew() {
+	private boolean isNewToBigchain() {
 		// Check if this book is new to Bigchain
 		return this.assetId == null && this.lastTxId == null;
 	}
@@ -100,7 +100,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public Map<String, String> getAsset() {
-		if (this.isNew() && this.asset.isEmpty()) {
+		if (this.isNewToBigchain() && this.asset.isEmpty()) {
 			// This is default value of asset
 			this.asset.put(BC_BOOK_ID, String.valueOf(this.id));
 		}
@@ -113,7 +113,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
     public Map<String, String> getMetadata() {
-		if (this.isNew() && this.metadata.isEmpty()) {
+		if (this.isNewToBigchain() && this.metadata.isEmpty()) {
 			// These are default values of metadata
 			this.metadata.put(BC_CURRENT_KEEPER, this.user.getEmail());
 			this.metadata.put(BC_BOOK_STATUS, this.status);
@@ -127,7 +127,10 @@ public class Book extends AbstractTimestampEntity implements Serializable {
     }
 
 	public void setBcTransactionList(List<com.bigchaindb.model.Transaction> bcTransactionList) {
-		this.bcTransactionList = bcTransactionList;
+		this.bcTransactionList.clear();
+		for (com.bigchaindb.model.Transaction bcTransaction : bcTransactionList) {
+			this.bcTransactionList.add(bcTransaction.getMetaData());
+		}
 	}
 
 	public List<com.bigchaindb.model.Transaction> getBcTransactionList() {
