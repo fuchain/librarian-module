@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
 @EntityScan("com.fpt.edu.entities")
-@EnableJpaRepositories("com.fpt.edu.repository")
+@EnableJpaRepositories("com.fpt.edu.repositories")
 @ImportResource({"classpath:META-INF/application-config.xml"})
 
 public class Application {

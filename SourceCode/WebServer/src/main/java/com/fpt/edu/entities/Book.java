@@ -4,8 +4,8 @@ package com.fpt.edu.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fpt.edu.common.EBookStatus;
-import com.fpt.edu.common.EBookTransferStatus;
+import com.fpt.edu.common.enums.EBookStatus;
+import com.fpt.edu.common.enums.EBookTransferStatus;
 
 import java.io.Serializable;
 import java.util.ArrayList;

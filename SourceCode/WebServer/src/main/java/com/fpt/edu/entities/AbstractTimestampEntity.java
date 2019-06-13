@@ -1,7 +1,7 @@
 package com.fpt.edu.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fpt.edu.config.CustomLocalDateTimeSerializer;
+import com.fpt.edu.configs.CustomLocalDateTimeSerializer;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
