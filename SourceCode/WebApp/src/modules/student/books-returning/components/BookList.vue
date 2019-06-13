@@ -193,6 +193,19 @@ export default {
         .catch(err => {
           // Catch
           console.log(err);
+
+          const status = err.reponse.data.status;
+          if (status !== 412) {
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Người nhận đã từ chối nhận xách",
+              color: "warning",
+              position: "top-center"
+            });
+
+            this.popupActive = false;
+            this.callReload();
+          }
         })
         .finally(() => {});
     },

@@ -253,12 +253,8 @@ export default {
           this.$router.push("/books/keeping");
         })
         .catch(e => {
-          this.$vs.notify({
-            title: "Lỗi",
-            text: "Chưa thể hủy bỏ việc trả sách",
-            color: "warning",
-            position: "top-center"
-          });
+          // Catch error
+          console.log(e);
         })
         .finally(() => {
           this.$vs.loading.close();
