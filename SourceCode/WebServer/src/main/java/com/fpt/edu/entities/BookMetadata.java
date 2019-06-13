@@ -21,11 +21,11 @@ public class BookMetadata {
 
 	// This constructor is used to get metadata from database
 	public BookMetadata(
-		String curerntKeeper,
+		String currentKeeper,
 		String status
 	) {
 		this.data = new TreeMap<>();
-		this.data.put(CURRENT_KEEPER, curerntKeeper);
+		this.data.put(CURRENT_KEEPER, currentKeeper);
 		this.data.put(BOOK_STATUS, status);
 		this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
 		this.data.put(REJECT_COUNT, String.valueOf(BC_MIN_REJECT_COUNT));
@@ -96,10 +96,10 @@ public class BookMetadata {
 	}
 
 	public void setImgHash(String imgHash) {
-		this.data.put(REJECT_REASON, imgHash);
+		this.data.put(IMAGE_HASH, imgHash);
 	}
 
 	public String getImgHash(String imgHash) {
-		return this.data.get(REJECT_REASON);
+		return this.data.get(IMAGE_HASH);
 	}
 }
