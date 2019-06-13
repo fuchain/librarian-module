@@ -76,7 +76,11 @@ public class BookMetadata {
 	}
 
 	public int getRejectCount() {
-		return Integer.parseInt(this.data.get(REJECT_COUNT));
+		String count = this.data.get(REJECT_COUNT);
+		if (count == null) {
+			return 0;
+		}
+		return Integer.parseInt(count);
 	}
 
 	public void setRejectCount(int rejectCount) {
