@@ -49,9 +49,9 @@ public class RequestController extends BaseController {
 
 	@Autowired
 	public RequestController(RequestServices requestServices, UserServices userServices,
-	                         BookDetailsServices bookDetailsServices, BookServices bookServices,
-	                         MatchingServices matchingServices, TransactionServices transactionServices,
-	                         PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, AmazonS3 s3Client) {
+							 BookDetailsServices bookDetailsServices, BookServices bookServices,
+							 MatchingServices matchingServices, TransactionServices transactionServices,
+							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, AmazonS3 s3Client) {
 		this.requestServices = requestServices;
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
@@ -865,9 +865,9 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Receiver rejects to receive book", response = JSONObject.class)
 	@PostMapping(value = "/reject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<String> rejectBook(@RequestParam("file") MultipartFile multipartFile,
-	                                         @RequestParam("matching_id") Long matchingId,
-	                                         @RequestParam("reason") String reason,
-	                                         Principal principal) throws Exception {
+											 @RequestParam("matching_id") Long matchingId,
+											 @RequestParam("reason") String reason,
+											 Principal principal) throws Exception {
 		// Get receiver information
 		User receiver = userServices.getUserByEmail(principal.getName());
 
@@ -953,7 +953,7 @@ public class RequestController extends BaseController {
 				}
 
 				// Override value in response
-				jsonResult.put("message", "confirm book transfer successfully");
+				jsonResult.put("message", "reject to transfer book successfully");
 				jsonResult.put("status_code", HttpStatus.OK);
 
 				callback.set(true);
