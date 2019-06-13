@@ -5,6 +5,7 @@ import com.fpt.edu.entities.Transaction;
 import com.fpt.edu.services.TransactionServices;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -42,11 +43,13 @@ public class TransactionController extends BaseController {
 	@Autowired
 	AmazonS3 s3Client;
 	@ApiOperation(value = "Create a transaction", response = Transaction.class)
-	@RequestMapping(value = "/upload", method = RequestMethod.POST, produces = {MediaType.IMAGE_JPEG_VALUE,MediaType.IMAGE_PNG_VALUE,MediaType.IMAGE_GIF_VALUE})
-	public ResponseEntity<byte[]> testUploadFile(@RequestParam("file")MultipartFile file) throws URISyntaxException, IOException {
-		String fileUrl=utils.uploadFile(file);
-		InputStreamResource resource= utils.downloadFileTos3bucket(fileUrl);
-		return new ResponseEntity<>(IOUtils.toByteArray(resource.getInputStream()),HttpStatus.CREATED);
+	@PostMapping("/upload")
+	public ResponseEntity<String> testUploadFile(@RequestParam("file")MultipartFile file) throws URISyntaxException, IOException {
+		String fileUrl = utils.uploadFile(file);
+
+		JSONObject responseObj = new JSONObject();
+		responseObj.put("url", fileUrl);
+		return new ResponseEntity<>(responseObj.toString(), HttpStatus.CREATED);
 	}
 
 }
