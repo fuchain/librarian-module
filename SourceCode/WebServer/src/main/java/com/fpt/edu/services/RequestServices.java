@@ -67,9 +67,9 @@ public class RequestServices implements Observer {
     	return requestRepository.getNumerOfRequest(userId,type,status);
 	}
 
-	public void deleteRequest(Long requestId){
-    	requestRepository.deleteById(requestId);
-	}
+//	public void deleteRequest(Long requestId){
+//    	requestRepository.deleteById(requestId);
+//	}
 
 
 }
