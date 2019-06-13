@@ -8,6 +8,17 @@
         <vs-button class="w-full" @click="verify" icon="done">Xác nhận đã nhận sách</vs-button>
       </div>
     </vx-card>
+
+    <vs-popup title="Xác nhận nhận sách" :active.sync="verifyPopup">
+      <div class="mb-4">
+        Bạn có chắc muốn nhận quyển sách
+        <strong>{{ bookName }}</strong>
+        (ID {{ bookID }}) không?
+      </div>
+      <div>
+        <vs-button class="w-full" icon="check" @click="doneVerify">Xác nhận</vs-button>
+      </div>
+    </vs-popup>
   </div>
 </template>
 
@@ -15,7 +26,10 @@
 export default {
   data() {
     return {
-      pin: ""
+      pin: "",
+      verifyPopup: false,
+      bookName: "",
+      bookID: 0
     };
   },
   methods: {
@@ -35,14 +49,14 @@ export default {
       this.$vs.loading();
 
       this.$http
-        .put(`${this.$http.baseUrl}/requests/manually/confirm`, {
-          pin: this.pin
-        })
+        .get(`${this.$http.baseUrl}/requests/manually/verify?pin=${this.pin}`)
         .then(response => {
           const data = response.data;
 
           // Log
-          console.log(data);
+          this.bookName = data.bookDetail.name;
+          this.bookID = data.id;
+          this.verifyPopup = true;
         })
         .catch(e => {
           // Catch error
@@ -59,11 +73,15 @@ export default {
           this.$vs.loading.close();
         });
     },
+    doneVerify() {
+      this.verifyPopup = false;
+      this.confirm();
+    },
     async confirm() {
       this.$vs.loading();
 
       this.$http
-        .put(`${this.$http.baseUrl}/requests/manually/verify`, {
+        .put(`${this.$http.baseUrl}/requests/manually/confirm`, {
           pin: this.pin
         })
         .then(() => {
