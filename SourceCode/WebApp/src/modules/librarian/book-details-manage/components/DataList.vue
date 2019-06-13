@@ -53,7 +53,7 @@
         <vs-th>Mã môn</vs-th>
         <vs-th>Cập nhật</vs-th>
         <vs-th>Số lượng sách</vs-th>
-        <ts-th></ts-th>
+        <vs-th></vs-th>
       </template>
 
       <template slot-scope="{data}">
