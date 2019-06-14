@@ -1,5 +1,7 @@
 package com.fpt.edu.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fpt.edu.common.helper.ImportHelper;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.entities.BookDetail;
@@ -8,6 +10,7 @@ import com.fpt.edu.services.BookDetailsServices;
 import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
 import io.swagger.annotations.ApiOperation;
+import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -29,8 +34,8 @@ public class LibrarianController extends BaseController {
 
 	@Autowired
 	public LibrarianController(UserServices userServices,
-	                           BookDetailsServices bookDetailsServices,
-	                           BookServices bookServices) {
+							   BookDetailsServices bookDetailsServices,
+							   BookServices bookServices) {
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
 		this.bookServices = bookServices;
@@ -126,4 +131,20 @@ public class LibrarianController extends BaseController {
 		bookServices.getListTransactionsFromBigchain(book);
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
+
+	@ApiOperation(value = "Get history of book instance", response = Book.class)
+	@PostMapping("/bookDetails/import")
+	public ResponseEntity<String> importData(@RequestParam("file")MultipartFile file) throws Exception {
+		File f = utils.convertMultiPartToFile(file);
+		String arrBook = FileUtil.readAsString(f);
+		JSONArray arr = new JSONArray(arrBook);
+		ImportHelper myHelper = new ImportHelper(arr);
+		myHelper.startImport();
+
+		return new ResponseEntity<>(arrBook.toString(), HttpStatus.OK);
+
+
+	}
+
+
 }
