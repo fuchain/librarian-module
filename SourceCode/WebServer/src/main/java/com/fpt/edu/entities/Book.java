@@ -97,7 +97,9 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public BookMetadata getMetadata() {
-		this.bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+		if (isNewToBigchain()) {
+			this.bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+		}
 		return this.bookMetadata;
 	}
 
