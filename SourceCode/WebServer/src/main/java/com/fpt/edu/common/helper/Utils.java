@@ -144,7 +144,7 @@ public class Utils {
 
 	public String uploadFileTos3bucket(String fileName, File file) {
 		s3Client.putObject(new PutObjectRequest(bucketName, fileName, file)
-			.withCannedAcl(CannedAccessControlList.AuthenticatedRead));
+			.withCannedAcl(CannedAccessControlList.PublicRead));
 		return s3Client.getUrl(this.bucketName, fileName).toString();
 
 	}
