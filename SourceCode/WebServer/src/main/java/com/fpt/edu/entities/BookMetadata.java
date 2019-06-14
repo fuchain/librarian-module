@@ -14,7 +14,7 @@ public class BookMetadata {
 		this.data.put(CURRENT_KEEPER, EMPTY_VALUE);
 		this.data.put(BOOK_STATUS, EMPTY_VALUE);
 		this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
-		this.data.put(REJECT_COUNT, String.valueOf(BC_MIN_REJECT_COUNT));
+		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
 		this.data.put(REJECT_REASON, EMPTY_VALUE);
 		this.data.put(IMAGE_HASH, EMPTY_VALUE);
 	}
@@ -28,7 +28,7 @@ public class BookMetadata {
 		this.data.put(CURRENT_KEEPER, currentKeeper);
 		this.data.put(BOOK_STATUS, status);
 		this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
-		this.data.put(REJECT_COUNT, String.valueOf(BC_MIN_REJECT_COUNT));
+		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
 		this.data.put(REJECT_REASON, EMPTY_VALUE);
 		this.data.put(IMAGE_HASH, EMPTY_VALUE);
 	}
@@ -76,11 +76,8 @@ public class BookMetadata {
 	}
 
 	public int getRejectCount() {
-		String count = this.data.get(REJECT_COUNT);
-		if (count == null) {
-			return 0;
-		}
-		return Integer.parseInt(count);
+		String rejectCount = this.data.get(REJECT_COUNT);
+		return rejectCount == null ? MIN_REJECT_COUNT : Integer.parseInt(rejectCount);
 	}
 
 	public void setRejectCount(int rejectCount) {
@@ -88,11 +85,12 @@ public class BookMetadata {
 	}
 
 	public boolean isLastRejectCountOver() {
-		return this.getRejectCount() >= BC_MAX_REJECT_COUNT;
+		return this.getRejectCount() >= MAX_REJECT_COUNT;
 	}
 
 	public String getRejectReason() {
-		return this.data.get(REJECT_REASON);
+		String reason = this.data.get(REJECT_REASON);
+		return reason == null ? EMPTY_VALUE : reason;
 	}
 
 	public void setRejectReason(String rejectReason) {
@@ -103,7 +101,8 @@ public class BookMetadata {
 		this.data.put(IMAGE_HASH, imgHash);
 	}
 
-	public String getImgHash(String imgHash) {
-		return this.data.get(IMAGE_HASH);
+	public String getImgHash() {
+		String imgHash = this.data.get(IMAGE_HASH);
+		return imgHash == null ? EMPTY_VALUE : imgHash;
 	}
 }
