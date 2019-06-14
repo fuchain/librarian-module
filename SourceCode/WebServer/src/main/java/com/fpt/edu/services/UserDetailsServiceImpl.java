@@ -2,7 +2,7 @@ package com.fpt.edu.services;
 
 import com.fpt.edu.entities.Role;
 import com.fpt.edu.entities.User;
-import com.fpt.edu.repository.UserRepository;
+import com.fpt.edu.repositories.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

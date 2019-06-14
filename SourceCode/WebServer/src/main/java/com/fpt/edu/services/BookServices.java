@@ -3,7 +3,7 @@ package com.fpt.edu.services;
 import com.bigchaindb.constants.Operations;
 import com.bigchaindb.model.Transaction;
 import com.fpt.edu.entities.Book;
-import com.fpt.edu.repository.BookRepository;
+import com.fpt.edu.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -65,17 +65,10 @@ public class BookServices {
 	}
 
 	public Transaction getLastTransactionFromBigchain(Book book) throws Exception {
-		book.setBcLastTransaction(bigchainTransactionServices.getTransactionById(book.getLastTxId()));
+		Transaction transaction = bigchainTransactionServices.getTransactionById(book.getLastTxId());
+		book.setBcLastTransaction(transaction);
+		book.getAsset().setData((Map<String, String>) transaction.getAsset().getData());
+		book.getMetadata().setData((Map<String, String>) transaction.getMetaData());
 		return book.getBcLastTransaction();
-	}
-
-	public Map<String, String> getAssetFromBigchain(Book book, Transaction transaction) {
-		book.setAsset((Map<String, String>) transaction.getAsset().getData());
-		return book.getAsset();
-	}
-
-	public Map<String, String> getMetadataFromBigchain(Book book, Transaction transaction) {
-		book.setMetadata((Map<String, String>) transaction.getMetaData());
-		return book.getMetadata();
 	}
 }

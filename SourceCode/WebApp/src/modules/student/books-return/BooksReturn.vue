@@ -235,7 +235,7 @@ export default {
       this.$vs.loading();
 
       this.$http
-        .put(`${this.$http.baseUrl}/requests/manually/cancel`, {
+        .put(`${this.$http.baseUrl}/requests/cancel`, {
           request_id: this.requestId
         })
         .then(() => {
@@ -253,12 +253,8 @@ export default {
           this.$router.push("/books/keeping");
         })
         .catch(e => {
-          this.$vs.notify({
-            title: "Lỗi",
-            text: "Chưa thể hủy bỏ việc trả sách",
-            color: "warning",
-            position: "top-center"
-          });
+          // Catch error
+          console.log(e);
         })
         .finally(() => {
           this.$vs.loading.close();

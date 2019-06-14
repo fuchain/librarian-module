@@ -1,21 +1,18 @@
 package com.fpt.edu.services;
 
 
-import com.fpt.edu.common.RequestQueueSimulate.Message;
-import com.fpt.edu.common.RequestQueueSimulate.Observer;
+import com.fpt.edu.common.request_queue_simulate.Message;
+import com.fpt.edu.common.request_queue_simulate.Observer;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Request;
-import com.fpt.edu.repository.RequestRepository;
+import com.fpt.edu.repositories.RequestRepository;
 import org.apache.commons.collections.IteratorUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RequestServices implements Observer {

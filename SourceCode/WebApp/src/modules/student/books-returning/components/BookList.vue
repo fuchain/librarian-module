@@ -193,6 +193,27 @@ export default {
         .catch(err => {
           // Catch
           console.log(err);
+
+          const status = err.response.status;
+          if (status !== 412) {
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Người nhận đã từ chối nhận xách",
+              color: "warning",
+              position: "top-center"
+            });
+
+            this.popupActive = false;
+
+            this.$store.dispatch("getNumOfBooks");
+
+            setTimeout(
+              function() {
+                this.$router.push("/books/keeping");
+              }.bind(this),
+              500
+            );
+          }
         })
         .finally(() => {});
     },
@@ -223,7 +244,7 @@ export default {
       this.$vs.loading();
 
       this.$http
-        .put(`${this.$http.baseUrl}/requests/manually/cancel`, {
+        .put(`${this.$http.baseUrl}/requests/cancel`, {
           request_id: item.requestId
         })
         .then(() => {
