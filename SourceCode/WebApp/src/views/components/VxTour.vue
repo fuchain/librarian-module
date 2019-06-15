@@ -77,13 +77,6 @@ export default {
       type: Array
     }
   },
-  mounted() {
-    if (
-      this.$auth.isAuthenticated() &&
-      !this.$auth.isAdmin() &&
-      this.$tours["vuesaxTour"]
-    ) { this.$tours["vuesaxTour"].start(); }
-  },
   methods: {
     handleAction(bool) {
       if (bool) this.$store.dispatch("openSidebar");
