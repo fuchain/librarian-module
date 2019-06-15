@@ -12,6 +12,8 @@
 import themeConfig from "@/../themeConfig.js";
 import Error500 from "./views/Error500";
 
+import initSocket from "@core/socket";
+
 const VxTour = () => import("@/views/components/VxTour.vue");
 
 window.isMobile = function() {
@@ -141,6 +143,9 @@ export default {
       }
 
       this.$vs.loading.close();
+
+      // Socket
+      initSocket();
     }
   },
   errorCaptured(err, vm, info) {
