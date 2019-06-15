@@ -16,7 +16,8 @@
         "jsonwebtoken": "^8.5.1",
         "morgan": "^1.9.1",
         "pg": "^7.11.0",
-        "sequelize": "^5.8.4"
+        "sequelize": "^5.8.4",
+        "socket.io": "^2.2.0"
     },
     "scripts": {
         "start": "node ./dist/server.js",
