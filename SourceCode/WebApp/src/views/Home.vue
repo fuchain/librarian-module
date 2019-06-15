@@ -175,7 +175,14 @@ export default {
     }
   },
   methods: {},
-  components: {}
+  components: {},
+  mounted() {
+    if (
+      this.$auth.isAuthenticated() &&
+      !this.$auth.isAdmin() &&
+      this.$tours["vuesaxTour"]
+    ) { this.$tours["vuesaxTour"].start(); }
+  }
 };
 </script>
 

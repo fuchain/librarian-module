@@ -78,7 +78,11 @@ export default {
     }
   },
   mounted() {
-    this.$tours["vuesaxTour"].start();
+    if (
+      this.$auth.isAuthenticated() &&
+      !this.$auth.isAdmin() &&
+      this.$tours["vuesaxTour"]
+    ) { this.$tours["vuesaxTour"].start(); }
   },
   methods: {
     handleAction(bool) {
