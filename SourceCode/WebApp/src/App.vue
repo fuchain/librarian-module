@@ -146,10 +146,6 @@ export default {
       }
 
       this.$vs.loading.close();
-
-      if (!this.$auth.isAdmin() && this.$tours["myTour"]) {
-        this.$tours["myTour"].start();
-      }
     }
   },
   errorCaptured(err, vm, info) {
