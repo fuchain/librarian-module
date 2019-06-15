@@ -15,7 +15,7 @@
     @mouseover="mouseover"
     @mouseout="mouseout"
   >
-    <div @click="clickGroup" class="group-header w-full">
+    <div @click="clickGroup" class="group-header w-full" :id="'menu-group-' + groupIndex">
       <span class="flex items-center w-full">
         <feather-icon
           :icon="group.icon || 'CircleIcon'"
@@ -51,6 +51,7 @@
           :icon="itemIcon(groupIndex + '.' + index)"
           icon-small
           :target="groupItem.target"
+          :itemIndex="parseInt(index)"
           v-else
         >
           <span class="truncate">{{ groupItem.name }}</span>

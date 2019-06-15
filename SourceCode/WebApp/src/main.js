@@ -35,6 +35,11 @@ import VueMoment from "vue-moment";
 import moment from "moment";
 import "moment/locale/vi";
 
+// Vue tour
+import VueTour from "vue-tour";
+import "vue-tour/dist/vue-tour.css";
+Vue.use(VueTour);
+
 // Form Wizard
 Vue.use(VueFormWizard);
 

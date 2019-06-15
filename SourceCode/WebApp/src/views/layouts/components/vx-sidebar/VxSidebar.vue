@@ -59,6 +59,7 @@
       :key="`sidebarItem-${index}`"
       v-if="!sidebarItem.submenu"
       :index="index"
+      :itemIndex="index * 100"
       :to="sidebarItem.slug !== 'external' ? sidebarItem.url : ''"
       :href="sidebarItem.slug === 'external' ? sidebarItem.url : ''"
       :icon="sidebarItem.icon"

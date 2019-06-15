@@ -17,6 +17,9 @@ const actions = {
   updateTheme({ commit }, val) {
     commit("UPDATE_THEME", val);
   },
+  openSidebar({ commit }) {
+    commit("TOGGLE_IS_SIDEBAR_ACTIVE", true);
+  },
 
   // ////////////////////////////////////////////
   // COMPONENT
