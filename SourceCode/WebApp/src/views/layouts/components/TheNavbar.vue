@@ -126,8 +126,8 @@
             >
               <ul class="bordered-items">
                 <li
-                  v-for="ntf in unreadNotifications"
-                  :key="ntf.index"
+                  v-for="(ntf, index) in unreadNotifications"
+                  :key="index"
                   class="flex justify-between px-4 py-4 notification cursor-pointer"
                 >
                   <div class="flex items-start">
@@ -236,7 +236,6 @@ export default {
       navbarSearchAndPinList: this.$store.state.navbarSearchAndPinList,
       searchQuery: "",
       showFullSearch: false,
-      unreadNotifications: [],
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,
@@ -304,6 +303,10 @@ export default {
     },
     fullname() {
       return this.$store.getters.fullname;
+    },
+
+    unreadNotifications() {
+      return this.$store.state.notifications;
     }
   },
   methods: {
