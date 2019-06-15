@@ -43,8 +43,8 @@ async function main() {
         // Init roues
         app.use("/api/v1", routes);
 
-        app.listen(3000, function() {
-            console.log("App is listening on port 3000!");
+        app.listen(5002, function() {
+            console.log("App is listening on port 5002!");
         });
     } catch (error) {
         console.error(error);
