@@ -4,11 +4,11 @@ import $http from "@http";
 
 function init() {
   // Socket
-  const socket = io.connect(`${$http.nodeUrl}/nodeUrl`, {
+  const socket = io.connect(`${$http.socketUrl}`, {
     query: "token=" + auth.getAccessToken()
   });
 
-  socket.on("notification", function(msg) {
+  window.socket = socket.on("notification", function(msg) {
     window.vue.$vs.notify({
       title: "Thông báo mới",
       text: msg,
