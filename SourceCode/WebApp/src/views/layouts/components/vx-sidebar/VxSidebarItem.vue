@@ -12,6 +12,7 @@
   <div
     :class="[{'vs-sidebar-item-active':activeLink}, {'disabled-item pointer-events-none': isDisabled}]"
     class="vs-sidebar--item"
+    :id="to === '/' ? 'menu-item-home' : 'menu-item-' + itemIndex"
   >
     <router-link
       v-if="to"
@@ -57,6 +58,10 @@ export default {
       type: String
     },
     index: {
+      default: null,
+      type: [String, Number]
+    },
+    itemIndex: {
       default: null,
       type: [String, Number]
     },
