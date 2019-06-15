@@ -85,11 +85,6 @@ export default {
         {
           target: "#menu-item-400",
           content: "<strong>FUCoin</strong> có thể xài để đổi quà ở Cóc Shop"
-        },
-        {
-          target: "#menu-item-500",
-          content:
-            "Nhớ đánh giá ở đây để chúng tôi hoàn thiện app hơn nhé, cảm ơn bạn đã xem tour guide"
         }
       ]
     };
