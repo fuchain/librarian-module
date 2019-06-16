@@ -81,3 +81,5 @@ configurations {
 bootJar {
 	mainClassName = 'com.fpt.edu.app.Application'
 }
+
+mainClassName = 'com.fpt.edu.app.Application'
