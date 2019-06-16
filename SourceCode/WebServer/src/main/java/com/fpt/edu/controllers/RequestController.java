@@ -47,9 +47,9 @@ public class RequestController extends BaseController {
 
 	@Autowired
 	public RequestController(RequestServices requestServices, UserServices userServices,
-	                         BookDetailsServices bookDetailsServices, BookServices bookServices,
-	                         MatchingServices matchingServices, TransactionServices transactionServices,
-	                         PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, AmazonS3 s3Client) {
+							 BookDetailsServices bookDetailsServices, BookServices bookServices,
+							 MatchingServices matchingServices, TransactionServices transactionServices,
+							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, AmazonS3 s3Client) {
 		this.requestServices = requestServices;
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
@@ -80,7 +80,12 @@ public class RequestController extends BaseController {
 		Hibernate.initialize(user.getListBooks());
 
 		// Get all requests based on user id and request type, with status not completed
-		List<Request> requestList = requestServices.findByUserIdAndType(user.getId(), type, ERequestStatus.COMPLETED.getValue());
+		List<Request> requestList = requestServices.findByUserIdAndType(
+			user.getId(),
+			type,
+			ERequestStatus.PENDING.getValue(),
+			ERequestStatus.MATCHING.getValue()
+		);
 
 		// Get paired user information from the request whose status is matching
 		for (Request r : requestList) {
@@ -88,7 +93,10 @@ public class RequestController extends BaseController {
 				if (r.getType() == ERequestType.RETURNING.getValue()) {
 
 					// Get matching based on request id, matching status has not confirmed yet
-					Matching matching = matchingServices.getByReturnRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
+					Matching matching = matchingServices.getByReturnRequestId(
+						r.getId(),
+						EMatchingStatus.PAIRED.getValue(),
+						EMatchingStatus.PENDING.getValue());
 
 					// Set paired user information for request
 					User borrower = matching.getBorrowerRequest().getUser();
@@ -96,7 +104,10 @@ public class RequestController extends BaseController {
 				} else if (r.getType() == ERequestType.BORROWING.getValue()) {
 
 					// Get matching based on request id, matching status has not confirmed yet
-					Matching matching = matchingServices.getByReceiveRequestId(r.getId(), EMatchingStatus.CONFIRMED.getValue());
+					Matching matching = matchingServices.getByReceiveRequestId(
+						r.getId(),
+						EMatchingStatus.PAIRED.getValue(),
+						EMatchingStatus.PENDING.getValue());
 
 					// Set paired user information for request
 					User returner = matching.getReturnerRequest().getUser();
@@ -167,8 +178,11 @@ public class RequestController extends BaseController {
 		}
 
 		// Check existed request based on request type, user id, book detail, with request status is not completed
-		boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
-			bookDetail.getId(), (long) 0);
+		boolean existed = requestServices.checkExistedRequest(
+			type, user.getId(),
+			ERequestStatus.PENDING.getValue(), ERequestStatus.MATCHING.getValue(),
+			bookDetail.getId(), (long) 0
+		);
 		if (existed) {
 			throw new EntityAldreayExisted("Request's already existed");
 		}
@@ -212,8 +226,11 @@ public class RequestController extends BaseController {
 		}
 
 		//check request existed based on request type, user id, book id, with request status is not completed
-		boolean existed = requestServices.checkExistedRequest(type, user.getId(), ERequestStatus.COMPLETED.getValue(),
-			(long) 0, book.getId());
+		boolean existed = requestServices.checkExistedRequest(
+			type, user.getId(),
+			ERequestStatus.PENDING.getValue(), ERequestStatus.MATCHING.getValue(),
+			(long) 0, book.getId()
+		);
 		if (existed) {
 			throw new EntityAldreayExisted("Request's already existed");
 		}
@@ -254,7 +271,7 @@ public class RequestController extends BaseController {
 			publishSubscribe.notifyToSub();
 
 			Matching matching = new Matching();
-			matching.setStatus(EMatchingStatus.PENDING.getValue());
+			matching.setStatus(EMatchingStatus.PAIRED.getValue());
 
 			if (matchRequest.getBook() != null) {
 				matching.setBook(matchRequest.getBook());
@@ -508,7 +525,10 @@ public class RequestController extends BaseController {
 		Date now = new Date();
 
 		// Check user has created a matching instance in DB or not
-		Matching existedMatching = matchingServices.getByBookId(bookId, EMatchingStatus.CONFIRMED.getValue());
+		Matching existedMatching = matchingServices.getByBookId(
+			bookId,
+			EMatchingStatus.PAIRED.getValue(),
+			EMatchingStatus.PENDING.getValue());
 		if (existedMatching != null) {
 			long duration = utils.getDuration(existedMatching.getMatchingStartDate(), now, TimeUnit.MINUTES);
 
@@ -557,7 +577,10 @@ public class RequestController extends BaseController {
 		bookServices.updateBook(book);
 
 		// Get matching id
-		Matching m = matchingServices.getByBookId(book.getId(), EMatchingStatus.CONFIRMED.getValue());
+		Matching m = matchingServices.getByBookId(
+			book.getId(),
+			EMatchingStatus.PAIRED.getValue(),
+			EMatchingStatus.PENDING.getValue());
 		Long matchingId = m.getId();
 
 		// Return response to client
@@ -574,7 +597,10 @@ public class RequestController extends BaseController {
 		Matching duplicatedMat;
 		do {
 			pin = utils.getPin();
-			duplicatedMat = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+			duplicatedMat = matchingServices.getByPin(
+				pin,
+				EMatchingStatus.PAIRED.getValue(),
+				EMatchingStatus.PENDING.getValue());
 		} while (duplicatedMat != null);
 
 		return pin;
@@ -590,7 +616,10 @@ public class RequestController extends BaseController {
 		}
 
 		// Check pin from client with matching
-		Matching matching = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+		Matching matching = matchingServices.getByPin(
+			pin,
+			EMatchingStatus.PAIRED.getValue(),
+			EMatchingStatus.PENDING.getValue());
 		if (matching == null) {
 			throw new EntityNotFoundException("Pin: " + pin + " is invalid, could not find any matching with pin");
 		}
@@ -634,7 +663,10 @@ public class RequestController extends BaseController {
 		String pin = bodyObject.getString("pin");
 
 		// Check pin from client with matching
-		Matching matching = matchingServices.getByPin(pin, EMatchingStatus.CONFIRMED.getValue());
+		Matching matching = matchingServices.getByPin(
+			pin,
+			EMatchingStatus.PAIRED.getValue(),
+			EMatchingStatus.PENDING.getValue());
 		if (matching == null) {
 			throw new EntityNotFoundException("Pin: " + pin + " is invalid, could not find any matching with pin");
 		}
@@ -823,12 +855,18 @@ public class RequestController extends BaseController {
 			Matching matching;
 			Request pairedRequest;
 			if (request.getType() == ERequestType.RETURNING.getValue()) {
-				matching = matchingServices.getByReturnRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+				matching = matchingServices.getByReturnRequestId(
+					request.getId(),
+					EMatchingStatus.PAIRED.getValue(),
+					EMatchingStatus.PENDING.getValue());
 
 				// Get paired request
 				pairedRequest = matching.getBorrowerRequest();
 			} else if (request.getType() == ERequestType.BORROWING.getValue()) {
-				matching = matchingServices.getByReceiveRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+				matching = matchingServices.getByReceiveRequestId(
+					request.getId(),
+					EMatchingStatus.PAIRED.getValue(),
+					EMatchingStatus.PENDING.getValue());
 
 				// Get paired request
 				pairedRequest = matching.getReturnerRequest();
@@ -853,7 +891,10 @@ public class RequestController extends BaseController {
 
 	private void cancelManualRequest(Request request) {
 		// Get matching by return request
-		Matching matching = matchingServices.getByReturnRequestId(request.getId(), EMatchingStatus.CONFIRMED.getValue());
+		Matching matching = matchingServices.getByReturnRequestId(
+			request.getId(),
+			EMatchingStatus.PAIRED.getValue(),
+			EMatchingStatus.PENDING.getValue());
 		if (matching != null) {
 			// Update matching status to 'CANCELED'
 			matching.setStatus(EMatchingStatus.CANCELED.getValue());
