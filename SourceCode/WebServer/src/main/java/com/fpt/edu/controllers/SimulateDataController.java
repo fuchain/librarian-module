@@ -47,7 +47,7 @@ public class SimulateDataController extends BaseController {
 
 		// Init data for  category
 		List<Category> categories = new ArrayList<>();
-		String[] categoryNames = {"Computer Scienece", "Software Engineering", "Business Management"};
+		String[] categoryNames = {"Computer Science", "Software Engineering", "Business Management"};
 		for (String categoryName : categoryNames) {
 			Category category = new Category();
 			category.setName(categoryName);
@@ -76,7 +76,7 @@ public class SimulateDataController extends BaseController {
 		}
 
 		// Init data for book detail
-		String[] bookDetailNames = {"XML", "C Sharp", "JAVA", "JAVASCRIPT", "SPRING", "BigchainDB", "Data Structure", "Algorithm", "Network", "Machine Learning"};
+		String[] bookDetailNames = {"Introduction to Databases", "Discrete Mathematics", "Object-Oriented Programming", "Front-end Web Development", "Data Structures and Algorithms", "Operating Systems", "Introduction to Software Engineering", "Web-based Java Applications", "Computer Networking", "Software Quality Assurance and Testing", "Software Requirements", ".NET and C#"};
 		int count = 1;
 		for (String bookDetailName : bookDetailNames) {
 			BookDetail bookDetail = new BookDetail();
@@ -92,7 +92,7 @@ public class SimulateDataController extends BaseController {
 			categoryList.add(categories.get(random.nextInt(categories.size())));
 			bookDetail.setCategories(categoryList);
 
-			// Map publiser to book detail
+			// Map publisher to book detail
 			bookDetail.setPublisher(publishers.get(random.nextInt(publishers.size())));
 
 			bookDetailRepository.save(bookDetail);
@@ -110,17 +110,17 @@ public class SimulateDataController extends BaseController {
 					book.getAsset(), book.getMetadata(),
 					String.valueOf(book.getUser().getEmail()),
 					(transaction, response) -> {
-						String trasactionId = transaction.getId();
-						book.setAssetId(trasactionId);
-						book.setLastTxId(trasactionId);
+						String transactionId = transaction.getId();
+						book.setAssetId(transactionId);
+						book.setLastTxId(transactionId);
 						if (!book.getAssetId().isEmpty()) {
 							bookList.add(book);
 							bookDetail.setBooks(bookList);
 						}
 					}, (transaction, response) -> {
-						String trasactionId = transaction.getId();
-						book.setAssetId(trasactionId);
-						book.setLastTxId(trasactionId);
+						String transactionId = transaction.getId();
+						book.setAssetId(transactionId);
+						book.setLastTxId(transactionId);
 						if (!book.getAssetId().isEmpty()) {
 							bookList.add(book);
 							bookDetail.setBooks(bookList);
@@ -130,6 +130,7 @@ public class SimulateDataController extends BaseController {
 				Thread.sleep(500);
 			}
 		}
+
 		return "Init simulate data completed!";
 	}
 
