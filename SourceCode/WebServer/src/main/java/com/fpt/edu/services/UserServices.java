@@ -85,7 +85,4 @@ public class UserServices {
 	public int countNumberOfBookThatUserKeep(Long userId){
 		return bookRepository.getBookNumberOfCurrentUser(userId);
 	}
-
-
-
 }
