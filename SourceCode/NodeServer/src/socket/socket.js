@@ -1,7 +1,7 @@
 import { verifyJWT } from "@utils/jwt";
+import { setRedisItem, deleteRedisItem } from "@utils/redis";
 
 export let io;
-export const socketPool = {};
 
 function initSocketModule(server) {
     io = require("socket.io")(server);
@@ -14,9 +14,7 @@ function initSocketModule(server) {
                 socket.payload = payload;
 
                 const email = payload.sub;
-
-                if (socketPool[email]) delete socketPool[email];
-                socketPool[email] = socket.id;
+                setRedisItem(email, socket.id);
 
                 next();
             } catch (err) {
@@ -28,9 +26,10 @@ function initSocketModule(server) {
     });
 
     io.on("connection", socket => {
-        socket.on("disconnect", reason => {
+        socket.on("disconnect", () => {
             const email = socket.payload.sub;
-            delete socketPool[email];
+
+            deleteRedisItem(email);
         });
     });
 }
