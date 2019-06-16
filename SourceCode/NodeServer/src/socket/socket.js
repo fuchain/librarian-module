@@ -14,6 +14,8 @@ function initSocketModule(server) {
                 socket.payload = payload;
 
                 const email = payload.sub;
+
+                if (socketPool[email]) delete socketPool[email];
                 socketPool[email] = socket.id;
 
                 next();
@@ -23,6 +25,13 @@ function initSocketModule(server) {
         } else {
             next(new Error("Authentication error"));
         }
+    });
+
+    io.on("connection", socket => {
+        socket.on("disconnect", reason => {
+            const email = socket.payload.sub;
+            delete socketPool[email];
+        });
     });
 }
 
