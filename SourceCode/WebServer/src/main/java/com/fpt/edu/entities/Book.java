@@ -85,10 +85,6 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public BookAsset getAsset() {
-		if (this.bookAsset == null) {
-			this.bookAsset = new BookAsset(String.valueOf(this.id));
-		}
-
 		return this.bookAsset;
 	}
 
@@ -97,7 +93,6 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public BookMetadata getMetadata() {
-		this.bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 		return this.bookMetadata;
 	}
 

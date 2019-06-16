@@ -46,7 +46,6 @@ public class TransactionController extends BaseController {
 	@PostMapping("/upload")
 	public ResponseEntity<String> testUploadFile(@RequestParam("file")MultipartFile file) throws URISyntaxException, IOException {
 		String fileUrl = utils.uploadFile(file);
-
 		JSONObject responseObj = new JSONObject();
 		responseObj.put("url", fileUrl);
 		return new ResponseEntity<>(responseObj.toString(), HttpStatus.CREATED);

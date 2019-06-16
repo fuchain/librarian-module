@@ -8,7 +8,11 @@ import routes from "@routes";
 import models from "@models";
 import { checkEnvLoaded } from "@utils/env";
 
+import initSocketModule from "./socket/socket";
+import initRedisModule from "@utils/redis";
+
 const app = express();
+const server = require("http").Server(app);
 
 async function main() {
     try {
@@ -43,9 +47,12 @@ async function main() {
         // Init roues
         app.use("/api/v1", routes);
 
-        app.listen(3000, function() {
-            console.log("App is listening on port 3000!");
+        server.listen(5002, function() {
+            console.log("App is listening on port 5002!");
         });
+
+        initSocketModule(server);
+        initRedisModule();
     } catch (error) {
         console.error(error);
         process.exit(1);

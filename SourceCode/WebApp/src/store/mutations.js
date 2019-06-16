@@ -104,6 +104,14 @@ const mutations = {
   ADD_COIN(state, amount) {
     state.coin = parseInt(state.coin) + amount;
     localStorage.setItem("fucoin", parseInt(state.coin));
+  },
+
+  // Notification
+  ADD_NOTIFICATION(state, notification) {
+    const newList = state.notifications.concat(notification);
+    newList.sort((a, b) => b.time - a.time);
+
+    state.notifications = newList;
   }
 };
 

@@ -17,6 +17,9 @@ const actions = {
   updateTheme({ commit }, val) {
     commit("UPDATE_THEME", val);
   },
+  openSidebar({ commit }) {
+    commit("TOGGLE_IS_SIDEBAR_ACTIVE", true);
+  },
 
   // ////////////////////////////////////////////
   // COMPONENT
@@ -74,6 +77,11 @@ const actions = {
   // Add coin
   addCoin({ commit }, amount) {
     commit("ADD_COIN", amount);
+  },
+
+  // Notification
+  addNotification({ commit }, notification) {
+    commit("ADD_NOTIFICATION", notification);
   }
 };
 

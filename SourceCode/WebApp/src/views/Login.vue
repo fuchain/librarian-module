@@ -84,6 +84,8 @@
 </template>
 
 <script>
+import initSocket from "@core/socket";
+
 export default {
   data() {
     return {
@@ -125,6 +127,9 @@ export default {
           // Get profile
           await this.$store.dispatch("getProfile");
           await this.$store.dispatch("getNumOfBooks");
+
+          // Socket
+          initSocket();
 
           this.$router.push("/");
         })
@@ -185,6 +190,9 @@ export default {
           // Get profile
           await this.$store.dispatch("getProfile");
           await this.$store.dispatch("getNumOfBooks");
+
+          // Socket
+          initSocket();
 
           this.$router.push("/");
         })

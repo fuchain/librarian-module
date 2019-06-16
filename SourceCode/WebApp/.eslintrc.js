@@ -19,7 +19,8 @@ module.exports = {
         named: "never",
         asyncArrow: "always"
       }
-    ]
+    ],
+    "vue/no-use-v-if-with-v-for": "off"
   },
   parserOptions: {
     parser: "babel-eslint"

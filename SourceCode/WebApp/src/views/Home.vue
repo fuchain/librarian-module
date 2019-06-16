@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import { setTimeout } from "timers";
 export default {
   data() {
     return {
@@ -175,7 +176,26 @@ export default {
     }
   },
   methods: {},
-  components: {}
+  components: {},
+  mounted() {
+    setTimeout(
+      function() {
+        if (
+          this.$auth.isAuthenticated() &&
+          !this.$auth.isAdmin() &&
+          this.$tours["vuesaxTour"]
+        ) {
+          this.$tours["vuesaxTour"].start();
+        }
+      }.bind(this),
+      500
+    );
+  },
+  beforeDestroy() {
+    if (this.$tours["vuesaxTour"]) {
+      this.$tours["vuesaxTour"].stop();
+    }
+  }
 };
 </script>
 

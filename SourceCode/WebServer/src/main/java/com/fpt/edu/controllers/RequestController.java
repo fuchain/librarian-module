@@ -16,10 +16,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
@@ -49,9 +47,9 @@ public class RequestController extends BaseController {
 
 	@Autowired
 	public RequestController(RequestServices requestServices, UserServices userServices,
-							 BookDetailsServices bookDetailsServices, BookServices bookServices,
-							 MatchingServices matchingServices, TransactionServices transactionServices,
-							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, AmazonS3 s3Client) {
+	                         BookDetailsServices bookDetailsServices, BookServices bookServices,
+	                         MatchingServices matchingServices, TransactionServices transactionServices,
+	                         PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, AmazonS3 s3Client) {
 		this.requestServices = requestServices;
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
@@ -388,11 +386,14 @@ public class RequestController extends BaseController {
 		// Update current_keeper
 		book.setUser(receiver);
 
+		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+
 		// Submit transaction to BlockChain
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
 			book.getLastTxId(),
-			book.getAssetId(), book.getMetadata().getData(),
+			book.getAssetId(), bookMetadata.getData(),
 			String.valueOf(returner.getEmail()), String.valueOf(receiver.getEmail()),
 			(transaction, response) -> { // Success
 
@@ -708,10 +709,13 @@ public class RequestController extends BaseController {
 
 		Date sendTime = new Date();
 
+		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
 			book.getLastTxId(),
-			book.getAssetId(), book.getMetadata().getData(),
+			book.getAssetId(), bookMetadata.getData(),
 			returner.getEmail(), receiver.getEmail(),
 			(transaction, response) -> { //success
 
@@ -912,11 +916,14 @@ public class RequestController extends BaseController {
 		// Update reject count
 		bookMetadata.increaseLastRejectCount();
 
+		// Set new transaction timestamp
+		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+
 		// Submit transaction to BC
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
 			book.getLastTxId(),
-			book.getAssetId(), book.getMetadata().getData(),
+			book.getAssetId(), bookMetadata.getData(),
 			returner.getEmail(), returner.getEmail(),
 			(transaction, response) -> { // success
 
