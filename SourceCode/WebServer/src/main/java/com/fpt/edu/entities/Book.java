@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fpt.edu.common.enums.EBookStatus;
 import com.fpt.edu.common.enums.EBookTransferStatus;
+import com.fpt.edu.configs.CustomLocalDateTimeSerializer;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
@@ -57,6 +59,11 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	@Column(name = "transfer_status")
 	@JsonSerialize
 	private String transferStatus;
+	// for tracking the when the new reader receive the book
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Column(name = "last_transfer_success_date")
+	private Date lastTransferSuccess;
+
 	@Transient
 	@JsonIgnore
 	private BookAsset bookAsset;
@@ -157,6 +164,9 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public void setUser(User user) {
+		if(this.getUser().getListBooks().equals(user.getId())){
+			this.setLastTransferSuccess(new Date());
+		}
 		this.user = user;
 		this.bookMetadata.setCurrentKeeper(user.getEmail());
 	}
@@ -192,4 +202,14 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	public void setBookDetail(BookDetail bookDetail) {
 		this.bookDetail = bookDetail;
 	}
+
+	public Date getLastTransferSuccess() {
+		return lastTransferSuccess;
+	}
+
+	public void setLastTransferSuccess(Date lastTransferSuccess) {
+		this.lastTransferSuccess = lastTransferSuccess;
+	}
+
+
 }

@@ -1,8 +1,12 @@
 package com.fpt.edu.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fpt.edu.configs.CustomLocalDateTimeSerializer;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 
@@ -32,7 +36,53 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     @JsonIgnore
     private Publisher publisher;
 
-    @OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
+
+
+	// new data that return by google
+	@Column(name = "libol")
+	private String libol;
+	@Column(name = "subject_codew")
+	private String subjectCode;
+    @Column(name = "previewLink")
+	private String previewLink;
+	@Column(name = "thumbnail")
+	private String thumbnail;
+	@CreationTimestamp
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Column(name = "published_date", nullable = true)
+	private Date publishedDate;
+	public String getLibol() {
+		return libol;
+	}
+
+	public void setLibol(String libol) {
+		this.libol = libol;
+	}
+	public String getPreviewLink() {
+		return previewLink;
+	}
+
+	public void setPreviewLink(String previewLink) {
+		this.previewLink = previewLink;
+	}
+
+	public String getThumbnail() {
+		return thumbnail;
+	}
+
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
+	}
+
+	public Date getPublishedDate() {
+		return publishedDate;
+	}
+
+	public void setPublishedDate(Date publishedDate) {
+		this.publishedDate = publishedDate;
+	}
+
+	@OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
     @JsonIgnore
     private List<Book> books;
 

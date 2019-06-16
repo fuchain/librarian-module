@@ -11,6 +11,7 @@ public class Constant {
 	public static final String NAME = "name";
 	public static final String REGULAR_ID_EXP = "[{][a-zA-Z]+[}]";
 	public static final String GOOGLE_AUTH_API = "https://www.googleapis.com/userinfo/v2/me";
+	public static final String GOOGLE_BOOK_API = "https://www.googleapis.com/books/v1/volumes";
 	public static final int PIN_EXPIRED_MINUTE = 5;
 	public static final int RANDOM_BOUND = 999999;
 	public static final int PHONE_NUMBER = 10;
@@ -25,6 +26,14 @@ public class Constant {
 	public static final String ROLES_LIBRARIAN = "librarian";
 	public static final int BIGCHAIN_REQUEST_TIMEOUT = 60;
 	public static final String EMPTY_VALUE = "";
+	public static final String ISBN = "isbn";
+	public static final String PREVIEW_LINK = "previewLink";
+	public static final String DESCRIPTION = "description";
+	public static final String IMAGE_THUMBNAIL = "thumbnail";
+	public static final String PUBLISHER = "publisher";
+	public static final String PUBLISHED_DATE= "publishedDate";
+	public static final String AUTHORS= "authors";
+	public static final String CATEGORY= "category";
 
 	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
 
