@@ -1,8 +1,11 @@
 package com.fpt.edu.controllers;
 
+import com.bigchaindb.model.Transaction;
+import com.fpt.edu.common.enums.EBookStatus;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
 import com.fpt.edu.services.BigchainTransactionServices;
+import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,9 @@ public class SimulateDataController extends BaseController {
 	private final BookDetailRepository bookDetailRepository;
 	private final BookRepository bookRepository;
 	private final UserServices userServices;
+
+	@Autowired
+	private BookServices bookServices;
 
 	@Autowired
 	public SimulateDataController(AuthorRepository authorRepository, CategoryRepository categoryRepository,
@@ -99,15 +105,21 @@ public class SimulateDataController extends BaseController {
 
 			// Init 10 book instance
 			List<Book> bookList = new ArrayList<>();
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 1; i++) {
 				Book book = new Book();
 				book.setId(Long.valueOf(count));
 				book.setBookDetail(bookDetail);
 				book.setUser(librarian);
 
+				BookMetadata bookMetadata = book.getMetadata();
+				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+				bookMetadata.setStatus(EBookStatus.IN_USE.getValue());
+				BookAsset asset = book.getAsset();
+				asset.setBookId(String.valueOf(count));
+
 				BigchainTransactionServices services = new BigchainTransactionServices();
 				services.doCreate(
-					book.getAsset(), book.getMetadata(),
+					book.getAsset(), bookMetadata.getData(),
 					String.valueOf(book.getUser().getEmail()),
 					(transaction, response) -> {
 						String trasactionId = transaction.getId();

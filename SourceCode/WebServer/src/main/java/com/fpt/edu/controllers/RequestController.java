@@ -979,9 +979,18 @@ public class RequestController extends BaseController {
 
 				// Update borrow request status to 'Completed'
 				returnRequest.setStatus(ERequestStatus.COMPLETED.getValue());
-				receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 				requestServices.updateRequest(returnRequest);
-				requestServices.updateRequest(receiveRequest);
+
+				// Put borrow request in queue after rejecting
+				try {
+					receiveRequest.setStatus(ERequestStatus.PENDING.getValue());
+					receiveRequest.setPairedUser(null);
+					pairRequest(receiveRequest);
+				} catch (NotFoundException ex) {
+					receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
+					requestServices.updateRequest(receiveRequest);
+				}
+
 
 				// Update transfer status of book
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
@@ -1034,16 +1043,4 @@ public class RequestController extends BaseController {
 		}
 	}
 
-	// Check if the file is an image or not
-	private boolean checkImageFile(File imageFile) {
-		try {
-			BufferedImage image = ImageIO.read(imageFile);
-			if (image == null) {
-				return false;
-			}
-		} catch (IOException ex) {
-			return false;
-		}
-		return true;
-	}
 }
