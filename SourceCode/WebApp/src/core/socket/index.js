@@ -4,7 +4,7 @@ import $http from "@http";
 
 function init() {
   // Socket
-  const socket = io.connect(`${$http.socketUrl}`, {
+  const socket = io.connect($http.socketUrl, {
     query: "token=" + auth.getAccessToken()
   });
 
