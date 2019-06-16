@@ -80,7 +80,7 @@ public class UserController extends BaseController {
 	}
 
 	@ApiOperation(value = "Update user profile", response = String.class)
-	@RequestMapping(value = "/update_profile", method = RequestMethod.PUT, produces = Constant.APPLICATION_JSON)
+	@PutMapping("update_profile")
 	public ResponseEntity<User> updateUser(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
 		User user = userServices.getUserByEmail(principal.getName());
@@ -114,7 +114,7 @@ public class UserController extends BaseController {
 
 
 	@ApiOperation(value = "Get user's book info", response = String.class)
-	@RequestMapping(value = "/book_infos", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+	@GetMapping("book_infos")
 	public ResponseEntity<String> getUserBookInfo(Principal principal) {
 
 		User user = userServices.getUserByEmail(principal.getName());
