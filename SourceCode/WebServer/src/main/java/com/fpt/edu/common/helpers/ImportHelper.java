@@ -1,7 +1,9 @@
 package com.fpt.edu.common.helpers;
 
 import com.fpt.edu.constant.Constant;
+import com.fpt.edu.entities.Author;
 import com.fpt.edu.entities.BookDetail;
+import com.fpt.edu.services.AuthorServices;
 import com.fpt.edu.services.CategoryServices;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -24,10 +26,11 @@ public class ImportHelper {
 	private Queue<JSONObject> queue;
 
 	private CategoryServices categoryServices;
-
+	private AuthorServices authorServices;
 	@Autowired
-	public ImportHelper(CategoryServices categoryServices) {
+	public ImportHelper(CategoryServices categoryServices, AuthorServices authorServices) {
 		this.categoryServices = categoryServices;
+		this.authorServices=authorServices;
 	}
 
 	public void initData(JSONArray rawData) {
@@ -105,7 +108,8 @@ public class ImportHelper {
 
 	public void importBookWihNoExtraInfo(JSONObject rawData) {
 		BookDetail bookDetail = new BookDetail();
-//		bookDetail.setCategories();
+		bookDetail.setCategories(categoryServices.addIfNotExist(rawData.getString(Constant.CATEGORY)));
+
 
 	}
 

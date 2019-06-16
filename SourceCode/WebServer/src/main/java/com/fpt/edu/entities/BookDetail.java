@@ -27,9 +27,10 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     private List<Author> authors;
 
     @JsonIgnore
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
-    private List<Category> categories;
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+    //@JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "publisher_id")
@@ -102,12 +103,12 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
         this.authors = authors;
     }
 
-    public List<Category> getCategories() {
-        return categories;
+    public Category getCategories() {
+        return category;
     }
 
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
+    public void setCategories(Category category) {
+        this.category = category;
     }
 
     public Publisher getPublisher() {
