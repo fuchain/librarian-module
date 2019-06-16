@@ -190,6 +190,11 @@ export default {
       }.bind(this),
       500
     );
+  },
+  beforeDestroy() {
+    if (this.$tours["vuesaxTour"]) {
+      this.$tours["vuesaxTour"].stop();
+    }
   }
 };
 </script>
