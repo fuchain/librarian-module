@@ -68,6 +68,9 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public BookAsset getAsset() {
+		if (this.bookAsset == null) {
+			this.bookAsset = new BookAsset();
+		}
 		return this.bookAsset;
 	}
 
@@ -76,6 +79,9 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public BookMetadata getMetadata() {
+		if (this.bookMetadata == null) {
+			this.bookMetadata = new BookMetadata();
+		}
 		return this.bookMetadata;
 	}
 
@@ -160,15 +166,17 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 		this.requests = requests;
 	}
 
-	public Long getId() {
-		if (!this.isNewToBigchain() & this.bookAsset == null & this.bookMetadata == null) {
-			this.bookAsset = new BookAsset(String.valueOf(this.id));
-			this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
-		} else if (this.bookAsset == null & this.bookMetadata == null) {
+	public void getAssetAndMetadata() {
+		if (this.isNewToBigchain()) {
 			this.bookAsset = new BookAsset();
 			this.bookMetadata = new BookMetadata();
+		} else {
+			this.bookAsset = new BookAsset(String.valueOf(this.id));
+			this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
 		}
+	}
 
+	public Long getId() {
 		return id;
 	}
 
