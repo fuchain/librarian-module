@@ -7,6 +7,14 @@ const testPushNotification = async (req, res, next) => {
 
     try {
         const socketId = await getRedisitem(email);
+
+        if (!socketId) {
+            res.status(422);
+            res.send({
+                error: "That user is not connecting to our service"
+            });
+        }
+
         io.to(socketId).emit("notification", message);
 
         res.status(201);
