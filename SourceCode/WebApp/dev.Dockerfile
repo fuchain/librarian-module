@@ -10,4 +10,4 @@ RUN yarn
 
 EXPOSE 3000
 
-ENTRYPOINT ["npm","run","serve"]
+ENTRYPOINT ["yarn","serve"]
