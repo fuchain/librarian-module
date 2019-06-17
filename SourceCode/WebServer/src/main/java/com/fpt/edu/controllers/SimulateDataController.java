@@ -6,11 +6,16 @@ import com.fpt.edu.services.BigchainTransactionServices;
 import com.fpt.edu.services.UserServices;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("simulate_datas")
@@ -24,8 +29,8 @@ public class SimulateDataController extends BaseController {
 
 	@Autowired
 	public SimulateDataController(AuthorRepository authorRepository, CategoryRepository categoryRepository,
-								  PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
-								  BookRepository bookRepository, UserServices userServices) {
+	                              PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
+	                              BookRepository bookRepository, UserServices userServices) {
 		this.authorRepository = authorRepository;
 		this.categoryRepository = categoryRepository;
 		this.publisherRepository = publisherRepository;
@@ -76,7 +81,20 @@ public class SimulateDataController extends BaseController {
 		}
 
 		// Init data for book detail
-		String[] bookDetailNames = {"Introduction to Databases", "Discrete Mathematics", "Object-Oriented Programming", "Front-end Web Development", "Data Structures and Algorithms", "Operating Systems", "Introduction to Software Engineering", "Web-based Java Applications", "Computer Networking", "Software Quality Assurance and Testing", "Software Requirements", ".NET and C#"};
+		String[] bookDetailNames = {
+			"Introduction to Databases",
+			"Discrete Mathematics",
+			"Object-Oriented Programming",
+			"Front-end Web Development",
+			"Data Structures and Algorithms",
+			"Operating Systems",
+			"Introduction to Software Engineering",
+			"Web-based Java Applications",
+			"Computer Networking",
+			"Software Quality Assurance and Testing",
+			"Software Requirements",
+			".NET and C#"
+		};
 		int count = 1;
 		for (String bookDetailName : bookDetailNames) {
 			BookDetail bookDetail = new BookDetail();
@@ -105,9 +123,16 @@ public class SimulateDataController extends BaseController {
 				book.setBookDetail(bookDetail);
 				book.setUser(librarian);
 
+				BookMetadata bookMetadata = book.getMetadata();
+				bookMetadata.setStatus(book.getStatus());
+				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
+
+				BookAsset bookAsset = book.getAsset();
+				bookAsset.setBookId(String.valueOf(book.getId()));
+
 				BigchainTransactionServices services = new BigchainTransactionServices();
 				services.doCreate(
-					book.getAsset(), book.getMetadata(),
+					bookAsset.getData(), bookMetadata.getData(),
 					String.valueOf(book.getUser().getEmail()),
 					(transaction, response) -> {
 						String transactionId = transaction.getId();
@@ -118,13 +143,6 @@ public class SimulateDataController extends BaseController {
 							bookDetail.setBooks(bookList);
 						}
 					}, (transaction, response) -> {
-						String transactionId = transaction.getId();
-						book.setAssetId(transactionId);
-						book.setLastTxId(transactionId);
-						if (!book.getAssetId().isEmpty()) {
-							bookList.add(book);
-							bookDetail.setBooks(bookList);
-						}
 					});
 				count++;
 				Thread.sleep(500);
