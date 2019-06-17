@@ -61,6 +61,18 @@ services:
       POSTGRES_PASSWORD: capstone
       POSTGRES_DB: librarianmodule
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: librarian-pgadmin-dev
+    expose:
+      - 80
+    ports:
+      - 1000:80
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@fptu.tech
+      PGADMIN_DEFAULT_PASSWORD: capstone
+
   redis:
     image: redis
     container_name: librarian-redis-dev
