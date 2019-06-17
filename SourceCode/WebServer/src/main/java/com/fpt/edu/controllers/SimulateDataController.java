@@ -3,6 +3,7 @@ package com.fpt.edu.controllers;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
 import com.fpt.edu.services.BigchainTransactionServices;
+import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +27,21 @@ public class SimulateDataController extends BaseController {
 	private final BookDetailRepository bookDetailRepository;
 	private final BookRepository bookRepository;
 	private final UserServices userServices;
+	private final BookServices bookServices;
 
 	@Autowired
-	public SimulateDataController(AuthorRepository authorRepository, CategoryRepository categoryRepository,
-	                              PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
-	                              BookRepository bookRepository, UserServices userServices) {
+	public SimulateDataController(
+		AuthorRepository authorRepository, CategoryRepository categoryRepository,
+	    PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
+		BookRepository bookRepository, UserServices userServices, BookServices bookServices
+	) {
 		this.authorRepository = authorRepository;
 		this.categoryRepository = categoryRepository;
 		this.publisherRepository = publisherRepository;
 		this.bookDetailRepository = bookDetailRepository;
 		this.bookRepository = bookRepository;
 		this.userServices = userServices;
+		this.bookServices = bookServices;
 	}
 
 	@PostMapping("/init")
@@ -170,6 +175,11 @@ public class SimulateDataController extends BaseController {
 		if (bookList.size() >= bookNumber) {
 			for (int i = 0; i < bookNumber; i++) {
 				Book book = bookList.get(random.nextInt(bookList.size()));
+
+				bookServices.getLastTransactionFromBigchain(book);
+				BookMetadata bookMetadata = book.getMetadata();
+				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
+
 				book.setUser(receiver);
 				services.doTransfer(
 					book.getLastTxId(),
