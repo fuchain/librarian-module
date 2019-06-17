@@ -124,6 +124,7 @@ public class SimulateDataController extends BaseController {
 			List<Book> bookList = new ArrayList<>();
 			for (int i = 0; i < 10; i++) {
 				Book book = new Book();
+				book.getAssetAndMetadata();
 				book.setId(Long.valueOf(count));
 				book.setBookDetail(bookDetail);
 				book.setUser(librarian);
@@ -175,6 +176,7 @@ public class SimulateDataController extends BaseController {
 		if (bookList.size() >= bookNumber) {
 			for (int i = 0; i < bookNumber; i++) {
 				Book book = bookList.get(random.nextInt(bookList.size()));
+				book.getAssetAndMetadata();
 
 				bookServices.getLastTransactionFromBigchain(book);
 				BookMetadata bookMetadata = book.getMetadata();
