@@ -17,16 +17,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Book extends AbstractTimestampEntity implements Serializable {
 
-	private static final String BC_BOOK_ID = "book_id";
-	private static final String BC_CURRENT_KEEPER = "current_keeper";
-	private static final String BC_BOOK_STATUS = "status";
-	private static final String BC_TX_TIMESTAMP = "transaction_timestamp";
-	private static final String BC_REJECT_COUNT = "reject_count";
-	private static final String BC_REJECT_REASON = "reject_reason";
-	private static final String BC_IMAGE_HASH = "img_hash";
-
-	private static final int BC_MAX_REJECT_COUNT = 5;
-	private static final int BC_MIN_REJECT_COUNT = 0;
 	@Transient
 	@JsonSerialize
 	private final List bcTransactionList;
