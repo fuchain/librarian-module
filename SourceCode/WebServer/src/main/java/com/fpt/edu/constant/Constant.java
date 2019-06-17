@@ -29,7 +29,7 @@ public class Constant {
 	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
 
 	// Asset
-	public static final String BC_BOOK_ID = "book_id";
+	public static final String BOOK_ID = "book_id";
 
 	// Metadata
 	public static final String CURRENT_KEEPER = "current_keeper";

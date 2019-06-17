@@ -61,13 +61,6 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 		this.status = EBookStatus.IN_USE.getValue();
 		this.transferStatus = EBookTransferStatus.TRANSFERRED.getValue();
 		this.bcTransactionList = new ArrayList();
-		if (this.isNewToBigchain()) {
-			this.bookAsset = new BookAsset();
-			this.bookMetadata = new BookMetadata();
-		} else {
-			this.bookAsset = new BookAsset(String.valueOf(this.id));
-			this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
-		}
 	}
 
 	private boolean isNewToBigchain() {
@@ -168,6 +161,14 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public Long getId() {
+		if (!this.isNewToBigchain() & this.bookAsset == null & this.bookMetadata == null) {
+			this.bookAsset = new BookAsset(String.valueOf(this.id));
+			this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
+		} else if (this.bookAsset == null & this.bookMetadata == null) {
+			this.bookAsset = new BookAsset();
+			this.bookMetadata = new BookMetadata();
+		}
+
 		return id;
 	}
 
