@@ -69,7 +69,11 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 
 	public BookAsset getAsset() {
 		if (this.bookAsset == null) {
-			this.bookAsset = new BookAsset();
+			if (this.isNewToBigchain()) {
+				this.bookAsset = new BookAsset();
+			} else {
+				this.bookAsset = new BookAsset(String.valueOf(this.id));
+			}
 		}
 		return this.bookAsset;
 	}
@@ -80,7 +84,11 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 
 	public BookMetadata getMetadata() {
 		if (this.bookMetadata == null) {
-			this.bookMetadata = new BookMetadata();
+			if (this.isNewToBigchain()) {
+				this.bookMetadata = new BookMetadata();
+			} else {
+				this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
+			}
 		}
 		return this.bookMetadata;
 	}
@@ -130,7 +138,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
-		this.bookMetadata.setStatus(status);
+		this.getMetadata().setStatus(status);
 	}
 
 	public String getTransferStatus() {
@@ -147,7 +155,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 
 	public void setUser(User user) {
 		this.user = user;
-		this.bookMetadata.setCurrentKeeper(user.getEmail());
+		this.getMetadata().setCurrentKeeper(user.getEmail());
 	}
 
 	public List<Transaction> getTransactions() {
@@ -164,16 +172,6 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 
 	public void setRequests(List<Request> requests) {
 		this.requests = requests;
-	}
-
-	public void getAssetAndMetadata() {
-		if (this.isNewToBigchain()) {
-			this.bookAsset = new BookAsset();
-			this.bookMetadata = new BookMetadata();
-		} else {
-			this.bookAsset = new BookAsset(String.valueOf(this.id));
-			this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
-		}
 	}
 
 	public Long getId() {
