@@ -7,9 +7,10 @@ import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
@@ -32,7 +33,7 @@ public class SimulateDataController extends BaseController {
 	@Autowired
 	public SimulateDataController(
 		AuthorRepository authorRepository, CategoryRepository categoryRepository,
-	    PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
+		PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
 		BookRepository bookRepository, UserServices userServices, BookServices bookServices
 	) {
 		this.authorRepository = authorRepository;
@@ -124,7 +125,6 @@ public class SimulateDataController extends BaseController {
 			List<Book> bookList = new ArrayList<>();
 			for (int i = 0; i < 10; i++) {
 				Book book = new Book();
-				book.getAssetAndMetadata();
 				book.setId(Long.valueOf(count));
 				book.setBookDetail(bookDetail);
 				book.setUser(librarian);
@@ -176,7 +176,6 @@ public class SimulateDataController extends BaseController {
 		if (bookList.size() >= bookNumber) {
 			for (int i = 0; i < bookNumber; i++) {
 				Book book = bookList.get(random.nextInt(bookList.size()));
-				book.getAssetAndMetadata();
 
 				bookServices.getLastTransactionFromBigchain(book);
 				BookMetadata bookMetadata = book.getMetadata();
