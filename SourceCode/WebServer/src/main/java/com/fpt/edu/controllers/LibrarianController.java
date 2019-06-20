@@ -1,6 +1,5 @@
 package com.fpt.edu.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.edu.common.helpers.ImportHelper;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Book;
@@ -31,15 +30,16 @@ public class LibrarianController extends BaseController {
 	private final UserServices userServices;
 	private final BookDetailsServices bookDetailsServices;
 	private final BookServices bookServices;
+	private final ImportHelper importHelper;
 
 	@Autowired
 	public LibrarianController(UserServices userServices,
 							   BookDetailsServices bookDetailsServices,
-							   BookServices bookServices) {
+							   BookServices bookServices, ImportHelper importHelper) {
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
 		this.bookServices = bookServices;
-
+		this.importHelper = importHelper;
 	}
 
 	@ApiOperation("Get all users")
@@ -138,8 +138,8 @@ public class LibrarianController extends BaseController {
 		File f = utils.convertMultiPartToFile(file);
 		String arrBook = FileUtil.readAsString(f);
 		JSONArray arr = new JSONArray(arrBook);
-		ImportHelper myHelper = new ImportHelper(arr);
-		myHelper.startImport();
+		importHelper.initData(arr);
+		importHelper.startImport();
 
 		return new ResponseEntity<>(arrBook.toString(), HttpStatus.OK);
 

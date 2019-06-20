@@ -52,6 +52,45 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
 	@Column(name = "published_date", nullable = true)
 	private Date publishedDate;
+	@Column(name = "description")
+	private String description;
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public String getSubjectCode() {
+		return subjectCode;
+	}
+
+	public void setSubjectCode(String subjectCode) {
+		this.subjectCode = subjectCode;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getIsbn() {
+		return isbn;
+	}
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+	@Column(name = "ISBN")
+	private String isbn;
+
+
 	public String getLibol() {
 		return libol;
 	}
