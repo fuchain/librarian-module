@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
-@EntityScan("com.fpt.edu.entities")
-@EnableJpaRepositories("com.fpt.edu.repositories")
+@EntityScan("com.fpt.edu.entity")
+@EnableJpaRepositories("com.fpt.edu.repository")
 @ImportResource({"classpath:META-INF/application-config.xml"})
 
 public class Application {

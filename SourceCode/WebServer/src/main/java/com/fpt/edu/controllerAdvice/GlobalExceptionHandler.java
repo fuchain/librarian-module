@@ -1,7 +1,7 @@
 package com.fpt.edu.controllerAdvice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fpt.edu.exceptions.*;
+import com.fpt.edu.exception.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
