@@ -1,5 +1,7 @@
 package com.fpt.edu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -67,28 +69,32 @@ public class BookMetadata {
 		this.data.put(BOOK_STATUS, status);
 	}
 
-	public void setTransactionTimestamp(String transactionTimestamp) {
-		this.data.put(TX_TIMESTAMP, transactionTimestamp);
-	}
-
+	@JsonIgnore
 	public String getTransactionTimestamp() {
 		String txTimestamp = this.data.get(TX_TIMESTAMP);
 		return txTimestamp == null ? EMPTY_VALUE : txTimestamp;
+	}
+
+	public void setTransactionTimestamp(String transactionTimestamp) {
+		this.data.put(TX_TIMESTAMP, transactionTimestamp);
 	}
 
 	public void increaseLastRejectCount() {
 		this.data.put(REJECT_COUNT, String.valueOf(this.getRejectCount() + 1));
 	}
 
+	@JsonIgnore
 	public int getRejectCount() {
 		String rejectCount = this.data.get(REJECT_COUNT);
 		return rejectCount == null ? MIN_REJECT_COUNT : Integer.parseInt(rejectCount);
 	}
 
+	@JsonIgnore
 	public boolean isLastRejectCountOver() {
 		return this.getRejectCount() >= MAX_REJECT_COUNT;
 	}
 
+	@JsonIgnore
 	public String getRejectReason() {
 		String reason = this.data.get(REJECT_REASON);
 		return reason == null ? EMPTY_VALUE : reason;
@@ -98,12 +104,13 @@ public class BookMetadata {
 		this.data.put(REJECT_REASON, rejectReason);
 	}
 
-	public void setImgHash(String imgHash) {
-		this.data.put(IMAGE_HASH, imgHash);
-	}
-
+	@JsonIgnore
 	public String getImgHash() {
 		String imgHash = this.data.get(IMAGE_HASH);
 		return imgHash == null ? EMPTY_VALUE : imgHash;
+	}
+
+	public void setImgHash(String imgHash) {
+		this.data.put(IMAGE_HASH, imgHash);
 	}
 }

@@ -1,7 +1,7 @@
 import { verifyJWT } from "@utils/jwt";
+import { setRedisItem, deleteRedisItem } from "@utils/redis";
 
 export let io;
-export const socketPool = {};
 
 function initSocketModule(server) {
     io = require("socket.io")(server);
@@ -14,7 +14,7 @@ function initSocketModule(server) {
                 socket.payload = payload;
 
                 const email = payload.sub;
-                socketPool[email] = socket.id;
+                setRedisItem(email, socket.id);
 
                 next();
             } catch (err) {
@@ -23,6 +23,14 @@ function initSocketModule(server) {
         } else {
             next(new Error("Authentication error"));
         }
+    });
+
+    io.on("connection", socket => {
+        socket.on("disconnect", () => {
+            const email = socket.payload.sub;
+
+            deleteRedisItem(email);
+        });
     });
 }
 

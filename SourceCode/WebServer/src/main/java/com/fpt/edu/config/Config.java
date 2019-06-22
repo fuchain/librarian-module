@@ -22,14 +22,18 @@ import java.util.List;
 
 @Configuration
 public class Config {
-	protected final Logger LOGGER = LogManager.getLogger(getClass());
+	private final Logger LOGGER = LogManager.getLogger(getClass());
+	private final RequestQueueManager requestQueueManager;
+	private final RequestServices requestServices;
+
 	@Autowired
-	RequestQueueManager requestQueueManager;
-	@Autowired
-	RequestServices requestServices;
+	public Config(RequestQueueManager requestQueueManager, RequestServices requestServices) {
+		this.requestQueueManager = requestQueueManager;
+		this.requestServices = requestServices;
+	}
+
 	@Value("${aws.accesskey}")
 	private String accessKey;
-
 	@Value("${aws.secretkey}")
 	private String secretKey;
 	@Value("${aws.s3.bucket.name}")
@@ -37,13 +41,10 @@ public class Config {
 
 	@Bean
 	PublishSubscribe getPublisher() {
-
-		List<Observer> list = new ArrayList<Observer>();
+		List<Observer> list = new ArrayList<>();
 		list.add(requestServices);
 		list.add(requestQueueManager);
 		return new PublishSubscribe(list);
-
-
 	}
 
 	@Bean
@@ -61,6 +62,4 @@ public class Config {
 
 		return s3client;
 	}
-
-
 }

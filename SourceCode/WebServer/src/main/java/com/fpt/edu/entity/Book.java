@@ -17,16 +17,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Book extends AbstractTimestampEntity implements Serializable {
 
-	private static final String BC_BOOK_ID = "book_id";
-	private static final String BC_CURRENT_KEEPER = "current_keeper";
-	private static final String BC_BOOK_STATUS = "status";
-	private static final String BC_TX_TIMESTAMP = "transaction_timestamp";
-	private static final String BC_REJECT_COUNT = "reject_count";
-	private static final String BC_REJECT_REASON = "reject_reason";
-	private static final String BC_IMAGE_HASH = "img_hash";
-
-	private static final int BC_MAX_REJECT_COUNT = 5;
-	private static final int BC_MIN_REJECT_COUNT = 0;
 	@Transient
 	@JsonSerialize
 	private final List bcTransactionList;
@@ -71,13 +61,6 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 		this.status = EBookStatus.IN_USE.getValue();
 		this.transferStatus = EBookTransferStatus.TRANSFERRED.getValue();
 		this.bcTransactionList = new ArrayList();
-		if (this.isNewToBigchain()) {
-			this.bookAsset = new BookAsset();
-			this.bookMetadata = new BookMetadata();
-		} else {
-			this.bookAsset = new BookAsset(String.valueOf(this.id));
-			this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
-		}
 	}
 
 	private boolean isNewToBigchain() {
@@ -85,6 +68,13 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public BookAsset getAsset() {
+		if (this.bookAsset == null) {
+			if (this.isNewToBigchain()) {
+				this.bookAsset = new BookAsset();
+			} else {
+				this.bookAsset = new BookAsset(String.valueOf(this.id));
+			}
+		}
 		return this.bookAsset;
 	}
 
@@ -93,6 +83,13 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public BookMetadata getMetadata() {
+		if (this.bookMetadata == null) {
+			if (this.isNewToBigchain()) {
+				this.bookMetadata = new BookMetadata();
+			} else {
+				this.bookMetadata = new BookMetadata(this.user.getEmail(), this.status);
+			}
+		}
 		return this.bookMetadata;
 	}
 
@@ -141,7 +138,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
-		this.bookMetadata.setStatus(status);
+		this.getMetadata().setStatus(status);
 	}
 
 	public String getTransferStatus() {
@@ -158,7 +155,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 
 	public void setUser(User user) {
 		this.user = user;
-		this.bookMetadata.setCurrentKeeper(user.getEmail());
+		this.getMetadata().setCurrentKeeper(user.getEmail());
 	}
 
 	public List<Transaction> getTransactions() {

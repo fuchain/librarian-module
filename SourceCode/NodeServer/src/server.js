@@ -9,6 +9,7 @@ import models from "@models";
 import { checkEnvLoaded } from "@utils/env";
 
 import initSocketModule from "./socket/socket";
+import initRedisModule from "@utils/redis";
 
 const app = express();
 const server = require("http").Server(app);
@@ -51,6 +52,7 @@ async function main() {
         });
 
         initSocketModule(server);
+        initRedisModule();
     } catch (error) {
         console.error(error);
         process.exit(1);

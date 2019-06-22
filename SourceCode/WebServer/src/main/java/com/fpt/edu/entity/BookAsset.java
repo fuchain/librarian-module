@@ -3,7 +3,7 @@ package com.fpt.edu.entity;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static com.fpt.edu.constant.Constant.BC_BOOK_ID;
+import static com.fpt.edu.constant.Constant.BOOK_ID;
 import static com.fpt.edu.constant.Constant.EMPTY_VALUE;
 
 public class BookAsset {
@@ -12,16 +12,16 @@ public class BookAsset {
 
 	public BookAsset() {
 		this.data = new TreeMap<>();
-		this.data.put(BC_BOOK_ID, EMPTY_VALUE);
+		this.data.put(BOOK_ID, EMPTY_VALUE);
 	}
 
 	public BookAsset(String bookId) {
 		this.data = new TreeMap<>();
-		this.data.put(BC_BOOK_ID, bookId);
+		this.data.put(BOOK_ID, bookId);
 	}
 
 	public void setBookId(String bookId) {
-		this.data.put(BC_BOOK_ID, bookId);
+		this.data.put(BOOK_ID, bookId);
 	}
 
 	public Map<String, String> getData() {

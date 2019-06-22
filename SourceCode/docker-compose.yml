@@ -1,14 +1,15 @@
 version: "3"
 services:
-  api:
+  server:
     build:
       context: ./WebServer
+      dockerfile: ./dev.Dockerfile
     expose:
       - 8080
     ports:
       - 8080:8080
-    image: server-dev
-    container_name: server-dev
+    image: librarian-server-dev
+    container_name: librarian-server-dev
     volumes:
       - ./WebServer/src:/root/src/api/src
     tty: true
@@ -16,13 +17,67 @@ services:
   web:
     build:
       context: ./WebApp
+      dockerfile: ./dev.Dockerfile
     expose:
       - 3000
     ports:
       - 3000:3000
-    image: web-dev
-    container_name: web-dev
+    image: librarian-web-dev
+    container_name: librarian-web-dev
     volumes:
       - ./WebApp/src:/root/src/app/src
       - ./WebApp/public:/root/src/app/public
+      - ./WebApp/.env:/root/src/app/.env
     tty: true
+
+  node:
+    build:
+      context: ./NodeServer
+      dockerfile: ./dev.Dockerfile
+    expose:
+      - 5002
+    ports:
+      - 5002:5002
+    image: librarian-node-dev
+    container_name: librarian-node-dev
+    volumes:
+      - ./NodeServer/src:/root/src/node/src
+      - ./NodeServer/.env:/root/src/node/.env
+      - ./NodeServer/sendgrid.env:/root/src/node/sendgrid.env
+    tty: true
+
+  postgres:
+    image: postgres
+    container_name: librarian-postgres-dev
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    restart: always
+    volumes:
+      - ./Postgres/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: capstone
+      POSTGRES_PASSWORD: capstone
+      POSTGRES_DB: librarianmodule
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: librarian-pgadmin-dev
+    expose:
+      - 80
+    ports:
+      - 1000:80
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@fptu.tech
+      PGADMIN_DEFAULT_PASSWORD: capstone
+
+  redis:
+    image: redis
+    container_name: librarian-redis-dev
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    restart: always
