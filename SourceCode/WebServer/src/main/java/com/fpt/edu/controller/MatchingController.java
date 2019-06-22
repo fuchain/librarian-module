@@ -31,7 +31,7 @@ public class MatchingController extends BaseController {
 	@GetMapping("/{id}/confirm")
 	public ResponseEntity<String> confirmBookTransfer(
 		@PathVariable("id") Long matchingId, Principal principal
-	) throws EntityIdMismatchException, EntityIdMismatchException {
+	) throws EntityIdMismatchException {
 
 		Matching matching = matchingServices.getMatchingById(matchingId);
 		User matchingUser = matching.getReturnerRequest().getUser();

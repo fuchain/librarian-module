@@ -1,4 +1,4 @@
-package com.fpt.edu.controllers;
+package com.fpt.edu.controller;
 
 import org.json.JSONObject;
 import org.springframework.boot.web.servlet.error.ErrorController;
