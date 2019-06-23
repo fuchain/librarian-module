@@ -62,8 +62,8 @@ services:
       - ./WebApp/public:/root/src/app/public
       - ./WebApp/.env:/root/src/app/.env
     environment:
-      VUE_APP_API_BASE_URL: https://lapi.fptu.tech
-      VUE_APP_API_BETA_URL: https://napi.fptu.tech
+      VUE_APP_API_BASE_URL: http://localhost:5000
+      VUE_APP_API_BETA_URL: http://localhost:5002
       VUE_APP_SOCKET_URL: http://localhost:5002
     tty: true
 
@@ -83,6 +83,8 @@ services:
     container_name: librarian-webserver-dev
     volumes:
       - ./WebServer/src:/root/src/api/src
+    environment:
+    - SPRING_PROFILES_ACTIVE=docker
     tty: true
 
   nodeserver:
