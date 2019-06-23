@@ -8,7 +8,7 @@ run: check-deps ## Run services from source (stop it with ctrl+c)
 	@$(DC) up
 
 start: check-deps ## Run services from source and daemonize it (stop with `make stop`)
-	@$(DC) up
+	@$(DC) up -d
 
 stop: check-deps ## Stop services
 	@$(DC) stop

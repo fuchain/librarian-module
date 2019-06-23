@@ -38,7 +38,7 @@ services:
   postgresn:
     image: postgres
     ports:
-      - 5433:5433
+      - 5433:5432
     volumes:
       - postgresn-data:/var/lib/postgresql/data
     networks:
