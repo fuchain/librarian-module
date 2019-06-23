@@ -7,6 +7,8 @@ services:
       - 6379
     ports:
       - 6379:6379
+    volumes:
+      - redis-data:/data
     networks:
       - node
     restart: always
@@ -131,5 +133,6 @@ networks:
   node:
 
 volumes:
+  redis-data:
   postgres-data:
   postgresn-data:
