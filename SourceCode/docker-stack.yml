@@ -38,7 +38,7 @@ services:
   postgresn:
     image: postgres
     ports:
-      - 5433:5433
+      - 5433:5432
     volumes:
       - postgresn-data:/var/lib/postgresql/data
     networks:
@@ -79,7 +79,7 @@ services:
     depends_on:
       - postgres
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     deploy:
       replicas: 1
       update_config:

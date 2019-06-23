@@ -3,8 +3,6 @@ services:
   redis:
     image: redis
     container_name: librarian-redis-dev
-    expose:
-      - 6379
     ports:
       - 6379:6379
     volumes:
@@ -16,8 +14,6 @@ services:
   postgres:
     image: postgres
     container_name: librarian-postgres-dev
-    expose:
-      - 5432
     ports:
       - 5432:5432
     volumes:
@@ -33,10 +29,8 @@ services:
   postgresn:
     image: postgres
     container_name: librarian-postgresn-dev
-    expose:
-      - 5432
     ports:
-      - 5432:5432
+      - 5433:5432
     volumes:
       - postgresn-data:/var/lib/postgresql/data
     networks:
@@ -51,8 +45,6 @@ services:
     build:
       context: ./WebApp
       dockerfile: ./dev.Dockerfile
-    expose:
-      - 3000
     ports:
       - 3000:3000
     image: librarian-webapp-dev
@@ -71,10 +63,8 @@ services:
     build:
       context: ./WebServer
       dockerfile: ./dev.Dockerfile
-    expose:
-      - 8080
     ports:
-      - 8080:8080
+      - 5000:5000
     networks:
       - backend
     depends_on:
@@ -91,8 +81,6 @@ services:
     build:
       context: ./NodeServer
       dockerfile: ./dev.Dockerfile
-    expose:
-      - 5002
     ports:
       - 5002:5002
     networks:
@@ -100,8 +88,8 @@ services:
     depends_on:
       - postgresn
       - redis
-    image: librarian-node-dev
-    container_name: librarian-node-dev
+    image: librarian-nodeserver-dev
+    container_name: librarian-nodeserver-dev
     volumes:
       - ./NodeServer/src:/root/src/node/src
       - ./NodeServer/.env:/root/src/node/.env
@@ -118,8 +106,6 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: librarian-pgadmin-dev
-    expose:
-      - 80
     ports:
       - 1002:80
     depends_on:
