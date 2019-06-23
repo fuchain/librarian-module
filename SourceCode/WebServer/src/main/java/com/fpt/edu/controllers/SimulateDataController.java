@@ -3,14 +3,21 @@ package com.fpt.edu.controllers;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
 import com.fpt.edu.services.BigchainTransactionServices;
+import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("simulate_datas")
@@ -21,17 +28,21 @@ public class SimulateDataController extends BaseController {
 	private final BookDetailRepository bookDetailRepository;
 	private final BookRepository bookRepository;
 	private final UserServices userServices;
+	private final BookServices bookServices;
 
 	@Autowired
-	public SimulateDataController(AuthorRepository authorRepository, CategoryRepository categoryRepository,
-								  PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
-								  BookRepository bookRepository, UserServices userServices) {
+	public SimulateDataController(
+		AuthorRepository authorRepository, CategoryRepository categoryRepository,
+		PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
+		BookRepository bookRepository, UserServices userServices, BookServices bookServices
+	) {
 		this.authorRepository = authorRepository;
 		this.categoryRepository = categoryRepository;
 		this.publisherRepository = publisherRepository;
 		this.bookDetailRepository = bookDetailRepository;
 		this.bookRepository = bookRepository;
 		this.userServices = userServices;
+		this.bookServices = bookServices;
 	}
 
 	@PostMapping("/init")
@@ -47,7 +58,7 @@ public class SimulateDataController extends BaseController {
 
 		// Init data for  category
 		List<Category> categories = new ArrayList<>();
-		String[] categoryNames = {"Computer Scienece", "Software Engineering", "Business Management"};
+		String[] categoryNames = {"Computer Science", "Software Engineering", "Business Management"};
 		for (String categoryName : categoryNames) {
 			Category category = new Category();
 			category.setName(categoryName);
@@ -76,7 +87,20 @@ public class SimulateDataController extends BaseController {
 		}
 
 		// Init data for book detail
-		String[] bookDetailNames = {"XML", "C Sharp", "JAVA", "JAVASCRIPT", "SPRING", "BigchainDB", "Data Structure", "Algorithm", "Network", "Machine Learning"};
+		String[] bookDetailNames = {
+			"Introduction to Databases",
+			"Discrete Mathematics",
+			"Object-Oriented Programming",
+			"Front-end Web Development",
+			"Data Structures and Algorithms",
+			"Operating Systems",
+			"Introduction to Software Engineering",
+			"Web-based Java Applications",
+			"Computer Networking",
+			"Software Quality Assurance and Testing",
+			"Software Requirements",
+			".NET and C#"
+		};
 		int count = 1;
 		for (String bookDetailName : bookDetailNames) {
 			BookDetail bookDetail = new BookDetail();
@@ -92,7 +116,7 @@ public class SimulateDataController extends BaseController {
 			categoryList.add(categories.get(random.nextInt(categories.size())));
 			bookDetail.setCategories(categoryList);
 
-			// Map publiser to book detail
+			// Map publisher to book detail
 			bookDetail.setPublisher(publishers.get(random.nextInt(publishers.size())));
 
 			bookDetailRepository.save(bookDetail);
@@ -105,31 +129,32 @@ public class SimulateDataController extends BaseController {
 				book.setBookDetail(bookDetail);
 				book.setUser(librarian);
 
+				BookMetadata bookMetadata = book.getMetadata();
+				bookMetadata.setStatus(book.getStatus());
+				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
+
+				BookAsset bookAsset = book.getAsset();
+				bookAsset.setBookId(String.valueOf(book.getId()));
+
 				BigchainTransactionServices services = new BigchainTransactionServices();
 				services.doCreate(
-					book.getAsset(), book.getMetadata(),
+					bookAsset.getData(), bookMetadata.getData(),
 					String.valueOf(book.getUser().getEmail()),
 					(transaction, response) -> {
-						String trasactionId = transaction.getId();
-						book.setAssetId(trasactionId);
-						book.setLastTxId(trasactionId);
+						String transactionId = transaction.getId();
+						book.setAssetId(transactionId);
+						book.setLastTxId(transactionId);
 						if (!book.getAssetId().isEmpty()) {
 							bookList.add(book);
 							bookDetail.setBooks(bookList);
 						}
 					}, (transaction, response) -> {
-						String trasactionId = transaction.getId();
-						book.setAssetId(trasactionId);
-						book.setLastTxId(trasactionId);
-						if (!book.getAssetId().isEmpty()) {
-							bookList.add(book);
-							bookDetail.setBooks(bookList);
-						}
 					});
 				count++;
 				Thread.sleep(500);
 			}
 		}
+
 		return "Init simulate data completed!";
 	}
 
@@ -151,6 +176,11 @@ public class SimulateDataController extends BaseController {
 		if (bookList.size() >= bookNumber) {
 			for (int i = 0; i < bookNumber; i++) {
 				Book book = bookList.get(random.nextInt(bookList.size()));
+
+				bookServices.getLastTransactionFromBigchain(book);
+				BookMetadata bookMetadata = book.getMetadata();
+				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
+
 				book.setUser(receiver);
 				services.doTransfer(
 					book.getLastTxId(),

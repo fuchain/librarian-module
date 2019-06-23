@@ -1,7 +1,10 @@
 const redis = require("redis");
 const { promisify } = require("util");
 
-export const client = redis.createClient(6379, "34.87.113.91");
+export const client = redis.createClient(
+    6379,
+    process.env.REDIS_HOST || "redis"
+);
 const getAsync = promisify(client.get).bind(client);
 
 const KEY_CONSTANT = "NODE_";
