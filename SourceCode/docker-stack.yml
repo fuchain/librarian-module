@@ -9,10 +9,13 @@ services:
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   postgres:
     image: postgres
@@ -53,10 +56,13 @@ services:
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   webserver:
     image: fptu/librarian-webserver:latest
@@ -69,10 +75,13 @@ services:
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   nodeserver:
     image: fptu/librarian-nodeserver:latest
@@ -86,15 +95,18 @@ services:
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   pgadmin:
     image: dpage/pgadmin4
     ports:
-      - 1000:80
+      - 1002:80
     depends_on:
       - postgres
       - postgresn
@@ -104,23 +116,42 @@ services:
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   jenkins:
     image: jenkins/jenkins:lts
     ports:
       - 8080:8080
       - 50000:50000
+    volumes:
+      - jenkins-data:/var/jenkins_home
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "1000:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
 networks:
   backend:
@@ -129,3 +160,4 @@ networks:
 volumes:
   postgres-data:
   postgresn-data:
+  jenkins-data:
