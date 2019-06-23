@@ -8,17 +8,18 @@ Document is at `./Documents`
 
 ## Source Code
 
-Source code is at `./SoureCode`
+Source code is at `./SourceCode`
 
-Start all services by run `make run` (with compose installed first)
+Start all services by run `make start` (with Docker compose)
 
 ## Stacks:
 
 - JavaEE, Gradle, Spring Boot
 - Javascript ES6, Vue, Webpack
-- BigchainDB, Postgresql
+- Socket.io
+- BigchainDB, Postgres
 - Redis
-- Docker, Docker Compose
+- Docker, Docker Compose, Docker Swarm
 
 ## Members:
 
