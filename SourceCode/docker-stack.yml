@@ -55,6 +55,10 @@ services:
     image: fptu/librarian-webapp:latest
     ports:
       - 3000:80
+    environment:
+      VUE_APP_API_BASE_URL: https://lapi.fptu.tech
+      VUE_APP_API_BETA_URL: https://napi.fptu.tech
+      VUE_APP_SOCKET_URL: http://napi.fptu.tech
     deploy:
       replicas: 1
       update_config:
@@ -74,6 +78,8 @@ services:
       - backend
     depends_on:
       - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     deploy:
       replicas: 1
       update_config:
@@ -94,6 +100,13 @@ services:
     depends_on:
       - postgresn
       - redis
+    environment:
+      DB_HOST: postgresn
+      DB_USER: capstone
+      DB_PASS: capstone
+      DB_NAME: node
+      DB_DIALECT: postgres
+      REDIS_HOST: redis
     deploy:
       replicas: 1
       update_config:
