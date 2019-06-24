@@ -3,7 +3,11 @@
     <vx-card title="Yêu cầu mượn sách">
       <div class="vx-row mb-6">
         <div class="vx-col sm:w-2/3 w-full">
-          <vs-input class="w-full" v-model="searchText" placeholder="MCL101 hoặc Machine Learning"/>
+          <vs-input
+            class="w-full"
+            v-model="searchText"
+            placeholder="Tìm JPD101 hoặc Nihongo Deiku 1"
+          />
         </div>
         <div class="vx-col sm:w-1/3 w-full">
           <vs-button type="relief" color="primary" class="w-full" @click="doSearch">Tìm sách</vs-button>
@@ -78,18 +82,19 @@ export default {
       suggestedBooks: [
         {
           id: 1,
-          code: "ISE",
+          code: "CDK",
           description:
-            "Book Introduction to Software Engineering learning at FPT University",
-          image: "/images/book-thumbnail.jpg",
-          name: "Introduction to Software Engineering"
+            "Những kĩ năng từ cứng đến mềm mà lập trình viên nào cũng phải biết để thăng tiến và thành công trong sự nghiệp.",
+          image: "/images/codedaokysu.png",
+          name: "Code dạo ký sự"
         },
         {
           id: 2,
-          code: "GLB",
-          description: "Golang Basic learning at FPT University",
-          image: "/images/book-thumbnail.jpg",
-          name: "Golang Basic"
+          code: "SKC",
+          description:
+            "Những môn thầy Khánh dạy trong Đại học FPT là: C, C++, Alice, I2SE, OS, Advanced Java, EIT, XML. ",
+          image: "/images/khanhkt.jpg",
+          name: "Surviving Mr.KhanhKT's Courses for Dummies"
         }
       ]
     };
