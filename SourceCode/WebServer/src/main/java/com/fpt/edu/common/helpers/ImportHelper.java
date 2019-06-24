@@ -1,12 +1,8 @@
 package com.fpt.edu.common.helpers;
 
 import com.fpt.edu.constant.Constant;
-import com.fpt.edu.entities.Author;
-import com.fpt.edu.entities.BookDetail;
-import com.fpt.edu.entities.Publisher;
-import com.fpt.edu.services.AuthorServices;
-import com.fpt.edu.services.CategoryServices;
-import com.fpt.edu.services.PublisherServices;
+import com.fpt.edu.entities.*;
+import com.fpt.edu.services.*;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
@@ -15,14 +11,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
-@Component
+@Service
+@Transactional
 public class ImportHelper {
 	protected final Logger LOGGER = LogManager.getLogger(getClass());
 
@@ -33,17 +33,25 @@ public class ImportHelper {
 	private CategoryServices categoryServices;
 	private AuthorServices authorServices;
 	private PublisherServices publisherServices;
+	private BookDetailsServices bookDetailsServices;
+	private UserServices userServices;
+	private BookServices bookServices;
 
 	@Autowired
-	public ImportHelper(CategoryServices categoryServices, AuthorServices authorServices) {
+	public ImportHelper(CategoryServices categoryServices, AuthorServices authorServices,PublisherServices publisherServices, BookDetailsServices bookDetailsServices,BookServices bookServices,UserServices userServices) {
 		this.categoryServices = categoryServices;
 		this.authorServices = authorServices;
+		this.publisherServices=publisherServices;
+		this.bookDetailsServices=bookDetailsServices;
+		this.userServices=userServices;
+		this.bookServices=bookServices;
 	}
 	public void initData(JSONArray rawData) {
 		this.rawData = rawData;
 		this.isEndOfInputData = false;
 		this.queue = new LinkedList<>();
 	}
+	@Transactional
 	public boolean startImport() {
 		Thread getDataThread = new Thread(new Runnable() {
 			@Override
@@ -71,6 +79,8 @@ public class ImportHelper {
 									importBook(current);
 								} catch (ParseException e) {
 									LOGGER.error(e.getMessage());
+								} catch (Exception e) {
+									e.printStackTrace();
 								}
 							} else {
 								try {
@@ -95,6 +105,8 @@ public class ImportHelper {
 									LOGGER.info(current.toString());
 								} catch (UnirestException | ParseException e) {
 									LOGGER.error("Error when get book with ISBN " + isbn);
+								} catch (Exception e) {
+									e.printStackTrace();
 								}
 							}
 						}
@@ -131,7 +143,7 @@ public class ImportHelper {
 	}
 
 
-	public void importBook(JSONObject rawData) throws ParseException {
+	public void importBook(JSONObject rawData) throws Exception {
 		BookDetail bookDetail = new BookDetail();
 		bookDetail.setCategories(categoryServices.addIfNotExist(rawData.getString(Constant.CATEGORY)));
 		JSONArray authors = rawData.getJSONArray(Constant.AUTHORS);
@@ -148,7 +160,7 @@ public class ImportHelper {
 		bookDetail.setIsbn(rawData.getString(Constant.ISBN));
 		bookDetail.setSubjectCode(rawData.getString(Constant.SUBJECT_CODE_KEY));
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		bookDetail.setPublishedDate(sdf.parse(rawData.getString(rawData.getString("publishedDate"))));
+		bookDetail.setPublishedDate(sdf.parse(rawData.getString("publishedDate")));
 		bookDetail.setPreviewLink(rawData.getString(Constant.PREVIEW_LINK));
 		bookDetail.setThumbnail(rawData.getString(Constant.IMAGE_THUMBNAIL));
 		LOGGER.info("Authos: "+bookDetail.getAuthors().get(0).getName());
@@ -159,8 +171,39 @@ public class ImportHelper {
 		LOGGER.info("Subject code: "+bookDetail.getSubjectCode());
 		LOGGER.info("preview Link: "+bookDetail.getPreviewLink());
 		LOGGER.info("publishDate: "+bookDetail.getPublishedDate());
-
-
+		bookDetailsServices.saveBookDetail(bookDetail);
+		User librarian = userServices.getFirstLibrarian();
+		int numberOfBook = rawData.getInt("remaining");
+		List<Book> bookList = new ArrayList<>();
+		for (int i = 0; i <numberOfBook ; i++) {
+			Book book = new Book();
+			book.setBookDetail(bookDetail);
+			book.setUser(librarian);
+			BigchainTransactionServices services = new BigchainTransactionServices();
+			services.doCreate(
+				book.getAsset(), book.getMetadata(),
+				String.valueOf(book.getUser().getEmail()),
+				(transaction, response) -> {
+					String trasactionId = transaction.getId();
+					book.setAssetId(trasactionId);
+					book.setLastTxId(trasactionId);
+					if (!book.getAssetId().isEmpty()) {
+						bookList.add(book);
+						bookDetail.setBooks(bookList);
+					}
+				}, (transaction, response) -> {
+					String trasactionId = transaction.getId();
+					book.setAssetId(trasactionId);
+					book.setLastTxId(trasactionId);
+					if (!book.getAssetId().isEmpty()) {
+						bookList.add(book);
+						bookDetail.setBooks(bookList);
+					}
+				});
+		}
+		bookDetail.setBooks(bookList);
+		bookDetailsServices.saveBookDetail(bookDetail);
+		LOGGER.info("Import success "+bookList.size()+" book with name" + bookDetail.getName() );
 
 	}
 

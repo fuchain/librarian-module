@@ -164,7 +164,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public void setUser(User user) {
-		if(this.getUser().getListBooks().equals(user.getId())){
+		if(this.getUser()!=null && this.getUser().getListBooks().equals(user.getId())){
 			this.setLastTransferSuccess(new Date());
 		}
 		this.user = user;
