@@ -184,7 +184,7 @@ public class SimulateDataController extends BaseController {
 				book.setUser(receiver);
 				services.doTransfer(
 					book.getLastTxId(),
-					book.getAssetId(), book.getMetadata(),
+					book.getAssetId(), book.getMetadata().getData(),
 					librarian.getEmail(), receiver.getEmail(),
 					(transaction, response) -> {
 						book.setLastTxId(transaction.getId());
