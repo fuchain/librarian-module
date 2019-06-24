@@ -1,6 +1,6 @@
 import { io } from "../socket/socket";
 
-import { getRedisitem } from "@utils/redis";
+import { getRedisItem } from "@utils/redis";
 
 const testPushNotification = async (req, res, next) => {
     const { email, message } = req.body;
