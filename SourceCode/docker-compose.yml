@@ -2,6 +2,7 @@ version: "3"
 services:
   redis:
     image: redis
+    command: redis-server --appendonly yes
     container_name: librarian-redis-dev
     ports:
       - 6379:6379
