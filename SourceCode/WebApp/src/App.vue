@@ -71,6 +71,10 @@ export default {
           target: "#menu-item-300",
           content:
             "Vào đây khi bạn có mã nhận sách từ thư viện hoặc từ người chuyển sách cho bạn"
+        },
+        {
+          target: "#menu-item-400",
+          content: "<strong>FUCoin</strong> có thể xài để đổi quà ở Cóc Shop"
         }
       ]
     };

@@ -20,7 +20,7 @@
     </div>
     <div class="vx-row">
       <div class="vx-col w-full md:w-2/5 lg:w-1/4 rounded-lg">
-        <vx-card>
+        <vx-card title-color="#fff" content-color="#fff">
           <h4>Bảng nội dung</h4>
           <ul class="faq-topics mt-4">
             <li
