@@ -40,7 +40,7 @@
 
             <vs-button
               size="small"
-              @click="handleAction(tour.currentStep === 1); tour.nextStep();"
+              @click="handleAction(tour.currentStep === 1);"
               icon-pack="feather"
               icon="icon-chevrons-right"
               icon-after
@@ -79,9 +79,18 @@ export default {
   },
   methods: {
     handleAction(bool) {
-      if (bool) this.$store.dispatch("openSidebar");
+      if (bool) {
+        this.$store.dispatch("openSidebar");
 
-      return false;
+        setTimeout(
+          function() {
+            this.$tours["vuesaxTour"].nextStep();
+          }.bind(this),
+          10
+        );
+      } else {
+        this.$tours["vuesaxTour"].nextStep();
+      }
     }
   }
 };
