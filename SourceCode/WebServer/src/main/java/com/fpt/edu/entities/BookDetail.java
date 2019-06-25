@@ -1,6 +1,6 @@
 package com.fpt.edu.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import  org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fpt.edu.configs.CustomLocalDateTimeSerializer;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,11 +31,11 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	@JoinColumn(name = "category_id")
     //@JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private Category category;
-
+	@JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "publisher_id")
-    @JsonIgnore
-    private Publisher publisher;
+	@JoinColumn(name = "publisher_id")
+	private Publisher publisher;
+
 
 
 
@@ -48,11 +48,10 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	private String previewLink;
 	@Column(name = "thumbnail")
 	private String thumbnail;
-	@CreationTimestamp
 	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
 	@Column(name = "published_date", nullable = true)
 	private Date publishedDate;
-	@Column(name = "description")
+	@Column(name = "description", columnDefinition = "text")
 	private String description;
 
 	public Category getCategory() {
@@ -114,6 +113,10 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 		this.thumbnail = thumbnail;
 	}
 
+	@OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
+	@JsonIgnore
+	private List<Book> books;
+
 	public Date getPublishedDate() {
 		return publishedDate;
 	}
@@ -121,10 +124,6 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	public void setPublishedDate(Date publishedDate) {
 		this.publishedDate = publishedDate;
 	}
-
-	@OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
-    @JsonIgnore
-    private List<Book> books;
 
     public Long getId() {
         return id;

@@ -15,7 +15,8 @@ const sequelize = new Sequelize(dbName, dbUser, dbPass, {
         underscored: false,
         timestamps: false,
         freezeTableName: false
-    }
+    },
+    logging: false
 });
 
 const basename = path.basename(module.filename);

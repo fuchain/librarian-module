@@ -35,17 +35,17 @@ public class Constant {
 	public static final String AUTHORS= "authors";
 	public static final String CATEGORY= "category";
 	public static final String DEFAULT_REVIEW_LINK= "DEFAULT_REVIEW_LINK";
-	public static final String DEFAULT_IMAGE_LINK= "DEFAULT_IMAGE_LINK";
-	public static final String DEFAULT_DESCRIPTION= "default description";
+	public static final String DEFAULT_IMAGE_LINK= "";
+	public static final String DEFAULT_DESCRIPTION= "Description Not Available";
 	public static final String DEFAULT_AUTHOR= "default author";
 	public static final String DEFAULT_PUBLISHER= "default PUBLISHER";
-	public static final String DEFAULT_PUBLISH_DATE= "default PUBLISHER DATE";
+	public static final String DEFAULT_PUBLISH_DATE= "2000-01-01";
 	public static final String SUBJECT_CODE_KEY= "subJectCode";
 
 	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
 
 	// Asset
-	public static final String BC_BOOK_ID = "book_id";
+	public static final String BOOK_ID = "book_id";
 
 	// Metadata
 	public static final String CURRENT_KEEPER = "current_keeper";

@@ -3,7 +3,7 @@ import Vue from "vue";
 import Vuesax from "vuesax";
 
 export let colors = {
-  primary: "#3C8CBC",
+  primary: "#7367F0",
   success: "#28C76F",
   danger: "#EA5455",
   warning: "#FF9F43",

@@ -140,7 +140,7 @@ public class LibrarianController extends BaseController {
 		JSONArray arr = new JSONArray(arrBook);
 		importHelper.initData(arr);
 		importHelper.startImport();
-
+		f.delete();
 		return new ResponseEntity<>(arrBook.toString(), HttpStatus.OK);
 
 

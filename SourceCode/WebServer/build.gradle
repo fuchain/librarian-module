@@ -32,18 +32,19 @@ dependencies {
 	// Read-Write Parse csv to Object
 	compile group: 'com.opencsv', name: 'opencsv', version: '4.4'
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '2.1.5.RELEASE'
-	// https://mvnrepository.com/artifact/log4j/apache-log4j-extras
 	compile group: 'log4j', name: 'apache-log4j-extras', version: '1.2.17'
 
 	// Driver BigchainDB
 	compile group: 'com.bigchaindb', name: 'bigchaindb-driver', version: '1.2'
+
 	// Use JUnit test framework
 	testImplementation 'junit:junit:4.12'
 	compile fileTree(dir: 'libs', include: '*.jar')
 
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-hibernate5
 	compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: '2.9.8'
+	// https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-core-asl
+	compile group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: '1.1.0'
 
 
 	compile fileTree(dir: 'libs', include: '*.jar')
@@ -57,12 +58,10 @@ dependencies {
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'
 	compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.0.2'
 	compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.3.6'
-	//AWS S3
-	// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
-	compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.567'
-	// https://mvnrepository.com/artifact/commons-io/commons-io
-	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
+	// AWS S3
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.567'
+	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
 	components {
 		withModule('org.springframework:spring-beans') {

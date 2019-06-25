@@ -62,18 +62,6 @@ export default {
           content:
             "Xem các sách của bạn ở đây, gồm sách đang giữ, sách đang yêu cầu trả và sách đang yêu cầu nhận"
         },
-        // {
-        //   target: "#menu-item-0",
-        //   content: "Đây là sách mà bạn đang giữ"
-        // },
-        // {
-        //   target: "#menu-item-1",
-        //   content: "Đây là sách mà bạn đang trả"
-        // },
-        // {
-        //   target: "#menu-item-2",
-        //   content: "Đây là sách mà bạn đang yêu cầu mượn"
-        // },
         {
           target: "#menu-item-200",
           content:
