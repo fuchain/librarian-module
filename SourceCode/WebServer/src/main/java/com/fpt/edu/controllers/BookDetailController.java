@@ -48,7 +48,6 @@ public class BookDetailController extends BaseController {
     @GetMapping("/{id}")
     public ResponseEntity<BookDetail> getBookDetail(@PathVariable Long id) {
         BookDetail bookDetail = bookDetailsServices.getBookById(id);
-
         return new ResponseEntity<>(bookDetail, HttpStatus.OK);
     }
 

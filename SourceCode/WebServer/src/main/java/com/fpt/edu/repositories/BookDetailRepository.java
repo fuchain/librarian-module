@@ -18,4 +18,10 @@ public interface BookDetailRepository extends PagingAndSortingRepository<BookDet
     @Query(value = "SELECT b FROM BookDetail b WHERE lower(b.name) LIKE %:name%")
 	Page<BookDetail> findBookDetailsByName(@Param("name") String name, Pageable pageable);
 
+
+
+
+	@Query(value = "SELECT b FROM BookDetail b WHERE b.isbn  =:isbn")
+	BookDetail findBookDetailsByISBN(@Param("isbn") String isbn);
+
 }

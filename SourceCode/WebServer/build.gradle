@@ -43,6 +43,8 @@ dependencies {
 
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
 	compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: '2.9.8'
+	// https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-core-asl
+	compile group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: '1.1.0'
 
 
 	compile fileTree(dir: 'libs', include: '*.jar')
