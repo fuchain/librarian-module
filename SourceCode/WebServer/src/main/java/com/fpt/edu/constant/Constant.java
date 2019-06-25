@@ -38,7 +38,7 @@ public class Constant {
 	public static final String DEFAULT_IMAGE_LINK= "";
 	public static final String DEFAULT_DESCRIPTION= "Description Not Available";
 	public static final String DEFAULT_AUTHOR= "default author";
-	public static final String DEFAULT_PUBLISHER= "default PUBLISHER";
+	public static final String DEFAULT_PUBLISHER= "default publisher";
 	public static final String DEFAULT_PUBLISH_DATE= "2000-01-01";
 	public static final String SUBJECT_CODE_KEY= "subJectCode";
 
