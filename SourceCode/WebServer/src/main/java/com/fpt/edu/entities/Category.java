@@ -1,5 +1,7 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.*;
@@ -33,7 +35,7 @@ public class Category extends AbstractTimestampEntity implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	@JsonIgnore
 	public List<BookDetail> getBooksDetails() {
 		return booksDetails;
 	}

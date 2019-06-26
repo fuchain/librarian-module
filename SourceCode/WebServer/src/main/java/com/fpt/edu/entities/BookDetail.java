@@ -1,9 +1,7 @@
 package com.fpt.edu.entities;
 
-import  org.codehaus.jackson.annotate.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fpt.edu.configs.CustomLocalDateTimeSerializer;
-import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -21,17 +19,16 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     @Column(name = "name")
     private String name;
 
-    @JsonIgnore
+
     @ManyToMany()
     @JoinTable(name = "book_author", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "author_id")})
     private List<Author> authors;
 
-    @JsonIgnore
+
 	@ManyToOne
 	@JoinColumn(name = "category_id")
     //@JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private Category category;
-	@JsonIgnore
     @ManyToOne
 	@JoinColumn(name = "publisher_id")
 	private Publisher publisher;
@@ -48,12 +45,12 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	private String previewLink;
 	@Column(name = "thumbnail")
 	private String thumbnail;
-	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
 	@Column(name = "published_date", nullable = true)
-	private Date publishedDate;
+	private String publishedDate;
 	@Column(name = "description", columnDefinition = "text")
 	private String description;
 
+	@JsonIgnore
 	public Category getCategory() {
 		return category;
 	}
@@ -117,11 +114,11 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	@JsonIgnore
 	private List<Book> books;
 
-	public Date getPublishedDate() {
+	public String getPublishedDate() {
 		return publishedDate;
 	}
 
-	public void setPublishedDate(Date publishedDate) {
+	public void setPublishedDate(String publishedDate) {
 		this.publishedDate = publishedDate;
 	}
 
@@ -132,7 +129,6 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     public void setId(Long id) {
         this.id = id;
     }
-
     public List<Author> getAuthors() {
         return authors;
     }
@@ -148,7 +144,7 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     public void setCategories(Category category) {
         this.category = category;
     }
-
+	@JsonIgnore
     public Publisher getPublisher() {
         return publisher;
     }
@@ -165,6 +161,7 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
         this.name = name;
     }
 
+	@JsonIgnore
     public List<Book> getBooks() {
         return books;
     }

@@ -1,5 +1,7 @@
 package com.fpt.edu.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class Author extends AbstractTimestampEntity implements Serializable {
 
 	@ManyToMany(mappedBy = "authors")
 	private List<BookDetail> books;
-
+	@JsonIgnore
 	public List<BookDetail> getBooks() {
 		return books;
 	}
