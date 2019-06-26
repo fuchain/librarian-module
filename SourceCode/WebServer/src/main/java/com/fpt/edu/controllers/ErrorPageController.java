@@ -15,7 +15,7 @@ public class ErrorPageController implements ErrorController {
 	public ResponseEntity<String> error() {
 		JSONObject errorObj = new JSONObject();
 		errorObj.put("message", "You cannot access this endpoint");
-		return new ResponseEntity<>(errorObj.toString(), HttpStatus.BAD_GATEWAY);
+		return new ResponseEntity<>(errorObj.toString(), HttpStatus.BAD_REQUEST);
 	}
 
 	@Override
