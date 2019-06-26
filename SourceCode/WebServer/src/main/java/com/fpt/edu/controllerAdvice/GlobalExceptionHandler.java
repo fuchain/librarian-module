@@ -1,7 +1,9 @@
 package com.fpt.edu.controllerAdvice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.constant.Constant;
 import com.fpt.edu.exceptions.*;
+import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -144,5 +146,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	private void logException(Exception ex) {
 		LOGGER.error("ERROR  :" + ex.toString());
 		LOGGER.error("ERROR Message :" + ex.getMessage());
+		Unirest.post(Constant.LOG_SERVER)
+			.header("accept", "application/json")
+			.field("type", "Exception")
+			.field("source", "Web api")
+			.field("metadata", ex.toString());
 	}
 }
