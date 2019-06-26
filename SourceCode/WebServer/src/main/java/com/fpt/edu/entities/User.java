@@ -92,7 +92,7 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public String getFullName() {
-		for (String prefix : Constant.FPT_EMAIL_PREFIX) {
+		for (String prefix : Constant.FPT_EMAIL_PREFIXS) {
 			fullName = fullName.replace(prefix, Constant.EMPTY_VALUE);
 		}
 		return fullName;
