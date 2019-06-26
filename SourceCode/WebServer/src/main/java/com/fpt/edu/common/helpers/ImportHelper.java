@@ -227,7 +227,7 @@ public class ImportHelper {
 			if (rawData.has("publishedDate")) {
 				publishedDate = rawData.getString("publishedDate");
 			}
-			bookDetail.setPublishedDate(sdf.parse(publishedDate));
+				bookDetail.setPublishedDate((publishedDate));
 			String previewLink = Constant.DEFAULT_REVIEW_LINK;
 			if (rawData.has(Constant.PREVIEW_LINK)) {
 				previewLink = rawData.getString(Constant.PREVIEW_LINK);
@@ -291,7 +291,7 @@ public class ImportHelper {
 			}
 			bookDetail.setBooks(bookList);
 			bookDetailsServices.saveBookDetail(bookDetail);
-			LOGGER.info("Import success " + bookList.size() + " book with name" + bookDetail.getName());
+			LOGGER.info("Import success " + bookList.size() + " book with name " + bookDetail.getName());
 		} else {
 
 			List<Book> bookList = new ArrayList<>();

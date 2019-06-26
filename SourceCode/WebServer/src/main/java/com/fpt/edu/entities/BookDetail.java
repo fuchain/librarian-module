@@ -48,9 +48,8 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	private String previewLink;
 	@Column(name = "thumbnail")
 	private String thumbnail;
-	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
 	@Column(name = "published_date", nullable = true)
-	private Date publishedDate;
+	private String publishedDate;
 	@Column(name = "description", columnDefinition = "text")
 	private String description;
 
@@ -117,11 +116,11 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	@JsonIgnore
 	private List<Book> books;
 
-	public Date getPublishedDate() {
+	public String getPublishedDate() {
 		return publishedDate;
 	}
 
-	public void setPublishedDate(Date publishedDate) {
+	public void setPublishedDate(String publishedDate) {
 		this.publishedDate = publishedDate;
 	}
 
