@@ -79,7 +79,7 @@ function userMenu(numOfBooks, coin = 0) {
     },
     {
       url: "/books/request",
-      name: "Yêu cầu mượn sách",
+      name: "Tìm mượn sách",
       slug: "book-request",
       icon: "BookOpenIcon"
     },
