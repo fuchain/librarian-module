@@ -1,5 +1,8 @@
 package com.fpt.edu.services;
 
+import com.fpt.edu.constant.Constant;
+import com.fpt.edu.entities.Role;
+import com.fpt.edu.repositories.RoleRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,8 @@ import com.fpt.edu.repositories.BookRepository;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.repositories.UserRepository;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,12 +29,15 @@ public class UserServices {
 	private final BCryptPasswordEncoder encoder;
 	private UserRepository userRepository;
 	private BookRepository bookRepository;
+	private RoleRepository roleRepository;
 
-	public UserServices(BCryptPasswordEncoder encoder, UserRepository userRepository, BookRepository bookRepository) {
+	public UserServices(BCryptPasswordEncoder encoder, UserRepository userRepository, BookRepository bookRepository, RoleRepository roleRepository) {
 		this.encoder = encoder;
 		this.userRepository = userRepository;
 		this.bookRepository = bookRepository;
+		this.roleRepository = roleRepository;
 	}
+
 	public User addNewUser(User user) {
 		user.setDisabled(false);
 		if (user.getPassword() != null) {
@@ -82,7 +90,17 @@ public class UserServices {
 	}
 
 
-	public int countNumberOfBookThatUserKeep(Long userId){
+	public int countNumberOfBookThatUserKeep(Long userId) {
 		return bookRepository.getBookNumberOfCurrentUser(userId);
 	}
+
+	public User getFirstLibrarian() {
+		Role librarianRole = roleRepository.getRoleByRoleName(Constant.ROLES_LIBRARIAN);
+		if (librarianRole != null && librarianRole.getUsers().size() > 0) {
+			return librarianRole.getUsers().get(0);
+		} else {
+			return null;
+		}
+	}
+
 }

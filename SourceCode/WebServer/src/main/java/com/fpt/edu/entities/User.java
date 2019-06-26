@@ -2,10 +2,11 @@ package com.fpt.edu.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fpt.edu.constant.Constant;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.*;
 
 @Entity
 @Table(name = "tbl_user")
@@ -28,7 +29,7 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	@Column(name = "phone")
 	private String phone;
 
-	@ManyToMany(cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
+	@ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
 	@JsonIgnore
 	private List<Role> roles;
@@ -54,16 +55,16 @@ public class User extends AbstractTimestampEntity implements Serializable {
 		return listBooks;
 	}
 
+	public void setListBooks(List<Book> listBooks) {
+		this.listBooks = listBooks;
+	}
+
 	public Boolean isDisabled() {
 		return isDisabled;
 	}
 
 	public void setDisabled(Boolean disabled) {
 		isDisabled = disabled;
-	}
-
-	public void setListBooks(List<Book> listBooks) {
-		this.listBooks = listBooks;
 	}
 
 	public Long getId() {
@@ -91,6 +92,9 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public String getFullName() {
+		for (String prefix : Constant.FPT_EMAIL_PREFIXS) {
+			fullName = fullName.replace(prefix, Constant.EMPTY_VALUE);
+		}
 		return fullName;
 	}
 

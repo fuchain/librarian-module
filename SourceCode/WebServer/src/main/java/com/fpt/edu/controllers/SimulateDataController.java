@@ -114,7 +114,7 @@ public class SimulateDataController extends BaseController {
 			// Map category to book detail
 			List<Category> categoryList = new ArrayList<>();
 			categoryList.add(categories.get(random.nextInt(categories.size())));
-			bookDetail.setCategories(categoryList);
+			bookDetail.setCategories(categoryList.get(0));
 
 			// Map publisher to book detail
 			bookDetail.setPublisher(publishers.get(random.nextInt(publishers.size())));

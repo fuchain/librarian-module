@@ -1,8 +1,12 @@
 package com.fpt.edu.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import  org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fpt.edu.configs.CustomLocalDateTimeSerializer;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 
@@ -18,23 +22,108 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     private String name;
 
     @JsonIgnore
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany()
     @JoinTable(name = "book_author", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "author_id")})
     private List<Author> authors;
 
     @JsonIgnore
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
-    private List<Category> categories;
-
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+    //@JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
+    private Category category;
+	@JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "publisher_id")
-    @JsonIgnore
-    private Publisher publisher;
+	@JoinColumn(name = "publisher_id")
+	private Publisher publisher;
 
-    @OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
-    @JsonIgnore
-    private List<Book> books;
+
+
+
+	// new data that return by google
+	@Column(name = "libol")
+	private String libol;
+	@Column(name = "subject_codew")
+	private String subjectCode;
+    @Column(name = "previewLink")
+	private String previewLink;
+	@Column(name = "thumbnail")
+	private String thumbnail;
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Column(name = "published_date", nullable = true)
+	private Date publishedDate;
+	@Column(name = "description", columnDefinition = "text")
+	private String description;
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public String getSubjectCode() {
+		return subjectCode;
+	}
+
+	public void setSubjectCode(String subjectCode) {
+		this.subjectCode = subjectCode;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getIsbn() {
+		return isbn;
+	}
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+	@Column(name = "ISBN")
+	private String isbn;
+
+
+	public String getLibol() {
+		return libol;
+	}
+
+	public void setLibol(String libol) {
+		this.libol = libol;
+	}
+	public String getPreviewLink() {
+		return previewLink;
+	}
+
+	public void setPreviewLink(String previewLink) {
+		this.previewLink = previewLink;
+	}
+
+	public String getThumbnail() {
+		return thumbnail;
+	}
+
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
+	}
+
+	@OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
+	@JsonIgnore
+	private List<Book> books;
+
+	public Date getPublishedDate() {
+		return publishedDate;
+	}
+
+	public void setPublishedDate(Date publishedDate) {
+		this.publishedDate = publishedDate;
+	}
 
     public Long getId() {
         return id;
@@ -52,12 +141,12 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
         this.authors = authors;
     }
 
-    public List<Category> getCategories() {
-        return categories;
+    public Category getCategories() {
+        return category;
     }
 
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
+    public void setCategories(Category category) {
+        this.category = category;
     }
 
     public Publisher getPublisher() {

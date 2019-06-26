@@ -17,7 +17,7 @@ public class Author extends AbstractTimestampEntity implements Serializable {
 	@Column(name = "name")
 	private String name;
 
-	@ManyToMany(mappedBy = "authors",cascade= CascadeType.ALL)
+	@ManyToMany(mappedBy = "authors")
 	private List<BookDetail> books;
 
 	public List<BookDetail> getBooks() {

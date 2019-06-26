@@ -54,4 +54,14 @@ public class BookDetailsServices {
 		return bookDetailRepository.findAll(pageable).getContent();
 	}
 
+
+	public BookDetail getBookByISBN(String isbn) {
+    	BookDetail bookDetail=bookDetailRepository.findBookDetailsByISBN(isbn);
+    	if(bookDetail==null){
+    		return new BookDetail();
+		}
+		return bookDetail;
+
+	}
+
 }
