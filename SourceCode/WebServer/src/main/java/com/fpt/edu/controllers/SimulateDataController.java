@@ -193,7 +193,7 @@ public class SimulateDataController extends BaseController {
 					(transaction, response) -> {
 					}
 				);
-				Thread.sleep(500);
+				Thread.sleep(100);
 			}
 			return "Give book completed";
 		} else {
