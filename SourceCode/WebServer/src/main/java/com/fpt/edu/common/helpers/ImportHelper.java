@@ -88,7 +88,7 @@ public class ImportHelper {
 
 		getDataThread.start();
 		insertDB.start();
-		insertDB2.start();
+	//	insertDB2.start();
 		return false;
 	}
 
