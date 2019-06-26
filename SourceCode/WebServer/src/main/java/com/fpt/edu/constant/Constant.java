@@ -41,7 +41,7 @@ public class Constant {
 	public static final String DEFAULT_PUBLISHER= "default PUBLISHER";
 	public static final String DEFAULT_PUBLISH_DATE= "2000-01-01";
 	public static final String SUBJECT_CODE_KEY= "subJectCode";
-	public static final String[] FPT_EMAIL_PREFIX = {
+	public static final String[] FPT_EMAIL_PREFIXS = {
 		" - K11 FUG HCM", "(SV K12- FUG HCM) "
 	};
 

@@ -104,7 +104,7 @@ public class AuthenticationController {
 			String email = jsonGoogleResponse.getBody().getObject().get("email").toString().toLowerCase();
 			String fullName;
 			fullName = jsonGoogleResponse.getBody().getObject().get("name").toString();
-			for (String prefix : Constant.FPT_EMAIL_PREFIX) {
+			for (String prefix : Constant.FPT_EMAIL_PREFIXS) {
 				fullName = fullName.replace(prefix, Constant.EMPTY_VALUE);
 			}
 			String picture = jsonGoogleResponse.getBody().getObject().get("picture").toString();
