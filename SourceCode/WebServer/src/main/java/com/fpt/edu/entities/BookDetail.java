@@ -16,7 +16,7 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "text")
     private String name;
 
 
@@ -39,11 +39,11 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	// new data that return by google
 	@Column(name = "libol")
 	private String libol;
-	@Column(name = "subject_codew")
+	@Column(name = "subject_code")
 	private String subjectCode;
-    @Column(name = "previewLink")
+    @Column(name = "previewLink", columnDefinition = "text")
 	private String previewLink;
-	@Column(name = "thumbnail")
+	@Column(name = "thumbnail", columnDefinition = "text")
 	private String thumbnail;
 	@Column(name = "published_date", nullable = true)
 	private String publishedDate;
