@@ -1,6 +1,6 @@
 <template>
   <div>
-    <vx-card title="Yêu cầu mượn sách">
+    <vx-card title="Tìm mượn sách">
       <div class="vx-row mb-6">
         <div class="vx-col sm:w-2/3 w-full">
           <vs-input
@@ -113,14 +113,15 @@ export default {
 
           this.listBooks = [].concat(
             data.map(e => {
+              console.log(e.subjectCode);
               return {
                 id: e.id,
                 name: e.name,
-                description: `Book ${
-                  e.name
-                } for Software Engineering learning at FPT University`,
-                image: "/images/book-thumbnail.jpg",
-                code: e.name.substring(0, 3).toUpperCase() + "101"
+                description: e.description,
+                image: e.thumbnail || "/images/book-thumbnail.jpg",
+                code: e.subjectCode
+                  ? "N/A"
+                  : e.subjectCode.substring(0, 3).toUpperCase()
               };
             })
           );
