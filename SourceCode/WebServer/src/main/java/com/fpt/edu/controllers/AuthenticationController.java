@@ -15,9 +15,15 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import static com.fpt.edu.security.SecurityConstants.EXPIRATION_TIME;
 import static com.fpt.edu.security.SecurityConstants.SECRET;
@@ -30,14 +36,6 @@ public class AuthenticationController {
 	@Autowired
 	public AuthenticationController(UserServices userServices) {
 		this.userServices = userServices;
-	}
-
-	@ApiOperation(value = "Add new user", response = String.class)
-	@PostMapping("new")
-	public ResponseEntity<String> signUp(@RequestBody User user) {
-		userServices.addNewUser(user);
-
-		return UserController.getJSONResponseUserProfile(user);
 	}
 
 	private static String generateJwtTokenResponse(User user, String picture) {
@@ -53,7 +51,7 @@ public class AuthenticationController {
 		}
 
 		String[] authorities = new String[roles.size()];
-		for (int i = 0; i < roles.size() ; i++) {
+		for (int i = 0; i < roles.size(); i++) {
 			authorities[i] = roles.get(i).getName();
 		}
 
@@ -76,6 +74,14 @@ public class AuthenticationController {
 		return responseObj.toString();
 	}
 
+	@ApiOperation(value = "Add new user", response = String.class)
+	@PostMapping("new")
+	public ResponseEntity<String> signUp(@RequestBody User user) {
+		userServices.addNewUser(user);
+
+		return UserController.getJSONResponseUserProfile(user);
+	}
+
 	private String getEmailDomain(String email) {
 		return email.substring(email.indexOf("@") + 1);
 	}
@@ -96,7 +102,11 @@ public class AuthenticationController {
 
 		try {
 			String email = jsonGoogleResponse.getBody().getObject().get("email").toString().toLowerCase();
-			String fullName = jsonGoogleResponse.getBody().getObject().get("name").toString();
+			String fullName;
+			fullName = jsonGoogleResponse.getBody().getObject().get("name").toString();
+			for (String prefix : Constant.FPT_EMAIL_PREFIX) {
+				fullName = fullName.replace(prefix, Constant.EMPTY_VALUE);
+			}
 			String picture = jsonGoogleResponse.getBody().getObject().get("picture").toString();
 			Optional<User> loggedUser = userServices.findUserByEmail(email);
 
