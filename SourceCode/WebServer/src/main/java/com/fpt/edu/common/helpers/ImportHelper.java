@@ -28,9 +28,9 @@ import java.util.Queue;
 public class ImportHelper {
 
 
-
 	protected final Logger LOGGER = LogManager.getLogger(getClass());
-	int countSuccess=0;
+	int countSuccess = 0;
+	Object LOCK;
 	private JSONArray rawData;
 	private boolean isEndOfInputData;
 	private Queue<JSONObject> queue;
@@ -50,6 +50,7 @@ public class ImportHelper {
 		this.bookDetailsServices = bookDetailsServices;
 		this.userServices = userServices;
 		this.bookServices = bookServices;
+		LOCK = new Object();
 	}
 
 	public void initData(JSONArray rawData) {
@@ -76,7 +77,6 @@ public class ImportHelper {
 				LOGGER.info("End processing");
 			}
 		});
-
 		Thread insertDB2 = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -84,27 +84,20 @@ public class ImportHelper {
 				LOGGER.info("End processing");
 			}
 		});
-		Thread insertDB3 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				insertDataRunable();
-				LOGGER.info("End processing");
-			}
-		});
+
 
 		getDataThread.start();
 		insertDB.start();
 		insertDB2.start();
-	//	insertDB3.start();
 		return false;
 	}
 
 
-	private void insertDataRunable(){
+	private void insertDataRunable() {
 		while (!queue.isEmpty() || !isEndOfInputData) {
 			if (!queue.isEmpty()) {
 				JSONObject current;
-				synchronized (queue){
+				synchronized (queue) {
 					current = queue.poll();
 				}
 				if (current != null) {
@@ -115,7 +108,9 @@ public class ImportHelper {
 					if (isbn.isEmpty()) {
 						setDefaultData(current);
 						try {
-							importBook(current);
+							InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
+							thread.importBook(current);
+
 						} catch (ParseException e) {
 							LOGGER.error(e.getMessage());
 						} catch (Exception e) {
@@ -154,14 +149,19 @@ public class ImportHelper {
 								} else {
 									current.put(Constant.PUBLISHED_DATE, Constant.PUBLISHED_DATE);
 								}
-								if( jsonData.has(Constant.AUTHORS))	{
+								if (jsonData.has(Constant.AUTHORS)) {
 									current.put(Constant.AUTHORS, jsonData.getJSONArray(Constant.AUTHORS));
 								}
-								importBook(current);
+
+								InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
+								thread.importBook(current);
 
 							} else {
+
 								setDefaultData(current);
-								importBook(current);
+								InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
+								thread.importBook(current);
+
 							}
 							LOGGER.info(current.toString());
 						} catch (UnirestException | ParseException e) {
@@ -175,9 +175,8 @@ public class ImportHelper {
 				LOGGER.info("Book import Queue is empty");
 			}
 		}
-		LOGGER.info("Import book is done with "+countSuccess+"book detail imported");
+		LOGGER.info("Import book is done with " + countSuccess + "book detail imported");
 	}
-
 
 
 	public JSONObject getBookDetailByISBN(String isbn) throws UnirestException {
@@ -195,141 +194,6 @@ public class ImportHelper {
 		JSONArray arr = new JSONArray();
 		arr.put(Constant.DEFAULT_AUTHOR);
 		rawData.put(Constant.AUTHORS, arr);
-
-	}
-
-	@Transactional
-	public void importBook(JSONObject rawData) throws Exception {
-		User librarian = userServices.getFirstLibrarian();
-		BookDetail bookDetail = bookDetailsServices.getBookByISBN(rawData.getString(Constant.ISBN));
-		if (bookDetail.getName() == null) {
-			bookDetail.setCategories(categoryServices.addIfNotExist(rawData.getString(Constant.CATEGORY)));
-			JSONArray authors = rawData.getJSONArray(Constant.AUTHORS);
-			bookDetail.setAuthors(new ArrayList<>());
-			for (int i = 0; i < authors.length(); i++) {
-				String authorName = authors.getString(i);
-				Author a = authorServices.getAndAddIfNotExist(authorName);
-				bookDetail.getAuthors().add(a);
-			}
-			Publisher p = publisherServices.getandAddIfNotExist(rawData.getString(Constant.PUBLISHER));
-			bookDetail.setPublisher(p);
-			bookDetail.setLibol(rawData.getString("libol"));
-			bookDetail.setName(rawData.getString("name"));
-			bookDetail.setIsbn(rawData.getString(Constant.ISBN));
-			String subject_code = "";
-			if (rawData.has(Constant.SUBJECT_CODE_KEY)) {
-				subject_code = rawData.getString(Constant.SUBJECT_CODE_KEY);
-			}
-
-			bookDetail.setSubjectCode(subject_code);
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			String publishedDate = "2000-01-01";
-			if (rawData.has("publishedDate")) {
-				publishedDate = rawData.getString("publishedDate");
-			}
-				bookDetail.setPublishedDate((publishedDate));
-			String previewLink = Constant.DEFAULT_REVIEW_LINK;
-			if (rawData.has(Constant.PREVIEW_LINK)) {
-				previewLink = rawData.getString(Constant.PREVIEW_LINK);
-			}
-			bookDetail.setPreviewLink(previewLink);
-			String thumbnail = Constant.DEFAULT_IMAGE_LINK;
-			if (rawData.has(Constant.IMAGE_THUMBNAIL)) {
-				thumbnail = rawData.getString(Constant.IMAGE_THUMBNAIL);
-
-			}
-			bookDetail.setThumbnail(thumbnail);
-			String desc = Constant.DEFAULT_DESCRIPTION;
-			if (rawData.has(Constant.DESCRIPTION)) {
-				desc = rawData.getString(Constant.DESCRIPTION);
-			}
-			bookDetail.setDescription(desc);
-			LOGGER.info("Authos: " + bookDetail.getAuthors().get(0).getName());
-			LOGGER.info("Description: " + bookDetail.getDescription());
-			LOGGER.info("ISBN : " + bookDetail.getIsbn());
-			LOGGER.info("Thumbnail: " + bookDetail.getThumbnail());
-			LOGGER.info("publisher: " + bookDetail.getPublisher().getName());
-			LOGGER.info("Subject code: " + bookDetail.getSubjectCode());
-			LOGGER.info("preview Link: " + bookDetail.getPreviewLink());
-			LOGGER.info("publishDate: " + bookDetail.getPublishedDate());
-			bookDetailsServices.saveBookDetail(bookDetail);
-			int numberOfBook = rawData.getInt("remaining");
-			List<Book> bookList = new ArrayList<>();
-			for (int i = 0; i < numberOfBook; i++) {
-				Book book = new Book();
-				book.setBookDetail(bookDetail);
-				book.setUser(librarian);
-
-				BookMetadata bookMetadata = book.getMetadata();
-				bookMetadata.setStatus(book.getStatus());
-				bookServices.saveBook(book);
-				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
-
-				BookAsset bookAsset = book.getAsset();
-				bookAsset.setBookId(String.valueOf(book.getId()));
-				// for estimate save book to bighchian
-				long startTime = System.currentTimeMillis();
-				BigchainTransactionServices services = new BigchainTransactionServices();
-				services.doCreate(
-					bookAsset.getData(), bookMetadata.getData(),
-					String.valueOf(book.getUser().getEmail()),
-					(transaction, response) -> {
-						String transactionId = transaction.getId();
-						book.setAssetId(transactionId);
-						book.setLastTxId(transactionId);
-						if (!book.getAssetId().isEmpty()) {
-							bookList.add(book);
-							bookDetail.setBooks(bookList);
-						}
-					}, (transaction, response) -> {
-						LOGGER.error(transaction.getMetaData());
-					});
-
-				long stopTime = System.currentTimeMillis();
-				LOGGER.info("Insert 1 book to bighchain take " + (stopTime - startTime));
-				Thread.sleep(500);
-			}
-			bookDetail.setBooks(bookList);
-			bookDetailsServices.saveBookDetail(bookDetail);
-			LOGGER.info("Import success " + bookList.size() + " book with name " + bookDetail.getName());
-		} else {
-
-			List<Book> bookList = new ArrayList<>();
-			int numberOfBook = rawData.getInt("remaining") - bookDetail.getBooks().size();
-			for (int i = 0; i < numberOfBook; i++) {
-				Book book = new Book();
-				book.setBookDetail(bookDetail);
-				book.setUser(librarian);
-				BookMetadata bookMetadata = book.getMetadata();
-				bookMetadata.setStatus(book.getStatus());
-				bookServices.saveBook(book);
-				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
-				BookAsset bookAsset = book.getAsset();
-				bookAsset.setBookId(String.valueOf(book.getId()));
-				long startTime = System.currentTimeMillis();
-				BigchainTransactionServices services = new BigchainTransactionServices();
-				services.doCreate(
-					bookAsset.getData(), bookMetadata.getData(),
-					String.valueOf(book.getUser().getEmail()),
-					(transaction, response) -> {
-						String transactionId = transaction.getId();
-						book.setAssetId(transactionId);
-						book.setLastTxId(transactionId);
-						if (!book.getAssetId().isEmpty()) {
-							bookList.add(book);
-							bookDetail.setBooks(bookList);
-						}
-					}, (transaction, response) -> {
-						LOGGER.error(transaction.getMetaData());
-					});
-				long stopTime = System.currentTimeMillis();
-				LOGGER.info("Insert 1 book to bighchain take " + (stopTime - startTime));
-				Thread.sleep(500);
-			}
-
-		}
-		countSuccess++;
-		LOGGER.info("Imported "+countSuccess+"  book detail");
 
 	}
 
