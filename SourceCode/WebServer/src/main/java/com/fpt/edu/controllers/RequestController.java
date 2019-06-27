@@ -530,7 +530,7 @@ public class RequestController extends BaseController {
 			// If pin is expired
 			if (duration > Constant.PIN_EXPIRED_MINUTE) {
 				// Update matching
-				String pin = utils.getPin();
+				String pin = getUniquePin();
 				existedMatching.setPin(pin);
 				existedMatching.setMatchingStartDate(now);
 				matchingServices.updateMatching(existedMatching);
@@ -565,18 +565,12 @@ public class RequestController extends BaseController {
 		matching.setPin(pin);
 		matching.setMatchingStartDate(now);
 		matching.setStatus(EMatchingStatus.PENDING.getValue());
-		matchingServices.saveMatching(matching);
+		Matching savedMatching = matchingServices.saveMatching(matching);
+		Long matchingId = savedMatching.getId();
 
 		// Update transfer status of book
 		book.setTransferStatus(EBookTransferStatus.TRANSFERRING.getValue());
 		bookServices.updateBook(book);
-
-		// Get matching id
-		Matching m = matchingServices.getByBookId(
-			book.getId(),
-			EMatchingStatus.PAIRED.getValue(),
-			EMatchingStatus.PENDING.getValue());
-		Long matchingId = m.getId();
 
 		// Return response to client
 		jsonResult.put("pin", pin);
