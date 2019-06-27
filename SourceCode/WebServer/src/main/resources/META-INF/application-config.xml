@@ -7,14 +7,14 @@
                        http://www.springframework.org/schema/context
                        http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="com.fpt.edu.service" />
-    <context:component-scan base-package="com.fpt.edu.controller" />
+    <context:component-scan base-package="com.fpt.edu.services" />
+    <context:component-scan base-package="com.fpt.edu.controllers" />
     <context:component-scan base-package="com.fpt.edu.controllerAdvice" />
-    <context:component-scan base-package="com.fpt.edu.config" />
+    <context:component-scan base-package="com.fpt.edu.configs" />
     <context:component-scan base-package="com.fpt.edu.security" />
     <context:component-scan base-package="com.fpt.edu.common.helpers" />
     <context:component-scan base-package="com.fpt.edu.common" />
-    <bean id="bigchainDbConfig" class="com.fpt.edu.config.BigchainDbConfig">
+    <bean id="bigchainDbConfig" class="com.fpt.edu.configs.BigchainDbConfig">
         <constructor-arg value="${fptu.tech.bigchaindb.host}"/>
     </bean>
 

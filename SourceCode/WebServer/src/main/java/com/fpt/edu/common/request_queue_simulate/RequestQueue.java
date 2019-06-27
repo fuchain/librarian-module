@@ -1,6 +1,6 @@
 package com.fpt.edu.common.request_queue_simulate;
 
-import com.fpt.edu.entity.Request;
+import com.fpt.edu.entities.Request;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
