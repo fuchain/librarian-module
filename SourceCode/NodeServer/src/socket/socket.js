@@ -1,10 +1,14 @@
 import { verifyJWT } from "@utils/jwt";
 import { setRedisItem, deleteRedisItem } from "@utils/redis";
+import redisAdapter from "socket.io-redis";
 
 export let io;
 
 function initSocketModule(server) {
     io = require("socket.io")(server);
+    io.adapter(
+        redisAdapter({ host: process.env.REDIS_HOST || "redis", port: 6379 })
+    );
     io.origins("*:*");
 
     io.use(function(socket, next) {

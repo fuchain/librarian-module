@@ -26,14 +26,11 @@ export function setRedisItem(key, value) {
     client.set(getKey(key), value);
 }
 
-export async function getRedisitem(key) {
+export async function getRedisItem(key) {
     try {
         return await getAsync(getKey(key));
     } catch (err) {
-        // Catch error
-        console.log("Get redis error: ", err);
-
-        return null;
+        throw err;
     }
 }
 

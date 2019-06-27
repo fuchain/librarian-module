@@ -47,7 +47,7 @@
 
                 <span
                   class="text-sm font-semibold ml-2"
-                  @click="triggerCall(item.user)"
+                  @click="triggerCall(item)"
                 >{{ item.user ? "LIÊN LẠC" : "HỦY BỎ VIỆC YÊU CẦU SÁCH" }}</span>
               </div>
             </div>
@@ -177,9 +177,38 @@ export default {
     }
   },
   methods: {
-    triggerCall(user) {
-      if (!user) return;
-      window.location.href = `tel:${user.phone}`;
+    triggerCall(item) {
+      if (!item.user) {
+        this.$vs.loading();
+
+        this.$http
+          .put(`${this.$http.baseUrl}/requests/cancel`, {
+            request_id: item.requestId
+          })
+          .then(() => {
+            this.$vs.notify({
+              title: "Thành công",
+              text: "Huỷ bỏ yêu cầu nhận sách thành công",
+              color: "primary",
+              position: "top-center"
+            });
+
+            this.$emit("doReload");
+          })
+          .catch(() => {
+            this.$vs.notify({
+              title: "Lỗi",
+              text: "Yêu cầu hủy bỏ không hợp lệ",
+              color: "warning",
+              position: "top-center"
+            });
+          })
+          .finally(() => {
+            this.$vs.loading.close();
+          });
+      } else {
+        window.location.href = `tel:${item.user.phone}`;
+      }
     },
     async beginConfirm(item) {
       this.$vs.loading();

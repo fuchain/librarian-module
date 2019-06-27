@@ -5,7 +5,8 @@ import $http from "@http";
 function init() {
   // Socket
   const socket = io.connect($http.socketUrl, {
-    query: "token=" + auth.getAccessToken()
+    query: "token=" + auth.getAccessToken(),
+    transports: ["websocket"]
   });
 
   window.socket = socket.on("notification", function(msg) {

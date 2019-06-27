@@ -2,17 +2,23 @@ version: "3"
 services:
   redis:
     image: redis:alpine
+    command: redis-server --appendonly yes
     ports:
       - 6379:6379
+    volumes:
+      - redis-data:/data
     networks:
       - node
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   postgres:
     image: postgres
@@ -33,7 +39,7 @@ services:
   postgresn:
     image: postgres
     ports:
-      - 5433:5433
+      - 5433:5432
     volumes:
       - postgresn-data:/var/lib/postgresql/data
     networks:
@@ -50,13 +56,20 @@ services:
     image: fptu/librarian-webapp:latest
     ports:
       - 3000:80
+    environment:
+      VUE_APP_API_BASE_URL: https://lapi.fptu.tech
+      VUE_APP_API_BETA_URL: https://napi.fptu.tech
+      VUE_APP_SOCKET_URL: http://napi.fptu.tech
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   webserver:
     image: fptu/librarian-webserver:latest
@@ -66,13 +79,18 @@ services:
       - backend
     depends_on:
       - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   nodeserver:
     image: fptu/librarian-nodeserver:latest
@@ -83,18 +101,28 @@ services:
     depends_on:
       - postgresn
       - redis
+    environment:
+      DB_HOST: postgresn
+      DB_USER: capstone
+      DB_PASS: capstone
+      DB_NAME: node
+      DB_DIALECT: postgres
+      REDIS_HOST: redis
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   pgadmin:
     image: dpage/pgadmin4
     ports:
-      - 1000:80
+      - 1002:80
     depends_on:
       - postgres
       - postgresn
@@ -104,28 +132,49 @@ services:
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   jenkins:
     image: jenkins/jenkins:lts
     ports:
       - 8080:8080
       - 50000:50000
+    volumes:
+      - jenkins-data:/var/jenkins_home
     deploy:
       replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "1000:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
 networks:
   backend:
   node:
 
 volumes:
+  redis-data:
   postgres-data:
   postgresn-data:
+  jenkins-data:

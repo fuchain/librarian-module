@@ -401,7 +401,6 @@ public class RequestController extends BaseController {
 
 		BookMetadata bookMetadata = book.getMetadata();
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
-
 		// Submit transaction to BlockChain
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
