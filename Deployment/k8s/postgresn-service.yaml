@@ -6,10 +6,11 @@ metadata:
     io.kompose.service: postgresn
   name: postgresn
 spec:
+  type: NodePort
   ports:
-  - name: "5433"
-    port: 5433
-    targetPort: 5432
+    - name: "5433"
+      port: 5433
+      targetPort: 5432
   selector:
     io.kompose.service: postgresn
 status:
