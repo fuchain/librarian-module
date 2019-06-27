@@ -113,7 +113,6 @@ export default {
 
           this.listBooks = [].concat(
             data.map(e => {
-              console.log(e.subjectCode);
               return {
                 id: e.id,
                 name: e.name,
