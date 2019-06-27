@@ -58,8 +58,6 @@ public class ImportHelper {
 		this.isEndOfInputData = false;
 		this.queue = new LinkedList<>();
 	}
-
-
 	public boolean startImport() {
 		Thread getDataThread = new Thread(new Runnable() {
 			@Override
@@ -77,103 +75,91 @@ public class ImportHelper {
 				LOGGER.info("End processing");
 			}
 		});
-		Thread insertDB2 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				insertDataRunable();
-				LOGGER.info("End processing");
-			}
-		});
-
-
 		getDataThread.start();
 		insertDB.start();
-	//	insertDB2.start();
 		return false;
 	}
-
-
 	private void insertDataRunable() {
-		while (!queue.isEmpty() || !isEndOfInputData) {
-			if (!queue.isEmpty()) {
-				JSONObject current;
-				synchronized (queue) {
-					current = queue.poll();
-				}
-				if (current != null) {
-					LOGGER.info("Processing the book Details");
-					LOGGER.info(current.toString());
-					// get book detail info from google APIS
-					String isbn = current.getString(Constant.ISBN);
-					if (isbn.isEmpty()) {
-						setDefaultData(current);
-						try {
-							InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
-							thread.importBook(current);
-
-						} catch (ParseException e) {
-							LOGGER.error(e.getMessage());
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					} else {
-						try {
-							JSONObject rawData = getBookDetailByISBN(isbn);
-							if (rawData.has("totalItems") && rawData.getInt("totalItems") != 0) {
-								JSONObject jsonData = rawData.getJSONArray(Constant.ITEMS).getJSONObject(0).getJSONObject("volumeInfo");
-								if (jsonData.has(Constant.PREVIEW_LINK)) {
-									current.put(Constant.PREVIEW_LINK, jsonData.getString(Constant.PREVIEW_LINK));
-								} else {
-									current.put(Constant.PREVIEW_LINK, Constant.DEFAULT_REVIEW_LINK);
-								}
-
-								if (jsonData.has(Constant.DESCRIPTION)) {
-									current.put(Constant.DESCRIPTION, jsonData.getString(Constant.DESCRIPTION));
-								} else {
-									current.put(Constant.DESCRIPTION, Constant.DEFAULT_DESCRIPTION);
-								}
-
-								if (jsonData.has("imageLinks")) {
-									current.put(Constant.IMAGE_THUMBNAIL, jsonData.getJSONObject("imageLinks").getString(Constant.IMAGE_THUMBNAIL));
-								} else {
-									current.put(Constant.IMAGE_THUMBNAIL, Constant.DEFAULT_IMAGE_LINK);
-								}
-								if (jsonData.has(Constant.PUBLISHER)) {
-									current.put(Constant.PUBLISHER, jsonData.getString(Constant.PUBLISHER));
-								} else {
-									current.put(Constant.PUBLISHER, Constant.DEFAULT_PUBLISHER);
-								}
-								if (jsonData.has(Constant.PUBLISHED_DATE)) {
-									current.put(Constant.PUBLISHED_DATE, jsonData.getString(Constant.PUBLISHED_DATE));
-
-								} else {
-									current.put(Constant.PUBLISHED_DATE, Constant.PUBLISHED_DATE);
-								}
-								if (jsonData.has(Constant.AUTHORS)) {
-									current.put(Constant.AUTHORS, jsonData.getJSONArray(Constant.AUTHORS));
-								}
-
+		synchronized (LOCK) {
+			long startTime =System.currentTimeMillis();
+			while (!queue.isEmpty() || !isEndOfInputData) {
+				if (!queue.isEmpty()) {
+					JSONObject current;
+					synchronized (queue) {
+						current = queue.poll();
+					}
+					if (current != null) {
+						LOGGER.info("Processing the book Details");
+						LOGGER.info(current.toString());
+						// get book detail info from google APIS
+						String isbn = current.getString(Constant.ISBN);
+						if (isbn.isEmpty()) {
+							setDefaultData(current);
+							try {
 								InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
 								thread.importBook(current);
 
-							} else {
-
-								setDefaultData(current);
-								InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
-								thread.importBook(current);
-
+							} catch (ParseException e) {
+								LOGGER.error(e.getMessage());
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
-							LOGGER.info(current.toString());
-						} catch (UnirestException | ParseException e) {
-							LOGGER.error("Error when get book with ISBN " + isbn);
-						} catch (Exception e) {
-							e.printStackTrace();
+						} else {
+							try {
+								JSONObject rawData = getBookDetailByISBN(isbn);
+								if (rawData.has("totalItems") && rawData.getInt("totalItems") != 0) {
+									JSONObject jsonData = rawData.getJSONArray(Constant.ITEMS).getJSONObject(0).getJSONObject("volumeInfo");
+									if (jsonData.has(Constant.PREVIEW_LINK)) {
+										current.put(Constant.PREVIEW_LINK, jsonData.getString(Constant.PREVIEW_LINK));
+									} else {
+										current.put(Constant.PREVIEW_LINK, Constant.DEFAULT_REVIEW_LINK);
+									}
+									if (jsonData.has(Constant.DESCRIPTION)) {
+										current.put(Constant.DESCRIPTION, jsonData.getString(Constant.DESCRIPTION));
+									} else {
+										current.put(Constant.DESCRIPTION, Constant.DEFAULT_DESCRIPTION);
+									}
+									if (jsonData.has("imageLinks")) {
+										current.put(Constant.IMAGE_THUMBNAIL, jsonData.getJSONObject("imageLinks").getString(Constant.IMAGE_THUMBNAIL));
+									} else {
+										current.put(Constant.IMAGE_THUMBNAIL, Constant.DEFAULT_IMAGE_LINK);
+									}
+									if (jsonData.has(Constant.PUBLISHER)) {
+										current.put(Constant.PUBLISHER, jsonData.getString(Constant.PUBLISHER));
+									} else {
+										current.put(Constant.PUBLISHER, Constant.DEFAULT_PUBLISHER);
+									}
+									if (jsonData.has(Constant.PUBLISHED_DATE)) {
+										current.put(Constant.PUBLISHED_DATE, jsonData.getString(Constant.PUBLISHED_DATE));
+									} else {
+										current.put(Constant.PUBLISHED_DATE, Constant.PUBLISHED_DATE);
+									}
+									if (jsonData.has(Constant.AUTHORS)) {
+										current.put(Constant.AUTHORS, jsonData.getJSONArray(Constant.AUTHORS));
+									} else {
+										current.put(Constant.AUTHORS, new JSONArray());
+									}
+									InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
+									thread.importBook(current);
+								} else {
+									setDefaultData(current);
+									InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
+									thread.importBook(current);
+								}
+								LOGGER.info(current.toString());
+							} catch (UnirestException | ParseException e) {
+								LOGGER.error("Error when get book with ISBN " + isbn);
+							} catch (Exception e) {
+								e.printStackTrace();
+								LOGGER.error(e.getMessage());
+							}
 						}
 					}
+				} else {
+					LOGGER.info("Book import Queue is empty");
 				}
-			} else {
-				LOGGER.info("Book import Queue is empty");
 			}
+			LOGGER.info("Done import data from file after"+(System.currentTimeMillis()-startTime));
 		}
 		LOGGER.info("Import book is done with " + countSuccess + "book detail imported");
 	}

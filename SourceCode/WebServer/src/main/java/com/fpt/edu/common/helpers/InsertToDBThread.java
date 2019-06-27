@@ -125,7 +125,7 @@ public class InsertToDBThread  {
 
 				long stopTime = System.currentTimeMillis();
 				LOGGER.info("Insert 1 book to bighchain take " + (stopTime - startTime));
-				Thread.sleep(500);
+				Thread.sleep(1000);
 			}
 			bookDetail.setBooks(bookList);
 			bookDetailsServices.saveBookDetail(bookDetail);
