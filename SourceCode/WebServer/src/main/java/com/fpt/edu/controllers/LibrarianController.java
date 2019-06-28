@@ -66,7 +66,6 @@ public class LibrarianController extends BaseController {
 		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE + "") int page,
 		@RequestParam(name = "size", required = false, defaultValue = Constant.DEFAULT_OFFSET + "") int size
 	) {
-		Pageable pageable = PageRequest.of(page - 1, size);
 		userServices.getByUserId(id);
 		List<Book> bookList = userServices.getCurrentBookListOfUser(id);
 		return new ResponseEntity<>(bookList, HttpStatus.OK);
@@ -95,9 +94,9 @@ public class LibrarianController extends BaseController {
 
 		List<BookDetail> bookDetailList;
 		if (name != null && !name.trim().isEmpty()) {
-			bookDetailList = bookDetailsServices.getAllBookDetails(pageable);
+			bookDetailList = bookDetailsServices.searchBookDetails(name.toLowerCase(), pageable);
 		} else {
-			bookDetailList = bookDetailsServices.searchBookDetails(name, pageable);
+			bookDetailList = bookDetailsServices.getAllBookDetails(pageable);
 		}
 
 		JSONArray arrResult = new JSONArray();
