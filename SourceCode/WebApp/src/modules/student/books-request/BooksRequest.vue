@@ -19,7 +19,7 @@
           v-for="item in listBooks"
           :key="item.id"
         >
-          <item-grid-view :item="item">
+          <book-card :item="item">
             <template slot="action-buttons">
               <div class="flex flex-wrap">
                 <div
@@ -32,7 +32,7 @@
                 </div>
               </div>
             </template>
-          </item-grid-view>
+          </book-card>
         </div>
       </div>
     </vx-card>
@@ -49,7 +49,7 @@
         v-for="item in suggestedBooks"
         :key="item.id"
       >
-        <item-grid-view :item="item">
+        <book-card :item="item">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
               <div
@@ -61,18 +61,18 @@
               </div>
             </div>
           </template>
-        </item-grid-view>
+        </book-card>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-const ItemGridView = () => import("./ItemGridView.vue");
+import BookCard from "@/views/components/BookCard.vue";
 
 export default {
   components: {
-    ItemGridView
+    BookCard
   },
   data() {
     return {
@@ -118,9 +118,12 @@ export default {
                 name: e.name,
                 description: e.description,
                 image: e.thumbnail || "/images/book-thumbnail.jpg",
-                code: e.subjectCode
-                  ? "N/A"
-                  : e.subjectCode.substring(0, 3).toUpperCase()
+                code:
+                  e.parseedSubjectCode &&
+                  e.parseedSubjectCode.length &&
+                  e.parseedSubjectCode[0]
+                    ? e.parseedSubjectCode[0]
+                    : "N/A"
               };
             })
           );

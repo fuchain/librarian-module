@@ -27,7 +27,7 @@
         v-for="item in listBooks"
         :key="item.id"
       >
-        <item-grid-view :item="item">
+        <book-card :item="item">
           <template slot="action-buttons">
             <div class="flex flex-wrap">
               <div
@@ -61,7 +61,7 @@
               </div>
             </div>
           </template>
-        </item-grid-view>
+        </book-card>
       </div>
     </div>
 
@@ -81,13 +81,13 @@
 </template>
 
 <script>
-const ItemGridView = () => import("./ItemGridView.vue");
+import BookCard from "@/views/components/BookCard.vue";
 
 let countInterval;
 
 export default {
   components: {
-    ItemGridView
+    BookCard
   },
   data() {
     return {
