@@ -2,7 +2,21 @@
   <div id="data-list-list-view" class="data-list-container">
     <h2 class="mb-8 ml-4">Quản lí đầu sách</h2>
 
-    <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
+    <div class="vx-row">
+      <div class="vx-col sm:w-2/3 w-2/3">
+        <vs-input
+          icon-pack="feather"
+          icon="icon-search"
+          placeholder="Tìm kiếm đầu sách"
+          v-model="searchText"
+          class="ml-4 w-full"
+          size="large"
+          v-on:keyup.enter="doSearch"
+        />
+      </div>
+    </div>
+
+    <vs-table ref="table" :data="dataList">
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
@@ -21,29 +35,6 @@
             </vs-dropdown-menu>
           </vs-dropdown>
         </div>
-
-        <!-- ITEMS PER PAGE -->
-        <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
-          <div
-            class="p-4 border border-solid border-grey-light rounded-full d-theme-dark-bg cursor-pointer flex items-center justify-between font-medium"
-          >
-            <span
-              class="mr-2"
-            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} of {{ dataList.length }}</span>
-            <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
-          </div>
-          <vs-dropdown-menu>
-            <vs-dropdown-item @click="itemsPerPage=10">
-              <span>10</span>
-            </vs-dropdown-item>
-            <vs-dropdown-item @click="itemsPerPage=15">
-              <span>15</span>
-            </vs-dropdown-item>
-            <vs-dropdown-item @click="itemsPerPage=20">
-              <span>20</span>
-            </vs-dropdown-item>
-          </vs-dropdown-menu>
-        </vs-dropdown>
       </div>
 
       <template slot="thead">
@@ -69,7 +60,7 @@
             </vs-td>
 
             <vs-td class="img-container">
-              <img src="/images/book-thumbnail.jpg" class="product-img">
+              <img :src="tr.image || '/images/book-thumbnail.jpg'" class="product-img">
             </vs-td>
 
             <vs-td>
@@ -77,7 +68,7 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.name.substring(0, 3).toUpperCase() + "101" }}</p>
+              <p>{{ tr.code && tr.code[0] || "N/A"}}</p>
             </vs-td>
 
             <vs-td>
@@ -107,9 +98,9 @@
 export default {
   data() {
     return {
-      itemsPerPage: 10,
       isMounted: false,
-      addNewDataSidebar: false
+      addNewDataSidebar: false,
+      searchText: ""
     };
   },
   props: {
@@ -131,6 +122,9 @@ export default {
       this.$router.push(
         `/librarian/book-details-manage/${item.id}?name=${item.name}`
       );
+    },
+    doSearch() {
+      this.$emit("doSearch", this.searchText);
     }
   },
   mounted() {

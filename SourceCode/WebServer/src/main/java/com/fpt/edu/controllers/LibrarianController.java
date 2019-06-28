@@ -91,6 +91,9 @@ public class LibrarianController extends BaseController {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put(Constant.ID, bookDetail.getId());
 			jsonObject.put(Constant.NAME, bookDetail.getName());
+			jsonObject.put(Constant.IMAGE, bookDetail.getThumbnail());
+			jsonObject.put(Constant.SUBJECT_CODE, bookDetail.getParseedSubjectCode());
+			jsonObject.put(Constant.PREVIEW_LINK, bookDetail.getPreviewLink());
 			jsonObject.put(Constant.UPDATE_DATE, String.valueOf(bookDetail.getUpdateDate().getTime() / 1000));
 			jsonObject.put(Constant.CREATE_DATE, String.valueOf(bookDetail.getUpdateDate().getTime() / 1000));
 			jsonObject.put("bookInstanceCount", bookDetail.getBooks().size());
@@ -132,7 +135,7 @@ public class LibrarianController extends BaseController {
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "Get history of book instance", response = Book.class)
+	@ApiOperation(value = "Import book from file", response = Book.class)
 	@PostMapping("/bookDetails/import")
 	public ResponseEntity<String> importData(@RequestParam("file") MultipartFile file) throws Exception {
 		File f = utils.convertMultiPartToFile(file);
