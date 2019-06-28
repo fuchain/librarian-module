@@ -41,8 +41,12 @@ public class UserController extends BaseController {
 		List<Book> currentBookList = userServices.getCurrentBookListOfUser(user.getId());
 
 		// Get book list that is returning
-		List<Request> returningList = requestServices.findByUserIdAndType(user.getId(),
-			ERequestType.RETURNING.getValue(), ERequestStatus.COMPLETED.getValue());
+		List<Request> returningList = requestServices.findByUserIdAndType(
+			user.getId(),
+			ERequestType.RETURNING.getValue(),
+			ERequestStatus.PENDING.getValue(),
+			ERequestStatus.MATCHING.getValue()
+		);
 
 		// Remove books that is returning from current book list
 		Iterator iterator = currentBookList.iterator();
@@ -121,11 +125,19 @@ public class UserController extends BaseController {
 		// Get number of current book list of user
 		int numberOfKeepingBook = userServices.countNumberOfBookThatUserKeep(user.getId());
 		// Get book list that is returning
-		int numberOfBorrowRequest = requestServices.countPendingRequestOfUser(user.getId(),
-			ERequestType.BORROWING.getValue(), ERequestStatus.COMPLETED.getValue());
+		int numberOfBorrowRequest = requestServices.countPendingRequestOfUser(
+			user.getId(),
+			ERequestType.BORROWING.getValue(),
+			ERequestStatus.PENDING.getValue(),
+			ERequestStatus.MATCHING.getValue()
+		);
 
-		int numberOfReturnRequest = requestServices.countPendingRequestOfUser(user.getId(),
-			ERequestType.RETURNING.getValue(), ERequestStatus.COMPLETED.getValue());
+		int numberOfReturnRequest = requestServices.countPendingRequestOfUser(
+			user.getId(),
+			ERequestType.RETURNING.getValue(),
+			ERequestStatus.PENDING.getValue(),
+			ERequestStatus.MATCHING.getValue()
+		);
 		JSONObject response = new JSONObject();
 		response.put(Constant.NUM_OF_KEEP_BOOK, numberOfKeepingBook - numberOfReturnRequest);
 		response.put(Constant.NUM_OF_RETURNING_BOOK, numberOfReturnRequest);

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository extends CrudRepository<Book, Long> {
@@ -39,4 +40,8 @@ public interface BookRepository extends CrudRepository<Book, Long> {
 	Page<Book> findBookListByBookDetailId(
 		@Param("bookDetailId") Long bookDetailId,
 		Pageable pageable);
+
+	@Query(value = "SELECT b FROM Book b WHERE b.user.id = :userId AND b.bookDetail.id = :bookDetailId")
+	Collection<Book> getByUserAndBookDetail(@Param("userId") Long userId,
+										  @Param("bookDetailId") Long bookDetailId);
 }
