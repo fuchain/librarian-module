@@ -74,8 +74,12 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 			String subject=code[i];
 			subject=subject.replace("\n","");
 			parsedCode.add(subject.trim());
-
 		}
+
+		if (parsedCode.size() == 2 && parsedCode.get(0).equalsIgnoreCase("N") && parsedCode.get(1).equalsIgnoreCase("A")) {
+			return new ArrayList<>();
+		}
+
 		return parsedCode;
 	}
 

@@ -9,6 +9,8 @@ public class Constant {
 	public static final String UPDATE_DATE = "updateDate";
 	public static final String CREATE_DATE = "createDate";
 	public static final String NAME = "name";
+	public static final String IMAGE = "image";
+	public static final String SUBJECT_CODE = "code";
 	public static final String REGULAR_ID_EXP = "[{][a-zA-Z]+[}]";
 	public static final String GOOGLE_AUTH_API = "https://www.googleapis.com/userinfo/v2/me";
 	public static final String GOOGLE_BOOK_API = "https://www.googleapis.com/books/v1/volumes";
