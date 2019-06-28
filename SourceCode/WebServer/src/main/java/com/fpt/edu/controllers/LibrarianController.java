@@ -150,7 +150,7 @@ public class LibrarianController extends BaseController {
 		return new ResponseEntity<>(arrBook.toString(), HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "Librarian transfers book for readers", response = JSONObject.class)
+	@ApiOperation(value = "Librarian transfers book for readers", response = String.class)
 	@PostMapping("/give_book")
 	public ResponseEntity<String> transferBook(@RequestParam Long book_detail_id, Principal principal) throws EntityNotFoundException {
 		// Check sender is librarian
@@ -175,7 +175,7 @@ public class LibrarianController extends BaseController {
 			long duration = utils.getDuration(existedMatching.getMatchingStartDate(), now, TimeUnit.MINUTES);
 
 			// If pin is expired
-			if(duration > Constant.PIN_EXPIRED_MINUTE){
+			if (duration > Constant.PIN_EXPIRED_MINUTE) {
 				// Update matching
 				String pin = getUniquePin();
 				existedMatching.setPin(pin);

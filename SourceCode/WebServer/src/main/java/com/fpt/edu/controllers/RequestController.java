@@ -676,6 +676,10 @@ public class RequestController extends BaseController {
 			returnRequest.setStatus(ERequestStatus.CANCELED.getValue());
 			requestServices.updateRequest(returnRequest);
 
+			Book book = matching.getBook();
+			book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
+			bookServices.updateBook(book);
+
 			throw new PinExpiredException("Pin is expired");
 		}
 
