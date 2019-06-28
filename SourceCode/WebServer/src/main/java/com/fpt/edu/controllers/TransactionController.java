@@ -1,8 +1,11 @@
 package com.fpt.edu.controllers;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
+import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.Transaction;
-import com.fpt.edu.services.TransactionServices;
+import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +20,12 @@ import java.net.URISyntaxException;
 @RestController
 @RequestMapping("transaction")
 public class TransactionController extends BaseController {
-    private final TransactionServices transactionServices;
 
-    @Autowired
-    public TransactionController(TransactionServices transactionServices) {
-        this.transactionServices = transactionServices;
-    }
+	public TransactionController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, TransactionServices transactionServices1) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	}
 
-    @ApiOperation(value = "Get a transaction by its id", response = Transaction.class)
+	@ApiOperation(value = "Get a transaction by its id", response = Transaction.class)
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getById(@PathVariable Long id) {
         return new ResponseEntity<>(transactionServices.getById(id), HttpStatus.OK);

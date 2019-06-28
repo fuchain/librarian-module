@@ -81,4 +81,11 @@ public class BookServices {
 		List<Book> bookList = (List<Book>) bookRepository.getByUserAndBookDetail(userId, bookDetailId);
 		return bookList.size() > 0 ? bookList.get(0) : null;
 	}
+
+	public long countNumberOfBookDetails(){
+		return bookRepository.count();
+	}
+
+
+
 }

@@ -70,4 +70,11 @@ public class BookDetailsServices {
 
 	}
 
+	public long countNumberOfBookDetail(){
+
+    	return bookDetailRepository.count();
+
+	}
+
+
 }

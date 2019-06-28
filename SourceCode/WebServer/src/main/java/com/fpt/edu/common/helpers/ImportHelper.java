@@ -1,26 +1,19 @@
 package com.fpt.edu.common.helpers;
 
 import com.fpt.edu.constant.Constant;
-import com.fpt.edu.entities.*;
 import com.fpt.edu.services.*;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.bcel.Const;
-import org.hibernate.Hibernate;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 @Service
@@ -32,7 +25,6 @@ public class ImportHelper {
 	int countSuccess = 0;
 	Object LOCK;
 	private JSONArray rawData;
-	private boolean isEndOfInputData;
 	private Queue<JSONObject> queue;
 
 	private CategoryServices categoryServices;
@@ -55,19 +47,16 @@ public class ImportHelper {
 
 	public void initData(JSONArray rawData) {
 		this.rawData = rawData;
-		this.isEndOfInputData = false;
 		this.queue = new LinkedList<>();
 	}
+
 	public boolean startImport() {
-		Thread getDataThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				for (int i = 0; i < rawData.length(); i++) {
-					queue.add(rawData.getJSONObject(i));
-				}
-				isEndOfInputData = true;
-			}
-		});
+
+		for (int i = 0; i < rawData.length(); i++) {
+			queue.add(rawData.getJSONObject(i));
+		}
+
+
 		Thread insertDB = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -75,14 +64,23 @@ public class ImportHelper {
 				LOGGER.info("End processing");
 			}
 		});
-		getDataThread.start();
+		Thread insertDB2 = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				insertDataRunable();
+				LOGGER.info("End processing");
+			}
+		});
 		insertDB.start();
+		insertDB2.start();
 		return false;
 	}
+
 	private void insertDataRunable() {
+		int countSuccess=0;
 		synchronized (LOCK) {
-			long startTime =System.currentTimeMillis();
-			while (!queue.isEmpty() || !isEndOfInputData) {
+			long startTime = System.currentTimeMillis();
+			while (!queue.isEmpty()) {
 				if (!queue.isEmpty()) {
 					JSONObject current;
 					synchronized (queue) {
@@ -98,6 +96,8 @@ public class ImportHelper {
 							try {
 								InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
 								thread.importBook(current);
+								LOGGER.info("Import success"+ (countSuccess++)+" book details" );
+								LOGGER.info("Remaining bookdetails "+queue.size() );
 
 							} catch (ParseException e) {
 								LOGGER.error(e.getMessage());
@@ -156,10 +156,14 @@ public class ImportHelper {
 						}
 					}
 				} else {
+
 					LOGGER.info("Book import Queue is empty");
 				}
+
+
+
 			}
-			LOGGER.info("Done import data from file after"+(System.currentTimeMillis()-startTime));
+			LOGGER.info("Done import data from file after" + (System.currentTimeMillis() - startTime));
 		}
 		LOGGER.info("Import book is done with " + countSuccess + "book detail imported");
 	}
