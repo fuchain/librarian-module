@@ -106,6 +106,7 @@
         <template slot="thead">
           <vs-th>ID sách</vs-th>
           <vs-th>ID đầu sách</vs-th>
+          <vs-th></vs-th>
           <vs-th>Tên sách</vs-th>
           <vs-th>Tình trạng</vs-th>
           <vs-th>Trạng thái</vs-th>
@@ -116,6 +117,12 @@
           <vs-tr :key="indextr" v-for="(tr, indextr) in data">
             <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
             <vs-td :data="data[indextr].bookDetail.id">{{data[indextr].bookDetail.id}}</vs-td>
+            <vs-td :data="data[indextr].bookDetail.name">
+              <img
+                :src="data[indextr].bookDetail.thumbnail || '/images/book-thumbnail.jpg'"
+                style="max-width: 65px;"
+              >
+            </vs-td>
             <vs-td :data="data[indextr].bookDetail.name">{{data[indextr].bookDetail.name}}</vs-td>
             <vs-td :data="data[indextr].status">{{data[indextr].status}}</vs-td>
             <vs-td :data="data[indextr].transferStatus">{{data[indextr].transferStatus}}</vs-td>

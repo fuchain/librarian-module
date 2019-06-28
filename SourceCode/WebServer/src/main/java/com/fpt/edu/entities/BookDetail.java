@@ -88,6 +88,10 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	}
 
 	public String getDescription() {
+		if (description.equalsIgnoreCase("Description Not Available")) {
+			return "Chưa có mô tả cho quyển sách này";
+		}
+
 		return description;
 	}
 

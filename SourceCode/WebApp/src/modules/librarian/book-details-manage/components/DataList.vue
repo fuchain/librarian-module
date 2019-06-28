@@ -7,7 +7,7 @@
         <vs-input
           icon-pack="feather"
           icon="icon-search"
-          placeholder="Tìm kiếm đầu sách"
+          placeholder="Tìm kiếm bằng tên đầu sách, mã môn hoặc ID đầu sách"
           v-model="searchText"
           class="ml-4 w-full"
           size="large"
@@ -119,12 +119,33 @@ export default {
   },
   methods: {
     openBookDataList(item) {
-      this.$router.push(
-        `/librarian/book-details-manage/${item.id}?name=${item.name}`
-      );
+      this.$router.push(`/librarian/book-details-manage/${item.id}`);
     },
     doSearch() {
-      this.$emit("doSearch", this.searchText);
+      if (!isNaN(this.searchText)) {
+        this.$vs.loading();
+
+        this.$http
+          .get(`${this.$http.baseUrl}/bookdetails/${this.searchText}`)
+          .then(() => {
+            this.$router.push(
+              `/librarian/book-details-manage/${this.searchText}`
+            );
+          })
+          .catch(() => {
+            this.$vs.notify({
+              title: "Lỗi",
+              text: `Không có đầu sách #ID ${this.searchText}`,
+              color: "warning",
+              position: "top-center"
+            });
+          })
+          .finally(() => {
+            this.$vs.loading.close();
+          });
+      } else {
+        this.$emit("doSearch", this.searchText);
+      }
     }
   },
   mounted() {
