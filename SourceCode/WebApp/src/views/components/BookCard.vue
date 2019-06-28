@@ -2,18 +2,36 @@
   <vx-card class="grid-view-item mb-base overflow-hidden">
     <template slot="no-body">
       <!-- ITEM IMAGE -->
-      <div class="item-img-container bg-white h-48 flex items-center justify-center mb-4">
+      <div class="item-img-container bg-white h-48 flex items-center justify-center mb-4 mt-4">
         <img :src="item.image" :alt="item.name" class="grid-view-img px-4">
       </div>
       <div class="item-details px-4">
         <!-- RATING & PRICE -->
-        <div class="flex justify-between items-center">
-          <div class="bg-primary flex text-white py-1 px-2 rounded">
-            <span class="text-sm mr-2">Mượn {{ item.time | moment("from") }}</span>
+        <div class="flex justify-between items-center" v-if="item.status === 'in use'">
+          <div class="bg-primary flex text-white py-1 px-2 rounded" v-if="item.time">
+            <span class="text-sm mr-2" v>Mượn {{ item.time | moment("from") }}</span>
             <feather-icon icon="ClockIcon" svgClasses="h-4 w-4"/>
+          </div>
+          <div class="flex text-white py-1 px-2 rounded" v-else></div>
+          <h6 class="font-bold">{{ item.code }}</h6>
+        </div>
+
+        <div class="flex justify-between items-center" v-else>
+          <div class="bg-primary flex text-white py-1 px-2 rounded">
+            <span
+              class="text-sm mr-2"
+            >{{ item.user && item.user.email && $auth.getNameFromEmail(item.user.email) || "Đang tìm" }}</span>
+            <feather-icon icon="UserIcon" svgClasses="h-4 w-4"/>
           </div>
           <h6 class="font-bold">{{ item.code }}</h6>
         </div>
+
+        <vs-progress
+          :indeterminate="!item.user"
+          :percent="item.user ? 100 : 0"
+          color="primary"
+          v-if="item.status !== 'in use'"
+        >primary</vs-progress>
 
         <!-- TITLE & DESCRIPTION -->
         <div class="my-4">
@@ -26,8 +44,6 @@
       <slot name="action-buttons"/>
     </template>
   </vx-card>
-  <!--  </div>
-  </div>-->
 </template>
 
 <script>

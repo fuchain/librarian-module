@@ -87,11 +87,19 @@ public class LibrarianController extends BaseController {
 	@GetMapping("/book_details")
 	@Transactional
 	public ResponseEntity<String> getListBookDetails(
+		@RequestParam("name") String name,
 		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE + "") int page,
 		@RequestParam(name = "size", required = false, defaultValue = Constant.DEFAULT_OFFSET + "") int size
 	) {
 		Pageable pageable = PageRequest.of(page - 1, size);
-		List<BookDetail> bookDetailList = bookDetailsServices.getAllBookDetails(pageable);
+
+		List<BookDetail> bookDetailList;
+		if (name.trim().isEmpty()) {
+			bookDetailList = bookDetailsServices.getAllBookDetails(pageable);
+		} else {
+			bookDetailList = bookDetailsServices.searchBookDetails(name, pageable);
+		}
+
 		JSONArray arrResult = new JSONArray();
 		for (BookDetail bookDetail : bookDetailList) {
 			JSONObject jsonObject = new JSONObject();

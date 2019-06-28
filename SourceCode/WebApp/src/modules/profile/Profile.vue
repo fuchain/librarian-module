@@ -112,14 +112,5 @@ export default {
 <style lang="scss" scoped>
 .vx-card {
   max-width: 800px;
-  min-height: 280px;
-  background: linear-gradient(
-      120deg,
-      rgba(109, 213, 237, 0.8),
-      rgba(33, 147, 176, 0.5)
-    ),
-    url("https://i.imgur.com/xbbhZcd.jpg");
-  background-repeat: no-repeat;
-  color: black;
 }
 </style>
