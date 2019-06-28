@@ -5,6 +5,7 @@ import com.fpt.edu.repositories.*;
 import com.fpt.edu.services.BigchainTransactionServices;
 import com.fpt.edu.services.BookServices;
 import com.fpt.edu.services.UserServices;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -123,7 +124,7 @@ public class SimulateDataController extends BaseController {
 
 			// Init 10 book instance
 			List<Book> bookList = new ArrayList<>();
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 1; i++) {
 				Book book = new Book();
 				book.setId(Long.valueOf(count));
 				book.setBookDetail(bookDetail);

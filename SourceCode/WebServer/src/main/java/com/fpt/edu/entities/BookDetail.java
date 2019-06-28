@@ -2,8 +2,11 @@ package com.fpt.edu.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.json.JSONArray;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -60,7 +63,20 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	}
 
 	public String getSubjectCode() {
-		return subjectCode;
+		return this.subjectCode;
+	}
+
+	@JsonProperty
+	public List<String> getParseedSubjectCode() {
+		ArrayList<String> parsedCode= new ArrayList<>();
+		String[] code = this.subjectCode.split("/");
+		for (int i = 0; i <code.length ; i++) {
+			String subject=code[i];
+			subject=subject.replace("\n","");
+			parsedCode.add(subject.trim());
+
+		}
+		return parsedCode;
 	}
 
 	public void setSubjectCode(String subjectCode) {

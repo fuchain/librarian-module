@@ -50,6 +50,12 @@ public class BookDetailsServices {
         return bookDetailRepository.findBookDetailsByName(name,pageable).getContent();
     }
 
+	public List<BookDetail> searchBookSubjectCode(String code, Pageable pageable) {
+		return bookDetailRepository.findBookDetailsBySubjectCode(code,pageable).getContent();
+	}
+
+
+
 	public List<BookDetail> getAllBookDetails(Pageable pageable) {
 		return bookDetailRepository.findAll(pageable).getContent();
 	}

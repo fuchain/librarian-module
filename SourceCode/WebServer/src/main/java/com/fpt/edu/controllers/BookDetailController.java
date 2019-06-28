@@ -78,6 +78,7 @@ public class BookDetailController extends BaseController {
     public ResponseEntity<List<BookDetail>> searchBook(@RequestParam("name") String name,@RequestParam(name = "page", required = false, defaultValue =Constant.DEFAULT_PAGE+"") int page,@RequestParam(name = "size", required = false,defaultValue = Constant.DEFAULT_OFFSET+"") int size ) {
 		Pageable pageable = PageRequest.of(page-1,size);
         List<BookDetail> books = bookDetailsServices.searchBookDetails(name.toLowerCase(),pageable);
+
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 }

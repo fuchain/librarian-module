@@ -25,25 +25,25 @@ public class MatchingServices {
 		return matchingRepository.save(matching);
 	}
 
-	public Matching getByReturnRequestId(Long returnRequestId, int matchingStatus) {
-		return matchingRepository.getByReturnRequestId(returnRequestId, matchingStatus);
+	public Matching getByReturnRequestId(Long returnRequestId, int matchingStatus1, int matchingStatus2) {
+		return matchingRepository.getByReturnRequestId(returnRequestId, matchingStatus1, matchingStatus2);
 	}
 
-	public Matching getByReceiveRequestId(Long receiveRequestId, int matchingStatus) {
-		return matchingRepository.getByReceiveRequestId(receiveRequestId, matchingStatus);
+	public Matching getByReceiveRequestId(Long receiveRequestId, int matchingStatus1, int matchingStatus2) {
+		return matchingRepository.getByReceiveRequestId(receiveRequestId, matchingStatus1, matchingStatus2);
 	}
 
 	public Matching getByRequestId(Long requestId) {
 		return matchingRepository.getByRequestId(requestId);
 	}
 
-	public Matching getByPin(String pin, int status) {
-		Matching matching = matchingRepository.getByPin(pin, status);
+	public Matching getByPin(String pin, int status1, int status2) {
+		Matching matching = matchingRepository.getByPin(pin, status1, status2);
 		return matching;
 	}
 
-	public Matching getByBookId(Long bookId, int status) {
-		return matchingRepository.getByBookId(bookId, status);
+	public Matching getByBookId(Long bookId, int status1, int status2) {
+		return matchingRepository.getByBookId(bookId, status1, status2);
 	}
 
 	public Matching saveMatching(Matching matching) {

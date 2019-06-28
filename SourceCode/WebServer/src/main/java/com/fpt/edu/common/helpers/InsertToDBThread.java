@@ -134,6 +134,10 @@ public class InsertToDBThread  {
 
 			List<Book> bookList = new ArrayList<>();
 			int numberOfBook = rawData.getInt("remaining") - bookDetail.getBooks().size();
+			if(numberOfBook==0){
+				LOGGER.info("Book name "+bookDetail.getName()+" was import with "+ bookDetail.getBooks().size()+" instances");
+
+			}
 			for (int i = 0; i < numberOfBook; i++) {
 				Book book = new Book();
 				book.setBookDetail(bookDetail);
