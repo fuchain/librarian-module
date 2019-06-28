@@ -15,9 +15,11 @@ import java.util.List;
 public interface BookDetailRepository extends PagingAndSortingRepository<BookDetail, Long> {
     List<BookDetail> findByName(String name);
 
-    @Query(value = "SELECT b FROM BookDetail b WHERE lower(b.name) LIKE %:name%")
+    @Query(value = "SELECT b FROM BookDetail b WHERE lower(b.name) LIKE %:name% or lower(b.subjectCode) like  %:name%")
 	Page<BookDetail> findBookDetailsByName(@Param("name") String name, Pageable pageable);
 
+	@Query(value = "SELECT b FROM BookDetail b WHERE lower(b.subjectCode) LIKE %:subjectCode%")
+	Page<BookDetail> findBookDetailsBySubjectCode(@Param("subjectCode") String subjectCode, Pageable pageable);
 
 
 
