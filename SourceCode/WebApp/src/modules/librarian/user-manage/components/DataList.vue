@@ -86,7 +86,11 @@
             </vs-td>
 
             <vs-td>
-              <vs-button icon="pageview" @click="openKeepingBook(tr)">Xem sách đang giữ</vs-button>
+              <vs-button
+                icon="pageview"
+                @click="openKeepingBook(tr)"
+                v-if="!tr.email.includes('fe.edu.vn')"
+              >Xem sách đang giữ</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>

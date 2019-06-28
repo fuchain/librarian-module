@@ -11,7 +11,7 @@
       placeholder="Tìm tên sách"
       v-model="searchText"
     />
-    <div>
+    <div v-if="books.length">
       <vs-tabs alignment="fixed">
         <vs-tab label="Đã ghép" icon="check" @click="showMatched = true">
           <div>{{ isMatchedNull ? "Chưa có quyển sách nào được ghép." : "" }}</div>

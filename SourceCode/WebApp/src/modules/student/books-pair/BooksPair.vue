@@ -11,26 +11,45 @@
     </vx-card>
 
     <vs-popup title="Xác nhận nhận sách" :active.sync="verifyPopup">
-      <div class="mb-4">
-        Bạn có chắc muốn nhận quyển sách
-        <strong>{{ bookName }}</strong>
-        (ID {{ bookID }}) không?
-      </div>
-      <div>
-        <vs-button class="w-full" icon="check" @click="doneVerify">Xác nhận</vs-button>
+      <div class="flex items-center justify-center">
+        <book-card :item="book" style="max-width: 300px;">
+          <template slot="action-buttons">
+            <div class="flex flex-wrap">
+              <div
+                class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
+              >
+                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+
+                <span class="text-sm font-semibold ml-2" @click="doneVerify">XÁC NHẬN NHẬN SÁCH</span>
+              </div>
+
+              <div
+                class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+              >
+                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4"/>
+
+                <span class="text-sm font-semibold ml-2">CHI TIẾT</span>
+              </div>
+            </div>
+          </template>
+        </book-card>
       </div>
     </vs-popup>
   </div>
 </template>
 
 <script>
+import BookCard from "@/views/components/BookCard.vue";
+
 export default {
+  components: {
+    BookCard
+  },
   data() {
     return {
       pin: "",
       verifyPopup: false,
-      bookName: "",
-      bookID: 0
+      book: {}
     };
   },
   methods: {
@@ -55,8 +74,17 @@ export default {
           const data = response.data;
 
           // Log
-          this.bookName = data.bookDetail.name;
-          this.bookID = data.id;
+          this.book = {
+            name: data.bookDetail.name,
+            description: data.bookDetail.description,
+            image: data.bookDetail.thumbnail,
+            code:
+              (data.bookDetail.parseedSubjectCode &&
+                data.bookDetail.parseedSubjectCode.length &&
+                data.bookDetail.parseedSubjectCode[0]) ||
+              "N/A",
+            status: data.status
+          };
           this.verifyPopup = true;
         })
         .catch(e => {
@@ -115,8 +143,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 .vx-card {
   max-width: 650px;
+}
+
+.vs-popup {
+  width: 100px;
 }
 </style>

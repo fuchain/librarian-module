@@ -69,6 +69,7 @@
 
 <script>
 import BookCard from "@/views/components/BookCard.vue";
+import { parseBookSearchItem } from "@http/parse";
 
 export default {
   components: {
@@ -111,22 +112,7 @@ export default {
 
           this.$vs.loading.close();
 
-          this.listBooks = [].concat(
-            data.map(e => {
-              return {
-                id: e.id,
-                name: e.name,
-                description: e.description,
-                image: e.thumbnail || "/images/book-thumbnail.jpg",
-                code:
-                  e.parseedSubjectCode &&
-                  e.parseedSubjectCode.length &&
-                  e.parseedSubjectCode[0]
-                    ? e.parseedSubjectCode[0]
-                    : "N/A"
-              };
-            })
-          );
+          this.listBooks = [].concat(parseBookSearchItem(data));
 
           if (!data.length) {
             this.$vs.notify({
