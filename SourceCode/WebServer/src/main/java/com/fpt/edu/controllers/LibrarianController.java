@@ -2,6 +2,8 @@ package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
+import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.exceptions.EntityNotFoundException;
@@ -10,7 +12,6 @@ import io.swagger.annotations.ApiOperation;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -28,24 +29,10 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("librarian")
 public class LibrarianController extends BaseController {
-	private final UserServices userServices;
-	private final BookDetailsServices bookDetailsServices;
-	private final BookServices bookServices;
-	private final ImportHelper importHelper;
-	private final MatchingServices matchingServices;
-	private final RequestServices requestServices;
 
-	@Autowired
-	public LibrarianController(UserServices userServices,
-							   BookDetailsServices bookDetailsServices,
-							   BookServices bookServices, ImportHelper importHelper,
-							   MatchingServices matchingServices, RequestServices requestServices) {
-		this.userServices = userServices;
-		this.bookDetailsServices = bookDetailsServices;
-		this.bookServices = bookServices;
-		this.importHelper = importHelper;
-		this.matchingServices = matchingServices;
-		this.requestServices = requestServices;
+
+	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
 	}
 
 	@ApiOperation("Get all users")
@@ -233,6 +220,23 @@ public class LibrarianController extends BaseController {
 		jsonResult.put("created_at", now.getTime());
 		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
+
+	@ApiOperation(value = "Get overview of books", response = Book.class)
+	@GetMapping("/overviews")
+	public ResponseEntity<String> getOvervide() throws Exception {
+		long totalBookDetail= bookDetailsServices.countNumberOfBookDetail();
+		long totalBookInstance = bookServices.countNumberOfBookDetails();
+		long totalUser=userServices.countTotalUser();
+		JSONObject result = new JSONObject();
+		result.put("totalBookDetails",totalBookDetail);
+		result.put("totalBookInstances",totalBookInstance);
+		result.put("totalUsers",totalUser);
+		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+	}
+
+
+
+
 
 	// Get unique pin
 	private String getUniquePin() {

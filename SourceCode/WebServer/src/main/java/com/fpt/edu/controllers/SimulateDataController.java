@@ -1,10 +1,11 @@
 package com.fpt.edu.controllers;
 
+import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
+import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
-import com.fpt.edu.services.BigchainTransactionServices;
-import com.fpt.edu.services.BookServices;
-import com.fpt.edu.services.UserServices;
+import com.fpt.edu.services.*;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,28 +24,25 @@ import java.util.Random;
 @RestController
 @RequestMapping("simulate_datas")
 public class SimulateDataController extends BaseController {
-	private final AuthorRepository authorRepository;
-	private final CategoryRepository categoryRepository;
-	private final PublisherRepository publisherRepository;
-	private final BookDetailRepository bookDetailRepository;
-	private final BookRepository bookRepository;
-	private final UserServices userServices;
-	private final BookServices bookServices;
+	public SimulateDataController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	}
 
 	@Autowired
-	public SimulateDataController(
-		AuthorRepository authorRepository, CategoryRepository categoryRepository,
-		PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
-		BookRepository bookRepository, UserServices userServices, BookServices bookServices
-	) {
-		this.authorRepository = authorRepository;
-		this.categoryRepository = categoryRepository;
-		this.publisherRepository = publisherRepository;
-		this.bookDetailRepository = bookDetailRepository;
-		this.bookRepository = bookRepository;
-		this.userServices = userServices;
-		this.bookServices = bookServices;
-	}
+	BookRepository bookRepository;
+
+	@Autowired
+	CategoryRepository categoryRepository;
+
+	@Autowired
+	AuthorRepository authorRepository;
+
+	@Autowired
+	PublisherRepository publisherRepository;
+
+	@Autowired
+	BookDetailRepository bookDetailRepository;
+
 
 	@PostMapping("/init")
 	@Transactional

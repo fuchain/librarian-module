@@ -3,6 +3,7 @@ package com.fpt.edu.controllers;
 import com.amazonaws.services.s3.AmazonS3;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImageHelper;
+import com.fpt.edu.common.helpers.ImportHelper;
 import com.fpt.edu.common.request_queue_simulate.Message;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -30,32 +31,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RestController
 @RequestMapping("requests")
 public class RequestController extends BaseController {
-	private final RequestServices requestServices;
-	private final UserServices userServices;
-	private final BookDetailsServices bookDetailsServices;
-	private final BookServices bookServices;
-	private final MatchingServices matchingServices;
-	private final TransactionServices transactionServices;
-	private final PublishSubscribe publishSubscribe;
-	private final RequestQueueManager requestQueueManager;
-
-	private final AmazonS3 s3Client;
-
-	@Autowired
-	public RequestController(RequestServices requestServices, UserServices userServices,
-							 BookDetailsServices bookDetailsServices, BookServices bookServices,
-							 MatchingServices matchingServices, TransactionServices transactionServices,
-							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, AmazonS3 s3Client) {
-		this.requestServices = requestServices;
-		this.userServices = userServices;
-		this.bookDetailsServices = bookDetailsServices;
-		this.bookServices = bookServices;
-		this.matchingServices = matchingServices;
-		this.transactionServices = transactionServices;
-		this.publishSubscribe = publishSubscribe;
-		this.requestQueueManager = requestQueueManager;
-		this.s3Client = s3Client;
+	public RequestController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
 	}
+
 
 	@ApiOperation(value = "Get a request by its id")
 	@GetMapping(value = "/{id}")

@@ -1,13 +1,15 @@
 package com.fpt.edu.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
+import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.exceptions.EntityIdMismatchException;
 import com.fpt.edu.exceptions.EntityNotFoundException;
-import com.fpt.edu.services.BookDetailsServices;
+import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,13 +22,10 @@ import java.util.List;
 @RestController
 @RequestMapping("bookdetails")
 public class BookDetailController extends BaseController {
-    private final BookDetailsServices bookDetailsServices;
 
-    @Autowired
-    public BookDetailController(BookDetailsServices bookDetailsServices) {
-        this.bookDetailsServices = bookDetailsServices;
-    }
-
+	public BookDetailController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	}
 
 	@ApiOperation(value = "Get a list of book details", response = String.class)
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)

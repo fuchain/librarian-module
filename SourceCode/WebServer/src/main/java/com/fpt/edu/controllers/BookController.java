@@ -1,10 +1,12 @@
 package com.fpt.edu.controllers;
 
+import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
+import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.Book;
 import com.fpt.edu.exceptions.EntityIdMismatchException;
-import com.fpt.edu.services.BookServices;
+import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("books")
 public class BookController extends BaseController {
-    private final BookServices bookServices;
 
-    @Autowired
-    public BookController(BookServices bookServices) {
-        this.bookServices = bookServices;
-    }
+	public BookController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	}
 
-    @ApiOperation(value = "Get a book by its id")
+	@ApiOperation(value = "Get a book by its id")
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
         return new ResponseEntity<>(bookServices.getBookById(id), HttpStatus.OK);
