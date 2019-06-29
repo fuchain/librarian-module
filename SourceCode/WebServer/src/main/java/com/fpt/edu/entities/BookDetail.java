@@ -1,6 +1,5 @@
 package com.fpt.edu.entities;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.json.JSONArray;
@@ -15,36 +14,33 @@ import javax.persistence.*;
 @Table(name = "book_detail")
 public class BookDetail extends AbstractTimestampEntity implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
-    @Column(name = "name", columnDefinition = "text")
-    private String name;
+	@Column(name = "name", columnDefinition = "text")
+	private String name;
 
-
-    @ManyToMany()
-    @JoinTable(name = "book_author", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "author_id")})
-    private List<Author> authors;
-
+	@ManyToMany()
+	@JoinTable(name = "book_author", joinColumns = { @JoinColumn(name = "book_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "author_id") })
+	private List<Author> authors;
 
 	@ManyToOne
 	@JoinColumn(name = "category_id")
-    //@JoinTable(name = "book_category", joinColumns = {@JoinColumn(name = "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
-    private Category category;
-    @ManyToOne
+	// @JoinTable(name = "book_category", joinColumns = {@JoinColumn(name =
+	// "book_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
+	private Category category;
+	@ManyToOne
 	@JoinColumn(name = "publisher_id")
 	private Publisher publisher;
-
-
-
 
 	// new data that return by google
 	@Column(name = "libol")
 	private String libol;
 	@Column(name = "subject_code")
 	private String subjectCode;
-    @Column(name = "previewLink", columnDefinition = "text")
+	@Column(name = "previewLink", columnDefinition = "text")
 	private String previewLink;
 	@Column(name = "thumbnail", columnDefinition = "text")
 	private String thumbnail;
@@ -68,14 +64,19 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 
 	@JsonProperty
 	public List<String> getParseedSubjectCode() {
-		ArrayList<String> parsedCode= new ArrayList<>();
+		ArrayList<String> parsedCode = new ArrayList<>();
 		String[] code = this.subjectCode.split("/");
-		for (int i = 0; i <code.length ; i++) {
-			String subject=code[i];
-			subject=subject.replace("\n","");
+		for (int i = 0; i < code.length; i++) {
+			String subject = code[i];
+			subject = subject.replace("\n", "");
 			parsedCode.add(subject.trim());
-
 		}
+
+		if (parsedCode.size() == 2 && parsedCode.get(0).equalsIgnoreCase("N")
+				&& parsedCode.get(1).equalsIgnoreCase("A")) {
+			return new ArrayList<>();
+		}
+
 		return parsedCode;
 	}
 
@@ -84,6 +85,10 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	}
 
 	public String getDescription() {
+		if (description.equalsIgnoreCase("Description Not Available")) {
+			return "Chưa có mô tả cho quyển sách này";
+		}
+
 		return description;
 	}
 
@@ -102,7 +107,6 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	@Column(name = "ISBN")
 	private String isbn;
 
-
 	public String getLibol() {
 		return libol;
 	}
@@ -110,6 +114,7 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	public void setLibol(String libol) {
 		this.libol = libol;
 	}
+
 	public String getPreviewLink() {
 		return previewLink;
 	}
@@ -126,7 +131,7 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 		this.thumbnail = thumbnail;
 	}
 
-	@OneToMany(mappedBy = "bookDetail", cascade = {CascadeType.ALL})
+	@OneToMany(mappedBy = "bookDetail", cascade = { CascadeType.PERSIST })
 	@JsonIgnore
 	private List<Book> books;
 
@@ -138,51 +143,53 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 		this.publishedDate = publishedDate;
 	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public List<Author> getAuthors() {
-        return authors;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setAuthors(List<Author> authors) {
-        this.authors = authors;
-    }
+	public List<Author> getAuthors() {
+		return authors;
+	}
 
-    public Category getCategories() {
-        return category;
-    }
+	public void setAuthors(List<Author> authors) {
+		this.authors = authors;
+	}
 
-    public void setCategories(Category category) {
-        this.category = category;
-    }
-	@JsonIgnore
-    public Publisher getPublisher() {
-        return publisher;
-    }
+	public Category getCategories() {
+		return category;
+	}
 
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setCategories(Category category) {
+		this.category = category;
+	}
 
 	@JsonIgnore
-    public List<Book> getBooks() {
-        return books;
-    }
+	public Publisher getPublisher() {
+		return publisher;
+	}
 
-    public void setBooks(List<Book> books) {
-        this.books = books;
-    }
+	public void setPublisher(Publisher publisher) {
+		this.publisher = publisher;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@JsonIgnore
+	public List<Book> getBooks() {
+		return books;
+	}
+
+	public void setBooks(List<Book> books) {
+		this.books = books;
+	}
 }
