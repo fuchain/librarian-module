@@ -3,11 +3,14 @@ package com.fpt.edu.controllers;
 import com.fpt.edu.common.helpers.ImportHelper;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
+import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
 import com.fpt.edu.services.*;
-
+import org.apache.commons.collections.IteratorUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,25 +27,33 @@ import java.util.Random;
 @RestController
 @RequestMapping("simulate_datas")
 public class SimulateDataController extends BaseController {
-	public SimulateDataController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
-	}
-
 	@Autowired
 	BookRepository bookRepository;
-
 	@Autowired
 	CategoryRepository categoryRepository;
-
 	@Autowired
 	AuthorRepository authorRepository;
-
 	@Autowired
 	PublisherRepository publisherRepository;
-
 	@Autowired
 	BookDetailRepository bookDetailRepository;
+	@Autowired
+	BigchainTransactionServices bigchainTransactionServices;
 
+	private Logger logger = LoggerFactory.getLogger(SimulateDataController.class);
+
+	public SimulateDataController(
+		UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices,
+		ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices,
+		TransactionServices transactionServices, PublishSubscribe publishSubscribe,
+		RequestQueueManager requestQueueManager, BigchainTransactionServices bigchainTransactionServices
+	) {
+		super(
+			userServices, bookDetailsServices, bookServices, importHelper, matchingServices,
+			requestServices, transactionServices, publishSubscribe, requestQueueManager
+		);
+		this.bigchainTransactionServices = bigchainTransactionServices;
+	}
 
 	@PostMapping("/init")
 	@Transactional
@@ -198,5 +209,37 @@ public class SimulateDataController extends BaseController {
 		} else {
 			return "Number of book is out of range";
 		}
+	}
+
+	@PostMapping("/restore_bigchain_from_db")
+	public String restoreBigchainFromDB() throws Exception {
+		List<Book> bookList = IteratorUtils.toList(bookRepository.findAll().iterator());
+		for (Book book : bookList) {
+			String curretnKeeper = book.getUser().getEmail();
+			book.setMetadata(new BookMetadata(
+				curretnKeeper,
+				book.getStatus(),
+				String.valueOf(book.getCreateDate().getTime() / 1000),
+				Constant.MIN_REJECT_COUNT,
+				Constant.EMPTY_VALUE,
+				Constant.EMPTY_VALUE
+			));
+			bigchainTransactionServices.doCreate(
+				book.getAsset().getData(),
+				book.getMetadata().getData(),
+				curretnKeeper,
+				(transaction, response) -> {
+					String bcAssetId = transaction.getId();
+					if (bcAssetId.equals(book.getAssetId())) {
+						logger.info("Insert asset id " + bcAssetId + "correctly!!!");
+					} else {
+						logger.error("Insert asset id " + bcAssetId + "failed!!!");
+					}
+				},
+				(transaction, response) -> {
+				}
+			);
+		}
+		return "Inserting to bigchain.....";
 	}
 }
