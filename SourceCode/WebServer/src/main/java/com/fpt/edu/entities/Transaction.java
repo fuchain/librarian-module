@@ -30,7 +30,7 @@ public class Transaction extends AbstractTimestampEntity implements Serializable
 	@Column(name = "bc_transaction_id")
 	private String bcTxId;
 
-	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "transaction")
+	@OneToMany(cascade = { CascadeType.PERSIST }, mappedBy = "transaction")
 	private List<Image> images;
 
 	public Integer getType() {

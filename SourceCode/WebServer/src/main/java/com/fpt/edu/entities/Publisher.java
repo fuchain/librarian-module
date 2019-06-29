@@ -14,7 +14,7 @@ public class Publisher extends AbstractTimestampEntity implements Serializable {
 
 	@Column(name = "name")
 	private String name;
-	@OneToMany(mappedBy = "publisher",cascade = {CascadeType.ALL})
+	@OneToMany(mappedBy = "publisher", cascade = { CascadeType.PERSIST })
 	private List<BookDetail> bookDetails;
 
 	public Long getId() {
