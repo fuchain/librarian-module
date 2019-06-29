@@ -34,7 +34,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL)
 	@JsonIgnore
 	private List<Transaction> transactions;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany
 	@JsonIgnore
 	private List<Request> requests;
 	// current keeper of the book
