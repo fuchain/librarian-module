@@ -61,8 +61,8 @@ public class BookDetailsServices {
 	}
 
 
-	public BookDetail getBookByISBN(String isbn) {
-    	BookDetail bookDetail=bookDetailRepository.findBookDetailsByISBN(isbn);
+	public BookDetail getBookByISBN(String isbn, String name, String libol) {
+    	BookDetail bookDetail=bookDetailRepository.findBookDetailsByISBN(isbn,name,libol);
     	if(bookDetail==null){
     		return new BookDetail();
 		}

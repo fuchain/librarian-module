@@ -71,8 +71,24 @@ public class ImportHelper {
 				LOGGER.info("End processing");
 			}
 		});
+		Thread insertDB3 = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				insertDataRunable();
+				LOGGER.info("End processing");
+			}
+		});
+		Thread insertDB4 = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				insertDataRunable();
+				LOGGER.info("End processing");
+			}
+		});
 		insertDB.start();
 		insertDB2.start();
+		insertDB3.start();
+		insertDB4.start();
 		return false;
 	}
 

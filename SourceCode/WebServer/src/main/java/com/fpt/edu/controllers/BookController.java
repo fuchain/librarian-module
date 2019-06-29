@@ -49,7 +49,6 @@ public class BookController extends BaseController {
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable Long id) {
         Book existedBook = bookServices.getBookById(id);
-
         bookServices.deleteBook(existedBook.getId());
     }
 
