@@ -29,13 +29,14 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	@Column(name = "phone")
 	private String phone;
 
-	@ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-	@JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
+	@ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER)
+	@JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "role_id") })
 	@JsonIgnore
 	private List<Role> roles;
 
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "user")
 	private List<Book> listBooks;
 
 	@Column(name = "isDisabled")
