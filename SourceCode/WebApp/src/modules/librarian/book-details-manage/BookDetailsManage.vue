@@ -1,5 +1,5 @@
 <template>
-  <data-list :dataList="bookdetails" v-if="loaded" @doReload="getList"/>
+  <data-list :dataList="bookdetails" v-if="loaded" @doReload="getList" @doSearch="doSearch"/>
 </template>
 
 <script>
@@ -30,7 +30,24 @@ export default {
   methods: {
     async getList() {
       this.$vs.loading();
-      await this.$store.dispatch(`${STORE_KEY}/getBookDetails`);
+      try {
+        await this.$store.dispatch(`${STORE_KEY}/getBookDetails`);
+      } catch (err) {
+        this.$vs.notify({
+          title: "Lỗi",
+          text: `Lỗi xảy ra khi tải dữ liệu, mã lỗi: ${err.response.status}`,
+          color: "danger",
+          position: "top-center"
+        });
+
+        this.$router.push("/error");
+      }
+
+      this.$vs.loading.close();
+    },
+    async doSearch(text) {
+      this.$vs.loading();
+      await this.$store.dispatch(`${STORE_KEY}/searchBookDetails`, text);
       this.$vs.loading.close();
     }
   }

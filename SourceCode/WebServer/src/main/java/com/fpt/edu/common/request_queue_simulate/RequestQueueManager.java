@@ -49,7 +49,7 @@ public class RequestQueueManager implements Observer {
                 }
             }
         }
-        LOGGER.info("Init Request Queue Success , Number of Queue is " + requestMap.size());
+        LOGGER.info("Initial queue success, number of queue is " + requestMap.size());
     }
 
 
