@@ -100,8 +100,8 @@ public class InsertToDBThread {
 				BookMetadata bookMetadata = book.getMetadata();
 				bookMetadata.setStatus(book.getStatus());
 				bookServices.saveBook(book);
-				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
-
+				//bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
+				bookMetadata.setTransactionTimestamp(String.valueOf(book.getCreateDate().getTime() / 1000));
 				BookAsset bookAsset = book.getAsset();
 				bookAsset.setBookId(String.valueOf(book.getId()));
 				// for estimate save book to bighchian
