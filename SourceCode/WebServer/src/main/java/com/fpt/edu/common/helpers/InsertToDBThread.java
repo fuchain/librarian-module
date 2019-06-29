@@ -124,7 +124,7 @@ public class InsertToDBThread {
 
 				long stopTime = System.currentTimeMillis();
 				LOGGER.info("Insert 1 book to bighchain take " + (stopTime - startTime));
-				Thread.sleep(1000);
+				Thread.sleep(500);
 			}
 			bookDetail.setBooks(bookList);
 			bookDetailsServices.saveBookDetail(bookDetail);
@@ -166,7 +166,7 @@ public class InsertToDBThread {
 					});
 				long stopTime = System.currentTimeMillis();
 				LOGGER.info("Insert 1 book to bighchain take " + (stopTime - startTime));
-				Thread.sleep(1000);
+				Thread.sleep(500);
 			}
 
 		}
