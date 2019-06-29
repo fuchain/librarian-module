@@ -39,7 +39,7 @@ public class InsertToDBThread  {
 	@Transactional
 	public void importBook(JSONObject rawData) throws Exception {
 		User librarian = userServices.getFirstLibrarian();
-		BookDetail bookDetail = bookDetailsServices.getBookByISBN(rawData.getString(Constant.ISBN));
+		BookDetail bookDetail = bookDetailsServices.getBookByISBN(rawData.getString(Constant.ISBN),rawData.getString("name"),rawData.getString("libol"));
 		if (bookDetail.getName() == null) {
 			bookDetail.setCategories(categoryServices.addIfNotExist(rawData.getString(Constant.CATEGORY)));
 			JSONArray authors = rawData.getJSONArray(Constant.AUTHORS);

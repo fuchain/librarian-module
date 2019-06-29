@@ -23,7 +23,7 @@ public interface BookDetailRepository extends PagingAndSortingRepository<BookDet
 
 
 
-	@Query(value = "SELECT b FROM BookDetail b WHERE b.isbn  =:isbn")
-	BookDetail findBookDetailsByISBN(@Param("isbn") String isbn);
+	@Query(value = "SELECT b FROM BookDetail b WHERE b.isbn  =:isbn and b.name =:name and b.libol=:libol")
+	BookDetail findBookDetailsByISBN(@Param("isbn") String isbn,@Param("name") String name,@Param("libol") String libol);
 
 }
