@@ -32,6 +32,9 @@ public class BaseController {
 	protected final PublishSubscribe publishSubscribe;
 	protected final RequestQueueManager requestQueueManager;
 
+	protected  BigchainTransactionServices bigchainTransactionServices;
+
+
 	@Autowired
 	public BaseController(UserServices userServices,
 						  BookDetailsServices bookDetailsServices,
@@ -47,6 +50,5 @@ public class BaseController {
 		this.publishSubscribe = publishSubscribe;
 		this.requestQueueManager = requestQueueManager;
 	}
-
 
 }

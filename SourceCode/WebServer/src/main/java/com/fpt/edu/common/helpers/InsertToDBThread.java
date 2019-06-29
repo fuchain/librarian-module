@@ -114,9 +114,9 @@ public class InsertToDBThread {
 						String transactionId = transaction.getId();
 						book.setAssetId(transactionId);
 						book.setLastTxId(transactionId);
+						bookServices.saveBook(book);
 						if (!book.getAssetId().isEmpty()) {
 							bookList.add(book);
-							bookDetail.setBooks(bookList);
 						}
 					}, (transaction, response) -> {
 						LOGGER.error(transaction.getMetaData());
