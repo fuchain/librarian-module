@@ -44,6 +44,7 @@ public class RequestServices implements Observer {
 
 	public Request updateRequest(Request request) {
 		return requestRepository.save(request);
+
 	}
 
 	public List<Request> getListPendingRequest() {

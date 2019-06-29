@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InsertToDBThread  {
+public class InsertToDBThread {
 	protected final Logger LOGGER = LogManager.getLogger(getClass());
 	private CategoryServices categoryServices;
 	private AuthorServices authorServices;
@@ -21,7 +21,6 @@ public class InsertToDBThread  {
 	private BookDetailsServices bookDetailsServices;
 	private UserServices userServices;
 	private BookServices bookServices;
-
 
 
 	public InsertToDBThread(CategoryServices categoryServices, AuthorServices authorServices, PublisherServices publisherServices, BookDetailsServices bookDetailsServices, BookServices bookServices, UserServices userServices) {
@@ -34,12 +33,10 @@ public class InsertToDBThread  {
 	}
 
 
-
-
 	@Transactional
 	public void importBook(JSONObject rawData) throws Exception {
 		User librarian = userServices.getFirstLibrarian();
-		BookDetail bookDetail = bookDetailsServices.getBookByISBN(rawData.getString(Constant.ISBN),rawData.getString("name"),rawData.getString("libol"));
+		BookDetail bookDetail = bookDetailsServices.getBookByISBN(rawData.getString(Constant.ISBN), rawData.getString("name"), rawData.getString("libol"));
 		if (bookDetail.getName() == null) {
 			bookDetail.setCategories(categoryServices.addIfNotExist(rawData.getString(Constant.CATEGORY)));
 			JSONArray authors = rawData.getJSONArray(Constant.AUTHORS);
@@ -82,7 +79,9 @@ public class InsertToDBThread  {
 				desc = rawData.getString(Constant.DESCRIPTION);
 			}
 			bookDetail.setDescription(desc);
-			LOGGER.info("Authos: " + bookDetail.getAuthors().get(0).getName());
+			if (bookDetail.getAuthors().size() > 0) {
+				LOGGER.info("Authos: " + bookDetail.getAuthors().get(0).getName());
+			}
 			LOGGER.info("Description: " + bookDetail.getDescription());
 			LOGGER.info("ISBN : " + bookDetail.getIsbn());
 			LOGGER.info("Thumbnail: " + bookDetail.getThumbnail());
@@ -134,8 +133,8 @@ public class InsertToDBThread  {
 
 			List<Book> bookList = new ArrayList<>();
 			int numberOfBook = rawData.getInt("remaining") - bookDetail.getBooks().size();
-			if(numberOfBook==0){
-				LOGGER.info("Book name "+bookDetail.getName()+" was import with "+ bookDetail.getBooks().size()+" instances");
+			if (numberOfBook == 0) {
+				LOGGER.info("Book name " + bookDetail.getName() + " was import with " + bookDetail.getBooks().size() + " instances");
 
 			}
 			for (int i = 0; i < numberOfBook; i++) {
@@ -145,7 +144,7 @@ public class InsertToDBThread  {
 				BookMetadata bookMetadata = book.getMetadata();
 				bookMetadata.setStatus(book.getStatus());
 				bookServices.saveBook(book);
-				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
+				bookMetadata.setTransactionTimestamp(String.valueOf(book.getCreateDate().getTime() / 1000));
 				BookAsset bookAsset = book.getAsset();
 				bookAsset.setBookId(String.valueOf(book.getId()));
 				long startTime = System.currentTimeMillis();
