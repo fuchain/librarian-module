@@ -100,8 +100,8 @@ public class InsertToDBThread {
 				BookMetadata bookMetadata = book.getMetadata();
 				bookMetadata.setStatus(book.getStatus());
 				bookServices.saveBook(book);
-				bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
-
+				//bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000L));
+				bookMetadata.setTransactionTimestamp(String.valueOf(book.getCreateDate().getTime() / 1000));
 				BookAsset bookAsset = book.getAsset();
 				bookAsset.setBookId(String.valueOf(book.getId()));
 				// for estimate save book to bighchian
@@ -114,9 +114,9 @@ public class InsertToDBThread {
 						String transactionId = transaction.getId();
 						book.setAssetId(transactionId);
 						book.setLastTxId(transactionId);
+						bookServices.saveBook(book);
 						if (!book.getAssetId().isEmpty()) {
 							bookList.add(book);
-							bookDetail.setBooks(bookList);
 						}
 					}, (transaction, response) -> {
 						LOGGER.error(transaction.getMetaData());
@@ -124,7 +124,7 @@ public class InsertToDBThread {
 
 				long stopTime = System.currentTimeMillis();
 				LOGGER.info("Insert 1 book to bighchain take " + (stopTime - startTime));
-				Thread.sleep(1000);
+				Thread.sleep(500);
 			}
 			bookDetail.setBooks(bookList);
 			bookDetailsServices.saveBookDetail(bookDetail);
@@ -166,7 +166,7 @@ public class InsertToDBThread {
 					});
 				long stopTime = System.currentTimeMillis();
 				LOGGER.info("Insert 1 book to bighchain take " + (stopTime - startTime));
-				Thread.sleep(1000);
+				Thread.sleep(500);
 			}
 
 		}
