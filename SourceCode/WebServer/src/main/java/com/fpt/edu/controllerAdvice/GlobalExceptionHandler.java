@@ -1,7 +1,9 @@
 package com.fpt.edu.controllerAdvice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fpt.edu.constant.Constant;
 import com.fpt.edu.exceptions.*;
+import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,9 +25,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
-		details.add(ex.getLocalizedMessage());
+		details.add(ex.getMessage());
+		details.add(ex.toString());
 		ErrorResponse error = new ErrorResponse("Server Internal Error", details);
-		return new ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(EntityNotFoundException.class)
@@ -33,47 +36,52 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
-		details.add("Entity Not Found Exception");
+		details.add(ex.toString());
+		details.add("Entity not found exception");
 		ErrorResponse error = new ErrorResponse("Entity Not Found", details);
 		return new ResponseEntity(error, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(NotFoundException.class)
-	public final ResponseEntity<Object> handleGenneralNotFound(NotFoundException ex, WebRequest request) {
+	public final ResponseEntity<Object> handleGeneralNotFound(NotFoundException ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
+		details.add(ex.toString());
 		details.add("NOT FOUND!!!");
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(EntityPinMisMatchException.class)
-	public final ResponseEntity<Object> handleMistMatch(EntityPinMisMatchException ex, WebRequest request) {
+	public final ResponseEntity<Object> handleMissMatch(EntityPinMisMatchException ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
-		details.add("Entity Pin Miss Match");
+		details.add(ex.toString());
+		details.add("Entity PIN mismatch");
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.NOT_ACCEPTABLE);
 	}
 
 	@ExceptionHandler(EntityAldreayExisted.class)
-	public final ResponseEntity<Object> handleEntityAldreadyExisted(EntityAldreayExisted ex, WebRequest request) {
+	public final ResponseEntity<Object> handleEntityAlreadyExisted(EntityAldreayExisted ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
-		details.add("Entiry aldready existed");
+		details.add("Entity already existed");
+		details.add(ex.toString());
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(EntityIdMismatchException.class)
-	public final ResponseEntity<Object> handleEntityAldread(EntityIdMismatchException ex, WebRequest request) {
+	public final ResponseEntity<Object> handleEntityIdMismatch(EntityIdMismatchException ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
-		details.add("Entity Id Miss Match ");
+		details.add(ex.toString());
+		details.add("Entity ID misatch");
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.PRECONDITION_FAILED);
 	}
@@ -83,6 +91,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
+		details.add(ex.toString());
 		details.add("Type not support");
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.NOT_ACCEPTABLE);
@@ -94,6 +103,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
+		details.add(ex.toString());
 		details.add("PIN have expired");
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.EXPECTATION_FAILED);
@@ -105,6 +115,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		List<String> details = new ArrayList<>();
 		details.add("Fail to do REST HTTP call");
 		details.add(ex.getMessage());
+		details.add(ex.toString());
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
 	}
@@ -113,26 +124,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
-		details.add("Fail to Parse Json");
+		details.add("Fail to parse JSON");
+		details.add(ex.toString());
 		details.add(ex.getMessage());
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
-		return new ResponseEntity(error, HttpStatus.FORBIDDEN);
+		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(NoSuchMethodException.class)
 	public final ResponseEntity<Object> handleException(NoSuchMethodException ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
-		details.add("Fail to Parse Json");
+		details.add("No such method");
+		details.add(ex.toString());
 		details.add(ex.getMessage());
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
-		return new ResponseEntity(error, HttpStatus.FORBIDDEN);
+		return new ResponseEntity(error, HttpStatus.METHOD_NOT_ALLOWED);
 	}
 
 
 	private void logException(Exception ex) {
-		LOGGER.error("ERROR Message :" + ex.getMessage());
-		LOGGER.error("ERROR Cause :" + ex.getCause());
-		LOGGER.error("ERROR StackTrace :" + ex.getStackTrace().toString());
+		LOGGER.error("ERROR: " + ex.toString());
+		LOGGER.error("ERROR Message: " + ex.getMessage());
+		Unirest.post(Constant.LOG_SERVER)
+			.header("accept", "application/json")
+			.field("type", "exception")
+			.field("source", "webserver")
+			.field("metadata", ex.toString());
 	}
 }

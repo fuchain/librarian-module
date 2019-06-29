@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fpt.edu.common.enums.EBookStatus;
 import com.fpt.edu.common.enums.EBookTransferStatus;
+import com.fpt.edu.configs.CustomLocalDateTimeSerializer;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
@@ -20,8 +22,12 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	@Transient
 	@JsonSerialize
 	private final List bcTransactionList;
+
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+
 	@ManyToOne()
 	@JoinColumn(name = "bookdetail_id")
 	private BookDetail bookDetail;
@@ -32,11 +38,11 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	@JsonIgnore
 	private List<Request> requests;
 	// current keeper of the book
-	@ManyToOne(cascade = {CascadeType.ALL})
+	@ManyToOne()
 	@JoinColumn(name = "user_id")
 	@JsonIgnore
 	private User user;
-	@Column(name = "asset_id", updatable = false)
+	@Column(name = "asset_id")
 	@JsonIgnore
 	private String assetId;
 	@Column(name = "last_tx_id")
@@ -47,6 +53,11 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	@Column(name = "transfer_status")
 	@JsonSerialize
 	private String transferStatus;
+	// for tracking the when the new reader receive the book
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Column(name = "last_transfer_success_date")
+	private Date lastTransferSuccess;
+
 	@Transient
 	@JsonIgnore
 	private BookAsset bookAsset;
@@ -121,7 +132,9 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public void setAssetId(String assetId) {
-		this.assetId = assetId;
+		if(this.getAssetId()==null||this.getAssetId().isEmpty()){
+			this.assetId = assetId;
+		}
 	}
 
 	public String getLastTxId() {
@@ -154,6 +167,9 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public void setUser(User user) {
+		if(this.getUser()!=null && this.getUser().getListBooks().equals(user.getId())){
+			this.setLastTransferSuccess(new Date());
+		}
 		this.user = user;
 		this.getMetadata().setCurrentKeeper(user.getEmail());
 	}
@@ -189,4 +205,14 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	public void setBookDetail(BookDetail bookDetail) {
 		this.bookDetail = bookDetail;
 	}
+
+	public Date getLastTransferSuccess() {
+		return lastTransferSuccess;
+	}
+
+	public void setLastTransferSuccess(Date lastTransferSuccess) {
+		this.lastTransferSuccess = lastTransferSuccess;
+	}
+
+
 }

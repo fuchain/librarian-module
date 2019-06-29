@@ -23,7 +23,7 @@
           </div>
           <div class="vx-col w-full mt-5">
             <p>Mã sách</p>
-            <p style="font-size: 2rem;">{{ 'FUHCMBOOK' + (book && book.id) || '0' }}</p>
+            <p style="font-size: 2rem;">{{ 'FUL10000' + (book && book.id) || '0' }}</p>
           </div>
         </vx-card>
       </div>

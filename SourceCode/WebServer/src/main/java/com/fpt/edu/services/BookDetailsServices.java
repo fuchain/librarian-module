@@ -50,8 +50,31 @@ public class BookDetailsServices {
         return bookDetailRepository.findBookDetailsByName(name,pageable).getContent();
     }
 
+	public List<BookDetail> searchBookSubjectCode(String code, Pageable pageable) {
+		return bookDetailRepository.findBookDetailsBySubjectCode(code,pageable).getContent();
+	}
+
+
+
 	public List<BookDetail> getAllBookDetails(Pageable pageable) {
 		return bookDetailRepository.findAll(pageable).getContent();
 	}
+
+
+	public BookDetail getBookByISBN(String isbn, String name, String libol) {
+    	BookDetail bookDetail=bookDetailRepository.findBookDetailsByISBN(isbn,name,libol);
+    	if(bookDetail==null){
+    		return new BookDetail();
+		}
+		return bookDetail;
+
+	}
+
+	public long countNumberOfBookDetail(){
+
+    	return bookDetailRepository.count();
+
+	}
+
 
 }

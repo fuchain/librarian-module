@@ -1,10 +1,12 @@
 package com.fpt.edu.controllers;
 
+import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
+import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
-import com.fpt.edu.services.BigchainTransactionServices;
-import com.fpt.edu.services.BookServices;
-import com.fpt.edu.services.UserServices;
+import com.fpt.edu.services.*;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,28 +24,25 @@ import java.util.Random;
 @RestController
 @RequestMapping("simulate_datas")
 public class SimulateDataController extends BaseController {
-	private final AuthorRepository authorRepository;
-	private final CategoryRepository categoryRepository;
-	private final PublisherRepository publisherRepository;
-	private final BookDetailRepository bookDetailRepository;
-	private final BookRepository bookRepository;
-	private final UserServices userServices;
-	private final BookServices bookServices;
+	public SimulateDataController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	}
 
 	@Autowired
-	public SimulateDataController(
-		AuthorRepository authorRepository, CategoryRepository categoryRepository,
-		PublisherRepository publisherRepository, BookDetailRepository bookDetailRepository,
-		BookRepository bookRepository, UserServices userServices, BookServices bookServices
-	) {
-		this.authorRepository = authorRepository;
-		this.categoryRepository = categoryRepository;
-		this.publisherRepository = publisherRepository;
-		this.bookDetailRepository = bookDetailRepository;
-		this.bookRepository = bookRepository;
-		this.userServices = userServices;
-		this.bookServices = bookServices;
-	}
+	BookRepository bookRepository;
+
+	@Autowired
+	CategoryRepository categoryRepository;
+
+	@Autowired
+	AuthorRepository authorRepository;
+
+	@Autowired
+	PublisherRepository publisherRepository;
+
+	@Autowired
+	BookDetailRepository bookDetailRepository;
+
 
 	@PostMapping("/init")
 	@Transactional
@@ -114,7 +113,7 @@ public class SimulateDataController extends BaseController {
 			// Map category to book detail
 			List<Category> categoryList = new ArrayList<>();
 			categoryList.add(categories.get(random.nextInt(categories.size())));
-			bookDetail.setCategories(categoryList);
+			bookDetail.setCategories(categoryList.get(0));
 
 			// Map publisher to book detail
 			bookDetail.setPublisher(publishers.get(random.nextInt(publishers.size())));
@@ -123,7 +122,7 @@ public class SimulateDataController extends BaseController {
 
 			// Init 10 book instance
 			List<Book> bookList = new ArrayList<>();
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 1; i++) {
 				Book book = new Book();
 				book.setId(Long.valueOf(count));
 				book.setBookDetail(bookDetail);
@@ -184,7 +183,7 @@ public class SimulateDataController extends BaseController {
 				book.setUser(receiver);
 				services.doTransfer(
 					book.getLastTxId(),
-					book.getAssetId(), book.getMetadata(),
+					book.getAssetId(), book.getMetadata().getData(),
 					librarian.getEmail(), receiver.getEmail(),
 					(transaction, response) -> {
 						book.setLastTxId(transaction.getId());
@@ -193,7 +192,7 @@ public class SimulateDataController extends BaseController {
 					(transaction, response) -> {
 					}
 				);
-				Thread.sleep(500);
+				Thread.sleep(100);
 			}
 			return "Give book completed";
 		} else {

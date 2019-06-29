@@ -1,13 +1,26 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <h2 class="mb-8 ml-4">
-      Quản lí sách của đầu sách {{ $route.query.name || "Chưa có tên" }} (ID: {{ $route.params.id }})
-      <vs-button
-        size="small"
-        class="ml-4"
-        @click="$router.push('/librarian/book-details-manage')"
-      >Quay lại danh sách đầu sách</vs-button>
-    </h2>
+    <h2
+      class="mb-8 ml-4"
+      v-if="bookDetail.id"
+    >Quản lí sách của đầu sách {{ bookDetail.name }} (ID: {{ $route.params.id }})</h2>
+
+    <div class="flex items-center justify-center">
+      <book-card :item="bookDetail" v-if="bookDetail.id" style="max-width: 250px;">
+        <template slot="action-buttons">
+          <div class="flex flex-wrap">
+            <div
+              class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+              @click="doBookTransfer"
+            >
+              <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+
+              <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH</span>
+            </div>
+          </div>
+        </template>
+      </book-card>
+    </div>
 
     <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
@@ -121,11 +134,30 @@
       </vs-table>
       <p v-else>Thư viện đang giữ sách này, chưa được chuyển đi đâu cả.</p>
     </vs-popup>
+
+    <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
+      <div style="font-size: 1.5rem; text-align: center;">Mã số PIN xác nhận</div>
+      <div style="font-size: 3rem; text-align: center;">{{ randomPIN }}</div>
+      <div style="text-align: center; margin-bottom: 1rem;">
+        Chỉ tồn tại trong
+        <strong>{{ remainTime }} giây</strong>
+      </div>
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <vs-button @click="doCancel">Hủy bỏ</vs-button>
+      </div>
+    </vs-popup>
   </div>
 </template>
 
 <script>
+import BookCard from "@/views/components/BookCard.vue";
+
+let countInterval;
+
 export default {
+  components: {
+    BookCard
+  },
   data() {
     return {
       itemsPerPage: 10,
@@ -133,7 +165,14 @@ export default {
       dataList: [],
       historyPopup: false,
       historyList: [],
-      historyId: 0
+      historyId: 0,
+      bookDetail: {},
+      // PIN Flow
+      popupActive: false,
+      randomPIN: 0,
+      remainTime: 0,
+      matchingId: 0,
+      requestId: 0
     };
   },
   computed: {
@@ -160,7 +199,126 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+    },
+    startCount() {
+      this.remainTime = 300;
+      clearInterval(countInterval);
+
+      countInterval = setInterval(
+        function() {
+          this.remainTime = this.remainTime - 1;
+          this.validateConfirm();
+
+          if (this.remainTime <= 0) {
+            this.$vs.notify({
+              title: "Lỗi",
+              text: "Hết hạn xác nhận mã PIN, vui lòng thao tác lại từ đầu",
+              color: "warning",
+              position: "top-center"
+            });
+
+            clearInterval(countInterval);
+          }
+        }.bind(this),
+        1000
+      );
+    },
+    async validateConfirm() {
+      this.$http
+        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Người nhận đã xác nhận mã PIN",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.popupActive = false;
+          this.requestId = 0;
+          clearInterval(countInterval);
+        })
+        .catch(err => {
+          // Catch
+          console.log(err);
+
+          const status = err.response.status;
+          if (status !== 412) {
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Người nhận đã từ chối nhận xách",
+              color: "warning",
+              position: "top-center"
+            });
+
+            this.popupActive = false;
+            this.requestId = 0;
+            clearInterval(countInterval);
+          }
+        })
+        .finally(() => {});
+    },
+    doBookTransfer() {
+      const id = this.$route.params.id;
+
+      this.$vs.loading();
+      this.$http
+        .post(`${this.$http.baseUrl}/librarian/give_book?book_detail_id=${id}`)
+        .then(response => {
+          const matchingId = response.data.matching_id;
+          this.matchingId = matchingId;
+          const requestId = response.data.request_id;
+          this.requestId = requestId;
+
+          this.randomPIN = response.data.pin;
+          this.startCount();
+          this.popupActive = true;
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Xảy ra lỗi, chưa thể thực hiện chuyển sách",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
+    },
+    doCancel() {
+      this.$vs.loading();
+
+      this.$http
+        .put(`${this.$http.baseUrl}/requests/cancel`, {
+          request_id: this.requestId
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Hủy bỏ việc chuyển sách thành công",
+            color: "primary",
+            position: "top-center"
+          });
+        })
+        .catch(e => {
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Chưa thể hủy bỏ việc trả sách",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
+  },
+  beforeDestroy() {
+    clearInterval(countInterval);
+    if (this.requestId) this.doCancel();
   },
   created() {
     if (!this.$route.params.id) {
@@ -174,7 +332,7 @@ export default {
       .get(
         `${this.$http.baseUrl}/librarian/book_details/${
           this.$route.params.id
-        }/books`
+        }/books?size=5000`
       )
       .then(response => {
         const data = response.data;
@@ -189,6 +347,28 @@ export default {
       .finally(() => {
         this.isMounted = true;
         this.$vs.loading.close();
+      });
+
+    this.$http
+      .get(`${this.$http.baseUrl}/bookdetails/${this.$route.params.id}`)
+      .then(response => {
+        const data = response.data;
+
+        this.bookDetail = {
+          id: data.id,
+          name: data.name,
+          description: data.description,
+          image: data.thumbnail || "/images/book-thumbnail.jpg",
+          code:
+            (data.parseedSubjectCode &&
+              data.parseedSubjectCode.length &&
+              data.parseedSubjectCode[0]) ||
+            "N/A",
+          status: "in use"
+        };
+      })
+      .catch(() => {
+        this.$router.push("/librarian/book-details-manage");
       });
   }
 };

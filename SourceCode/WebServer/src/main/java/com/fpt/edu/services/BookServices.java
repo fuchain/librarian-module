@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +18,9 @@ import java.util.Map;
 public class BookServices {
 	final private BookRepository bookRepository;
 	final private BigchainTransactionServices bigchainTransactionServices;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
 	public BookServices(BookRepository bookRepository, BigchainTransactionServices bigchainTransactionServices) {
@@ -71,4 +76,16 @@ public class BookServices {
 		book.getMetadata().setData((Map<String, String>) transaction.getMetaData());
 		return book.getBcLastTransaction();
 	}
+
+	public Book getByUserAndBookDetail(Long userId, Long bookDetailId){
+		List<Book> bookList = (List<Book>) bookRepository.getByUserAndBookDetail(userId, bookDetailId);
+		return bookList.size() > 0 ? bookList.get(0) : null;
+	}
+
+	public long countNumberOfBookDetails(){
+		return bookRepository.count();
+	}
+
+
+
 }

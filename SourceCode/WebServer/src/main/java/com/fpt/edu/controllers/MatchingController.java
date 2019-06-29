@@ -1,14 +1,15 @@
 package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.enums.EMatchingStatus;
+import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
+import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.Matching;
 import com.fpt.edu.entities.User;
 import com.fpt.edu.exceptions.EntityIdMismatchException;
-import com.fpt.edu.services.MatchingServices;
-import com.fpt.edu.services.UserServices;
+import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,20 +19,17 @@ import java.security.Principal;
 @RestController
 @RequestMapping("matchings")
 public class MatchingController extends BaseController {
-	private final MatchingServices matchingServices;
-	private final UserServices userServices;
 
-	@Autowired
-	public MatchingController(MatchingServices matchingServices, UserServices userServices) {
-		this.matchingServices = matchingServices;
-		this.userServices = userServices;
+
+	public MatchingController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
 	}
 
 	@ApiOperation(value = "Returner confirms book transfer", response = String.class)
 	@GetMapping("/{id}/confirm")
 	public ResponseEntity<String> confirmBookTransfer(
 		@PathVariable("id") Long matchingId, Principal principal
-	) throws EntityIdMismatchException, EntityIdMismatchException {
+	) throws EntityIdMismatchException {
 
 		Matching matching = matchingServices.getMatchingById(matchingId);
 		User matchingUser = matching.getReturnerRequest().getUser();
