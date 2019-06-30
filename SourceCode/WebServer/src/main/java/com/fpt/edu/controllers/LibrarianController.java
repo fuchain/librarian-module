@@ -192,7 +192,7 @@ public class LibrarianController extends BaseController {
 		Request returningRequest = new Request();
 		returningRequest.setBook(book);
 		returningRequest.setUser(librarian);
-		returningRequest.setStatus(ERequestStatus.PENDING.getValue());
+		returningRequest.setStatus(ERequestStatus.MATCHING.getValue());
 		returningRequest.setType(ERequestType.RETURNING.getValue());
 		returningRequest.setMode(ERequestMode.MANUAL.getValue());
 		Request savedRequest = requestServices.saveRequest(returningRequest);
