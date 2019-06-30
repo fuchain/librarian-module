@@ -1,4 +1,5 @@
 import models from "@models";
+import axios from "axios";
 
 const list = async (req, res, next) => {
     const listTrackings = await models.log.findAll();
@@ -10,6 +11,15 @@ const create = async (req, res) => {
 
     try {
         const newTracking = await models.log.create(newItem);
+
+        const trackingStr = JSON.stringify(newTracking);
+        axios.post(
+            "https://hooks.slack.com/services/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",
+            {
+                text: trackingStr
+            }
+        );
+
         res.send(newTracking);
     } catch (err) {
         res.status(400);
