@@ -10,6 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("http://localhost:3000", "https://library.fptu.tech").allowedMethods("GET", "POST", "PUT", "DELETE").exposedHeaders("Authorization").allowCredentials(true);
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000", "https://library.fptu.tech", "https://thuvienfu.com",
+                        "http://dev.fptu.tech", "https://dev.fptu.tech", "http://dev.fptu.tech:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE").exposedHeaders("Authorization").allowCredentials(true);
     }
 }
