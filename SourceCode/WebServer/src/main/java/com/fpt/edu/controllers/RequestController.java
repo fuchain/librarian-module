@@ -925,10 +925,9 @@ public class RequestController extends BaseController {
 
 		bookMetadata.setRejectReason(reason);
 		bookMetadata.setImgHash(hashValue);
-
+		bookMetadata.setImageLink(imageUrl);
 		// Update reject count
 		bookMetadata.increaseLastRejectCount();
-
 		// Set new transaction timestamp
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 
@@ -993,7 +992,6 @@ public class RequestController extends BaseController {
 				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
 				requestServices.updateRequest(returnRequest);
 				requestServices.updateRequest(receiveRequest);
-
 				// Update user in book
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());

@@ -59,6 +59,7 @@ public class Constant {
 	public static final String REJECT_COUNT = "reject_count";
 	public static final String REJECT_REASON = "reject_reason";
 	public static final String IMAGE_HASH = "img_hash";
+	public static final String IMAGE_LINK = "img_link";// in reject case this field will have value
 	public static final int MAX_REJECT_COUNT = 5;
 	public static final int MIN_REJECT_COUNT = 0;
 
