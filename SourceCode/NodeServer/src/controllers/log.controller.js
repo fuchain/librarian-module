@@ -18,8 +18,10 @@ const create = async (req, res) => {
             {
                 text:
                     "We have new bug report for service **" +
-                        newTracking.source ||
-                    "unknow" + "** :tired_face:. \n\n ```" + trackingStr + "```"
+                    (newTracking.source || "unknown") +
+                    "** :tired_face:. \n\n ```" +
+                    trackingStr +
+                    "```"
             }
         );
 
