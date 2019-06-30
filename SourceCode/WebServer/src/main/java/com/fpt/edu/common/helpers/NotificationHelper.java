@@ -25,13 +25,11 @@ public class NotificationHelper {
 		jsonObject.put("message", message);
 		jsonObject.put("type", type);
 
-		HttpResponse<JsonNode> response = Unirest.post(this.endPoint)
+		Unirest.post(this.endPoint)
 			.header("accept", "application/json")
 			.header("Content-Type", Constant.APPLICATION_JSON)
 			.body(jsonObject.toString())
 			.asJson();
-
-		System.out.println(response.getBody().toString());
 	}
 
 

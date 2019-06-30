@@ -151,10 +151,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		JSONObject errObj = new JSONObject();
 		errObj.put("type", "error");
 		errObj.put("source", "webserver");
-		errObj.put("metadata", ex.toString() + " | " + ex.getMessage());
+		errObj.put("metadata", ex.toString());
 
-		Unirest.post(Constant.LOG_SERVER)
-			.header("Content-Type", "application/json")
-			.body(errObj.toString());
+		try {
+			Unirest.post(Constant.LOG_SERVER)
+				.header("accept", "application/json")
+				.header("Content-Type", Constant.APPLICATION_JSON)
+				.body(errObj.toString())
+				.asJson();
+		} catch(UnirestException err) {
+			LOGGER.error("Logging error: " + err.toString());
+		}
 	}
 }
