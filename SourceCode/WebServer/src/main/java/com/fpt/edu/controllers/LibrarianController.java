@@ -2,16 +2,22 @@ package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.helpers.SchedulerJob;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.exceptions.EntityNotFoundException;
+import com.fpt.edu.exceptions.InvalidExpressionException;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,6 +35,9 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("librarian")
 public class LibrarianController extends BaseController {
+
+	private Logger logger = LoggerFactory.getLogger(LibrarianController.class);
+	private String cronExpression = "";
 
 
 	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
@@ -226,19 +235,77 @@ public class LibrarianController extends BaseController {
 	@ApiOperation(value = "Get overview of books", response = Book.class)
 	@GetMapping("/overviews")
 	public ResponseEntity<String> getOvervide() throws Exception {
-		long totalBookDetail= bookDetailsServices.countNumberOfBookDetail();
+		long totalBookDetail = bookDetailsServices.countNumberOfBookDetail();
 		long totalBookInstance = bookServices.countNumberOfBookDetails();
-		long totalUser=userServices.countTotalUser();
+		long totalUser = userServices.countTotalUser();
 		JSONObject result = new JSONObject();
-		result.put("totalBookDetails",totalBookDetail);
-		result.put("totalBookInstances",totalBookInstance);
-		result.put("totalUsers",totalUser);
+		result.put("totalBookDetails", totalBookDetail);
+		result.put("totalBookInstances", totalBookInstance);
+		result.put("totalUsers", totalUser);
 		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
 	}
 
 
+	@ApiOperation(value = "Enable or disable system scheduler", response = String.class)
+	@PutMapping("")
+	public ResponseEntity<String> enableScheduler(@RequestBody String body, Principal principal) throws InvalidExpressionException, SchedulerException {
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+
+		// Get data from request body
+		JSONObject bodyObject = new JSONObject(body);
+		boolean enable = bodyObject.getBoolean("enable");
+		cronExpression = bodyObject.getString("interval_expression");
+
+		// Get scheduler
+		Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+
+		if (!enable) {
+			scheduler.shutdown();
+			logger.info("Shut down scheduler");
+			return new ResponseEntity<>("Shut down scheduler successfully", HttpStatus.OK);
+		}
+
+		if (!CronExpression.isValidExpression(cronExpression)) {
+			throw new InvalidExpressionException(cronExpression + " expression is invalid");
+		}
+
+		JobDataMap jobDataMap = new JobDataMap();
+		jobDataMap.put("RequestServices", requestServices);
+		jobDataMap.put("MatchingServices", matchingServices);
+
+		JobDetail jobDetail = JobBuilder.newJob(SchedulerJob.class).setJobData(jobDataMap).build();
+
+		Trigger trigger = TriggerBuilder.newTrigger().withIdentity("CronTrigger")
+			.withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
+
+		scheduler.scheduleJob(jobDetail, trigger);
+		scheduler.start();
+		logger.info("Started scheduler");
+
+		return new ResponseEntity<>("Started Scheduler Successfully", HttpStatus.OK);
+	}
 
 
+	@ApiOperation(value = "Get scheduler status", response = JSONObject.class)
+	@GetMapping("/scheduler")
+	public ResponseEntity<JSONObject> getSchedulerStatus(Principal principal) throws SchedulerException {
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+
+		JSONObject jsonResult = new JSONObject();
+
+		// Get scheduler
+		Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+		if (scheduler.isShutdown()) {
+			jsonResult.put("enable", scheduler.isShutdown());
+		} else if (scheduler.isStarted()) {
+			jsonResult.put("enable", scheduler.isStarted());
+			jsonResult.put("interval_expression", cronExpression);
+		}
+
+		return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+	}
 
 	// Get unique pin
 	private String getUniquePin() {
