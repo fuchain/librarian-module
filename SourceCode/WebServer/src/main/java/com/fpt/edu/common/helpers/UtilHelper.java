@@ -127,7 +127,6 @@ public class UtilHelper {
 	}
 
 	public String uploadFile(MultipartFile multipartFile) {
-
 		String fileUrl = "";
 		try {
 			File file = convertMultiPartToFile(multipartFile);
@@ -155,7 +154,6 @@ public class UtilHelper {
 		S3Object s3Object = s3Client.getObject(amazonS3URI.getBucket(), amazonS3URI.getKey());
 		S3ObjectInputStream inputStream = s3Object.getObjectContent();
 		InputStreamResource resource = new InputStreamResource(inputStream.getDelegateStream());
-
 		return resource;
 	}
 
