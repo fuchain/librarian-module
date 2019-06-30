@@ -7,6 +7,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -146,10 +147,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	private void logException(Exception ex) {
 		LOGGER.error("ERROR: " + ex.toString());
 		LOGGER.error("ERROR Message: " + ex.getMessage());
+
+		JSONObject errObj = new JSONObject();
+		errObj.put("type", "error");
+		errObj.put("source", "webserver");
+		errObj.put("metadata", ex.toString() + " | " + ex.getMessage());
+
 		Unirest.post(Constant.LOG_SERVER)
-			.header("accept", "application/json")
-			.field("type", "exception")
-			.field("source", "webserver")
-			.field("metadata", ex.toString());
+			.header("Content-Type", "application/json")
+			.body(errObj.toString());
 	}
 }
