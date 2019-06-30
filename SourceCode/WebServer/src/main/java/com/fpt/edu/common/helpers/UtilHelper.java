@@ -108,7 +108,7 @@ public class UtilHelper {
 	}
 
 	// Get duration between 2 dates
-	public long getDuration(Date oldDate, Date newDate, TimeUnit timeUnit) {
+	public static long getDuration(Date oldDate, Date newDate, TimeUnit timeUnit) {
 		long diffInMillies = newDate.getTime() - oldDate.getTime();
 		return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
 	}

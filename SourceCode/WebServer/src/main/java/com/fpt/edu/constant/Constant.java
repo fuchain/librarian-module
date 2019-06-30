@@ -46,6 +46,8 @@ public class Constant {
 	public static final String[] FPT_EMAIL_PREFIXS = {
 		" - K11 FUG HCM", "(SV K12- FUG HCM) "
 	};
+	public static final int REQUEST_EXPIRED_TIME = 2;
+	public static final int MATCHING_EXPIRED_TIME = 2;
 
 	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
 

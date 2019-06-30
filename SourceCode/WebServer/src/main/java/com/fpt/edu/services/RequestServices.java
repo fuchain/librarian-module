@@ -51,6 +51,10 @@ public class RequestServices implements Observer {
 		return IteratorUtils.toList(requestRepository.getListOfPendingRequest().iterator());
 	}
 
+	public List<Request> getPendingMatchingList(int status1, int status2) {
+		return requestRepository.getPendingMatchingList(status1, status2);
+	}
+
 	@Override
 	public void doUpdate(Message mess) {
 		if (mess.getAction().equalsIgnoreCase(Constant.ACTION_ADD_NEW)) {

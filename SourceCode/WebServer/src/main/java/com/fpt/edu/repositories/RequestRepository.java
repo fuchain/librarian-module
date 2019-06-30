@@ -40,5 +40,8 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
 						  @Param("status1") int status1,
 						  @Param("status2") int status2);
 
+	@Query(value = "SELECT r FROM Request r WHERE r.status = :status1 OR r.status = :status2")
+	List<Request> getPendingMatchingList(@Param("status1") int status1,
+										 @Param("status2") int status2);
 
 }
