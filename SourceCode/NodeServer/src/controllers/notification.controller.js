@@ -2,22 +2,25 @@ import { io } from "../socket/socket";
 
 import { getRedisItem } from "@utils/redis";
 
-const testPushNotification = async (req, res, next) => {
-    const { email, message } = req.body;
+const pushNotification = async (req, res) => {
+    const { email, message, type } = req.body;
 
     try {
         const socketId = await getRedisItem(email);
 
+        // Save to database
+
         if (!socketId) {
-            res.status(422);
+            res.status(200);
             res.send({
-                error: "That user is not connecting to our service"
+                message:
+                    "Message sent, but that user is not connecting to our service"
             });
 
             return;
         }
 
-        io.to(socketId).emit("notification", message);
+        io.to(socketId).emit("notification", { message, type });
 
         res.status(201);
         res.send({ message: `Sent to ${socketId}` });
@@ -30,4 +33,4 @@ const testPushNotification = async (req, res, next) => {
     }
 };
 
-export default { testPushNotification };
+export default { pushNotification };

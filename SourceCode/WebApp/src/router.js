@@ -106,6 +106,11 @@ const router = new Router({
           path: "librarian/monitoring/infrastructure",
           component: () =>
             import("@/modules/librarian/monitoring/Infrastructure.vue")
+        },
+        {
+          path: "librarian/notification/send",
+          component: () =>
+            import("@/modules/librarian/notification/SendNotification.vue")
         }
       ]
     },
