@@ -119,8 +119,10 @@ public class BookMetadata {
 	public void setImageLink(String url){
 		this.data.put(IMAGE_LINK,url);
 	}
+	@JsonIgnore
 	public String getRejectImageLink(){
-		return this.data.get(IMAGE_LINK);
+		String image_link=this.data.get(IMAGE_LINK);
+		return image_link==null? EMPTY_VALUE:image_link;
 
 	}
 
