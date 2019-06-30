@@ -3,15 +3,16 @@ package com.fpt.edu.controllers;
 import com.fpt.edu.common.helpers.ImportHelper;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
-import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
 import com.fpt.edu.services.*;
-import org.apache.commons.collections.IteratorUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,10 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("simulate_datas")
@@ -135,7 +134,7 @@ public class SimulateDataController extends BaseController {
 			List<Book> bookList = new ArrayList<>();
 			for (int i = 0; i < 1; i++) {
 				Book book = new Book();
-				book.setId(Long.valueOf(count));
+				book.setId((long) count);
 				book.setBookDetail(bookDetail);
 				book.setUser(librarian);
 
@@ -213,33 +212,49 @@ public class SimulateDataController extends BaseController {
 
 	@PostMapping("/restore_bigchain_from_db")
 	public String restoreBigchainFromDB() throws Exception {
-		List<Book> bookList = IteratorUtils.toList(bookRepository.findAll().iterator());
+		int pageIndex = 0;
+		int pageSize = 1000;
+		Pageable pageable;
+		pageable = PageRequest.of(pageIndex, pageSize);
+		while (true) {
+			Page<Book> bookPage = bookRepository.findAll(pageable);
+			insertBookBackToBC(bookPage.getContent());
+			if (bookPage.hasNext()) {
+				pageable = bookPage.nextPageable();
+			} else {
+				break;
+			}
+		}
+		return "Inserting to bigchain.....";
+	}
+
+	private void insertBookBackToBC(List<Book> bookList) throws Exception {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		for (Book book : bookList) {
-			String curretnKeeper = book.getUser().getEmail();
-			book.setMetadata(new BookMetadata(
-				curretnKeeper,
-				book.getStatus(),
-				String.valueOf(book.getCreateDate().getTime() / 1000),
-				Constant.MIN_REJECT_COUNT,
-				Constant.EMPTY_VALUE,
-				Constant.EMPTY_VALUE
-			));
+			String currentKeeper = book.getUser().getEmail();
+			BookMetadata bookMetadata = new BookMetadata(currentKeeper, book.getStatus());
+			book.setMetadata(bookMetadata);
+			bookMetadata.setTransactionTimestamp(String.valueOf(
+				dateFormat.parse(book.getCreateDate().toString()).getTime() / 1000L)
+			);
 			bigchainTransactionServices.doCreate(
 				book.getAsset().getData(),
-				book.getMetadata().getData(),
-				curretnKeeper,
+				bookMetadata.getData(),
+				currentKeeper,
 				(transaction, response) -> {
 					String bcAssetId = transaction.getId();
-					if (bcAssetId.equals(book.getAssetId())) {
-						logger.info("Insert asset id " + bcAssetId + "correctly!!!");
+					String assetId = book.getAssetId();
+					if (bcAssetId.equals(assetId)) {
+						logger.info("Insert asset id " + bcAssetId + " correctly!!!");
 					} else {
-						logger.error("Insert asset id " + bcAssetId + "failed!!!");
+						logger.error("Insert asset id " + bcAssetId + " failed!!!");
+						logger.error("Book asset id: " + assetId);
 					}
 				},
 				(transaction, response) -> {
 				}
 			);
 		}
-		return "Inserting to bigchain.....";
 	}
 }
