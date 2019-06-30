@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.helpers.NotificationHelper;
 import com.fpt.edu.common.request_queue_simulate.Message;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -31,10 +32,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RestController
 @RequestMapping("requests")
 public class RequestController extends BaseController {
-	public RequestController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	public RequestController(UserServices userServices, BookDetailsServices bookDetailsServices,
+							 BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices,
+							 RequestServices requestServices, TransactionServices transactionServices,
+							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager,
+							 NotificationHelper notificationHelper) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper);
 	}
-
 
 	@ApiOperation(value = "Get a request by its id")
 	@GetMapping(value = "/{id}")
@@ -943,14 +947,20 @@ public class RequestController extends BaseController {
 				String transactionId = transaction.getId();
 				book.setLastTxId(transactionId);
 
-
 				// Update matching status to 'Confirmed'
 				matching.setStatus(EMatchingStatus.REJECTED.getValue());
 				matchingServices.updateMatching(matching);
 
-				// Update borrow request status to 'Completed'
+				// Update returner request status to 'Completed'
 				returnRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 				requestServices.updateRequest(returnRequest);
+
+				// Push notification to returner
+				notificationHelper.pushNotification(
+					returnRequest.getUser().getEmail(),
+					"Người mượn đã từ chối nhận sách " + book.getBookDetail().getName(),
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
 
 				// Put borrow request in queue after rejecting
 				try {
@@ -961,7 +971,6 @@ public class RequestController extends BaseController {
 					receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 					requestServices.updateRequest(receiveRequest);
 				}
-
 
 				// Update transfer status of book
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());

@@ -1,6 +1,7 @@
 package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.helpers.NotificationHelper;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.*;
@@ -38,6 +39,7 @@ public class SimulateDataController extends BaseController {
 	BookDetailRepository bookDetailRepository;
 	@Autowired
 	BigchainTransactionServices bigchainTransactionServices;
+	NotificationHelper notificationHelper;
 
 	private Logger logger = LoggerFactory.getLogger(SimulateDataController.class);
 
@@ -45,11 +47,12 @@ public class SimulateDataController extends BaseController {
 		UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices,
 		ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices,
 		TransactionServices transactionServices, PublishSubscribe publishSubscribe,
-		RequestQueueManager requestQueueManager, BigchainTransactionServices bigchainTransactionServices
+		RequestQueueManager requestQueueManager, BigchainTransactionServices bigchainTransactionServices,
+		NotificationHelper notificationHelper
 	) {
 		super(
 			userServices, bookDetailsServices, bookServices, importHelper, matchingServices,
-			requestServices, transactionServices, publishSubscribe, requestQueueManager
+			requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper
 		);
 		this.bigchainTransactionServices = bigchainTransactionServices;
 	}
