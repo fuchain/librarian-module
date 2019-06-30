@@ -104,6 +104,10 @@
     </vs-table>
 
     <vs-popup :title="'Lịch sử chuyển của sách #' + historyId" :active.sync="historyPopup">
+      <vs-alert color="warning" v-if="fraudEmail">
+        Lorem ip
+        sum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat
+      </vs-alert>
       <vs-table :data="historyList" v-if="historyList && historyList.length">
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>
@@ -199,6 +203,8 @@ export default {
       dataList: [],
       historyPopup: false,
       historyList: [],
+      metadata: {},
+      fraudEmail: "",
       historyId: 0,
       bookDetail: {},
       // PIN Flow
@@ -228,11 +234,22 @@ export default {
       this.$http
         .get(`${this.$http.baseUrl}/librarian/books/${item.id}`)
         .then(response => {
-          const data = response.data.bcTransactionList;
+          const data = response.data;
 
-          this.historyList = data;
+          this.historyList = data.bcTransactionList;
+          this.metadata = data.metadata.data;
           this.historyPopup = true;
           this.historyId = item.id;
+
+          if (
+            this.historyList.length &&
+            this.historyList[this.historyList.length - 1].current_keeper !==
+              this.metadata.current_keeper
+          ) {
+            this.fraudEmail = this.metadata.current_keeper;
+          } else {
+            this.fraud = {};
+          }
         })
         .finally(() => {
           this.$vs.loading.close();

@@ -2,7 +2,7 @@
   <div id="app">
     <router-view v-if="!error"></router-view>
     <error-500 v-if="error"></error-500>
-    <vx-tour :steps="steps"/>
+    <vx-tour :steps="steps" />
   </div>
 </template>
 
@@ -137,23 +137,9 @@ export default {
     }
   },
   errorCaptured(err, vm, info) {
-    // Log API
-    const metadata = {
-      err,
-      vm,
-      info
-    };
-
-    this.$http.post(`${this.$http.nodeUrl}/logs`, {
-      type: "error",
-      source: "webapp",
-      metadata: JSON.stringify(metadata)
-    });
-
     // Print log error
-    console.log("Error: ", err);
-    console.log("VM: ", vm);
-    console.log("Info: ", info);
+    console.log("Error: ", err.toString());
+    console.log("Info: ", info.toString());
 
     this.error = true;
 
@@ -162,6 +148,18 @@ export default {
       text: "Lỗi do đường truyền kém, vui lòng tải lại ứng dụng",
       color: "danger",
       position: "top-center"
+    });
+
+    // Log API
+    const metadata = {
+      err: err.toString(),
+      info: info.toString()
+    };
+
+    this.$http.post(`${this.$http.nodeUrl}/logs`, {
+      type: "error",
+      source: "webapp",
+      metadata: JSON.stringify(metadata)
     });
 
     this.$router.push("/error");
