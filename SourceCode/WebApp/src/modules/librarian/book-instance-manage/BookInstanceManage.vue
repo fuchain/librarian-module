@@ -1,9 +1,6 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <h2
-      class="mb-8 ml-4"
-      v-if="bookDetail.id"
-    >Quản lí sách của đầu sách {{ bookDetail.name }} (ID: {{ $route.params.id }})</h2>
+    <h2 class="mb-8 ml-4" v-if="bookDetail.id">Quản lí đầu sách #{{ $route.params.id || "--" }}</h2>
 
     <div class="flex items-center justify-center">
       <book-card :item="bookDetail" v-if="bookDetail.id" style="max-width: 250px;">
@@ -13,7 +10,7 @@
               class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               @click="doBookTransfer"
             >
-              <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+              <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
               <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH</span>
             </div>
@@ -31,7 +28,7 @@
               class="p-4 shadow-drop rounded-lg d-theme-dark-bg cursor-pointer flex items-center justify-center text-lg font-medium w-32"
             >
               <span class="mr-2">Làm</span>
-              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
+              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
             </div>
 
             <vs-dropdown-menu>
@@ -50,7 +47,7 @@
             <span
               class="mr-2"
             >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} of {{ dataList.length }}</span>
-            <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
+            <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
           <vs-dropdown-menu>
             <vs-dropdown-item @click="itemsPerPage=10">
@@ -124,7 +121,13 @@
 
             <vs-td :data="data[indextr].status">{{data[indextr].status || "rejected"}}</vs-td>
 
-            <vs-td :data="data[indextr].reject_count">{{data[indextr].reject_count || "0"}} lần</vs-td>
+            <vs-td :data="data[indextr].reject_count">
+              <div @click="openRejectPopup(data[indextr])" style="cursor: pointer;">
+                <vs-chip
+                  :color="data[indextr].reject_count === '0' ? 'primary' : 'danger'"
+                >{{data[indextr].reject_count || "0"}} lần</vs-chip>
+              </div>
+            </vs-td>
 
             <vs-td
               :data="data[indextr].transaction_timestamp"
@@ -133,6 +136,37 @@
         </template>
       </vs-table>
       <p v-else>Thư viện đang giữ sách này, chưa được chuyển đi đâu cả.</p>
+
+      <vs-popup
+        :title="'Thông tin từ chối nhận sách của ' + rejectPopup.item.current_keeper"
+        :active.sync="rejectPopup.isActive"
+      >
+        <div class="vx-row">
+          <div class="vx-col w-full">
+            <vs-textarea
+              label="Lí do từ chối"
+              :value="rejectPopup.item.reject_reason"
+              disabled="true"
+            />
+          </div>
+        </div>
+        <div class="vx-row mb-6">
+          <div class="vx-col w-full">
+            <vs-input
+              class="w-full"
+              label="Hash ảnh"
+              :value="rejectPopup.item.img_hash"
+              disabled="true"
+            />
+          </div>
+        </div>
+
+        <div class="vx-row mb-6">
+          <div class="vx-col w-full">
+            <img :src="rejectPopup.item.img_link" style="max-width: 566.5px;" />
+          </div>
+        </div>
+      </vs-popup>
     </vs-popup>
 
     <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
@@ -172,7 +206,11 @@ export default {
       randomPIN: 0,
       remainTime: 0,
       matchingId: 0,
-      requestId: 0
+      requestId: 0,
+      rejectPopup: {
+        isActive: false,
+        item: {}
+      }
     };
   },
   computed: {
@@ -290,6 +328,7 @@ export default {
     },
     doCancel() {
       this.$vs.loading();
+      clearInterval(countInterval);
 
       this.$http
         .put(`${this.$http.baseUrl}/requests/cancel`, {
@@ -302,6 +341,7 @@ export default {
             color: "primary",
             position: "top-center"
           });
+          this.popupActive = false;
         })
         .catch(e => {
           this.$vs.notify({
@@ -314,11 +354,17 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+    },
+    openRejectPopup(item) {
+      if (!item.reject_reason) return;
+
+      this.rejectPopup.isActive = true;
+      this.rejectPopup.item = item;
     }
   },
   beforeDestroy() {
     clearInterval(countInterval);
-    if (this.requestId) this.doCancel();
+    if (this.requestId && this.popupActive) this.doCancel();
   },
   created() {
     if (!this.$route.params.id) {
@@ -330,9 +376,7 @@ export default {
 
     this.$http
       .get(
-        `${this.$http.baseUrl}/librarian/book_details/${
-          this.$route.params.id
-        }/books?size=5000`
+        `${this.$http.baseUrl}/librarian/book_details/${this.$route.params.id}/books?size=5000`
       )
       .then(response => {
         const data = response.data;

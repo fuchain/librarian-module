@@ -19,6 +19,7 @@ public class BookMetadata {
 		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
 		this.data.put(REJECT_REASON, EMPTY_VALUE);
 		this.data.put(IMAGE_HASH, EMPTY_VALUE);
+		this.data.put(IMAGE_LINK, EMPTY_VALUE);
 	}
 
 	// This constructor is used to get metadata from database
@@ -33,6 +34,7 @@ public class BookMetadata {
 		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
 		this.data.put(REJECT_REASON, EMPTY_VALUE);
 		this.data.put(IMAGE_HASH, EMPTY_VALUE);
+		this.data.put(IMAGE_LINK, EMPTY_VALUE);
 	}
 
 	// This constructor is used to get metadata from blockchain
@@ -113,4 +115,19 @@ public class BookMetadata {
 	public void setImgHash(String imgHash) {
 		this.data.put(IMAGE_HASH, imgHash);
 	}
+
+	public void setImageLink(String url){
+		this.data.put(IMAGE_LINK,url);
+	}
+	@JsonIgnore
+	public String getRejectImageLink(){
+		String image_link=this.data.get(IMAGE_LINK);
+		return image_link==null? EMPTY_VALUE:image_link;
+
+	}
+
+
+
+
+
 }
