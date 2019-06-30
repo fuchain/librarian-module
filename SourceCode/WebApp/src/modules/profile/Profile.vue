@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     async submit() {
-      if (!this.phone.trim() || !this.email.trim()) {
+      if (!this.phone || !this.email) {
         this.$vs.notify({
           title: "Không hợp lệ",
           text: "Bạn phải nhập đủ cả tên và số điện thoại",
