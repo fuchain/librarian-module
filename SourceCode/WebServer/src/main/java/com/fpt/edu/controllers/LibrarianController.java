@@ -279,6 +279,7 @@ public class LibrarianController extends BaseController {
 		JobDataMap jobDataMap = new JobDataMap();
 		jobDataMap.put("RequestServices", requestServices);
 		jobDataMap.put("MatchingServices", matchingServices);
+		jobDataMap.put("NotificationHelper", notificationHelper);
 
 		JobDetail jobDetail = JobBuilder.newJob(SchedulerJob.class).setJobData(jobDataMap).build();
 
@@ -330,7 +331,7 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Send notification", response = String.class)
 	@PostMapping("/notification")
-	public ResponseEntity<String> pushNotification(@RequestBody String body, Principal principal) throws IOException, UnirestException {
+	public ResponseEntity<String> pushNotification(@RequestBody String body, Principal principal) throws UnirestException {
 		User librarian = userServices.getUserByEmail(principal.getName());
 
 		JSONObject bodyObject = new JSONObject(body);

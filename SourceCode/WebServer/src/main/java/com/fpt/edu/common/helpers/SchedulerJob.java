@@ -9,6 +9,7 @@ import com.fpt.edu.entities.Matching;
 import com.fpt.edu.entities.Request;
 import com.fpt.edu.services.MatchingServices;
 import com.fpt.edu.services.RequestServices;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ public class SchedulerJob implements Job {
 
 	private RequestServices requestServices;
 	private MatchingServices matchingServices;
+	private NotificationHelper notificationHelper;
 
 	private Logger logger = LoggerFactory.getLogger(SchedulerJob.class);
 
@@ -30,6 +32,7 @@ public class SchedulerJob implements Job {
 			JobDataMap jobDataMap = context.getMergedJobDataMap();
 			requestServices = (RequestServices) jobDataMap.get("RequestServices");
 			matchingServices = (MatchingServices) jobDataMap.get("MatchingServices");
+			notificationHelper = (NotificationHelper) jobDataMap.get("NotificationHelper");
 		}
 
 		// Get request list with status is pending or matching
@@ -39,28 +42,33 @@ public class SchedulerJob implements Job {
 		Date now = new Date();
 
 		// Update status of request that is expired
-		for (Request request : pendingMatchingList) {
-			if (request.getStatus() == ERequestStatus.PENDING.getValue()) {
-				updatePendingRequest(request, now);
-			} else if (request.getStatus() == ERequestStatus.MATCHING.getValue()) {
-				updateMatchingRequest(request, now);
+		try {
+			for (Request request : pendingMatchingList) {
+				if (request.getStatus() == ERequestStatus.PENDING.getValue()) {
+					updatePendingRequest(request, now);
+				} else if (request.getStatus() == ERequestStatus.MATCHING.getValue()) {
+					updateMatchingRequest(request, now);
+				}
 			}
+		} catch (UnirestException e) {
+			e.printStackTrace();
 		}
 		logger.info("============== SCHEDULER SCANNED==================");
 	}
 
-	private void updatePendingRequest(Request request, Date now) {
+	private void updatePendingRequest(Request request, Date now) throws UnirestException {
 		long duration = UtilHelper.getDuration(request.getCreateDate(), now, TimeUnit.DAYS);
 
 		if (duration >= Constant.REQUEST_EXPIRED_TIME) {
 			request.setStatus(ERequestStatus.EXPIRED.getValue());
 			requestServices.updateRequest(request);
 
+			pushNotiFromRequest(request);
 			logger.info("Update request id: " + request.getId() + " at " + now);
 		}
 	}
 
-	private void updateMatchingRequest(Request request, Date now) {
+	private void updateMatchingRequest(Request request, Date now) throws UnirestException {
 		// Update matching
 		Matching matching = null;
 		Request pairedRequest = null;
@@ -100,12 +108,31 @@ public class SchedulerJob implements Job {
 				if (pairedRequest != null) {
 					pairedRequest.setStatus(ERequestStatus.EXPIRED.getValue());
 					requestServices.updateRequest(pairedRequest);
+
+					pushNotiFromRequest(pairedRequest);
 					logger.info("Update request id: " + pairedRequest.getId() + " at " + now);
 				}
 
+				pushNotiFromRequest(request);
 				logger.info("Update request id: " + request.getId() + " at " + now);
 				logger.info("Update matching id: " + matching.getId() + " at " + now);
 			}
+		}
+	}
+
+	private void pushNotiFromRequest(Request request) throws UnirestException {
+		if (request.getType() == ERequestType.RETURNING.getValue()) {
+			notificationHelper.pushNotification(
+				request.getUser().getEmail(),
+				"Hệ thống đã hủy yêu cầu trả sách " + request.getBook().getBookDetail().getName() + " - #" + request.getBook().getId(),
+				Constant.NOTIFICATION_TYPE_KEEPING
+			);
+		} else if (request.getType() == ERequestType.BORROWING.getValue()) {
+			notificationHelper.pushNotification(
+				request.getUser().getEmail(),
+				"Hệ thống đã hủy yêu cầu mượn sách " + request.getBookDetail().getName(),
+				Constant.NOTIFICATION_TYPE_KEEPING
+			);
 		}
 	}
 
