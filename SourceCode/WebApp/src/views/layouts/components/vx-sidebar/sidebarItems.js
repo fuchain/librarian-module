@@ -29,6 +29,14 @@ const adminMenu = [
     icon: "UsersIcon"
   },
   {
+    url: "/librarian/notification/send",
+    name: "Gửi thông báo",
+    slug: "notification-send",
+    icon: "BellIcon",
+    tag: "beta",
+    tagColor: "darkorange"
+  },
+  {
     url: null,
     name: "Theo dõi vận hành",
     icon: "DatabaseIcon",

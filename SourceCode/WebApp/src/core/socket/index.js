@@ -9,17 +9,17 @@ function init() {
     transports: ["websocket"]
   });
 
-  window.socket = socket.on("notification", function(msg) {
+  window.socket = socket.on("notification", function({ message, type }) {
     window.vue.$vs.notify({
       title: "Thông báo mới",
-      text: msg,
+      text: message,
       color: "success",
       position: "top-center"
     });
 
     window.vue.$store.dispatch("addNotification", {
       title: "Kiểm thử thông báo",
-      msg,
+      message,
       icon: "MessageSquareIcon",
       time: new Date().getTime(),
       category: "primary"
