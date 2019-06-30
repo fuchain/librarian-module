@@ -776,7 +776,7 @@ public class RequestController extends BaseController {
 
 	@ApiOperation(value = "User cancels manually returning request", response = String.class)
 	@PutMapping(value = "/cancel", produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> removeRequestManually(@RequestBody String body, Principal principal) throws Exception {
+	public ResponseEntity<String> removeRequest(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
 		User sender = userServices.getUserByEmail(principal.getName());
 

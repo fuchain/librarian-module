@@ -2,6 +2,7 @@ package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.helpers.NotificationHelper;
 import com.fpt.edu.common.helpers.SchedulerJob;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -10,7 +11,9 @@ import com.fpt.edu.entities.*;
 import com.fpt.edu.exceptions.EntityNotFoundException;
 import com.fpt.edu.exceptions.InvalidExpressionException;
 import com.fpt.edu.services.*;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import io.swagger.annotations.ApiOperation;
+import netscape.javascript.JSObject;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,6 +21,7 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +44,8 @@ public class LibrarianController extends BaseController {
 	private Logger logger = LoggerFactory.getLogger(LibrarianController.class);
 	private String cronExpression = "";
 
+	@Autowired
+	private NotificationHelper notificationHelper;
 
 	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
 		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
@@ -245,9 +252,8 @@ public class LibrarianController extends BaseController {
 		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
 	}
 
-
 	@ApiOperation(value = "Enable or disable system scheduler", response = String.class)
-	@PutMapping("")
+	@PutMapping("/scheduler/enable")
 	public ResponseEntity<String> enableScheduler(@RequestBody String body, Principal principal) throws InvalidExpressionException, SchedulerException {
 		// Check sender is librarian or not
 		User librarian = userServices.getUserByEmail(principal.getName());
@@ -286,10 +292,9 @@ public class LibrarianController extends BaseController {
 		return new ResponseEntity<>("Started Scheduler Successfully", HttpStatus.OK);
 	}
 
-
 	@ApiOperation(value = "Get scheduler status", response = JSONObject.class)
-	@GetMapping("/scheduler")
-	public ResponseEntity<JSONObject> getSchedulerStatus(Principal principal) throws SchedulerException {
+	@GetMapping("/scheduler/status")
+	public ResponseEntity<String> getSchedulerStatus(Principal principal) throws SchedulerException {
 		// Check sender is librarian or not
 		User librarian = userServices.getUserByEmail(principal.getName());
 
@@ -297,14 +302,14 @@ public class LibrarianController extends BaseController {
 
 		// Get scheduler
 		Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-		if (scheduler.isShutdown()) {
-			jsonResult.put("enable", scheduler.isShutdown());
+		if (!scheduler.isStarted() || scheduler.isShutdown()) {
+			jsonResult.put("enable", Boolean.FALSE);
 		} else if (scheduler.isStarted()) {
-			jsonResult.put("enable", scheduler.isStarted());
+			jsonResult.put("enable", Boolean.TRUE);
 			jsonResult.put("interval_expression", cronExpression);
 		}
 
-		return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
 
 	// Get unique pin
@@ -321,6 +326,21 @@ public class LibrarianController extends BaseController {
 		} while (duplicatedMat != null);
 
 		return pin;
+	}
+
+	@ApiOperation(value = "Send notification", response = String.class)
+	@PostMapping("/notification")
+	public ResponseEntity<String> pushNotification(@RequestBody String body, Principal principal) throws IOException, UnirestException {
+		User librarian = userServices.getUserByEmail(principal.getName());
+
+		JSONObject bodyObject = new JSONObject(body);
+		String email = bodyObject.getString("email");
+		String message = bodyObject.getString("message");
+		String type = bodyObject.getString("type");
+
+		notificationHelper.pushNotification(email, message, type);
+
+		return new ResponseEntity<>("Push notification successfully", HttpStatus.OK);
 	}
 
 }
