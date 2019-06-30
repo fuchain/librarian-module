@@ -49,6 +49,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 			.antMatchers("/", "/static/**", "/**.{js,json,css}").permitAll()
 			.antMatchers("/webjars/**", "/swagger-resources/**", "/v2/api-docs/**").permitAll()
 			.antMatchers("/librarian/**").hasAnyAuthority(Constant.ROLES_LIBRARIAN)
+			.antMatchers("/publics/**").permitAll()
 			.anyRequest().authenticated()
 			.and()
 			.addFilter(authenticationFilter)
