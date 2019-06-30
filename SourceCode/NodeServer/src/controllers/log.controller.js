@@ -16,7 +16,10 @@ const create = async (req, res) => {
         axios.post(
             "https://hooks.slack.com/services/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",
             {
-                text: trackingStr
+                text:
+                    "We have new bug report for service **" +
+                        newTracking.source ||
+                    "unknow" + "** :tired_face:. \n\n ```" + trackingStr + "```"
             }
         );
 
