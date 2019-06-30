@@ -104,10 +104,11 @@
     </vs-table>
 
     <vs-popup :title="'Lịch sử chuyển của sách #' + historyId" :active.sync="historyPopup">
-      <vs-alert color="warning" v-if="fraudEmail">
-        Lorem ip
-        sum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat
-      </vs-alert>
+      <div
+        class="mb-4"
+        style="color: red;"
+        v-if="fraudEmail"
+      >Phát hiện thay đổi bất thường, người đang giữ sách trong cơ sở dữ liệu ({{ fraudEmail }}) không khớp với trong Blockchain.</div>
       <vs-table :data="historyList" v-if="historyList && historyList.length">
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>
@@ -242,13 +243,14 @@ export default {
           this.historyId = item.id;
 
           if (
+            this.historyList &&
             this.historyList.length &&
             this.historyList[this.historyList.length - 1].current_keeper !==
               this.metadata.current_keeper
           ) {
             this.fraudEmail = this.metadata.current_keeper;
           } else {
-            this.fraud = {};
+            this.fraudEmail = "";
           }
         })
         .finally(() => {
