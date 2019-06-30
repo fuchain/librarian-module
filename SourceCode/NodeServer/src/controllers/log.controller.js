@@ -12,14 +12,16 @@ const create = async (req, res) => {
     try {
         const newTracking = await models.log.create(newItem);
 
-        const trackingStr = JSON.stringify(newTracking);
+        const trackingStr = JSON.stringify(newTracking.metadata);
         axios.post(
             "https://hooks.slack.com/services/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",
             {
                 text:
-                    "We have new bug report for service **" +
+                    "We have new " +
+                    newTracking.type +
+                    " report for service " +
                     (newTracking.source || "unknown") +
-                    "** :tired_face:. \n\n ```" +
+                    " :tired_face:. \n\n ```" +
                     trackingStr +
                     "```"
             }
