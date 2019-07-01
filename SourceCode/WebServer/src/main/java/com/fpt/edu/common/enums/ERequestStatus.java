@@ -17,7 +17,10 @@ public enum ERequestStatus {
     COMPLETED(3),
 
 	// When user has already returned book manually, user can cancel returning request.
-    CANCELED(4);
+    CANCELED(4),
+
+	// When request is made a period time, scheduler automatically updates request to expired
+    EXPIRED(5);
 
     private int value;
 

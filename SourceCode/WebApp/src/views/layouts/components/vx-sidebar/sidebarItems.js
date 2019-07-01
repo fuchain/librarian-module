@@ -29,6 +29,33 @@ const adminMenu = [
     icon: "UsersIcon"
   },
   {
+    url: "/librarian/notification/send",
+    name: "Gửi thông báo",
+    slug: "notification-send",
+    icon: "BellIcon",
+    tag: "beta",
+    tagColor: "darkorange"
+  },
+  {
+    url: null,
+    name: "Theo dõi vận hành",
+    icon: "DatabaseIcon",
+    submenu: [
+      {
+        url: "/librarian/monitoring/infrastructure",
+        name: "Hạ tầng Swarm",
+        tag: "3",
+        tagColor: "#254356"
+      },
+      {
+        url: "/librarian/monitoring/bigchain",
+        name: "Mạng Blockchain",
+        tag: "8",
+        tagColor: "#435261"
+      }
+    ]
+  },
+  {
     url: "/librarian/review-report",
     name: "Đánh giá",
     slug: "review-ux",

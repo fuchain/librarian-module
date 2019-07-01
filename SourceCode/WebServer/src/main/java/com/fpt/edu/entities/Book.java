@@ -27,14 +27,13 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-
 	@ManyToOne()
 	@JoinColumn(name = "bookdetail_id")
 	private BookDetail bookDetail;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.PERSIST)
 	@JsonIgnore
 	private List<Transaction> transactions;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.PERSIST)
 	@JsonIgnore
 	private List<Request> requests;
 	// current keeper of the book
@@ -132,7 +131,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public void setAssetId(String assetId) {
-		if(this.getAssetId()==null||this.getAssetId().isEmpty()){
+		if (this.getAssetId() == null || this.getAssetId().isEmpty()) {
 			this.assetId = assetId;
 		}
 	}
@@ -167,7 +166,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public void setUser(User user) {
-		if(this.getUser()!=null && this.getUser().getListBooks().equals(user.getId())){
+		if (this.getUser() != null && this.getUser().getListBooks().equals(user.getId())) {
 			this.setLastTransferSuccess(new Date());
 		}
 		this.user = user;
@@ -213,6 +212,5 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	public void setLastTransferSuccess(Date lastTransferSuccess) {
 		this.lastTransferSuccess = lastTransferSuccess;
 	}
-
 
 }

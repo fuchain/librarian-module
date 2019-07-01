@@ -107,5 +107,12 @@ public class UserServices {
 		return userRepository.count();
 	}
 
+	public List<User> getAllLibrarian(){
+	List<User> users = roleRepository.getRoleByRoleName(Constant.ROLES_LIBRARIAN).getUsers();
+	return users;
+	}
+
+
+
 
 }

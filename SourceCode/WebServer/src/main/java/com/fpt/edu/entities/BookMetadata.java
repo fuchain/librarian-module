@@ -19,6 +19,8 @@ public class BookMetadata {
 		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
 		this.data.put(REJECT_REASON, EMPTY_VALUE);
 		this.data.put(IMAGE_HASH, EMPTY_VALUE);
+		this.data.put(IMAGE_LINK, EMPTY_VALUE);
+		this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
 	}
 
 	// This constructor is used to get metadata from database
@@ -33,6 +35,8 @@ public class BookMetadata {
 		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
 		this.data.put(REJECT_REASON, EMPTY_VALUE);
 		this.data.put(IMAGE_HASH, EMPTY_VALUE);
+		this.data.put(IMAGE_LINK, EMPTY_VALUE);
+		this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
 	}
 
 	// This constructor is used to get metadata from blockchain
@@ -42,7 +46,9 @@ public class BookMetadata {
 		String transactionTimestamp,
 		int rejectCount,
 		String rejectReason,
-		String imgHash
+		String imgHash,
+		String imgUrl,
+		String rejectorEmail
 	) {
 		this.data = new TreeMap<>();
 		this.data.put(CURRENT_KEEPER, currentKeeper);
@@ -51,6 +57,8 @@ public class BookMetadata {
 		this.data.put(REJECT_COUNT, String.valueOf(rejectCount));
 		this.data.put(REJECT_REASON, rejectReason);
 		this.data.put(IMAGE_HASH, imgHash);
+		this.data.put(IMAGE_LINK, imgUrl);
+		this.data.put(REJECTOR_EMAIL, rejectorEmail);
 	}
 
 	public Map<String, String> getData() {
@@ -112,5 +120,25 @@ public class BookMetadata {
 
 	public void setImgHash(String imgHash) {
 		this.data.put(IMAGE_HASH, imgHash);
+	}
+
+	@JsonIgnore
+	public String getRejectImageLink() {
+		String imageLink = this.data.get(IMAGE_LINK);
+		return imageLink == null ? EMPTY_VALUE : imageLink;
+	}
+
+	public void setImageLink(String url) {
+		this.data.put(IMAGE_LINK, url);
+	}
+
+	@JsonIgnore
+	public String getRejectorEmail() {
+		String rejectorEmail = this.data.get(REJECTOR_EMAIL);
+		return rejectorEmail == null ? EMPTY_VALUE : rejectorEmail;
+	}
+
+	public void setRejectorEmail(String rejectorEmail) {
+		this.data.put(REJECTOR_EMAIL, rejectorEmail);
 	}
 }

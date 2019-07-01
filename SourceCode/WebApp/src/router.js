@@ -82,17 +82,35 @@ const router = new Router({
         {
           path: "librarian/book-details-manage",
           component: () =>
-            import("@/modules/librarian/book-details-manage/BookDetailsManage.vue")
+            import(
+              "@/modules/librarian/book-details-manage/BookDetailsManage.vue"
+            )
         },
         {
           path: "librarian/book-details-manage/:id",
           component: () =>
-            import("@/modules/librarian/book-instance-manage/BookInstanceManage.vue")
+            import(
+              "@/modules/librarian/book-instance-manage/BookInstanceManage.vue"
+            )
         },
         {
           path: "librarian/user-manage",
           component: () =>
             import("@/modules/librarian/user-manage/UserManage.vue")
+        },
+        {
+          path: "librarian/monitoring/bigchain",
+          component: () => import("@/modules/librarian/monitoring/BigChain.vue")
+        },
+        {
+          path: "librarian/monitoring/infrastructure",
+          component: () =>
+            import("@/modules/librarian/monitoring/Infrastructure.vue")
+        },
+        {
+          path: "librarian/notification/send",
+          component: () =>
+            import("@/modules/librarian/notification/SendNotification.vue")
         }
       ]
     },

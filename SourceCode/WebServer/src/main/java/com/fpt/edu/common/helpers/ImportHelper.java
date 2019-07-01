@@ -86,9 +86,9 @@ public class ImportHelper {
 			}
 		});
 		insertDB.start();
-		insertDB2.start();
-		insertDB3.start();
-		insertDB4.start();
+//		insertDB2.start();
+//		insertDB3.start();
+//		insertDB4.start();
 		return false;
 	}
 
@@ -100,7 +100,7 @@ public class ImportHelper {
 				if (!queue.isEmpty()) {
 					JSONObject current;
 					synchronized (queue) {
-						current = queue.poll();
+						current = new JSONObject(queue.poll().toString());
 					}
 					if (current != null) {
 						LOGGER.info("Processing the book Details");
@@ -148,12 +148,13 @@ public class ImportHelper {
 									if (jsonData.has(Constant.PUBLISHED_DATE)) {
 										current.put(Constant.PUBLISHED_DATE, jsonData.getString(Constant.PUBLISHED_DATE));
 									} else {
-										current.put(Constant.PUBLISHED_DATE, Constant.PUBLISHED_DATE);
+										current.put(Constant.PUBLISHED_DATE, "");
 									}
 									if (jsonData.has(Constant.AUTHORS)) {
 										current.put(Constant.AUTHORS, jsonData.getJSONArray(Constant.AUTHORS));
 									} else {
-										current.put(Constant.AUTHORS, new JSONArray());
+										JSONArray arr = new JSONArray();
+										current.put(Constant.AUTHORS, arr.put(Constant.DEFAULT_AUTHOR));
 									}
 									InsertToDBThread thread = new InsertToDBThread(this.categoryServices, this.authorServices, this.publisherServices, this.bookDetailsServices, this.bookServices, this.userServices);
 									thread.importBook(current);

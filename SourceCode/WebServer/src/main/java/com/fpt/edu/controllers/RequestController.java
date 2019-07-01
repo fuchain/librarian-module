@@ -1,6 +1,5 @@
 package com.fpt.edu.controllers;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.common.helpers.ImportHelper;
@@ -14,7 +13,6 @@ import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.Hibernate;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -526,7 +524,7 @@ public class RequestController extends BaseController {
 		Request returningRequest = new Request();
 		returningRequest.setBook(book);
 		returningRequest.setUser(user);
-		returningRequest.setStatus(ERequestStatus.PENDING.getValue());
+		returningRequest.setStatus(ERequestStatus.MATCHING.getValue());
 		returningRequest.setType(ERequestType.RETURNING.getValue());
 		returningRequest.setMode(ERequestMode.MANUAL.getValue());
 		Request savedRequest = requestServices.saveRequest(returningRequest);
@@ -776,7 +774,7 @@ public class RequestController extends BaseController {
 
 	@ApiOperation(value = "User cancels manually returning request", response = String.class)
 	@PutMapping(value = "/cancel", produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> removeRequestManually(@RequestBody String body, Principal principal) throws Exception {
+	public ResponseEntity<String> removeRequest(@RequestBody String body, Principal principal) throws Exception {
 		// Get user information
 		User sender = userServices.getUserByEmail(principal.getName());
 
@@ -925,10 +923,10 @@ public class RequestController extends BaseController {
 
 		bookMetadata.setRejectReason(reason);
 		bookMetadata.setImgHash(hashValue);
-
+		bookMetadata.setImageLink(imageUrl);
+		bookMetadata.setRejectorEmail(receiver.getEmail());
 		// Update reject count
 		bookMetadata.increaseLastRejectCount();
-
 		// Set new transaction timestamp
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 
@@ -993,7 +991,6 @@ public class RequestController extends BaseController {
 				receiveRequest.setStatus(ERequestStatus.CANCELED.getValue());
 				requestServices.updateRequest(returnRequest);
 				requestServices.updateRequest(receiveRequest);
-
 				// Update user in book
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());

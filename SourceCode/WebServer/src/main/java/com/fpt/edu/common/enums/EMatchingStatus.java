@@ -19,7 +19,10 @@ public enum EMatchingStatus {
 	CANCELED(4),
 
 	// When receiver rejects to receive book, matching status is 'REJECTED'
-	REJECTED(5);
+	REJECTED(5),
+
+	// When matching is made a period time, scheduler automatically updates matching to expired
+	EXPIRED(6);
 
 	private int value;
 

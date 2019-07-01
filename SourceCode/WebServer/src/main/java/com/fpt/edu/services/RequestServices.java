@@ -44,10 +44,15 @@ public class RequestServices implements Observer {
 
 	public Request updateRequest(Request request) {
 		return requestRepository.save(request);
+
 	}
 
 	public List<Request> getListPendingRequest() {
 		return IteratorUtils.toList(requestRepository.getListOfPendingRequest().iterator());
+	}
+
+	public List<Request> getPendingMatchingList(int status1, int status2) {
+		return requestRepository.getPendingMatchingList(status1, status2);
 	}
 
 	@Override

@@ -46,6 +46,8 @@ public class Constant {
 	public static final String[] FPT_EMAIL_PREFIXS = {
 		" - K11 FUG HCM", "(SV K12- FUG HCM) "
 	};
+	public static final int REQUEST_EXPIRED_TIME = 2;
+	public static final int MATCHING_EXPIRED_TIME = 2;
 
 	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
 
@@ -59,6 +61,8 @@ public class Constant {
 	public static final String REJECT_COUNT = "reject_count";
 	public static final String REJECT_REASON = "reject_reason";
 	public static final String IMAGE_HASH = "img_hash";
+	public static final String IMAGE_LINK = "img_link";
+	public static final String REJECTOR_EMAIL = "rejector_email";
 	public static final int MAX_REJECT_COUNT = 5;
 	public static final int MIN_REJECT_COUNT = 0;
 

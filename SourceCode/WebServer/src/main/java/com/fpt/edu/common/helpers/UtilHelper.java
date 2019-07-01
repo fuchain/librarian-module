@@ -108,7 +108,7 @@ public class UtilHelper {
 	}
 
 	// Get duration between 2 dates
-	public long getDuration(Date oldDate, Date newDate, TimeUnit timeUnit) {
+	public static long getDuration(Date oldDate, Date newDate, TimeUnit timeUnit) {
 		long diffInMillies = newDate.getTime() - oldDate.getTime();
 		return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
 	}
@@ -127,7 +127,6 @@ public class UtilHelper {
 	}
 
 	public String uploadFile(MultipartFile multipartFile) {
-
 		String fileUrl = "";
 		try {
 			File file = convertMultiPartToFile(multipartFile);
@@ -155,7 +154,6 @@ public class UtilHelper {
 		S3Object s3Object = s3Client.getObject(amazonS3URI.getBucket(), amazonS3URI.getKey());
 		S3ObjectInputStream inputStream = s3Object.getObjectContent();
 		InputStreamResource resource = new InputStreamResource(inputStream.getDelegateStream());
-
 		return resource;
 	}
 
