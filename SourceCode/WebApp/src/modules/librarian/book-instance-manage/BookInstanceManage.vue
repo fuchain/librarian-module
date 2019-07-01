@@ -12,7 +12,7 @@
             >
               <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-              <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH</span>
+              <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH (CÒN {{dataList.length}})</span>
             </div>
           </div>
         </template>

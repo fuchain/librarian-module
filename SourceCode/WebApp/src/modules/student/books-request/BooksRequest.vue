@@ -7,6 +7,7 @@
             class="w-full"
             v-model="searchText"
             placeholder="Tìm JPD101 hoặc Nihongo Deiku 1"
+            v-on:keyup.enter="doSearch"
           />
         </div>
         <div class="vx-col sm:w-1/3 w-full">
@@ -26,7 +27,7 @@
                   class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
                   @click="submit(item.name)"
                 >
-                  <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+                  <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
                   <span class="text-sm font-semibold ml-2">YÊU CẦU MƯỢN SÁCH</span>
                 </div>
@@ -55,7 +56,7 @@
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               >
-                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
                 <span class="text-sm font-semibold ml-2" @click="comingSoon">YÊU CẦU MƯỢN SÁCH</span>
               </div>
@@ -87,7 +88,8 @@ export default {
           description:
             "Những kĩ năng từ cứng đến mềm mà lập trình viên nào cũng phải biết để thăng tiến và thành công trong sự nghiệp.",
           image: "/images/codedaokysu.png",
-          name: "Code dạo ký sự"
+          name: "Code dạo ký sự",
+          type: "info"
         },
         {
           id: 2,
@@ -95,7 +97,8 @@ export default {
           description:
             "Những môn thầy Khánh dạy trong Đại học FPT là: C, C++, Alice, I2SE, OS, Advanced Java, EIT, XML. ",
           image: "/images/khanhkt.jpg",
-          name: "Surviving Mr.KhanhKT's Courses for Dummies"
+          name: "Surviving Mr.KhanhKT's Courses for Dummies",
+          type: "info"
         }
       ]
     };
@@ -112,7 +115,7 @@ export default {
 
           this.$vs.loading.close();
 
-          this.listBooks = [].concat(parseBookSearchItem(data));
+          this.listBooks = [].concat(parseBookSearchItem(data, "info"));
 
           if (!data.length) {
             this.$vs.notify({
