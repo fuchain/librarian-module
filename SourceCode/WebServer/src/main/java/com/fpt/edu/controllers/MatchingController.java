@@ -29,7 +29,7 @@ public class MatchingController extends BaseController {
 	@GetMapping("/{id}/confirm")
 	public ResponseEntity<String> confirmBookTransfer(
 		@PathVariable("id") Long matchingId, Principal principal
-	) throws EntityIdMismatchException {
+	) {
 
 		Matching matching = matchingServices.getMatchingById(matchingId);
 		User matchingUser = matching.getReturnerRequest().getUser();
@@ -39,14 +39,13 @@ public class MatchingController extends BaseController {
 
 		// The returner does not send the request
 		if (!user.getId().equals(matchingUser.getId())) {
-			throw new EntityIdMismatchException(
-				"User id of matching: " + matchingUser.getId() + " does not match to user id from authentication"
-			);
+			return new ResponseEntity<>("User id of matching: " + matchingUser.getId()
+				+ " does not match to user id from authentication", HttpStatus.BAD_REQUEST);
 		}
 
 		// Receiver has not imported pin yet
 		if (matching.getStatus() == EMatchingStatus.PENDING.getValue()) {
-			throw new EntityIdMismatchException("Receiver has not imported pin yet");
+			return new ResponseEntity<>("Receiver has not imported pin yet", HttpStatus.BAD_REQUEST);
 		}
 
 		// Check the receiver rejected or not

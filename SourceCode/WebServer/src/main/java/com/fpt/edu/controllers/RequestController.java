@@ -115,7 +115,7 @@ public class RequestController extends BaseController {
 		if (type == ERequestType.BORROWING.getValue()) {
 			// Check user is active or not
 			if (user.isDisabled() == null || user.isDisabled()) {
-				throw new Exception("User id: " + user.getId() + " is not active. Cannot make borrow request");
+				return new ResponseEntity<>("User id: " + user.getId() + " is not active. Cannot make borrow request", HttpStatus.BAD_REQUEST);
 			}
 
 			// Get book name from Request Body
@@ -133,7 +133,7 @@ public class RequestController extends BaseController {
 
 			request = getReturningRequest(type, user, bookId);
 		} else {
-			throw new TypeNotSupportedException("Type " + type + " is not supported");
+			return new ResponseEntity<>("Type " + type + " is not supported", HttpStatus.BAD_REQUEST);
 		}
 
 		// Set mode of request
@@ -266,6 +266,26 @@ public class RequestController extends BaseController {
 				matching.setReturnerRequest(request);
 			}
 			matchingServices.updateMatching(matching);
+
+			// Push notification to returner and receiver
+			pushNotiFromRequest(request, matchRequest);
+			pushNotiFromRequest(matchRequest, request);
+		}
+	}
+
+	private void pushNotiFromRequest(Request request, Request matchRequest) {
+		if (request.getType() == ERequestType.RETURNING.getValue()) {
+			notificationHelper.pushNotification(
+				request.getUser().getEmail(),
+				"Yêu cầu trả sách " + request.getBook().getBookDetail().getName() + " đã được ghép với " + matchRequest.getUser().getFullName(),
+				Constant.NOTIFICATION_TYPE_RETURNING
+			);
+		} else {
+			notificationHelper.pushNotification(
+				request.getUser().getEmail(),
+				"Yêu cầu mượn sách " + request.getBookDetail().getName() + " đã được ghép với " + matchRequest.getUser().getFullName(),
+				Constant.NOTIFICATION_TYPE_REQUESTING
+			);
 		}
 	}
 
@@ -286,7 +306,7 @@ public class RequestController extends BaseController {
 		// Check whether matchingId is existed or not
 		Matching matching = matchingServices.getMatchingById(matchingId);
 		if (matching == null) {
-			throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
+			return new ResponseEntity<>("Matching id: " + matchingId + " not found", HttpStatus.BAD_REQUEST);
 		}
 
 		// Check transfer type is returner or receiver
@@ -307,7 +327,7 @@ public class RequestController extends BaseController {
 				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} else {
-			throw new TypeNotSupportedException("Type: " + type + " is not supported");
+			return new ResponseEntity<>("Type: " + type + " is not supported", HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -433,11 +453,16 @@ public class RequestController extends BaseController {
 				requestServices.updateRequest(returnerRequest);
 				requestServices.updateRequest(receiverRequest);
 
-
 				// Update user in book
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
+
+				notificationHelper.pushNotification(
+					Constant.LIBRARIAN_EMAIL,
+					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
 
 				callback.set(true);
 			}
@@ -762,6 +787,12 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
+				notificationHelper.pushNotification(
+					Constant.LIBRARIAN_EMAIL,
+					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
+
 				callback.set(true);
 			}
 		);
@@ -1005,6 +1036,12 @@ public class RequestController extends BaseController {
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
+
+				notificationHelper.pushNotification(
+					Constant.LIBRARIAN_EMAIL,
+					"Transaction từ chối của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
 
 				callback.set(true);
 			}
