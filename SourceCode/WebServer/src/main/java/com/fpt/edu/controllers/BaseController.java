@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @Component
 public class BaseController {
-	protected final Logger LOGGER = LogManager.getLogger(getClass());
+	protected final Logger LOGGER;
 
 	@Autowired
 	protected UtilHelper utils;
@@ -51,6 +51,7 @@ public class BaseController {
 						  BookDetailsServices bookDetailsServices,
 						  BookServices bookServices, ImportHelper importHelper,
 						  MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+		this.LOGGER = LogManager.getLogger(getClass());
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
 		this.bookServices = bookServices;
