@@ -331,18 +331,22 @@ public class LibrarianController extends BaseController {
 		return pin;
 	}
 
-	@ApiOperation(value = "Sync current keeper of a book instance back from bigchain", response = Book.class)
+	@ApiOperation(value = "Sync current keeper of a book instance back from bigchain", response = String.class)
 	@PutMapping("/books/{book_id}/sync_current_keeper")
-	public ResponseEntity<Book> syncCurrentKeeperFromBigchain(
+	public ResponseEntity<String> syncCurrentKeeperFromBigchain(
 		@PathVariable("book_id") Long bookId
 	) throws Exception {
 		Book book = bookServices.getBookById(bookId);
 		bookServices.getLastTransactionFromBigchain(book);
-		Thread.sleep(10);
 		User currentKeeper = userServices.getUserByEmail(book.getMetadata().getCurrentKeeper());
 		book.setUser(currentKeeper);
 		bookServices.updateBook(book);
-		return new ResponseEntity<>(book, HttpStatus.OK);
+
+		JSONObject response = new JSONObject();
+		response.put("bookId", bookId);
+		response.put("currentKeeper", book.getUser().getEmail());
+
+		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "Send notification", response = String.class)
