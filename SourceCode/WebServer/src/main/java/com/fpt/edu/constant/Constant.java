@@ -48,6 +48,10 @@ public class Constant {
 	};
 	public static final int REQUEST_EXPIRED_TIME = 2;
 	public static final int MATCHING_EXPIRED_TIME = 2;
+	public static final String NOTIFICATION_TYPE_KEEPING = "keeping";
+	public static final String NOTIFICATION_TYPE_REQUESTING = "requesting";
+	public static final String NOTIFICATION_TYPE_RETURNING = "returning";
+	public static final String LIBRARIAN_EMAIL = "librarian";
 
 	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
 
@@ -65,7 +69,4 @@ public class Constant {
 	public static final String REJECTOR_EMAIL = "rejector_email";
 	public static final int MAX_REJECT_COUNT = 5;
 	public static final int MIN_REJECT_COUNT = 0;
-
-	//---------------------------------- THIS IS FOR LOG ----------------------------------
-	public static final String LOG_SERVER = "https://napi.fptu.tech/api/v1/logs/";
 }

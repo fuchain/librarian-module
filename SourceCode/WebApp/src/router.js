@@ -31,6 +31,10 @@ const router = new Router({
           component: () => import("@/modules/profile/Profile.vue")
         },
         {
+          path: "notifications",
+          component: () => import("@/modules/notification/Notification.vue")
+        },
+        {
           path: "coin",
           component: () => import("@/modules/student/coin/Coin.vue")
         },
@@ -111,6 +115,10 @@ const router = new Router({
           path: "librarian/notification/send",
           component: () =>
             import("@/modules/librarian/notification/SendNotification.vue")
+        },
+        {
+          path: "librarian/scheduler",
+          component: () => import("@/modules/librarian/scheduler/Scheduler.vue")
         }
       ]
     },

@@ -2,7 +2,7 @@ package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
-import com.fpt.edu.common.helpers.NotificationHelper;
+import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.helpers.SchedulerJob;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -13,14 +13,11 @@ import com.fpt.edu.exceptions.InvalidExpressionException;
 import com.fpt.edu.services.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.swagger.annotations.ApiOperation;
-import netscape.javascript.JSObject;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,14 +38,13 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("librarian")
 public class LibrarianController extends BaseController {
 
-	private Logger logger = LoggerFactory.getLogger(LibrarianController.class);
 	private String cronExpression = "";
 
 	@Autowired
-	private NotificationHelper notificationHelper;
+	private NotificationService notificationService;
 
-	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationService notificationService) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation("Get all users")
@@ -165,7 +161,10 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Librarian transfers book for readers", response = String.class)
 	@PostMapping("/give_book")
-	public ResponseEntity<String> transferBook(@RequestParam Long book_detail_id, Principal principal) throws EntityNotFoundException {
+	public ResponseEntity<String> transferBook(
+		@RequestParam Long book_detail_id,
+		Principal principal
+	) throws EntityNotFoundException {
 		// Check sender is librarian
 		User librarian = userServices.getUserByEmail(principal.getName());
 
@@ -254,7 +253,10 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Enable or disable system scheduler", response = String.class)
 	@PutMapping("/scheduler/enable")
-	public ResponseEntity<String> enableScheduler(@RequestBody String body, Principal principal) throws InvalidExpressionException, SchedulerException {
+	public ResponseEntity<String> enableScheduler(
+		@RequestBody String body,
+		Principal principal
+	) throws InvalidExpressionException, SchedulerException {
 		// Check sender is librarian or not
 		User librarian = userServices.getUserByEmail(principal.getName());
 
@@ -268,7 +270,7 @@ public class LibrarianController extends BaseController {
 
 		if (!enable) {
 			scheduler.shutdown();
-			logger.info("Shut down scheduler");
+			LOGGER.info("Shut down scheduler");
 			return new ResponseEntity<>("Shut down scheduler successfully", HttpStatus.OK);
 		}
 
@@ -279,6 +281,7 @@ public class LibrarianController extends BaseController {
 		JobDataMap jobDataMap = new JobDataMap();
 		jobDataMap.put("RequestServices", requestServices);
 		jobDataMap.put("MatchingServices", matchingServices);
+		jobDataMap.put("NotificationHelper", notificationService);
 
 		JobDetail jobDetail = JobBuilder.newJob(SchedulerJob.class).setJobData(jobDataMap).build();
 
@@ -287,7 +290,7 @@ public class LibrarianController extends BaseController {
 
 		scheduler.scheduleJob(jobDetail, trigger);
 		scheduler.start();
-		logger.info("Started scheduler");
+		LOGGER.info("Started scheduler");
 
 		return new ResponseEntity<>("Started Scheduler Successfully", HttpStatus.OK);
 	}
@@ -328,6 +331,24 @@ public class LibrarianController extends BaseController {
 		return pin;
 	}
 
+	@ApiOperation(value = "Sync current keeper of a book instance back from bigchain", response = String.class)
+	@PutMapping("/books/{book_id}/sync_current_keeper")
+	public ResponseEntity<String> syncCurrentKeeperFromBigchain(
+		@PathVariable("book_id") Long bookId
+	) throws Exception {
+		Book book = bookServices.getBookById(bookId);
+		bookServices.getLastTransactionFromBigchain(book);
+		User currentKeeper = userServices.getUserByEmail(book.getMetadata().getCurrentKeeper());
+		book.setUser(currentKeeper);
+		bookServices.updateBook(book);
+
+		JSONObject response = new JSONObject();
+		response.put("bookId", bookId);
+		response.put("currentKeeper", book.getUser().getEmail());
+
+		return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+	}
+
 	@ApiOperation(value = "Send notification", response = String.class)
 	@PostMapping("/notification")
 	public ResponseEntity<String> pushNotification(@RequestBody String body, Principal principal) throws IOException, UnirestException {
@@ -338,7 +359,7 @@ public class LibrarianController extends BaseController {
 		String message = bodyObject.getString("message");
 		String type = bodyObject.getString("type");
 
-		notificationHelper.pushNotification(email, message, type);
+		notificationService.pushNotification(email, message, type);
 
 		return new ResponseEntity<>("Push notification successfully", HttpStatus.OK);
 	}

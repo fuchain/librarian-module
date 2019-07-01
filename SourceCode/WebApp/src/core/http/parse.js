@@ -1,4 +1,4 @@
-export function parseBookItem(data) {
+export function parseBookItem(data, type = "defaut") {
   return data.map(e => {
     return {
       id: e.id,
@@ -13,7 +13,8 @@ export function parseBookItem(data) {
         "N/A",
       status: e.status,
       user: e.pairedUser,
-      requestId: e.id
+      requestId: e.id,
+      type
     };
   });
 }
@@ -30,7 +31,8 @@ export function parseBookSearchItem(data) {
         e.parseedSubjectCode.length &&
         e.parseedSubjectCode[0]
           ? e.parseedSubjectCode[0]
-          : "N/A"
+          : "N/A",
+      type: "info"
     };
   });
 }

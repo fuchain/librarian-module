@@ -102,12 +102,7 @@
         ></feather-icon>-->
 
         <!-- NOTIFICATIONS -->
-        <vs-dropdown
-          vs-custom-content
-          vs-trigger-click
-          class="cursor-pointer"
-          v-if="!$auth.isAdmin()"
-        >
+        <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
           <feather-icon
             icon="BellIcon"
             class="cursor-pointer mt-1 ml-4"
@@ -129,6 +124,7 @@
                   v-for="(ntf, index) in unreadNotifications"
                   :key="index"
                   class="flex justify-between px-4 py-4 notification cursor-pointer"
+                  @click="notificationRedirect(ntf.type)"
                 >
                   <div class="flex items-start">
                     <feather-icon
@@ -139,16 +135,16 @@
                       <span
                         class="font-medium block notification-title"
                         :class="[`text-${ntf.category}`]"
-                      >{{ ntf.title }}</span>
-                      <small>{{ ntf.msg }}</small>
+                      >{{ ntf.message }}</span>
                     </div>
                   </div>
-                  <small class="mt-1 whitespace-no-wrap">{{ elapsedTime(ntf.time) }}</small>
+                  <small class="mt-1 whitespace-no-wrap">{{ ntf.time | moment("from") }}</small>
                 </li>
               </ul>
             </VuePerfectScrollbar>
             <div
               class="checkout-footer fixed pin-b rounded-b-lg text-primary w-full p-2 font-semibold text-center border border-b-0 border-l-0 border-r-0 border-solid border-grey-light cursor-pointer"
+              @click="$router.push('/notifications')"
             >
               <span>Xem tất cả thông báo</span>
             </div>
@@ -174,7 +170,7 @@
                 width="40"
                 height="40"
                 class="rounded-full shadow-md cursor-pointer block"
-              >
+              />
             </div>
             <vs-dropdown-menu>
               <ul style="min-width: 9rem">
@@ -220,6 +216,7 @@
 import VxAutoSuggest from "@/views/components/vx-auto-suggest/VxAutoSuggest.vue";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import draggable from "vuedraggable";
+import redirect from "@core/socket/redirect";
 
 import { setTimeout } from "timers";
 
@@ -330,40 +327,6 @@ export default {
     showSearchbar() {
       this.showFullSearch = true;
     },
-    elapsedTime(startTime) {
-      let x = new Date(startTime);
-      let now = new Date();
-      var timeDiff = now - x;
-      timeDiff /= 1000;
-
-      var seconds = Math.round(timeDiff);
-      timeDiff = Math.floor(timeDiff / 60);
-
-      var minutes = Math.round(timeDiff % 60);
-      timeDiff = Math.floor(timeDiff / 60);
-
-      var hours = Math.round(timeDiff % 24);
-      timeDiff = Math.floor(timeDiff / 24);
-
-      var days = Math.round(timeDiff % 365);
-      timeDiff = Math.floor(timeDiff / 365);
-
-      var years = timeDiff;
-
-      if (years > 0) {
-        return years + (years > 1 ? " năm " : " năm ") + "trước";
-      } else if (days > 0) {
-        return days + (days > 1 ? " ngày " : " ngày ") + "trước";
-      } else if (hours > 0) {
-        return hours + (hours > 1 ? " giờ " : " giờ ") + "trước";
-      } else if (minutes > 0) {
-        return minutes + (minutes > 1 ? " phút " : " phút ") + "trước";
-      } else if (seconds > 0) {
-        return seconds + (seconds > 1 ? `${seconds} giây trước` : "mới đây");
-      }
-
-      return "Just Now";
-    },
     outside: function() {
       this.showBookmarkPagesDropdown = false;
     },
@@ -384,8 +347,8 @@ export default {
         500
       );
     },
-    doSwitch: function() {
-      this.$router.push("/switch");
+    notificationRedirect(type) {
+      redirect(type);
     }
   },
   directives: {

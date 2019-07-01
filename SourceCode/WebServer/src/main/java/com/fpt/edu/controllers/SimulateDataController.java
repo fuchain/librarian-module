@@ -1,14 +1,13 @@
 package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
 import com.fpt.edu.services.*;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -38,18 +38,18 @@ public class SimulateDataController extends BaseController {
 	BookDetailRepository bookDetailRepository;
 	@Autowired
 	BigchainTransactionServices bigchainTransactionServices;
-
-	private Logger logger = LoggerFactory.getLogger(SimulateDataController.class);
+	NotificationService notificationService;
 
 	public SimulateDataController(
 		UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices,
 		ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices,
 		TransactionServices transactionServices, PublishSubscribe publishSubscribe,
-		RequestQueueManager requestQueueManager, BigchainTransactionServices bigchainTransactionServices
+		RequestQueueManager requestQueueManager, BigchainTransactionServices bigchainTransactionServices,
+		NotificationService notificationService
 	) {
 		super(
 			userServices, bookDetailsServices, bookServices, importHelper, matchingServices,
-			requestServices, transactionServices, publishSubscribe, requestQueueManager
+			requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService
 		);
 		this.bigchainTransactionServices = bigchainTransactionServices;
 	}
@@ -246,15 +246,32 @@ public class SimulateDataController extends BaseController {
 					String bcAssetId = transaction.getId();
 					String assetId = book.getAssetId();
 					if (bcAssetId.equals(assetId)) {
-						logger.info("Insert asset id " + bcAssetId + " correctly!!!");
+						LOGGER.info("Insert asset id " + bcAssetId + " correctly!!!");
 					} else {
-						logger.error("Insert asset id " + bcAssetId + " failed!!!");
-						logger.error("Book asset id: " + assetId);
+						LOGGER.error("Insert asset id " + bcAssetId + " failed!!!");
+						LOGGER.error("Book asset id: " + assetId);
 					}
 				},
 				(transaction, response) -> {
 				}
 			);
 		}
+	}
+
+	@PostMapping("/create_draft_tx")
+	public String createDrarfTx(Principal principal) throws Exception {
+		User user = userServices.getUserByEmail(principal.getName());
+		Map asset = new TreeMap();
+		SecureRandom random = new SecureRandom();
+		asset.put("abc", random.nextInt());
+		asset.put("xyz", random.nextInt());
+		asset.put("tx_ts", System.currentTimeMillis() / 1000L);
+		Map metadata = new TreeMap();
+		metadata.put("abc", random.nextInt());
+		metadata.put("xyz", random.nextInt());
+		metadata.put("tx_ts", System.currentTimeMillis() / 1000L);
+		bigchainTransactionServices.doCreate(asset, metadata, user.getEmail());
+
+		return "Submited to bigchain!!!";
 	}
 }

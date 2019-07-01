@@ -12,7 +12,7 @@
             >
               <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-              <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH</span>
+              <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH (CÒN {{dataList.length}})</span>
             </div>
           </div>
         </template>
@@ -104,11 +104,16 @@
     </vs-table>
 
     <vs-popup :title="'Lịch sử chuyển của sách #' + historyId" :active.sync="historyPopup">
-      <div
-        class="mb-4"
-        style="color: red;"
-        v-if="fraudEmail"
-      >Phát hiện thay đổi bất thường, người đang giữ sách trong cơ sở dữ liệu ({{ fraudEmail }}) không khớp với trong Blockchain.</div>
+      <div class="mb-4" style="color: red;" v-if="fraudEmail">
+        <p>Phát hiện thay đổi bất thường, người đang giữ sách trong cơ sở dữ liệu ({{ fraudEmail }}) không khớp với dữ liệu trong Blockchain.</p>
+        <vs-button
+          color="red"
+          class="mt-2 w-full"
+          type="relief"
+          @click="fraudRecover(historyId)"
+        >Khôi phục lại dữ liệu</vs-button>
+        <vs-divider border-style="dashed" color="red">phát hiện gian lận bởi hệ thống blockchain</vs-divider>
+      </div>
       <vs-table :data="historyList" v-if="historyList && historyList.length">
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>
@@ -300,7 +305,7 @@ export default {
           console.log(err);
 
           const status = err.response.status;
-          if (status !== 412) {
+          if (status !== 400) {
             this.$vs.notify({
               title: "Thất bại",
               text: "Người nhận đã từ chối nhận xách",
@@ -379,6 +384,37 @@ export default {
 
       this.rejectPopup.isActive = true;
       this.rejectPopup.item = item;
+    },
+    fraudRecover(id) {
+      this.$vs.loading();
+
+      this.$http
+        .put(`${this.$http.baseUrl}/librarian/books/${id}/sync_current_keeper`)
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Cập nhật dữ liệu thành công",
+            color: "primary",
+            position: "top-center"
+          });
+
+          this.historyPopup = false;
+
+          setTimeout(function() {
+            window.location.reload(true);
+          }, 500);
+        })
+        .catch(() => {
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Chưa thể cập nhật",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   },
   beforeDestroy() {
