@@ -111,6 +111,10 @@ const router = new Router({
           path: "librarian/notification/send",
           component: () =>
             import("@/modules/librarian/notification/SendNotification.vue")
+        },
+        {
+          path: "librarian/scheduler",
+          component: () => import("@/modules/librarian/scheduler/Scheduler.vue")
         }
       ]
     },

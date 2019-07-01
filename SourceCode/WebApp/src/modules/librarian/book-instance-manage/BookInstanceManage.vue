@@ -300,7 +300,7 @@ export default {
           console.log(err);
 
           const status = err.response.status;
-          if (status !== 412) {
+          if (status !== 400) {
             this.$vs.notify({
               title: "Thất bại",
               text: "Người nhận đã từ chối nhận xách",

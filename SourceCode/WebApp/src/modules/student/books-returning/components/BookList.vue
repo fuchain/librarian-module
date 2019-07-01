@@ -34,7 +34,7 @@
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
                 v-if="item.user"
               >
-                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
                 <span class="text-sm font-semibold ml-2" @click="beginConfirm(item)">ĐÃ TRẢ</span>
               </div>
@@ -43,7 +43,7 @@
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
                 v-if="item.user"
               >
-                <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4" />
 
                 <span class="text-sm font-semibold ml-2" @click="triggerCall(item.user)">LIÊN LẠC</span>
               </div>
@@ -52,7 +52,7 @@
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
                 v-if="!item.user"
               >
-                <feather-icon icon="XIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4" />
 
                 <span
                   class="text-sm font-semibold ml-2"
@@ -195,7 +195,7 @@ export default {
           console.log(err);
 
           const status = err.response.status;
-          if (status !== 412) {
+          if (status !== 400) {
             this.$vs.notify({
               title: "Thất bại",
               text: "Người nhận đã từ chối nhận xách",
