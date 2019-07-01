@@ -33,15 +33,7 @@ const state = {
   coin: localStorage.getItem("fucoin") || 0,
 
   // Notification
-  notifications: [
-    {
-      title: "Kiểm thử thông báo",
-      msg: "Hiện tại đã có chức năng thông báo rồi nhé!",
-      icon: "MessageSquareIcon",
-      time: new Date().getTime(),
-      category: "primary"
-    }
-  ]
+  notifications: []
 };
 
 export default state;

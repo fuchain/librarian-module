@@ -31,6 +31,10 @@ const router = new Router({
           component: () => import("@/modules/profile/Profile.vue")
         },
         {
+          path: "notifications",
+          component: () => import("@/modules/notification/Notification.vue")
+        },
+        {
           path: "coin",
           component: () => import("@/modules/student/coin/Coin.vue")
         },

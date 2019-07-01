@@ -1,6 +1,7 @@
 import io from "socket.io-client";
 import auth from "@auth";
 import $http from "@http";
+import redirect from "@core/socket/redirect";
 
 function init() {
   // Socket
@@ -11,16 +12,23 @@ function init() {
 
   window.socket = socket.on("notification", function({ message, type }) {
     window.vue.$vs.notify({
+      fixed: true,
       title: "Thông báo mới",
       text: message,
-      color: "success",
-      position: "top-center"
+      color: "primary",
+      position: "top-center",
+      iconPack: "feather",
+      icon: "icon-info",
+      click: () => {
+        redirect(type);
+      }
     });
 
     window.vue.$store.dispatch("addNotification", {
       title: "Kiểm thử thông báo",
       message,
-      icon: "MessageSquareIcon",
+      type,
+      icon: "InfoIcon",
       time: new Date().getTime(),
       category: "primary"
     });
