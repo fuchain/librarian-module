@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -255,5 +256,22 @@ public class SimulateDataController extends BaseController {
 				}
 			);
 		}
+	}
+
+	@PostMapping("/create_draft_tx")
+	public String createDrarfTx(Principal principal) throws Exception {
+		User user = userServices.getUserByEmail(principal.getName());
+		Map asset = new TreeMap();
+		SecureRandom random = new SecureRandom();
+		asset.put("abc", random.nextInt());
+		asset.put("xyz", random.nextInt());
+		asset.put("tx_ts", System.currentTimeMillis() / 1000L);
+		Map metadata = new TreeMap();
+		metadata.put("abc", random.nextInt());
+		metadata.put("xyz", random.nextInt());
+		metadata.put("tx_ts", System.currentTimeMillis() / 1000L);
+		bigchainTransactionServices.doCreate(asset, metadata, user.getEmail());
+
+		return "Submited to bigchain!!!";
 	}
 }
