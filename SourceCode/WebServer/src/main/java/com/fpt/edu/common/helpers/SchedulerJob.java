@@ -11,9 +11,11 @@ import com.fpt.edu.services.MatchingServices;
 import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.services.RequestServices;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import org.quartz.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
 
 import java.util.Date;
 import java.util.List;
@@ -21,11 +23,10 @@ import java.util.concurrent.TimeUnit;
 
 public class SchedulerJob implements Job {
 
+	private final Logger LOGGER = LogManager.getLogger(getClass());
 	private RequestServices requestServices;
 	private MatchingServices matchingServices;
 	private NotificationService notificationService;
-
-	private Logger logger = LoggerFactory.getLogger(SchedulerJob.class);
 
 	@Override
 	public void execute(JobExecutionContext context) {
@@ -54,7 +55,7 @@ public class SchedulerJob implements Job {
 		} catch (UnirestException e) {
 			e.printStackTrace();
 		}
-		logger.info("============== SCHEDULER SCANNED==================");
+		LOGGER.info("============== SCHEDULER SCANNED==================");
 	}
 
 	private void updatePendingRequest(Request request, Date now) throws UnirestException {
@@ -64,8 +65,9 @@ public class SchedulerJob implements Job {
 			request.setStatus(ERequestStatus.EXPIRED.getValue());
 			requestServices.updateRequest(request);
 
+			LOGGER.info("Update request id: " + request.getId() + " at " + now);
 			pushNotiFromRequest(request);
-			logger.info("Update request id: " + request.getId() + " at " + now);
+			LOGGER.info("Update request id: " + request.getId() + " at " + now);
 		}
 	}
 
@@ -109,14 +111,13 @@ public class SchedulerJob implements Job {
 				if (pairedRequest != null) {
 					pairedRequest.setStatus(ERequestStatus.EXPIRED.getValue());
 					requestServices.updateRequest(pairedRequest);
-
 					pushNotiFromRequest(pairedRequest);
-					logger.info("Update request id: " + pairedRequest.getId() + " at " + now);
+					LOGGER.info("Update request id: " + pairedRequest.getId() + " at " + now);
 				}
 
 				pushNotiFromRequest(request);
-				logger.info("Update request id: " + request.getId() + " at " + now);
-				logger.info("Update matching id: " + matching.getId() + " at " + now);
+				LOGGER.info("Update request id: " + request.getId() + " at " + now);
+				LOGGER.info("Update matching id: " + matching.getId() + " at " + now);
 			}
 		}
 	}

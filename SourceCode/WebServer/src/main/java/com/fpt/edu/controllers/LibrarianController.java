@@ -18,8 +18,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("librarian")
 public class LibrarianController extends BaseController {
 
-	private Logger logger = LoggerFactory.getLogger(LibrarianController.class);
 	private String cronExpression = "";
 
 	@Autowired
@@ -273,7 +270,7 @@ public class LibrarianController extends BaseController {
 
 		if (!enable) {
 			scheduler.shutdown();
-			logger.info("Shut down scheduler");
+			LOGGER.info("Shut down scheduler");
 			return new ResponseEntity<>("Shut down scheduler successfully", HttpStatus.OK);
 		}
 
@@ -293,7 +290,7 @@ public class LibrarianController extends BaseController {
 
 		scheduler.scheduleJob(jobDetail, trigger);
 		scheduler.start();
-		logger.info("Started scheduler");
+		LOGGER.info("Started scheduler");
 
 		return new ResponseEntity<>("Started Scheduler Successfully", HttpStatus.OK);
 	}

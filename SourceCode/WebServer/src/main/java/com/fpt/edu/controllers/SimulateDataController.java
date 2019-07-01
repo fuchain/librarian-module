@@ -8,8 +8,6 @@ import com.fpt.edu.entities.*;
 import com.fpt.edu.repositories.*;
 import com.fpt.edu.services.*;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,8 +38,6 @@ public class SimulateDataController extends BaseController {
 	@Autowired
 	BigchainTransactionServices bigchainTransactionServices;
 	NotificationService notificationService;
-
-	private Logger logger = LoggerFactory.getLogger(SimulateDataController.class);
 
 	public SimulateDataController(
 		UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices,
@@ -249,10 +245,10 @@ public class SimulateDataController extends BaseController {
 					String bcAssetId = transaction.getId();
 					String assetId = book.getAssetId();
 					if (bcAssetId.equals(assetId)) {
-						logger.info("Insert asset id " + bcAssetId + " correctly!!!");
+						LOGGER.info("Insert asset id " + bcAssetId + " correctly!!!");
 					} else {
-						logger.error("Insert asset id " + bcAssetId + " failed!!!");
-						logger.error("Book asset id: " + assetId);
+						LOGGER.error("Insert asset id " + bcAssetId + " failed!!!");
+						LOGGER.error("Book asset id: " + assetId);
 					}
 				},
 				(transaction, response) -> {

@@ -5,17 +5,17 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationService {
+	private final Logger LOGGER = LogManager.getLogger(getClass());
 	private String endPoint;
-	private Logger logger = LoggerFactory.getLogger(NotificationService.class);
 
 	@Autowired
 	public NotificationService(@Value("${notification.service}") String endpoint) {
@@ -36,7 +36,7 @@ public class NotificationService {
 				.body(jsonObject.toString())
 				.asJson();
 		} catch (UnirestException e) {
-			logger.error("Cannot send request to the endpoint: " + endPoint);
+			LOGGER.error("Cannot send request to the endpoint: " + endPoint);
 		}
 	}
 }
