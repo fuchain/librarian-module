@@ -65,7 +65,4 @@ public class Constant {
 	public static final String REJECTOR_EMAIL = "rejector_email";
 	public static final int MAX_REJECT_COUNT = 5;
 	public static final int MIN_REJECT_COUNT = 0;
-
-	//---------------------------------- THIS IS FOR LOG ----------------------------------
-	public static final String LOG_SERVER = "https://napi.fptu.tech/api/v1/logs/";
 }
