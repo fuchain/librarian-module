@@ -3,6 +3,7 @@ package com.fpt.edu.controllers;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.helpers.NotificationHelper;
 import com.fpt.edu.common.request_queue_simulate.Message;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -29,10 +30,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RestController
 @RequestMapping("requests")
 public class RequestController extends BaseController {
-	public RequestController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	public RequestController(UserServices userServices, BookDetailsServices bookDetailsServices,
+							 BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices,
+							 RequestServices requestServices, TransactionServices transactionServices,
+							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager,
+							 NotificationHelper notificationHelper) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper);
 	}
-
 
 	@ApiOperation(value = "Get a request by its id")
 	@GetMapping(value = "/{id}")
@@ -109,7 +113,7 @@ public class RequestController extends BaseController {
 		if (type == ERequestType.BORROWING.getValue()) {
 			// Check user is active or not
 			if (user.isDisabled() == null || user.isDisabled()) {
-				throw new Exception("User id: " + user.getId() + " is not active. Cannot make borrow request");
+				return new ResponseEntity<>("User id: " + user.getId() + " is not active. Cannot make borrow request", HttpStatus.BAD_REQUEST);
 			}
 
 			// Get book name from Request Body
@@ -127,7 +131,7 @@ public class RequestController extends BaseController {
 
 			request = getReturningRequest(type, user, bookId);
 		} else {
-			throw new TypeNotSupportedException("Type " + type + " is not supported");
+			return new ResponseEntity<>("Type " + type + " is not supported", HttpStatus.BAD_REQUEST);
 		}
 
 		// Set mode of request
@@ -260,6 +264,26 @@ public class RequestController extends BaseController {
 				matching.setReturnerRequest(request);
 			}
 			matchingServices.updateMatching(matching);
+
+			// Push notification to returner and receiver
+			pushNotiFromRequest(request, matchRequest);
+			pushNotiFromRequest(matchRequest, request);
+		}
+	}
+
+	private void pushNotiFromRequest(Request request, Request matchRequest) {
+		if (request.getType() == ERequestType.RETURNING.getValue()) {
+			notificationHelper.pushNotification(
+				request.getUser().getEmail(),
+				"Yêu cầu trả sách " + request.getBook().getBookDetail().getName() + " đã được ghép với " + matchRequest.getUser().getFullName(),
+				Constant.NOTIFICATION_TYPE_RETURNING
+			);
+		} else {
+			notificationHelper.pushNotification(
+				request.getUser().getEmail(),
+				"Yêu cầu mượn sách " + request.getBookDetail().getName() + " đã được ghép với " + matchRequest.getUser().getFullName(),
+				Constant.NOTIFICATION_TYPE_REQUESTING
+			);
 		}
 	}
 
@@ -280,7 +304,7 @@ public class RequestController extends BaseController {
 		// Check whether matchingId is existed or not
 		Matching matching = matchingServices.getMatchingById(matchingId);
 		if (matching == null) {
-			throw new EntityNotFoundException("Matching id: " + matchingId + " not found");
+			return new ResponseEntity<>("Matching id: " + matchingId + " not found", HttpStatus.BAD_REQUEST);
 		}
 
 		// Check transfer type is returner or receiver
@@ -301,7 +325,7 @@ public class RequestController extends BaseController {
 				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} else {
-			throw new TypeNotSupportedException("Type: " + type + " is not supported");
+			return new ResponseEntity<>("Type: " + type + " is not supported", HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -427,11 +451,16 @@ public class RequestController extends BaseController {
 				requestServices.updateRequest(returnerRequest);
 				requestServices.updateRequest(receiverRequest);
 
-
 				// Update user in book
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
+
+				notificationHelper.pushNotification(
+					Constant.LIBRARIAN_EMAIL,
+					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
 
 				callback.set(true);
 			}
@@ -756,6 +785,12 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
+				notificationHelper.pushNotification(
+					Constant.LIBRARIAN_EMAIL,
+					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
+
 				callback.set(true);
 			}
 		);
@@ -942,14 +977,20 @@ public class RequestController extends BaseController {
 				String transactionId = transaction.getId();
 				book.setLastTxId(transactionId);
 
-
 				// Update matching status to 'Confirmed'
 				matching.setStatus(EMatchingStatus.REJECTED.getValue());
 				matchingServices.updateMatching(matching);
 
-				// Update borrow request status to 'Completed'
+				// Update returner request status to 'Completed'
 				returnRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 				requestServices.updateRequest(returnRequest);
+
+				// Push notification to returner
+				notificationHelper.pushNotification(
+					returnRequest.getUser().getEmail(),
+					"Người mượn đã từ chối nhận sách " + book.getBookDetail().getName(),
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
 
 				// Put borrow request in queue after rejecting
 				try {
@@ -960,7 +1001,6 @@ public class RequestController extends BaseController {
 					receiveRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 					requestServices.updateRequest(receiveRequest);
 				}
-
 
 				// Update transfer status of book
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
@@ -995,6 +1035,12 @@ public class RequestController extends BaseController {
 				book.setUser(returner);
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
+
+				notificationHelper.pushNotification(
+					Constant.LIBRARIAN_EMAIL,
+					"Transaction từ chối của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
 
 				callback.set(true);
 			}

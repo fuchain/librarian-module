@@ -3,6 +3,7 @@ package com.fpt.edu.controllers;
 import com.fpt.edu.common.enums.ERequestStatus;
 import com.fpt.edu.common.enums.ERequestType;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.helpers.NotificationHelper;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
@@ -24,9 +25,8 @@ import java.util.List;
 @RestController
 @RequestMapping("users")
 public class UserController extends BaseController {
-
-	public UserController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, UserServices userServices1, RequestServices requestServices1) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	public UserController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationHelper notificationHelper) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper);
 	}
 
 	@ApiOperation(value = "Get a list of current book")

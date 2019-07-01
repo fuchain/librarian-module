@@ -1,6 +1,7 @@
 package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.helpers.NotificationHelper;
 import com.fpt.edu.common.helpers.UtilHelper;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -42,15 +43,17 @@ public class BaseController {
 	protected final TransactionServices transactionServices;
 	protected final PublishSubscribe publishSubscribe;
 	protected final RequestQueueManager requestQueueManager;
+	protected final NotificationHelper notificationHelper;
 
 	protected BigchainTransactionServices bigchainTransactionServices;
-
 
 	@Autowired
 	public BaseController(UserServices userServices,
 						  BookDetailsServices bookDetailsServices,
 						  BookServices bookServices, ImportHelper importHelper,
-						  MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
+						  MatchingServices matchingServices, RequestServices requestServices,
+						  TransactionServices transactionServices, PublishSubscribe publishSubscribe,
+						  RequestQueueManager requestQueueManager, NotificationHelper notificationHelper) {
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
 		this.bookServices = bookServices;
@@ -60,6 +63,7 @@ public class BaseController {
 		this.transactionServices = transactionServices;
 		this.publishSubscribe = publishSubscribe;
 		this.requestQueueManager = requestQueueManager;
+		this.notificationHelper = notificationHelper;
 	}
 
 	@ApiOperation(value = "Get all email of user has role librarian", response = JSONObject.class)

@@ -1,6 +1,7 @@
 package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.helpers.NotificationHelper;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.Book;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("books")
 public class BookController extends BaseController {
 
-	public BookController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	public BookController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationHelper notificationHelper) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper);
 	}
 
 	@ApiOperation(value = "Get a book by its id")

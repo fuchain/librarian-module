@@ -46,16 +46,8 @@ public class LibrarianController extends BaseController {
 	@Autowired
 	private NotificationHelper notificationHelper;
 
-	public LibrarianController(
-		UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices,
-		ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices,
-		TransactionServices transactionServices, PublishSubscribe publishSubscribe,
-		RequestQueueManager requestQueueManager
-	) {
-		super(
-			userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices,
-			transactionServices, publishSubscribe, requestQueueManager
-		);
+	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationHelper notificationHelper) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper);
 	}
 
 	@ApiOperation("Get all users")
@@ -292,6 +284,7 @@ public class LibrarianController extends BaseController {
 		JobDataMap jobDataMap = new JobDataMap();
 		jobDataMap.put("RequestServices", requestServices);
 		jobDataMap.put("MatchingServices", matchingServices);
+		jobDataMap.put("NotificationHelper", notificationHelper);
 
 		JobDetail jobDetail = JobBuilder.newJob(SchedulerJob.class).setJobData(jobDataMap).build();
 
@@ -356,10 +349,7 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Send notification", response = String.class)
 	@PostMapping("/notification")
-	public ResponseEntity<String> pushNotification(
-		@RequestBody String body,
-		Principal principal
-	) throws IOException, UnirestException {
+	public ResponseEntity<String> pushNotification(@RequestBody String body, Principal principal) throws IOException, UnirestException {
 		User librarian = userServices.getUserByEmail(principal.getName());
 
 		JSONObject bodyObject = new JSONObject(body);
