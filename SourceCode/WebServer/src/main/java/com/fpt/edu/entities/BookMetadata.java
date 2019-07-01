@@ -20,6 +20,7 @@ public class BookMetadata {
 		this.data.put(REJECT_REASON, EMPTY_VALUE);
 		this.data.put(IMAGE_HASH, EMPTY_VALUE);
 		this.data.put(IMAGE_LINK, EMPTY_VALUE);
+		this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
 	}
 
 	// This constructor is used to get metadata from database
@@ -35,6 +36,7 @@ public class BookMetadata {
 		this.data.put(REJECT_REASON, EMPTY_VALUE);
 		this.data.put(IMAGE_HASH, EMPTY_VALUE);
 		this.data.put(IMAGE_LINK, EMPTY_VALUE);
+		this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
 	}
 
 	// This constructor is used to get metadata from blockchain
@@ -44,7 +46,9 @@ public class BookMetadata {
 		String transactionTimestamp,
 		int rejectCount,
 		String rejectReason,
-		String imgHash
+		String imgHash,
+		String imgUrl,
+		String rejectorEmail
 	) {
 		this.data = new TreeMap<>();
 		this.data.put(CURRENT_KEEPER, currentKeeper);
@@ -53,6 +57,8 @@ public class BookMetadata {
 		this.data.put(REJECT_COUNT, String.valueOf(rejectCount));
 		this.data.put(REJECT_REASON, rejectReason);
 		this.data.put(IMAGE_HASH, imgHash);
+		this.data.put(IMAGE_LINK, imgUrl);
+		this.data.put(REJECTOR_EMAIL, rejectorEmail);
 	}
 
 	public Map<String, String> getData() {
@@ -63,8 +69,18 @@ public class BookMetadata {
 		this.data = data;
 	}
 
+	public String getCurrentKeeper() {
+		String currentKeeper = this.data.get(CURRENT_KEEPER);
+		return currentKeeper == null ? EMPTY_VALUE : currentKeeper;
+	}
+
 	public void setCurrentKeeper(String currentKeeper) {
 		this.data.put(CURRENT_KEEPER, currentKeeper);
+	}
+
+	public String getStatus() {
+		String status = this.data.get(BOOK_STATUS);
+		return status == null ? EMPTY_VALUE : status;
 	}
 
 	public void setStatus(String status) {
@@ -116,18 +132,23 @@ public class BookMetadata {
 		this.data.put(IMAGE_HASH, imgHash);
 	}
 
-	public void setImageLink(String url){
-		this.data.put(IMAGE_LINK,url);
-	}
 	@JsonIgnore
-	public String getRejectImageLink(){
-		String image_link=this.data.get(IMAGE_LINK);
-		return image_link==null? EMPTY_VALUE:image_link;
-
+	public String getRejectImageLink() {
+		String imageLink = this.data.get(IMAGE_LINK);
+		return imageLink == null ? EMPTY_VALUE : imageLink;
 	}
 
+	public void setImageLink(String url) {
+		this.data.put(IMAGE_LINK, url);
+	}
 
+	@JsonIgnore
+	public String getRejectorEmail() {
+		String rejectorEmail = this.data.get(REJECTOR_EMAIL);
+		return rejectorEmail == null ? EMPTY_VALUE : rejectorEmail;
+	}
 
-
-
+	public void setRejectorEmail(String rejectorEmail) {
+		this.data.put(REJECTOR_EMAIL, rejectorEmail);
+	}
 }

@@ -1,6 +1,5 @@
 package com.fpt.edu.controllers;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.common.helpers.ImportHelper;
@@ -15,7 +14,6 @@ import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.Hibernate;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -961,6 +959,7 @@ public class RequestController extends BaseController {
 		bookMetadata.setRejectReason(reason);
 		bookMetadata.setImgHash(hashValue);
 		bookMetadata.setImageLink(imageUrl);
+		bookMetadata.setRejectorEmail(receiver.getEmail());
 		// Update reject count
 		bookMetadata.increaseLastRejectCount();
 		// Set new transaction timestamp
