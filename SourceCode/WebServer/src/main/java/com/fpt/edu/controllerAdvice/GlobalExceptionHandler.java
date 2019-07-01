@@ -1,13 +1,11 @@
 package com.fpt.edu.controllerAdvice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fpt.edu.constant.Constant;
 import com.fpt.edu.exceptions.*;
-import com.mashape.unirest.http.Unirest;
+import com.fpt.edu.services.LoggingService;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,7 +18,13 @@ import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-	protected final Logger LOGGER = LogManager.getLogger(getClass());
+
+	private final Logger LOGGER = LogManager.getLogger(getClass());
+	private final LoggingService loggingService;
+
+	public GlobalExceptionHandler(LoggingService loggingService) {
+		this.loggingService = loggingService;
+	}
 
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
@@ -82,13 +86,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
 		details.add(ex.toString());
-		details.add("Entity ID misatch");
+		details.add("Entity ID mismatch");
 		ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
 		return new ResponseEntity(error, HttpStatus.PRECONDITION_FAILED);
 	}
 
 	@ExceptionHandler(TypeNotSupportedException.class)
-	public final ResponseEntity<Object> handleEntityAldread(TypeNotSupportedException ex, WebRequest request) {
+	public final ResponseEntity<Object> handleEntityAlready(TypeNotSupportedException ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
@@ -100,7 +104,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 
 	@ExceptionHandler(PinExpiredException.class)
-	public final ResponseEntity<Object> handlePinexpired(PinExpiredException ex, WebRequest request) {
+	public final ResponseEntity<Object> handlePinExpired(PinExpiredException ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMessage());
@@ -111,7 +115,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(UnirestException.class)
-	public final ResponseEntity<Object> handlePinexpired(UnirestException ex, WebRequest request) {
+	public final ResponseEntity<Object> handlePinExpired(UnirestException ex, WebRequest request) {
 		logException(ex);
 		List<String> details = new ArrayList<>();
 		details.add("Fail to do REST HTTP call");
@@ -147,20 +151,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	private void logException(Exception ex) {
 		LOGGER.error("ERROR: " + ex.toString());
 		LOGGER.error("ERROR Message: " + ex.getMessage());
-
-		JSONObject errObj = new JSONObject();
-		errObj.put("type", "error");
-		errObj.put("source", "webserver");
-		errObj.put("metadata", ex.toString());
-
-		try {
-			Unirest.post(Constant.LOG_SERVER)
-				.header("accept", "application/json")
-				.header("Content-Type", Constant.APPLICATION_JSON)
-				.body(errObj.toString())
-				.asJson();
-		} catch(UnirestException err) {
-			LOGGER.error("Logging error: " + err.toString());
-		}
+		loggingService.logError(ex);
 	}
 }
