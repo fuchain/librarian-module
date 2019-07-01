@@ -338,6 +338,7 @@ public class LibrarianController extends BaseController {
 	) throws Exception {
 		Book book = bookServices.getBookById(bookId);
 		bookServices.getLastTransactionFromBigchain(book);
+		Thread.sleep(10);
 		User currentKeeper = userServices.getUserByEmail(book.getMetadata().getCurrentKeeper());
 		book.setUser(currentKeeper);
 		bookServices.updateBook(book);
