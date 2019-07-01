@@ -1,11 +1,10 @@
-package com.fpt.edu.common.helpers;
+package com.fpt.edu.services;
 
 import com.fpt.edu.constant.Constant;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import org.apache.logging.log4j.spi.LoggerRegistry;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NotificationHelper {
+public class NotificationService {
 	private String endPoint;
-	private Logger logger = LoggerFactory.getLogger(NotificationHelper.class);
+	private Logger logger = LoggerFactory.getLogger(NotificationService.class);
 
 	@Autowired
-	public NotificationHelper(@Value("${notification.service}") String endpoint) {
+	public NotificationService(@Value("${notification.service}") String endpoint) {
 		this.endPoint = endpoint;
 	}
 

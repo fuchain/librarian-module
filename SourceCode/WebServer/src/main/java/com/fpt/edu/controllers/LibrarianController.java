@@ -2,7 +2,7 @@ package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
-import com.fpt.edu.common.helpers.NotificationHelper;
+import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.helpers.SchedulerJob;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -44,10 +44,10 @@ public class LibrarianController extends BaseController {
 	private String cronExpression = "";
 
 	@Autowired
-	private NotificationHelper notificationHelper;
+	private NotificationService notificationService;
 
-	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationHelper notificationHelper) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper);
+	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationService notificationService) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation("Get all users")
@@ -284,7 +284,7 @@ public class LibrarianController extends BaseController {
 		JobDataMap jobDataMap = new JobDataMap();
 		jobDataMap.put("RequestServices", requestServices);
 		jobDataMap.put("MatchingServices", matchingServices);
-		jobDataMap.put("NotificationHelper", notificationHelper);
+		jobDataMap.put("NotificationHelper", notificationService);
 
 		JobDetail jobDetail = JobBuilder.newJob(SchedulerJob.class).setJobData(jobDataMap).build();
 
@@ -357,7 +357,7 @@ public class LibrarianController extends BaseController {
 		String message = bodyObject.getString("message");
 		String type = bodyObject.getString("type");
 
-		notificationHelper.pushNotification(email, message, type);
+		notificationService.pushNotification(email, message, type);
 
 		return new ResponseEntity<>("Push notification successfully", HttpStatus.OK);
 	}
