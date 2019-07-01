@@ -3,6 +3,7 @@ package com.fpt.edu.controllers;
 import com.fpt.edu.common.enums.ERequestStatus;
 import com.fpt.edu.common.enums.ERequestType;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
@@ -12,7 +13,6 @@ import com.fpt.edu.entities.User;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +24,8 @@ import java.util.List;
 @RestController
 @RequestMapping("users")
 public class UserController extends BaseController {
-
-	public UserController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, UserServices userServices1, RequestServices requestServices1) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	public UserController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationService notificationService) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation(value = "Get a list of current book")
