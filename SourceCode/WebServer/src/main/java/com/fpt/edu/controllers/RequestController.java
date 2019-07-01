@@ -3,7 +3,7 @@ package com.fpt.edu.controllers;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.common.helpers.ImportHelper;
-import com.fpt.edu.common.helpers.NotificationHelper;
+import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.request_queue_simulate.Message;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -34,8 +34,8 @@ public class RequestController extends BaseController {
 							 BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices,
 							 RequestServices requestServices, TransactionServices transactionServices,
 							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager,
-							 NotificationHelper notificationHelper) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper);
+							 NotificationService notificationService) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation(value = "Get a request by its id")
@@ -273,13 +273,13 @@ public class RequestController extends BaseController {
 
 	private void pushNotiFromRequest(Request request, Request matchRequest) {
 		if (request.getType() == ERequestType.RETURNING.getValue()) {
-			notificationHelper.pushNotification(
+			notificationService.pushNotification(
 				request.getUser().getEmail(),
 				"Yêu cầu trả sách " + request.getBook().getBookDetail().getName() + " đã được ghép với " + matchRequest.getUser().getFullName(),
 				Constant.NOTIFICATION_TYPE_RETURNING
 			);
 		} else {
-			notificationHelper.pushNotification(
+			notificationService.pushNotification(
 				request.getUser().getEmail(),
 				"Yêu cầu mượn sách " + request.getBookDetail().getName() + " đã được ghép với " + matchRequest.getUser().getFullName(),
 				Constant.NOTIFICATION_TYPE_REQUESTING
@@ -456,7 +456,7 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
-				notificationHelper.pushNotification(
+				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
 					Constant.NOTIFICATION_TYPE_KEEPING
@@ -785,7 +785,7 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
-				notificationHelper.pushNotification(
+				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
 					Constant.NOTIFICATION_TYPE_KEEPING
@@ -986,7 +986,7 @@ public class RequestController extends BaseController {
 				requestServices.updateRequest(returnRequest);
 
 				// Push notification to returner
-				notificationHelper.pushNotification(
+				notificationService.pushNotification(
 					returnRequest.getUser().getEmail(),
 					"Người mượn đã từ chối nhận sách " + book.getBookDetail().getName(),
 					Constant.NOTIFICATION_TYPE_KEEPING
@@ -1036,7 +1036,7 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
-				notificationHelper.pushNotification(
+				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction từ chối của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
 					Constant.NOTIFICATION_TYPE_KEEPING

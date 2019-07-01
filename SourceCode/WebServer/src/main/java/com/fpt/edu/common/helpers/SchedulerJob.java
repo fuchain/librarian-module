@@ -8,6 +8,7 @@ import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Matching;
 import com.fpt.edu.entities.Request;
 import com.fpt.edu.services.MatchingServices;
+import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.services.RequestServices;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.quartz.*;
@@ -22,7 +23,7 @@ public class SchedulerJob implements Job {
 
 	private RequestServices requestServices;
 	private MatchingServices matchingServices;
-	private NotificationHelper notificationHelper;
+	private NotificationService notificationService;
 
 	private Logger logger = LoggerFactory.getLogger(SchedulerJob.class);
 
@@ -32,7 +33,7 @@ public class SchedulerJob implements Job {
 			JobDataMap jobDataMap = context.getMergedJobDataMap();
 			requestServices = (RequestServices) jobDataMap.get("RequestServices");
 			matchingServices = (MatchingServices) jobDataMap.get("MatchingServices");
-			notificationHelper = (NotificationHelper) jobDataMap.get("NotificationHelper");
+			notificationService = (NotificationService) jobDataMap.get("NotificationHelper");
 		}
 
 		// Get request list with status is pending or matching
@@ -122,13 +123,13 @@ public class SchedulerJob implements Job {
 
 	private void pushNotiFromRequest(Request request) throws UnirestException {
 		if (request.getType() == ERequestType.RETURNING.getValue()) {
-			notificationHelper.pushNotification(
+			notificationService.pushNotification(
 				request.getUser().getEmail(),
 				"Hệ thống đã hủy yêu cầu trả sách " + request.getBook().getBookDetail().getName() + " - #" + request.getBook().getId(),
 				Constant.NOTIFICATION_TYPE_KEEPING
 			);
 		} else if (request.getType() == ERequestType.BORROWING.getValue()) {
-			notificationHelper.pushNotification(
+			notificationService.pushNotification(
 				request.getUser().getEmail(),
 				"Hệ thống đã hủy yêu cầu mượn sách " + request.getBookDetail().getName(),
 				Constant.NOTIFICATION_TYPE_KEEPING

@@ -2,12 +2,11 @@ package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.enums.EMatchingStatus;
 import com.fpt.edu.common.helpers.ImportHelper;
-import com.fpt.edu.common.helpers.NotificationHelper;
+import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.entities.Matching;
 import com.fpt.edu.entities.User;
-import com.fpt.edu.exceptions.EntityIdMismatchException;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
@@ -21,8 +20,8 @@ import java.security.Principal;
 @RequestMapping("matchings")
 public class MatchingController extends BaseController {
 
-	public MatchingController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationHelper notificationHelper) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationHelper);
+	public MatchingController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationService notificationService) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation(value = "Returner confirms book transfer", response = String.class)
