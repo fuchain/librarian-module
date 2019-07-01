@@ -40,6 +40,4 @@ public class NotificationHelper {
 			logger.error("Cannot send request to the endpoint: " + endPoint);
 		}
 	}
-
-
 }

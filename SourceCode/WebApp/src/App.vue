@@ -145,7 +145,7 @@ export default {
 
     this.$vs.notify({
       title: "Lỗi xảy ra",
-      text: "Lỗi do đường truyền kém, vui lòng tải lại ứng dụng",
+      text: "Lỗi bất ngờ xảy ra, vui lòng tải lại ứng dụng",
       color: "danger",
       position: "top-center"
     });
