@@ -69,8 +69,18 @@ public class BookMetadata {
 		this.data = data;
 	}
 
+	public String getCurrentKeeper() {
+		String currentKeeper = this.data.get(CURRENT_KEEPER);
+		return currentKeeper == null ? EMPTY_VALUE : currentKeeper;
+	}
+
 	public void setCurrentKeeper(String currentKeeper) {
 		this.data.put(CURRENT_KEEPER, currentKeeper);
+	}
+
+	public String getStatus() {
+		String status = this.data.get(BOOK_STATUS);
+		return status == null ? EMPTY_VALUE : status;
 	}
 
 	public void setStatus(String status) {

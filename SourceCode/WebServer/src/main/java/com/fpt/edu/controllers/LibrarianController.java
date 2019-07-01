@@ -13,7 +13,6 @@ import com.fpt.edu.exceptions.InvalidExpressionException;
 import com.fpt.edu.services.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.swagger.annotations.ApiOperation;
-import netscape.javascript.JSObject;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,8 +46,16 @@ public class LibrarianController extends BaseController {
 	@Autowired
 	private NotificationHelper notificationHelper;
 
-	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager);
+	public LibrarianController(
+		UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices,
+		ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices,
+		TransactionServices transactionServices, PublishSubscribe publishSubscribe,
+		RequestQueueManager requestQueueManager
+	) {
+		super(
+			userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices,
+			transactionServices, publishSubscribe, requestQueueManager
+		);
 	}
 
 	@ApiOperation("Get all users")
@@ -165,7 +172,10 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Librarian transfers book for readers", response = String.class)
 	@PostMapping("/give_book")
-	public ResponseEntity<String> transferBook(@RequestParam Long book_detail_id, Principal principal) throws EntityNotFoundException {
+	public ResponseEntity<String> transferBook(
+		@RequestParam Long book_detail_id,
+		Principal principal
+	) throws EntityNotFoundException {
 		// Check sender is librarian
 		User librarian = userServices.getUserByEmail(principal.getName());
 
@@ -254,7 +264,10 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Enable or disable system scheduler", response = String.class)
 	@PutMapping("/scheduler/enable")
-	public ResponseEntity<String> enableScheduler(@RequestBody String body, Principal principal) throws InvalidExpressionException, SchedulerException {
+	public ResponseEntity<String> enableScheduler(
+		@RequestBody String body,
+		Principal principal
+	) throws InvalidExpressionException, SchedulerException {
 		// Check sender is librarian or not
 		User librarian = userServices.getUserByEmail(principal.getName());
 
@@ -328,9 +341,25 @@ public class LibrarianController extends BaseController {
 		return pin;
 	}
 
+	@ApiOperation(value = "Sync current keeper of a book instance back from bigchain", response = Book.class)
+	@PutMapping("/books/{book_id}/sync_current_keeper")
+	public ResponseEntity<Book> syncCurrentKeeperFromBigchain(
+		@PathVariable("book_id") Long bookId
+	) throws Exception {
+		Book book = bookServices.getBookById(bookId);
+		bookServices.getLastTransactionFromBigchain(book);
+		User currentKeeper = userServices.getUserByEmail(book.getMetadata().getCurrentKeeper());
+		book.setUser(currentKeeper);
+		bookServices.updateBook(book);
+		return new ResponseEntity<>(book, HttpStatus.OK);
+	}
+
 	@ApiOperation(value = "Send notification", response = String.class)
 	@PostMapping("/notification")
-	public ResponseEntity<String> pushNotification(@RequestBody String body, Principal principal) throws IOException, UnirestException {
+	public ResponseEntity<String> pushNotification(
+		@RequestBody String body,
+		Principal principal
+	) throws IOException, UnirestException {
 		User librarian = userServices.getUserByEmail(principal.getName());
 
 		JSONObject bodyObject = new JSONObject(body);
