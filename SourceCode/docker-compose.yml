@@ -27,20 +27,19 @@ services:
       POSTGRES_PASSWORD: capstone
       POSTGRES_DB: librarianmodule
 
-  postgresn:
-    image: postgres
-    container_name: librarian-postgresn-dev
+  mongodb:
+    image: mongo
+    container_name: librarian-mongodb-dev
     ports:
-      - 5433:5432
+        - 27018:27017
     volumes:
-      - postgresn-data:/var/lib/postgresql/data
+      - mongodb-data:/data/db
     networks:
       - node
     restart: always
     environment:
-      POSTGRES_USER: capstone
-      POSTGRES_PASSWORD: capstone
-      POSTGRES_DB: node
+        MONGO_INITDB_ROOT_USERNAME: capstone
+        MONGO_INITDB_ROOT_PASSWORD: capstone
 
   webapp:
     build:
@@ -96,11 +95,10 @@ services:
       - ./NodeServer/.env:/root/src/node/.env
       - ./NodeServer/sendgrid.env:/root/src/node/sendgrid.env
     environment:
-      DB_HOST: postgresn
+      DB_HOST: mongodb
       DB_USER: capstone
       DB_PASS: capstone
-      DB_NAME: node
-      DB_DIALECT: postgres
+      DB_NAME: librariannode
       REDIS_HOST: redis
     tty: true
 
@@ -124,4 +122,4 @@ networks:
 volumes:
   redis-data:
   postgres-data:
-  postgresn-data:
+  mongodb-data:
