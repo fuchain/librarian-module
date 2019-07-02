@@ -364,4 +364,18 @@ public class LibrarianController extends BaseController {
 		return new ResponseEntity<>("Push notification successfully", HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "Get book instance total of book detail at library", response = String.class)
+	@GetMapping("/book_total")
+	public ResponseEntity<String> getLibrayBookTotal(@RequestParam Long book_detail_id, Principal principal) {
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+
+		long total = bookServices.getBookTotalAtLibrary(book_detail_id, librarian.getId());
+
+		JSONObject jsonResult = new JSONObject();
+		jsonResult.put("total", total);
+
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
+
 }

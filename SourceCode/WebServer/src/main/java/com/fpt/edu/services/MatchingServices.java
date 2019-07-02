@@ -33,8 +33,8 @@ public class MatchingServices {
 		return matchingRepository.getByReceiveRequestId(receiveRequestId, matchingStatus1, matchingStatus2);
 	}
 
-	public Matching getByRequestId(Long requestId) {
-		return matchingRepository.getByRequestId(requestId);
+	public Matching getByRequestId(Long requestId, int status1, int status2) {
+		return matchingRepository.getByRequestId(requestId, status1, status2);
 	}
 
 	public Matching getByPin(String pin, int status1, int status2) {
