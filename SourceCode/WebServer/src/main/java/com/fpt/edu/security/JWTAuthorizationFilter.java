@@ -56,16 +56,17 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .verify(token.replace(TOKEN_PREFIX, ""))
                     .getSubject();
 
-
-
-           	String[] authoritiesArr=JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+           	String[] authorityArr = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
 				.build()
 				.verify(token.replace(TOKEN_PREFIX, ""))
 				.getClaims().get(Constant.AUTHORITIES_HEADER).asArray(String.class);
+
 			Collection<GrantedAuthority> authorities =  new HashSet<>();
-			for (int i = 0; i <authoritiesArr.length ; i++) {
-				authorities.add(new SimpleGrantedAuthority(authoritiesArr[i]));
+
+			for (String authority : authorityArr) {
+				authorities.add(new SimpleGrantedAuthority(authority));
 			}
+
             if (user != null) {
                 return new UsernamePasswordAuthenticationToken(user, null, authorities);
             }
