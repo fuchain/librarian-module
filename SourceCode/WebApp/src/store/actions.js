@@ -82,6 +82,31 @@ const actions = {
   // Notification
   addNotification({ commit }, notification) {
     commit("ADD_NOTIFICATION", notification);
+  },
+
+  // Get notification
+  async getNotification({ commit }) {
+    try {
+      const { data } = await $http.get(`${$http.nodeUrl}/notifications`);
+
+      data.map(e => {
+        const notification = {
+          isRead: e.isRead,
+          title: "Thông báo",
+          message: e.message,
+          id: e._id,
+          type: e.type,
+          icon: "InfoIcon",
+          time: e.createdAt,
+          category: "primary"
+        };
+
+        commit("ADD_NOTIFICATION", notification);
+      });
+    } catch (e) {
+      // Catch error
+      throw e;
+    }
   }
 };
 

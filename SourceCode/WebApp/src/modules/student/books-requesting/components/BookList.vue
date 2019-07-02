@@ -34,7 +34,7 @@
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
                 v-if="item.user"
               >
-                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
                 <span class="text-sm font-semibold ml-2" @click="beginConfirm(item)">XÁC NHẬN</span>
               </div>
@@ -42,8 +42,8 @@
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               >
-                <feather-icon icon="XIcon" svgClasses="h-4 w-4" v-if="!item.user"/>
-                <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4" v-if="item.user"/>
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4" v-if="!item.user" />
+                <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4" v-if="item.user" />
 
                 <span
                   class="text-sm font-semibold ml-2"
@@ -94,7 +94,7 @@
       </div>
       <div class="mt-2">
         <vs-upload
-          :action="$http.baseUrl + '/transaction/upload' "
+          :action="$http.baseUrl + '/requests/upload' "
           fileName="file"
           :headers="uploadHeader"
           @on-success="successUpload"
