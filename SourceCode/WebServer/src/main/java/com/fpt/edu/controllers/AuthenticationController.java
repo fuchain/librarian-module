@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Role;
 import com.fpt.edu.entities.User;
+import com.fpt.edu.services.RoleServices;
 import com.fpt.edu.services.UserServices;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -32,10 +33,12 @@ import static com.fpt.edu.security.SecurityConstants.SECRET;
 @RequestMapping("auth")
 public class AuthenticationController {
 	private final UserServices userServices;
+	private final RoleServices roleServices;
 
 	@Autowired
-	public AuthenticationController(UserServices userServices) {
+	public AuthenticationController(UserServices userServices, RoleServices roleServices) {
 		this.userServices = userServices;
+		this.roleServices = roleServices;
 	}
 
 	private static String generateJwtTokenResponse(User user, String picture) {
@@ -45,18 +48,19 @@ public class AuthenticationController {
 
 		Role role;
 		if (user.getRole() == null) {
-			role = new Role();
+			role = new Role("reader");
 		} else {
 			role = user.getRole();
 		}
 
-		String authorities = role.getName();
+		String[] authorities = new String[1];
+		authorities[0] = role.getName();
 
 		String responseToken = JWT.create()
 			.withClaim("id", user.getId())
 			.withSubject(user.getEmail())
 			.withExpiresAt(expireDate)
-			.withClaim(Constant.AUTHORITIES_HEADER, authorities)
+			.withArrayClaim(Constant.AUTHORITIES_HEADER, authorities)
 			.sign(Algorithm.HMAC512(SECRET.getBytes()));
 
 		// Response token JSON
@@ -74,9 +78,9 @@ public class AuthenticationController {
 	@ApiOperation(value = "Add new user", response = String.class)
 	@PostMapping("new")
 	public ResponseEntity<String> signUp(@RequestBody User user) {
-		userServices.addNewUser(user);
+		User newUser = userServices.addNewUser(user);
 
-		return UserController.getJSONResponseUserProfile(user);
+		return UserController.getJSONResponseUserProfile(newUser);
 	}
 
 	private String getEmailDomain(String email) {

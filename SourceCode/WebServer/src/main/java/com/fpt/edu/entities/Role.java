@@ -9,17 +9,12 @@ import javax.persistence.*;
 @Entity
 @Table(name = "role")
 public class Role extends AbstractTimestampEntity implements Serializable {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "role_name")
 	private String name;
-
-	@OneToMany(cascade = { CascadeType.PERSIST }, mappedBy = "role")
-	@JsonIgnore
-	private List<User> users;
 
 	public Long getId() {
 		return id;
@@ -37,11 +32,10 @@ public class Role extends AbstractTimestampEntity implements Serializable {
 		this.name = name;
 	}
 
-	public List<User> getUsers() {
-		return users;
+	public Role(String name) {
+		this.name = name;
 	}
 
-	public void setUsers(List<User> users) {
-		this.users = users;
+	public Role() {
 	}
 }

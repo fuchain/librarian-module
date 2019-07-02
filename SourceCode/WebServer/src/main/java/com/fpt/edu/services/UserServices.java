@@ -95,11 +95,12 @@ public class UserServices {
 	}
 
 	public User getFirstLibrarian() {
-		Role librarianRole = roleRepository.getRoleByRoleName(Constant.ROLES_LIBRARIAN);
-		if (librarianRole != null && librarianRole.getUsers().size() > 0) {
-			return librarianRole.getUsers().get(0);
-		} else {
+		Integer firstId = 1;
+		Optional<User> firstLibrarian = userRepository.findById(firstId.longValue());
+		if (firstLibrarian.isEmpty()) {
 			return null;
+		} else {
+			return firstLibrarian.get();
 		}
 	}
 
@@ -107,12 +108,12 @@ public class UserServices {
 		return userRepository.count();
 	}
 
-	public List<User> getAllLibrarian(){
-	List<User> users = roleRepository.getRoleByRoleName(Constant.ROLES_LIBRARIAN).getUsers();
-	return users;
+	public List<User> getAllLibrarian() {
+		return userRepository.findAllByRoleId(roleRepository.getRoleByRoleName(Constant.ROLES_LIBRARIAN).getId());
 	}
 
-
-
-
+	public void setLibrarian(User user) {
+		Role librarianRole = roleRepository.getRoleByRoleName(Constant.ROLES_LIBRARIAN);
+		user.setRole(librarianRole);
+	}
 }
