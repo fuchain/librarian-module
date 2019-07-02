@@ -32,9 +32,6 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	private BookDetail bookDetail;
 	@OneToMany(cascade = CascadeType.PERSIST)
 	@JsonIgnore
-	private List<Transaction> transactions;
-	@OneToMany(cascade = CascadeType.PERSIST)
-	@JsonIgnore
 	private List<Request> requests;
 	// current keeper of the book
 	@ManyToOne()
@@ -171,14 +168,6 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 		}
 		this.user = user;
 		this.getMetadata().setCurrentKeeper(user.getEmail());
-	}
-
-	public List<Transaction> getTransactions() {
-		return transactions;
-	}
-
-	public void setTransactions(List<Transaction> transactions) {
-		this.transactions = transactions;
 	}
 
 	public List<Request> getRequests() {

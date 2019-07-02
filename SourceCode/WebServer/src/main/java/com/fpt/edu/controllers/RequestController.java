@@ -32,10 +32,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RequestController extends BaseController {
 	public RequestController(UserServices userServices, BookDetailsServices bookDetailsServices,
 							 BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices,
-							 RequestServices requestServices, TransactionServices transactionServices,
+							 RequestServices requestServices,
 							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager,
 							 NotificationService notificationService) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation(value = "Get a request by its id")
@@ -434,13 +434,6 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
-				//insert a transaction to DB Postgresql
-				Transaction tran = new Transaction();
-				tran.setBook(book);
-				tran.setReturner(returner);
-				tran.setBorrower(receiver);
-				transactionServices.insertTransaction(tran);
-
 				// Override value in response
 				jsonResult.put("message", "confirm book transfer successfully");
 				jsonResult.put("status_code", HttpStatus.OK);
@@ -772,13 +765,6 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
-				// Insert a transaction to DB Postgresql
-				Transaction tran = new Transaction();
-				tran.setBook(book);
-				tran.setReturner(returner);
-				tran.setBorrower(receiver);
-				transactionServices.insertTransaction(tran);
-
 				// Response to client
 				jsonResult.put("message", "confirm book transfer successfully");
 				jsonResult.put("status_code", HttpStatus.OK);
@@ -1026,12 +1012,6 @@ public class RequestController extends BaseController {
 				// Update transfer status of book
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
-
-				//insert a transaction to DB Postgresql
-				Transaction tran = new Transaction();
-				tran.setBook(book);
-				tran.setType(ETransactionType.REJECTED.getValue());
-				transactionServices.insertTransaction(tran);
 
 				if (bookMetadata.isLastRejectCountOver()) { // If reject count > 5
 					// Update book status

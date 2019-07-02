@@ -31,7 +31,6 @@ public class BaseController {
 	protected final ImportHelper importHelper;
 	protected final MatchingServices matchingServices;
 	protected final RequestServices requestServices;
-	protected final TransactionServices transactionServices;
 	protected final PublishSubscribe publishSubscribe;
 	protected final RequestQueueManager requestQueueManager;
 	protected final NotificationService notificationService;
@@ -46,8 +45,8 @@ public class BaseController {
 	                      BookDetailsServices bookDetailsServices,
 	                      BookServices bookServices, ImportHelper importHelper,
 	                      MatchingServices matchingServices, RequestServices requestServices,
-	                      TransactionServices transactionServices, PublishSubscribe publishSubscribe,
-	                      RequestQueueManager requestQueueManager, NotificationService notificationService) {
+	                      PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager,
+						  NotificationService notificationService) {
 		LOGGER = LogManager.getLogger(getClass());
 		this.userServices = userServices;
 		this.bookDetailsServices = bookDetailsServices;
@@ -55,7 +54,6 @@ public class BaseController {
 		this.importHelper = importHelper;
 		this.matchingServices = matchingServices;
 		this.requestServices = requestServices;
-		this.transactionServices = transactionServices;
 		this.publishSubscribe = publishSubscribe;
 		this.requestQueueManager = requestQueueManager;
 		this.notificationService = notificationService;
