@@ -120,13 +120,14 @@ export default {
         scale: "1.5",
         type: "sound"
       });
+
       try {
         await this.$store.dispatch("getProfile");
+        await this.$store.dispatch("getNotification");
         !this.$auth.isAdmin() && (await this.$store.dispatch("getNumOfBooks"));
       } catch (e) {
         // Catch error
         console.log(e);
-
         this.$router.push("/error");
       }
 
