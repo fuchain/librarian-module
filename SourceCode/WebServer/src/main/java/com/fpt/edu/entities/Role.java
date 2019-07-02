@@ -17,7 +17,7 @@ public class Role extends AbstractTimestampEntity implements Serializable {
 	@Column(name = "role_name")
 	private String name;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST }, mappedBy = "roles")
+	@OneToMany(cascade = { CascadeType.PERSIST }, mappedBy = "role")
 	@JsonIgnore
 	private List<User> users;
 

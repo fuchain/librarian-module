@@ -32,8 +32,11 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	@ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "role_id") })
+
+	@ManyToOne
+	@JoinColumn(name = "role_id")
 	@JsonIgnore
-	private List<Role> roles;
+	private Role role;
 
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "user")
@@ -111,12 +114,11 @@ public class User extends AbstractTimestampEntity implements Serializable {
 		this.phone = phone;
 	}
 
-	public List<Role> getRoles() {
-		return roles;
+	public Role getRole() {
+		return role;
 	}
 
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
+	public void setRole(Role role) {
+		this.role = role;
 	}
-
 }

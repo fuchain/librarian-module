@@ -646,14 +646,6 @@ public class RequestController extends BaseController {
 
 		// Get book info from matching
 		Book book = matching.getBook();
-
-		// Check book status
-		if(book.getStatus().equals(EBookStatus.LOCKED.getValue())){
-			// If receiver # librarian, do not transfer
-
-
-		}
-
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
 
@@ -702,9 +694,17 @@ public class RequestController extends BaseController {
 			throw new PinExpiredException("Pin is expired");
 		}
 
+		Book book = matching.getBook();
+		// Check book status
+		if (book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+			if (!receiver.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+				return new ResponseEntity<>("Book status is locked, cannot transfer to other reader", HttpStatus.BAD_REQUEST);
+			}
+		}
+
 		// Create a borrowing request
 		Request borrowingRequest = new Request();
-		borrowingRequest.setBook(matching.getBook());
+		borrowingRequest.setBook(book);
 		borrowingRequest.setUser(receiver);
 		borrowingRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 		borrowingRequest.setType(ERequestType.BORROWING.getValue());
