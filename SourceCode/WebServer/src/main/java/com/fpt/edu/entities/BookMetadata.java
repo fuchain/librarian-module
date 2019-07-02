@@ -134,7 +134,7 @@ public class BookMetadata {
 
 	@JsonIgnore
 	public boolean isLastRejectCountOver() {
-		return this.getRejectCount() >= MAX_REJECT_COUNT;
+		return this.getRejectCount() > MAX_REJECT_COUNT;
 	}
 
 	@JsonIgnore

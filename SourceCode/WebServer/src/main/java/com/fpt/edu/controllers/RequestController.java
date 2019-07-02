@@ -126,6 +126,11 @@ public class RequestController extends BaseController {
 
 			// Update transfer status of book
 			Book book = bookServices.getBookById(bookId);
+
+			if (book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+				return new ResponseEntity<>("Book status is locked, cannot make a request to return", HttpStatus.BAD_REQUEST);
+			}
+
 			book.setTransferStatus(EBookTransferStatus.TRANSFERRING.getValue());
 			bookServices.updateBook(book);
 
@@ -401,6 +406,7 @@ public class RequestController extends BaseController {
 		book.setUser(receiver);
 
 		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.setStatus(book.getStatus());
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 		// Submit transaction to BlockChain
 		BigchainTransactionServices services = new BigchainTransactionServices();
@@ -640,7 +646,6 @@ public class RequestController extends BaseController {
 
 		// Get book info from matching
 		Book book = matching.getBook();
-
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
 
@@ -689,9 +694,17 @@ public class RequestController extends BaseController {
 			throw new PinExpiredException("Pin is expired");
 		}
 
+		Book book = matching.getBook();
+		// Check book status
+		if (book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+			if (!receiver.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+				return new ResponseEntity<>("Book status is locked, cannot transfer to other reader", HttpStatus.BAD_REQUEST);
+			}
+		}
+
 		// Create a borrowing request
 		Request borrowingRequest = new Request();
-		borrowingRequest.setBook(matching.getBook());
+		borrowingRequest.setBook(book);
 		borrowingRequest.setUser(receiver);
 		borrowingRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 		borrowingRequest.setType(ERequestType.BORROWING.getValue());
@@ -741,6 +754,7 @@ public class RequestController extends BaseController {
 		Date sendTime = new Date();
 
 		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.setStatus(book.getStatus());
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 
 		BigchainTransactionServices services = new BigchainTransactionServices();
@@ -924,16 +938,15 @@ public class RequestController extends BaseController {
 		Long matchingId = bodyObject.getLong("matching_id");
 		String reason = bodyObject.getString("reason");
 
-
 		Matching matching = matchingServices.getMatchingById(matchingId);
 		if (matching == null) {
-			throw new Exception("Matching id: " + matchingId + " not found");
+			return new ResponseEntity<>("Matching id: " + matchingId + " not found", HttpStatus.BAD_REQUEST);
 		}
 		if (!matching.getBorrowerRequest().getUser().getId().equals(receiver.getId())) {
-			throw new Exception("User id: " + receiver.getId() + " is not the receiver");
+			return new ResponseEntity<>("User id: " + receiver.getId() + " is not the receiver", HttpStatus.BAD_REQUEST);
 		}
 		if (matching.getStatus() != EMatchingStatus.PENDING.getValue()) {
-			throw new Exception("Cannot reject matching with status: " + matching.getStatus());
+			return new ResponseEntity<>("Cannot reject matching with status: " + matching.getStatus(), HttpStatus.BAD_REQUEST);
 		}
 
 		// Get hash value
@@ -962,6 +975,14 @@ public class RequestController extends BaseController {
 		bookMetadata.setRejectorEmail(receiver.getEmail());
 		// Update reject count
 		bookMetadata.increaseLastRejectCount();
+
+		// Update book status
+		if (bookMetadata.isLastRejectCountOver()) {
+			bookMetadata.setStatus(EBookStatus.LOCKED.getValue());
+		} else {
+			bookMetadata.setStatus(book.getStatus());
+		}
+
 		// Set new transaction timestamp
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 
@@ -1013,6 +1034,10 @@ public class RequestController extends BaseController {
 				transactionServices.insertTransaction(tran);
 
 				if (bookMetadata.isLastRejectCountOver()) { // If reject count > 5
+					// Update book status
+					book.setStatus(EBookStatus.LOCKED.getValue());
+					bookServices.updateBook(book);
+
 					// Push notification to librarian
 					notificationService.pushNotification(
 						Constant.LIBRARIAN_EMAIL,

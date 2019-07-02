@@ -54,14 +54,6 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 		return category;
 	}
 
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-
-	public String getSubjectCode() {
-		return this.subjectCode;
-	}
-
 	@JsonProperty
 	public List<String> getParseedSubjectCode() {
 		ArrayList<String> parsedCode = new ArrayList<>();
@@ -78,6 +70,21 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 		}
 
 		return parsedCode;
+	}
+
+	@OneToMany(mappedBy = "bookDetail", cascade = { CascadeType.PERSIST })
+	@JsonIgnore
+	private List<Book> books;
+
+	@Column(name = "ISBN")
+	private String isbn;
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public String getSubjectCode() {
+		return this.subjectCode;
 	}
 
 	public void setSubjectCode(String subjectCode) {
@@ -104,9 +111,6 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 		this.isbn = isbn;
 	}
 
-	@Column(name = "ISBN")
-	private String isbn;
-
 	public String getLibol() {
 		return libol;
 	}
@@ -130,10 +134,6 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 	public void setThumbnail(String thumbnail) {
 		this.thumbnail = thumbnail;
 	}
-
-	@OneToMany(mappedBy = "bookDetail", cascade = { CascadeType.PERSIST })
-	@JsonIgnore
-	private List<Book> books;
 
 	public String getPublishedDate() {
 		return publishedDate;

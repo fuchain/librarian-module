@@ -24,8 +24,9 @@ public class Constant {
 	public static final String NUM_OF_REQUESTING_BOOK = "num_of_requesting_book";
 	public static final int DEFAULT_PAGE = 1;
 	public static final int DEFAULT_OFFSET = 20;
-	public static final String AUTHORITIES_HEADER = "roles";
+	public static final String AUTHORITIES_HEADER = "role";
 	public static final String ROLES_LIBRARIAN = "librarian";
+	public static final String ROLES_READER = "reader";
 	public static final int BIGCHAIN_REQUEST_TIMEOUT = 60;
 	public static final String EMPTY_VALUE = "";
 	public static final String ISBN = "isbn";

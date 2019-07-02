@@ -43,23 +43,20 @@ public class AuthenticationController {
 		long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
 		Date expireDate = new Date(expireDateUnixTime * 1000);
 
-		List<Role> roles;
-		if (user.getRoles() == null) {
-			roles = new ArrayList<>();
+		Role role;
+		if (user.getRole() == null) {
+			role = new Role();
 		} else {
-			roles = user.getRoles();
+			role = user.getRole();
 		}
 
-		String[] authorities = new String[roles.size()];
-		for (int i = 0; i < roles.size(); i++) {
-			authorities[i] = roles.get(i).getName();
-		}
+		String authorities = role.getName();
 
 		String responseToken = JWT.create()
 			.withClaim("id", user.getId())
 			.withSubject(user.getEmail())
 			.withExpiresAt(expireDate)
-			.withArrayClaim(Constant.AUTHORITIES_HEADER, authorities)
+			.withClaim(Constant.AUTHORITIES_HEADER, authorities)
 			.sign(Algorithm.HMAC512(SECRET.getBytes()));
 
 		// Response token JSON
