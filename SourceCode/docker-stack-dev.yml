@@ -36,18 +36,17 @@ services:
       placement:
         constraints: [node.role == manager]
 
-  postgresn:
-    image: postgres
+  mongodb:
+    image: mongo
     ports:
-      - 5433:5432
+      - 27018:27017
     volumes:
-      - postgresn-data:/var/lib/postgresql/data
+      - mongodb-data:/data/db
     networks:
       - node
     environment:
-      POSTGRES_USER: capstone
-      POSTGRES_PASSWORD: capstone
-      POSTGRES_DB: node
+      MONGO_INITDB_ROOT_USERNAME: capstone
+      MONGO_INITDB_ROOT_PASSWORD: capstone
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -102,11 +101,10 @@ services:
       - postgresn
       - redis
     environment:
-      DB_HOST: postgresn
+      DB_HOST: mongodb
       DB_USER: capstone
       DB_PASS: capstone
-      DB_NAME: node
-      DB_DIALECT: postgres
+      DB_NAME: librariannode
       REDIS_HOST: redis
     deploy:
       replicas: 1
@@ -158,4 +156,4 @@ networks:
 volumes:
   redis-data:
   postgres-data:
-  postgresn-data:
+  mongodb-data:

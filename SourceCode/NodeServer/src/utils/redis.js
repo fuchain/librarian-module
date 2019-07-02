@@ -1,10 +1,8 @@
-const redis = require("redis");
-const { promisify } = require("util");
+import redis from "redis";
+import { promisify } from "util";
+import env from "@utils/env";
 
-export const client = redis.createClient(
-    6379,
-    process.env.REDIS_HOST || "redis"
-);
+export const client = redis.createClient(6379, env.redisHost || "redis");
 const getAsync = promisify(client.get).bind(client);
 
 const KEY_CONSTANT = "NODE_";
