@@ -378,4 +378,42 @@ public class LibrarianController extends BaseController {
 		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "Librarian ends life cycle of book", response = JSONObject.class)
+	@PutMapping("/end_book")
+	public ResponseEntity<JSONObject> endBooklife(@RequestBody String body, Principal principal) {
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+
+		JSONObject bodyObject = new JSONObject(body);
+		Long bookId = bodyObject.getLong("book_id");
+
+		Book book = bookServices.getBookById(bookId);
+		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.setCurrentKeeper(Constant.EMPTY_VALUE);
+		bookMetadata.setStatus(EBookStatus.DAMAGED.getValue());
+		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+
+		// Update in DB
+		book.setUser(null);
+		book.setStatus(EBookStatus.DAMAGED.getValue());
+
+		JSONObject jsonResult = new JSONObject();
+		return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "", response = JSONObject.class)
+	@PutMapping("/reuse_book")
+	public ResponseEntity<JSONObject> reuseBook(@RequestBody String body, Principal principal) {
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+
+		JSONObject bodyObject = new JSONObject(body);
+		Long bookId = bodyObject.getLong("book_id");
+
+		Book book = bookServices.getBookById(bookId);
+
+		JSONObject jsonResult = new JSONObject();
+		return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+	}
+
 }
