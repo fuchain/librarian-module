@@ -500,7 +500,7 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Get Match ID", response = JSONObject.class)
 	@GetMapping("/{id}/matched")
 	public ResponseEntity<String> getMatchedIdOfRequest(@PathVariable Long id) throws Exception {
-		Matching matched = matchingServices.getByRequestId(id);
+		Matching matched = matchingServices.getByRequestId(id, EMatchingStatus.PAIRED.getValue(), EMatchingStatus.PENDING.getValue());
 		JSONObject jsonResponse = new JSONObject();
 		if (matched != null) {
 			jsonResponse.put("matching_id", matched.getId());
@@ -1013,7 +1013,13 @@ public class RequestController extends BaseController {
 				transactionServices.insertTransaction(tran);
 
 				if (bookMetadata.isLastRejectCountOver()) { // If reject count > 5
-
+					// Push notification to librarian
+					notificationService.pushNotification(
+						Constant.LIBRARIAN_EMAIL,
+						"Sách " + book.getBookDetail().getName() + "- #" + book.getId() + " đã bị từ chối " +
+							Constant.MAX_REJECT_COUNT + " lần.",
+						Constant.NOTIFICATION_TYPE_RETURNING
+					);
 				}
 
 				// Override value in response
@@ -1036,6 +1042,7 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
+				// Push notification to librarian
 				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction từ chối của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
