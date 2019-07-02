@@ -38,18 +38,16 @@ public class SimulateDataController extends BaseController {
 	BookDetailRepository bookDetailRepository;
 	@Autowired
 	BigchainTransactionServices bigchainTransactionServices;
-	NotificationService notificationService;
 
 	public SimulateDataController(
 		UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices,
 		ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices,
-		TransactionServices transactionServices, PublishSubscribe publishSubscribe,
-		RequestQueueManager requestQueueManager, BigchainTransactionServices bigchainTransactionServices,
-		NotificationService notificationService
+		PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager,
+		BigchainTransactionServices bigchainTransactionServices, NotificationService notificationService
 	) {
 		super(
 			userServices, bookDetailsServices, bookServices, importHelper, matchingServices,
-			requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService
+			requestServices, publishSubscribe, requestQueueManager, notificationService
 		);
 		this.bigchainTransactionServices = bigchainTransactionServices;
 	}

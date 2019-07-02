@@ -10,7 +10,6 @@ import com.bigchaindb.util.KeyPairUtils;
 import com.fpt.edu.common.helpers.KeypairHelper;
 import com.google.api.client.util.Base64;
 import com.google.gson.JsonObject;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import okhttp3.Response;
