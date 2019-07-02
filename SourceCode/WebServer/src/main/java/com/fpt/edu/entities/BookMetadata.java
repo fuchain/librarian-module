@@ -12,31 +12,18 @@ public class BookMetadata {
 	private Map<String, String> data;
 
 	public BookMetadata() {
-		this.data = new TreeMap<>();
-		this.data.put(CURRENT_KEEPER, EMPTY_VALUE);
-		this.data.put(BOOK_STATUS, EMPTY_VALUE);
-		this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
-		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
-		this.data.put(REJECT_REASON, EMPTY_VALUE);
-		this.data.put(IMAGE_HASH, EMPTY_VALUE);
-		this.data.put(IMAGE_LINK, EMPTY_VALUE);
-		this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
+		String refreshBigchain = System.getenv("REFRESH_BIGCHAIN"); // TRUE/FALSE
+		boolean isRestoring =  refreshBigchain == null ? false : Boolean.valueOf(refreshBigchain);
+		if (isRestoring) {
+			this.applyOldMetadataModel();
+		} else {
+			this.applyLatestMetadataModel();
+		}
 	}
 
 	// This constructor is used to get metadata from database
-	public BookMetadata(
-		String currentKeeper,
-		String status
-	) {
-		this.data = new TreeMap<>();
-		this.data.put(CURRENT_KEEPER, currentKeeper);
-		this.data.put(BOOK_STATUS, status);
-		this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
-		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
-		this.data.put(REJECT_REASON, EMPTY_VALUE);
-		this.data.put(IMAGE_HASH, EMPTY_VALUE);
-		this.data.put(IMAGE_LINK, EMPTY_VALUE);
-		this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
+	public BookMetadata(String currentKeeper, String status) {
+		this.applyLatestMetadataModel();
 	}
 
 	// This constructor is used to get metadata from blockchain
@@ -50,15 +37,25 @@ public class BookMetadata {
 		String imgUrl,
 		String rejectorEmail
 	) {
-		this.data = new TreeMap<>();
-		this.data.put(CURRENT_KEEPER, currentKeeper);
-		this.data.put(BOOK_STATUS, status);
-		this.data.put(TX_TIMESTAMP, transactionTimestamp);
-		this.data.put(REJECT_COUNT, String.valueOf(rejectCount));
-		this.data.put(REJECT_REASON, rejectReason);
-		this.data.put(IMAGE_HASH, imgHash);
-		this.data.put(IMAGE_LINK, imgUrl);
+		this.applyOldMetadataModel();
 		this.data.put(REJECTOR_EMAIL, rejectorEmail);
+	}
+
+	// Old model doesn't have email of rejector
+	private void applyOldMetadataModel() {
+		this.data = new TreeMap<>();
+		this.data.put(CURRENT_KEEPER, EMPTY_VALUE);
+		this.data.put(BOOK_STATUS, EMPTY_VALUE);
+		this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
+		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
+		this.data.put(REJECT_REASON, EMPTY_VALUE);
+		this.data.put(IMAGE_HASH, EMPTY_VALUE);
+		this.data.put(IMAGE_LINK, EMPTY_VALUE);
+	}
+
+	private void applyLatestMetadataModel() {
+		this.applyOldMetadataModel();
+		this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
 	}
 
 	public Map<String, String> getData() {
