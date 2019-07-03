@@ -1,18 +1,19 @@
 import sgMail from "@sendgrid/mail";
+import env from "@utils/env";
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+sgMail.setApiKey(env.sendgridKey);
 
-const
-    defaultSender = "librarian@fe.edu.vn",
-    defaultSubject = "Notification from librarian",
-    defaultText = "We have an announcement for you",
-    defaultHtml = "<strong>We have an announcement for you</strong>";
+const defaultSender = "librarian@fe.edu.vn",
+    defaultSubject = "Thông báo từ phòng thư viện",
+    defaultText = "Phòng thư viện xin gửi thông báo đến bạn",
+    defaultHtml = "<strong>Phòng thư viện xin gửi thông báo đến bạn</strong>";
 
-export function sendEmail(
-    to = "", from = defaultSender,
-    subject = defaultSubject,
-    text = defaultText, html = defaultHtml
-) {
-    const msg = { to, from, subject, text, html };
-    sgMail.send(msg);
+export function sendEmail(datas) {
+    const to = datas.to || "",
+        from = datas.from || defaultSender,
+        subject = datas.subject || defaultSubject,
+        text = datas.text || defaultText,
+        html = datas.html || defaultHtml;
+
+    sgMail.send({ to, from, subject, text, html });
 }
