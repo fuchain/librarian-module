@@ -446,6 +446,15 @@ export default {
         });
 
         this.dataList = [].concat(data);
+
+        if (this.$route.params.bookid && !isNaN(this.$route.params.bookid)) {
+          const instanceId = parseInt(this.$route.params.bookid);
+          const instance = this.dataList.find(e => e.id === instanceId);
+
+          if (instance) {
+            this.openHistory(instance);
+          }
+        }
       })
       .finally(() => {
         this.isMounted = true;

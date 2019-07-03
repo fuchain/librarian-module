@@ -98,6 +98,13 @@ const router = new Router({
             )
         },
         {
+          path: "librarian/book-details-manage/:id/:bookid",
+          component: () =>
+            import(
+              "@/modules/librarian/book-instance-manage/BookInstanceManage.vue"
+            )
+        },
+        {
           path: "librarian/user-manage",
           component: () =>
             import("@/modules/librarian/user-manage/UserManage.vue")
@@ -186,6 +193,8 @@ router.beforeEach((to, from, next) => {
         }
       } else {
         if (to.path === "/") {
+          next({ path: "/librarian/statistics" });
+        } else if (to.path.includes("/books/")) {
           next({ path: "/librarian/statistics" });
         }
       }
