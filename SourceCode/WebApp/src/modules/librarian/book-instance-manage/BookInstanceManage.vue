@@ -1,6 +1,9 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <h2 class="mb-8 ml-4" v-if="bookDetail.id">Quản lí đầu sách #{{ $route.params.id || "--" }}</h2>
+    <h2
+      class="mb-8 ml-4"
+      v-if="bookDetail.id"
+    >Quản lí đầu sách #{{ $route.params.id || "--" }} ({{ dataList.length }} cuốn)</h2>
 
     <div class="flex items-center justify-center">
       <book-card :item="bookDetail" v-if="bookDetail.id" style="max-width: 250px;">
