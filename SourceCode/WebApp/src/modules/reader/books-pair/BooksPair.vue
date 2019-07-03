@@ -3,7 +3,13 @@
     <vx-card>
       <h4 class="mb-4">Nhập mã PIN xác nhận</h4>
       <div class="mb-4">
-        <vs-input size="large" class="w-full" placeholder="Mã PIN xác nhận" v-model="pin" />
+        <vs-input
+          v-on:keyup.enter="verify"
+          size="large"
+          class="w-full"
+          placeholder="Mã PIN xác nhận"
+          v-model="pin"
+        />
       </div>
       <div>
         <vs-button

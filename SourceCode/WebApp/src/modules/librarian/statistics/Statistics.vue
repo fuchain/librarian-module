@@ -24,11 +24,11 @@
         <p class="xl:w-3/4 lg:w-4/5 md:w-2/3 w-4/5 mx-auto text-white">
           Ứng dụng
           <strong>Thư viện FU</strong>
-          đã giúp
-          <strong>{{ totalUsers }}</strong> người dùng trao đổi
+          đang giúp
+          <strong>{{ totalUsers }}</strong> người đọc trao đổi
           <strong>
             <span style="font-size: 1.5rem;">{{ totalBookInstances }}</span>
-          </strong> quyển sách trong
+          </strong> quyển sách của
           <strong>{{ totalBookDetails }}</strong> đầu sách trong thư viện, xem chi tiết hơn ở phần hiệu suất.
         </p>
       </vx-card>

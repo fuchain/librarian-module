@@ -11,7 +11,13 @@
           />
         </div>
         <div class="vx-col sm:w-1/3 w-full">
-          <vs-button type="relief" color="primary" class="w-full" @click="doSearch">Tìm sách</vs-button>
+          <vs-button
+            type="relief"
+            color="primary"
+            class="w-full"
+            @click="doSearch"
+            icon="search"
+          >Tìm sách</vs-button>
         </div>
       </div>
       <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
