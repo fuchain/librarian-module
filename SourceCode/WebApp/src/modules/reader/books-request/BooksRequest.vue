@@ -76,6 +76,11 @@ export default {
   components: {
     BookCard
   },
+  computed: {
+    phone() {
+      return this.$store.getters.phone;
+    }
+  },
   data() {
     return {
       searchText: "",
@@ -106,6 +111,24 @@ export default {
   methods: {
     doSearch() {
       if (!this.searchText.trim()) return;
+
+      if (!this.phone) {
+        this.$vs.notify({
+          title: "Chưa cập nhật số điện thoại",
+          text:
+            "Vui lòng cập nhật số điện thoại ở mục 'Hồ sơ' của bạn trước khi mượn sách",
+          color: "danger",
+          position: "top-center",
+          fixed: true,
+          iconPack: "feather",
+          icon: "icon-alert-triangle",
+          click: () => {
+            this.$router.push("/profile");
+          }
+        });
+        return;
+      }
+
       this.$vs.loading();
 
       this.$http
