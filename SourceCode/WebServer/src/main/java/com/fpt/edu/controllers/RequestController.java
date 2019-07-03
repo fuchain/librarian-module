@@ -461,7 +461,7 @@ public class RequestController extends BaseController {
 				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
-					Constant.NOTIFICATION_TYPE_KEEPING
+					Constant.NOTIFICATION_TYPE_BOOKINSTANCE + ":" + book.getId()
 				);
 
 				callback.set(true);
@@ -791,7 +791,7 @@ public class RequestController extends BaseController {
 				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
-					Constant.NOTIFICATION_TYPE_KEEPING
+					Constant.NOTIFICATION_TYPE_BOOKINSTANCE + ":" + book.getId()
 				);
 
 				callback.set(true);
@@ -1025,8 +1025,8 @@ public class RequestController extends BaseController {
 					notificationService.pushNotification(
 						Constant.LIBRARIAN_EMAIL,
 						"Sách " + book.getBookDetail().getName() + "- #" + book.getId() + " đã bị từ chối " +
-							Constant.MAX_REJECT_COUNT + " lần.",
-						Constant.NOTIFICATION_TYPE_RETURNING
+							bookMetadata.getRejectCount() + " lần.",
+						Constant.NOTIFICATION_TYPE_BOOKINSTANCE + ":" + book.getId()
 					);
 				}
 
@@ -1054,7 +1054,7 @@ public class RequestController extends BaseController {
 				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction từ chối của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
-					Constant.NOTIFICATION_TYPE_KEEPING
+					Constant.NOTIFICATION_TYPE_BOOKINSTANCE + ":" + book.getId()
 				);
 
 				callback.set(true);
@@ -1085,7 +1085,6 @@ public class RequestController extends BaseController {
 		return new ResponseEntity<>(responseObj.toString(), HttpStatus.CREATED);
 	}
 
-
 	@ApiOperation(value = "Get Request Overview", response = String.class)
 	@RequestMapping(value = "/overview", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<String> getQueueInfo() throws JsonProcessingException {
@@ -1096,6 +1095,5 @@ public class RequestController extends BaseController {
 		result.put("totalMatchingRequest", matchingRequest);
 		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
 	}
-
 
 }
