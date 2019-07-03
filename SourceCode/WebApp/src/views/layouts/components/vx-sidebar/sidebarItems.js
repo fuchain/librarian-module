@@ -23,6 +23,12 @@ const adminMenu = [
     icon: "BookIcon"
   },
   {
+    url: "/librarian/queue",
+    name: "Sách đang ghép",
+    slug: "queue",
+    icon: "LayersIcon"
+  },
+  {
     url: "/librarian/user-manage",
     name: "Quản lí tài khoản",
     slug: "users-manage",
@@ -32,7 +38,7 @@ const adminMenu = [
     url: "/librarian/notification/send",
     name: "Gửi thông báo",
     slug: "notification-send",
-    icon: "BellIcon",
+    icon: "SendIcon",
     tag: "beta",
     tagColor: "darkorange"
   },
@@ -47,7 +53,7 @@ const adminMenu = [
   {
     url: null,
     name: "Theo dõi vận hành",
-    icon: "DatabaseIcon",
+    icon: "CloudIcon",
     submenu: [
       {
         url: "/librarian/monitoring/infrastructure",

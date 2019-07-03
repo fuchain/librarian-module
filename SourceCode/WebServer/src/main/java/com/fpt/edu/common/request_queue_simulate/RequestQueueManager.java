@@ -51,8 +51,6 @@ public class RequestQueueManager implements Observer {
         }
         LOGGER.info("Initial queue success, number of queue is " + requestMap.size());
     }
-
-
     public void addNewRequestToQueue(Request request) {
         long bookDetailId = request.getBookDetail().getId();
         if (requestMap.get(bookDetailId) == null) {
@@ -78,8 +76,6 @@ public class RequestQueueManager implements Observer {
             }
         }
     }
-
-
     private boolean updateRequest(Request request) throws NotFoundException {
         long bookDetailId = request.getBookDetail().getId();
         if (this.requestMap.get(bookDetailId) == null) {
@@ -108,8 +104,6 @@ public class RequestQueueManager implements Observer {
         }
         return false;
     }
-
-
     public Request findTheMatch(Request request) throws NotFoundException {
         long bookDetailId = request.getBookDetail().getId();
         if (this.requestMap.get(bookDetailId) == null) {
@@ -129,7 +123,6 @@ public class RequestQueueManager implements Observer {
         }
         return null;
     }
-
     public Request removeRequestOutTheQueue(Request request) throws NotFoundException {
         long bookDetailId = request.getBookDetail().getId();
         if (this.requestMap.get(bookDetailId) == null) {
@@ -151,11 +144,6 @@ public class RequestQueueManager implements Observer {
     }
         return request;
     }
-
-
-
-
-
     @Override
     public void doUpdate(Message mess) throws NotFoundException {
         if (mess.getAction().equalsIgnoreCase(Constant.ACTION_ADD_NEW)) {
@@ -164,4 +152,12 @@ public class RequestQueueManager implements Observer {
             this.updateRequest((Request) mess.getMessage());
         }
     }
+
+	public Map<Long, RequestQueue> getRequestMap() {
+		return requestMap;
+	}
+
+	public void setRequestMap(Map<Long, RequestQueue> requestMap) {
+		this.requestMap = requestMap;
+	}
 }

@@ -188,6 +188,7 @@ export default {
   methods: {
     toggleContent() {
       this.$refs.content.style.overflow = "hidden";
+      if (!this.$refs.content || !this.$refs.content.scrollHeight) return;
       let scrollHeight = this.$refs.content.scrollHeight;
       if (this.maxHeight === "1.5rem") {
         this.maxHeight = `${scrollHeight}px`;

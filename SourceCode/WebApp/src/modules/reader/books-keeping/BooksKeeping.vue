@@ -1,5 +1,5 @@
 <template>
-  <book-list :books="books" v-if="loaded" @doReload="getList"/>
+  <book-list :books="books" v-if="loaded" @doReload="getList" />
 </template>
 
 <script>
@@ -7,7 +7,7 @@ import { mapGetters } from "vuex";
 import store from "./store";
 import BookList from "./components/BookList.vue";
 
-export const STORE_KEY = "student-book-keeping";
+export const STORE_KEY = "reader-book-keeping";
 
 export default {
   components: {

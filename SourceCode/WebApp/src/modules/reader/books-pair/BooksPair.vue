@@ -3,10 +3,15 @@
     <vx-card>
       <h4 class="mb-4">Nhập mã PIN xác nhận</h4>
       <div class="mb-4">
-        <vs-input size="large" class="w-full" placeholder="Mã PIN xác nhận" v-model="pin"/>
+        <vs-input size="large" class="w-full" placeholder="Mã PIN xác nhận" v-model="pin" />
       </div>
       <div>
-        <vs-button class="w-full" @click="verify" icon="done">Xác nhận đã nhận sách</vs-button>
+        <vs-button
+          class="w-full"
+          @click="verify"
+          icon="done"
+          :disabled="!pin.trim()"
+        >Xác nhận đã nhận sách</vs-button>
       </div>
     </vx-card>
 
@@ -18,7 +23,7 @@
               <div
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
               >
-                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
                 <span class="text-sm font-semibold ml-2" @click="doneVerify">XÁC NHẬN NHẬN SÁCH</span>
               </div>
@@ -26,7 +31,7 @@
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               >
-                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4" />
 
                 <span class="text-sm font-semibold ml-2">CHI TIẾT</span>
               </div>
@@ -45,6 +50,11 @@ export default {
   components: {
     BookCard
   },
+  computed: {
+    phone() {
+      return this.$store.getters.phone;
+    }
+  },
   data() {
     return {
       pin: "",
@@ -53,19 +63,24 @@ export default {
     };
   },
   methods: {
-    async fakeLoad(customTime) {
-      return new Promise((resolve, reject) => {
-        this.$vs.loading();
-        setTimeout(
-          function() {
-            this.$vs.loading.close();
-            resolve();
-          }.bind(this),
-          customTime || 500
-        );
-      });
-    },
     async verify() {
+      if (!this.phone) {
+        this.$vs.notify({
+          title: "Chưa cập nhật số điện thoại",
+          text:
+            "Vui lòng cập nhật số điện thoại ở mục 'Hồ sơ' của bạn trước khi mượn sách",
+          color: "danger",
+          position: "top-center",
+          fixed: true,
+          iconPack: "feather",
+          icon: "icon-alert-triangle",
+          click: () => {
+            this.$router.push("/profile");
+          }
+        });
+        return;
+      }
+
       this.$vs.loading();
 
       this.$http

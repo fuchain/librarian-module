@@ -1,7 +1,10 @@
 package com.fpt.edu.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.RequestQueue;
 import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.helpers.SchedulerJob;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
@@ -13,6 +16,7 @@ import com.fpt.edu.exceptions.InvalidExpressionException;
 import com.fpt.edu.services.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.iterators.EntrySetMapIterator;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,8 +34,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -403,18 +406,10 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Librarian ends life cycle of book", response = JSONObject.class)
 	@PutMapping("/end_book")
-	public ResponseEntity<JSONObject> endBookLife(@RequestBody String body, Principal principal) throws Exception {
+	public ResponseEntity<String> endBookLife(@RequestBody String body, Principal principal) throws Exception {
 		JSONObject jsonResult = new JSONObject();
 		AtomicBoolean callback = new AtomicBoolean(false);
 		Date sendTime = new Date();
-
-		// Check sender is librarian or not
-		User librarian = userServices.getUserByEmail(principal.getName());
-		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
-			jsonResult.put("message", "The sender is not librarian role");
-			return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
-		}
-
 		JSONObject bodyObject = new JSONObject(body);
 		Long bookId = bodyObject.getLong("book_id");
 
@@ -422,7 +417,7 @@ public class LibrarianController extends BaseController {
 
 		if (!book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
 			jsonResult.put("message", "This book is in 'locked' status");
-			return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
 		}
 
 		BookMetadata bookMetadata = book.getMetadata();
@@ -464,12 +459,11 @@ public class LibrarianController extends BaseController {
 		while (true) {
 			now = new Date();
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
-
 			if (duration > Constant.BIGCHAIN_REQUEST_TIMEOUT || callback.get()) {
 				if (jsonResult.get("status_code").equals(HttpStatus.OK.value())) {
-					return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 				} else {
-					return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
 				}
 			}
 		}
@@ -548,5 +542,51 @@ public class LibrarianController extends BaseController {
 			}
 		}
 	}
+
+
+	@ApiOperation(value = "Get Queue Overview", response = String.class)
+	@RequestMapping(value = "/queue/overview", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> getQueueInfo() throws JsonProcessingException {
+		HashMap<Long, RequestQueue> requestQueueMap = (HashMap<Long, RequestQueue>) this.requestQueueManager.getRequestMap();
+		JSONArray response = new JSONArray();
+		Iterator<Map.Entry<Long, RequestQueue>> iterator = requestQueueMap.entrySet().iterator();
+		JSONArray result = new JSONArray();
+		ObjectMapper mapper = new ObjectMapper();
+		while (iterator.hasNext()) {
+			JSONObject bookQueueNode = new JSONObject();
+			Map.Entry<Long, RequestQueue> currentBookQueue = iterator.next();
+			BookDetail bookDetail = bookDetailsServices.getBookById(currentBookQueue.getKey());
+			bookQueueNode.put("bookDetail", new JSONObject(mapper.writeValueAsString(bookDetail)));
+			PriorityQueue<Request> borrowQueue = currentBookQueue.getValue().getBorrowRequestQueue();
+			JSONArray borrowArr = new JSONArray();
+			Iterator<Request> borrowRequestIterator = borrowQueue.iterator();
+			convertQueueToJSONARR(borrowRequestIterator, borrowArr);
+			PriorityQueue<Request> returnQueue = currentBookQueue.getValue().getReturnRequestQueue();
+			Iterator<Request> returnRequestIterator = returnQueue.iterator();
+			JSONArray returnArr = new JSONArray();
+			convertQueueToJSONARR(returnRequestIterator, returnArr);
+			if (borrowArr.length() > 0 || returnArr.length() > 0) {
+				bookQueueNode.put("borrowRequest", borrowArr);
+				bookQueueNode.put("returnRequest", returnArr);
+				result.put(bookQueueNode);
+			}
+		}
+		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+	}
+
+
+	private void convertQueueToJSONARR(Iterator<Request> iterator, JSONArray jsonArr) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		while (iterator.hasNext()) {
+			Request currentRequest = iterator.next();
+			JSONObject requestData = new JSONObject(mapper.writeValueAsString(currentRequest));
+			User user = currentRequest.getUser();
+			requestData.put("user", new JSONObject(mapper.writeValueAsString(user)));
+			requestData.remove("bookDetail");
+			jsonArr.put(requestData);
+		}
+
+	}
+
 
 }
