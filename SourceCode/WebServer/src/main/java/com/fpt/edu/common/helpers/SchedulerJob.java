@@ -122,19 +122,21 @@ public class SchedulerJob implements Job {
 		}
 	}
 
-	private void pushNotiFromRequest(Request request) throws UnirestException {
-		if (request.getType() == ERequestType.RETURNING.getValue()) {
-			notificationService.pushNotification(
-				request.getUser().getEmail(),
-				"Hệ thống đã hủy yêu cầu trả sách " + request.getBook().getBookDetail().getName() + " - #" + request.getBook().getId(),
-				Constant.NOTIFICATION_TYPE_KEEPING
-			);
-		} else if (request.getType() == ERequestType.BORROWING.getValue()) {
-			notificationService.pushNotification(
-				request.getUser().getEmail(),
-				"Hệ thống đã hủy yêu cầu mượn sách " + request.getBookDetail().getName(),
-				Constant.NOTIFICATION_TYPE_KEEPING
-			);
+	private void pushNotiFromRequest(Request request) {
+		if (!request.getUser().getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			if (request.getType() == ERequestType.RETURNING.getValue()) {
+				notificationService.pushNotification(
+					request.getUser().getEmail(),
+					"Hệ thống đã hủy yêu cầu trả sách " + request.getBook().getBookDetail().getName() + " - #" + request.getBook().getId(),
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
+			} else if (request.getType() == ERequestType.BORROWING.getValue()) {
+				notificationService.pushNotification(
+					request.getUser().getEmail(),
+					"Hệ thống đã hủy yêu cầu mượn sách " + request.getBookDetail().getName(),
+					Constant.NOTIFICATION_TYPE_KEEPING
+				);
+			}
 		}
 	}
 
