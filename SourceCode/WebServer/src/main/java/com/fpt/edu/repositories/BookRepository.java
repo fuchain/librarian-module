@@ -34,7 +34,7 @@ public interface BookRepository extends PagingAndSortingRepository<Book, Long> {
 		value = "" +
 			"SELECT b " +
 			"FROM Book b " +
-			"WHERE b.bookDetail.id = :bookDetailId"
+			"WHERE b.bookDetail.id = :bookDetailId and b.user is not null"
 	)
 	Page<Book> findBookListByBookDetailId(
 		@Param("bookDetailId") Long bookDetailId,
