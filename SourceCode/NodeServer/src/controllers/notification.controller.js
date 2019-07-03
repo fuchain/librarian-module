@@ -2,6 +2,7 @@ import { io } from "../socket/socket";
 
 import { getRedisItem } from "@utils/redis";
 import { Notification } from "@models";
+import { sendEmail } from "@utils/sendgrid";
 
 const pushNotification = async (req, res) => {
     const { email, message, type } = req.body;
@@ -16,6 +17,8 @@ const pushNotification = async (req, res) => {
             type
         });
         await newNotification.save();
+
+        sendEmail(email, undefined, undefined, message, message)
 
         if (!socketId) {
             res.status(200);
