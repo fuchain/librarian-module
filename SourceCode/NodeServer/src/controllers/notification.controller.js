@@ -19,9 +19,9 @@ const pushNotification = async (req, res) => {
         await newNotification.save();
         
         sendEmail({
-            "to": email,
-            "text": message,
-            "html": message
+            to: email,
+            text: message,
+            html: message
         })
 
         if (!socketId) {

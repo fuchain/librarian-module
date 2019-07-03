@@ -10,11 +10,11 @@ const
 
 export function sendEmail(datas) {
     const
-        to = datas["to"] || "",
-        from = datas["from"] || defaultSender,
-        subject = datas['subject'] || defaultSubject,
-        text = datas['text'] || defaultText,
-        html = datas['html'] || defaultHtml;
+        to = datas.to || "",
+        from = datas.from || defaultSender,
+        subject = datas.subject || defaultSubject,
+        text = datas.text || defaultText,
+        html = datas.html || defaultHtml;
 
     sgMail.send({ to, from, subject, text, html });
 }
