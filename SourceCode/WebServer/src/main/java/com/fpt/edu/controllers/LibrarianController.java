@@ -1,7 +1,10 @@
 package com.fpt.edu.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.RequestQueue;
 import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.helpers.SchedulerJob;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
@@ -13,6 +16,7 @@ import com.fpt.edu.exceptions.InvalidExpressionException;
 import com.fpt.edu.services.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.iterators.EntrySetMapIterator;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,8 +34,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -415,5 +418,54 @@ public class LibrarianController extends BaseController {
 		JSONObject jsonResult = new JSONObject();
 		return new ResponseEntity<>(jsonResult, HttpStatus.OK);
 	}
+
+
+	@ApiOperation(value = "Get Queue Overview", response = String.class)
+	@RequestMapping(value = "/queue/overview", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> getQueueInfo() throws JsonProcessingException {
+		HashMap<Long, RequestQueue> requestQueueMap = (HashMap<Long, RequestQueue>) this.requestQueueManager.getRequestMap();
+		JSONArray response = new JSONArray();
+		Iterator<Map.Entry<Long, RequestQueue>> iterator  = requestQueueMap.entrySet().iterator();
+		JSONArray result = new JSONArray();
+		ObjectMapper mapper = new ObjectMapper();
+		while (iterator.hasNext()){
+			JSONObject bookQueueNode = new JSONObject();
+			Map.Entry<Long, RequestQueue> currentBookQueue = iterator.next();
+			BookDetail bookDetail = bookDetailsServices.getBookById(currentBookQueue.getKey());
+			bookQueueNode.put("bookDetail",new JSONObject(mapper.writeValueAsString(bookDetail)));
+			PriorityQueue<Request> borrowQueue = currentBookQueue.getValue().getBorrowRequestQueue();
+			JSONArray borrowArr = new JSONArray();
+			Iterator<Request> borrowRequestIterator = borrowQueue.iterator();
+			convertQueueToJSONARR(borrowRequestIterator,borrowArr);
+			PriorityQueue<Request> returnQueue = currentBookQueue.getValue().getReturnRequestQueue();
+			Iterator<Request> returnRequestIterator = returnQueue.iterator();
+			JSONArray returnArr = new JSONArray();
+			convertQueueToJSONARR(returnRequestIterator,returnArr);
+			bookQueueNode.put("borrowRequest",borrowArr);
+			bookQueueNode.put("returnRequest",returnArr);
+			result.put(bookQueueNode);
+		}
+		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+	}
+
+
+
+
+
+
+	private void convertQueueToJSONARR(Iterator<Request> iterator, JSONArray jsonArr ) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		while (iterator.hasNext()){
+			Request currentRequest = iterator.next();
+			JSONObject requestData = new JSONObject(mapper.writeValueAsString(currentRequest));
+			User user = currentRequest.getUser();
+			requestData.put("user",new JSONObject(mapper.writeValueAsString(user)));
+			requestData.remove("bookDetail");
+			jsonArr.put(requestData);
+		}
+
+	}
+
+
 
 }
