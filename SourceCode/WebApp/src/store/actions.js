@@ -85,7 +85,11 @@ const actions = {
   },
 
   // Get notification
-  async getNotification({ commit }) {
+  async getNotification({ commit }, reset) {
+    if (reset) {
+      commit("RESET_NOTIFICATION");
+    }
+
     try {
       const { data } = await $http.get(`${$http.nodeUrl}/notifications`);
 
