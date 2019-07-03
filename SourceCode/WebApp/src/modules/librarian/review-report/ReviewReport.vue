@@ -35,7 +35,7 @@
               <span
                 class="mr-2"
               >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ reviews.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : reviews.length }} of {{ reviews.length }}</span>
-              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
+              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
             </div>
             <vs-dropdown-menu>
               <vs-dropdown-item @click="itemsPerPage=10">
@@ -166,7 +166,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #data-list-list-view {
   .vs-con-table {
     .vs-table--header {
