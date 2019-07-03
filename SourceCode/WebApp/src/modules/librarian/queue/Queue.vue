@@ -80,6 +80,8 @@ export default {
     }
   },
   mounted() {
+    this.$vs.loading();
+
     this.$http
       .get(`${this.$http.baseUrl}/librarian/queue/overview`)
       .then(response => {
@@ -92,6 +94,9 @@ export default {
         });
 
         this.queue = data;
+      })
+      .finally(() => {
+        this.$vs.loading.close();
       });
 
     this.$http.get(`${this.$http.baseUrl}/requests/overview`).then(response => {
