@@ -112,6 +112,10 @@ const mutations = {
     newList.sort((a, b) => b.time - a.time);
 
     state.notifications = newList;
+  },
+
+  RESET_NOTIFICATION(state) {
+    state.notifications = [];
   }
 };
 
