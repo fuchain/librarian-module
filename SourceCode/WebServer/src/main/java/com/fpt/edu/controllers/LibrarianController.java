@@ -410,18 +410,32 @@ public class LibrarianController extends BaseController {
 		JSONObject jsonResult = new JSONObject();
 		AtomicBoolean callback = new AtomicBoolean(false);
 		Date sendTime = new Date();
+
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			jsonResult.put("message", "The sender is not librarian role");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
+		}
+
 		JSONObject bodyObject = new JSONObject(body);
 		Long bookId = bodyObject.getLong("book_id");
 
-		// Set default value for response
-		jsonResult.put("message", "failed to submit transaction");
-		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR);
-
 		Book book = bookServices.getBookById(bookId);
+
+		if (!book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+			jsonResult.put("message", "This book is in 'locked' status");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
+		}
+
 		BookMetadata bookMetadata = book.getMetadata();
 		bookMetadata.setCurrentKeeper(Constant.EMPTY_VALUE);
 		bookMetadata.setStatus(EBookStatus.DAMAGED.getValue());
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR.value());
 
 		BigchainTransactionServices services = new BigchainTransactionServices();
 		services.doTransfer(
@@ -439,7 +453,7 @@ public class LibrarianController extends BaseController {
 				bookServices.updateBook(book);
 
 				jsonResult.put("message", "End book lifecycle successfully");
-				jsonResult.put("status_code", HttpStatus.OK);
+				jsonResult.put("status_code", HttpStatus.OK.value());
 
 				callback.set(true);
 			},
@@ -454,32 +468,86 @@ public class LibrarianController extends BaseController {
 			now = new Date();
 			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
 			if (duration > Constant.BIGCHAIN_REQUEST_TIMEOUT || callback.get()) {
-				if (jsonResult.get("status_code").equals(HttpStatus.OK)) {
+				if (jsonResult.get("status_code").equals(HttpStatus.OK.value())) {
 					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 				} else {
-					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
 		}
 	}
 
-	@ApiOperation(value = "", response = JSONObject.class)
+	@ApiOperation(value = "Librarian reuse book", response = JSONObject.class)
 	@PutMapping("/reuse_book")
-	public ResponseEntity<JSONObject> reuseBook(@RequestBody String body, Principal principal) {
+	public ResponseEntity<JSONObject> reuseBook(@RequestBody String body, Principal principal) throws Exception {
+		// Init data
+		JSONObject jsonResult = new JSONObject();
+		AtomicBoolean callback = new AtomicBoolean(false);
+		Date sendTime = new Date();
+
 		// Check sender is librarian or not
 		User librarian = userServices.getUserByEmail(principal.getName());
 		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
-			return new ResponseEntity<>(new JSONObject().put("message", "The sender is not librarian role"),
-				HttpStatus.BAD_REQUEST);
+			jsonResult.put("message", "The sender is not librarian role");
+			return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
 		}
 
+		// Get book
 		JSONObject bodyObject = new JSONObject(body);
 		Long bookId = bodyObject.getLong("book_id");
-
 		Book book = bookServices.getBookById(bookId);
 
-		JSONObject jsonResult = new JSONObject();
-		return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+		if (!book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+			jsonResult.put("message", "This book is in 'locked' status");
+			return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
+		}
+
+		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.resetRejectCount();
+		bookMetadata.setStatus(EBookStatus.IN_USE.getValue());
+		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+		BigchainTransactionServices services = new BigchainTransactionServices();
+		services.doTransfer(
+			book.getLastTxId(),
+			book.getAssetId(), bookMetadata.getData(),
+			book.getUser().getEmail(), librarian.getEmail(),
+			(transaction, response) -> { // success
+
+				String transactionId = transaction.getId();
+				book.setLastTxId(transactionId);
+				book.setStatus(EBookStatus.IN_USE.getValue());
+				bookServices.updateBook(book);
+
+				jsonResult.put("message", "Submit transaction successfully");
+				jsonResult.put("status_code", HttpStatus.OK.value());
+
+				callback.set(true);
+			},
+			(transaction, response) -> { // failed
+
+				callback.set(true);
+			}
+		);
+
+		// Wait until Bigchain has callback or request time out
+		Date now;
+		while (true) {
+			now = new Date();
+			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+
+			if (duration > Constant.BIGCHAIN_REQUEST_TIMEOUT || callback.get()) {
+				if (jsonResult.get("status_code").equals(HttpStatus.OK.value())) {
+					return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+				} else {
+					return new ResponseEntity<>(jsonResult, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
 	}
 
 

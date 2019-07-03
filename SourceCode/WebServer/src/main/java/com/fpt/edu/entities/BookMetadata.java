@@ -126,6 +126,10 @@ public class BookMetadata {
 		this.data.put(REJECT_COUNT, String.valueOf(this.getRejectCount() + 1));
 	}
 
+	public void resetRejectCount() {
+		this.data.put(REJECT_COUNT, String.valueOf(0));
+	}
+
 	@JsonIgnore
 	public int getRejectCount() {
 		String rejectCount = this.data.get(REJECT_COUNT);
