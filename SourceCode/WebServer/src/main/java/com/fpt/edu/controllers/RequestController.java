@@ -1,10 +1,10 @@
 package com.fpt.edu.controllers;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.common.helpers.ImportHelper;
-import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.request_queue_simulate.Message;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -651,7 +651,7 @@ public class RequestController extends BaseController {
 		// Check receiver is active or not
 		User receiver = userServices.getUserByEmail(principal.getName());
 		if (receiver.isDisabled()) {
-			throw new Exception("User id: " + receiver.getId() + " is not active. Cannot make borrow request");
+			return new ResponseEntity<>("User id: " + receiver.getId() + " is not active. Cannot make borrow request", HttpStatus.BAD_REQUEST);
 		}
 
 		// Get pin from Request Body
@@ -1075,6 +1075,7 @@ public class RequestController extends BaseController {
 
 	@Autowired
 	AmazonS3 s3Client;
+
 	@ApiOperation(value = "Create a transaction", response = Request.class)
 	@PostMapping("/upload")
 	public ResponseEntity<String> testUploadFile(@RequestParam("file") MultipartFile file) {
@@ -1083,5 +1084,18 @@ public class RequestController extends BaseController {
 		responseObj.put("url", fileUrl);
 		return new ResponseEntity<>(responseObj.toString(), HttpStatus.CREATED);
 	}
+
+
+	@ApiOperation(value = "Get Request Overview", response = String.class)
+	@RequestMapping(value = "/overview", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> getQueueInfo() throws JsonProcessingException {
+		long pedingRequest = requestServices.countRequestByStatus(ERequestStatus.PENDING.getValue());
+		long matchingRequest = requestServices.countRequestByStatus(ERequestStatus.MATCHING.getValue());
+		JSONObject result = new JSONObject();
+		result.put("totalPendingRequest", pedingRequest);
+		result.put("totalMatchingRequest", matchingRequest);
+		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+	}
+
 
 }
