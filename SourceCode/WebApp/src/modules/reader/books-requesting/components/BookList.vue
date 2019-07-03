@@ -11,7 +11,7 @@
       placeholder="Tìm tên sách"
       v-model="searchText"
     />
-    <div v-if="books.length">
+    <div v-if="books.length && needTab()">
       <vs-tabs alignment="fixed">
         <vs-tab label="Đã ghép" icon="check" @click="showMatched = true">
           <div>{{ isMatchedNull ? "Chưa có quyển sách nào được ghép." : "" }}</div>
@@ -161,6 +161,8 @@ export default {
       return false;
     },
     listBooks() {
+      if (!this.needTab()) return this.books;
+
       const showMatchedBooks = this.showMatched
         ? this.books.filter(e => e.status === 2)
         : this.books.filter(e => e.status === 1);
@@ -320,6 +322,15 @@ export default {
     },
     callReload() {
       this.$emit("doReload");
+    },
+    needTab() {
+      const needArr = [1, 2];
+      const statusArr = this.books.map(e => {
+        return e.status;
+      });
+
+      const needTab = needArr.every(i => statusArr.includes(i));
+      return needTab;
     }
   }
 };
