@@ -12,7 +12,7 @@
             >
               <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-              <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH (CÒN {{dataList.length}})</span>
+              <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH (CÒN {{ totalRemain }})</span>
             </div>
           </div>
         </template>
@@ -222,7 +222,8 @@ export default {
       rejectPopup: {
         isActive: false,
         item: {}
-      }
+      },
+      totalRemain: 0
     };
   },
   computed: {
@@ -468,6 +469,16 @@ export default {
       })
       .catch(() => {
         this.$router.push("/librarian/book-details-manage");
+      });
+
+    this.$http
+      .get(
+        `${this.$http.baseUrl}/librarian/book_total?book_detail_id=${this.$route.params.id}`
+      )
+      .then(response => {
+        const data = response.data;
+
+        this.totalRemain = data.total;
       });
   }
 };
