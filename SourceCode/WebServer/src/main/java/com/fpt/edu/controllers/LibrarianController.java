@@ -314,6 +314,9 @@ public class LibrarianController extends BaseController {
 	public ResponseEntity<String> getSchedulerStatus(Principal principal) throws SchedulerException {
 		// Check sender is librarian or not
 		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			return new ResponseEntity<>("The sender is not librarian role", HttpStatus.BAD_REQUEST);
+		}
 
 		JSONObject jsonResult = new JSONObject();
 
@@ -367,6 +370,9 @@ public class LibrarianController extends BaseController {
 	@PostMapping("/notification")
 	public ResponseEntity<String> pushNotification(@RequestBody String body, Principal principal) throws IOException, UnirestException {
 		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			return new ResponseEntity<>("The sender is not librarian role", HttpStatus.BAD_REQUEST);
+		}
 
 		JSONObject bodyObject = new JSONObject(body);
 		String email = bodyObject.getString("email");
@@ -426,14 +432,14 @@ public class LibrarianController extends BaseController {
 		services.doTransfer(
 			book.getLastTxId(),
 			book.getAssetId(), bookMetadata.getData(),
-			Constant.EMPTY_VALUE, Constant.EMPTY_VALUE,
+			book.getUser().getEmail(), Constant.EMPTY_VALUE,
 			(transaction, response) -> { // success
 
 				String transactionId = transaction.getId();
 				book.setLastTxId(transactionId);
 
 				// Update in DB
-				book.setUser(null);
+				book.setUser(new User());
 				book.setStatus(EBookStatus.DAMAGED.getValue());
 				bookServices.updateBook(book);
 
