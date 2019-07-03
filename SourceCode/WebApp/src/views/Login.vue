@@ -191,6 +191,9 @@ export default {
           await this.$store.dispatch("getProfile");
           await this.$store.dispatch("getNumOfBooks");
 
+          // Get notification
+          await this.$store.dispatch("getNotification");
+
           // Socket
           initSocket();
 
