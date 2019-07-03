@@ -37,19 +37,17 @@ services:
       placement:
         constraints: [node.role == manager]
 
-  postgresn:
-    image: postgres
-    command: postgres -c 'max_connections=500'
+  mongodb:
+    image: mongo
     ports:
-      - 5433:5432
+      - 27018:27017
     volumes:
-      - postgresn-data:/var/lib/postgresql/data
+      - mongodb-data:/data/db
     networks:
       - node
     environment:
-      POSTGRES_USER: capstone
-      POSTGRES_PASSWORD: capstone
-      POSTGRES_DB: node
+      MONGO_INITDB_ROOT_USERNAME: capstone
+      MONGO_INITDB_ROOT_PASSWORD: capstone
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -62,6 +60,21 @@ services:
       VUE_APP_API_BASE_URL: https://lapi.fptu.tech
       VUE_APP_API_BETA_URL: https://napi.fptu.tech
       VUE_APP_SOCKET_URL: http://napi.fptu.tech
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+  visualizeapp:
+    image: fptu/librarian-visualizeapp:latest
+    ports:
+      - 3001:80
     deploy:
       replicas: 1
       update_config:
@@ -104,12 +117,12 @@ services:
       - postgresn
       - redis
     environment:
-      DB_HOST: postgresn
+      DB_HOST: mongodb
       DB_USER: capstone
       DB_PASS: capstone
-      DB_NAME: node
-      DB_DIALECT: postgres
+      DB_NAME: librariannode
       REDIS_HOST: redis
+      SENDGRID_API_KEY: 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
     deploy:
       replicas: 1
       update_config:
@@ -178,5 +191,5 @@ networks:
 volumes:
   redis-data:
   postgres-data:
-  postgresn-data:
+  mongodb-data:
   jenkins-data:

@@ -43,5 +43,16 @@ pipeline {
                 build 'nodeserver-staging'
             }
         }
+        stage('Build VisualizeApp') {
+            when {
+                expression {
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/VisualizeApp'")
+                    return !matches
+                }
+            }
+            steps {
+                build 'visualizeapp-staging'
+            }
+        }
     }
 }

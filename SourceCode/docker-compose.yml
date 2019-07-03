@@ -27,20 +27,19 @@ services:
       POSTGRES_PASSWORD: capstone
       POSTGRES_DB: librarianmodule
 
-  postgresn:
-    image: postgres
-    container_name: librarian-postgresn-dev
+  mongodb:
+    image: mongo
+    container_name: librarian-mongodb-dev
     ports:
-      - 5433:5432
+        - 27018:27017
     volumes:
-      - postgresn-data:/var/lib/postgresql/data
+      - mongodb-data:/data/db
     networks:
       - node
     restart: always
     environment:
-      POSTGRES_USER: capstone
-      POSTGRES_PASSWORD: capstone
-      POSTGRES_DB: node
+        MONGO_INITDB_ROOT_USERNAME: capstone
+        MONGO_INITDB_ROOT_PASSWORD: capstone
 
   webapp:
     build:
@@ -58,8 +57,19 @@ services:
       VUE_APP_API_BASE_URL: http://localhost:5000
       VUE_APP_API_BETA_URL: http://localhost:5002
       VUE_APP_SOCKET_URL: http://localhost:5002
-    tty: true
 
+  visualizeapp:
+    build:
+      context: ./VisualizeApp
+      dockerfile: ./dev.Dockerfile
+    ports:
+      - 3001:3000
+    image: librarian-visualizeapp-dev
+    container_name: librarian-visualizeapp-dev
+    volumes:
+      - ./VisualizeApp/src:/root/src/app/src
+      - ./VisualizeApp/public:/root/src/app/public
+      
   webserver:
     build:
       context: ./WebServer
@@ -76,7 +86,6 @@ services:
       - ./WebServer/src:/root/src/api/src
     environment:
     - SPRING_PROFILES_ACTIVE=docker
-    tty: true
 
   nodeserver:
     build:
@@ -96,13 +105,12 @@ services:
       - ./NodeServer/.env:/root/src/node/.env
       - ./NodeServer/sendgrid.env:/root/src/node/sendgrid.env
     environment:
-      DB_HOST: postgresn
+      DB_HOST: mongodb
       DB_USER: capstone
       DB_PASS: capstone
-      DB_NAME: node
-      DB_DIALECT: postgres
+      DB_NAME: librariannode
       REDIS_HOST: redis
-    tty: true
+      SENDGRID_API_KEY: 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
 
   pgadmin:
     image: dpage/pgadmin4
@@ -124,4 +132,4 @@ networks:
 volumes:
   redis-data:
   postgres-data:
-  postgresn-data:
+  mongodb-data:

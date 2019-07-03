@@ -10,7 +10,7 @@ function init() {
     transports: ["websocket"]
   });
 
-  window.socket = socket.on("notification", function({ message, type }) {
+  window.socket = socket.on("notification", function({ message, type, id }) {
     window.vue.$vs.notify({
       fixed: true,
       title: "Thông báo mới",
@@ -20,13 +20,19 @@ function init() {
       iconPack: "feather",
       icon: "icon-info",
       click: () => {
-        redirect(type);
+        redirect({
+          message,
+          type,
+          id
+        });
       }
     });
 
     window.vue.$store.dispatch("addNotification", {
-      title: "Kiểm thử thông báo",
+      isRead: false,
+      title: "Thông báo",
       message,
+      id,
       type,
       icon: "InfoIcon",
       time: new Date().getTime(),

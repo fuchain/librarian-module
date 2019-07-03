@@ -35,7 +35,7 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	private List<Request> requests;
 	// current keeper of the book
 	@ManyToOne()
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id",nullable = true)
 	@JsonIgnore
 	private User user;
 	@Column(name = "asset_id")
