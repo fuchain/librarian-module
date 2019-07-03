@@ -33,31 +33,31 @@
               <div
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
                 v-if="item.user"
+                @click="beginConfirm(item)"
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2" @click="beginConfirm(item)">ĐÃ TRẢ</span>
+                <span class="text-sm font-semibold ml-2">ĐÃ TRẢ</span>
               </div>
 
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
                 v-if="item.user"
+                @click="triggerCall(item.user)"
               >
                 <feather-icon icon="PhoneIncomingIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2" @click="triggerCall(item.user)">LIÊN LẠC</span>
+                <span class="text-sm font-semibold ml-2">LIÊN LẠC</span>
               </div>
 
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
                 v-if="!item.user"
+                @click="doCancel(item)"
               >
                 <feather-icon icon="XIcon" svgClasses="h-4 w-4" />
 
-                <span
-                  class="text-sm font-semibold ml-2"
-                  @click="doCancel(item)"
-                >HỦY BỎ VIỆC TRẢ SÁCH</span>
+                <span class="text-sm font-semibold ml-2">HỦY BỎ VIỆC TRẢ SÁCH</span>
               </div>
             </div>
           </template>
@@ -66,7 +66,7 @@
     </div>
 
     <vx-card class="mt-6" title="Bạn đang không trả sách nào." v-else>
-      <vs-button @click="$router.push('/books/keeping')">Trả sách</vs-button>
+      <vs-button @click="$router.push('/books/keeping')" icon="book">Trả sách</vs-button>
     </vx-card>
 
     <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">

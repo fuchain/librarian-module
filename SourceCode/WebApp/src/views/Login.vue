@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex w-full bg-img" id="page-login">
+  <div class="h-screen flex w-full login-bg-img" id="page-login">
     <div class="vx-col sm:w-1/2 md:w-1/2 lg:w-3/4 xl:w-3/5 mx-auto self-center">
       <vx-card>
         <div slot="no-body" class="full-page-bg-color">
@@ -41,7 +41,11 @@
                   <div class="flex flex-wrap justify-between my-5">
                     <vs-checkbox v-model="remember" class="mb-3">Lưu mật khẩu</vs-checkbox>
                   </div>
-                  <vs-button class="float-right" icon="fingerprint">Đăng nhập</vs-button>
+                  <vs-button
+                    class="float-right"
+                    icon="fingerprint"
+                    :disabled="!email || !password"
+                  >Đăng nhập</vs-button>
                 </form>
 
                 <vs-divider>HOẶC</vs-divider>

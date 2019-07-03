@@ -22,16 +22,17 @@
             <div class="flex flex-wrap">
               <div
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
+                @click="doReturnBook(item)"
               >
-                <feather-icon icon="XIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="XIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2" @click="doReturnBook(item)">TRẢ SÁCH</span>
+                <span class="text-sm font-semibold ml-2">TRẢ SÁCH</span>
               </div>
 
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               >
-                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4"/>
+                <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4" />
 
                 <span class="text-sm font-semibold ml-2">CHI TIẾT</span>
               </div>
@@ -42,7 +43,7 @@
     </div>
 
     <vx-card title="Bạn đang không giữ sách nào." v-else>
-      <vs-button @click="$router.push('/books/request')">Mượn sách</vs-button>
+      <vs-button @click="$router.push('/books/request')" icon="search">Tìm mượn sách</vs-button>
     </vx-card>
   </div>
 </template>
