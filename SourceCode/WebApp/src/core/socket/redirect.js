@@ -1,8 +1,17 @@
 /* eslint-disable indent */
+import $http from "@http";
 
-export default function redirect(type) {
-  if (type) {
-    switch (type) {
+export default function redirect(notification) {
+  if (notification.id) {
+    $http
+      .put(`${$http.nodeUrl}/notifications/touch/${notification.id}`)
+      .then(() => {
+        window.vue.$store.dispatch("getNotification", true);
+      });
+  }
+
+  if (notification.type) {
+    switch (notification.type) {
       case "keeping":
         window.vue.$router.push("/books/keeping");
         break;

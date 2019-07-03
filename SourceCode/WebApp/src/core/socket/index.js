@@ -20,7 +20,11 @@ function init() {
       iconPack: "feather",
       icon: "icon-info",
       click: () => {
-        redirect(type);
+        redirect({
+          message,
+          type,
+          id
+        });
       }
     });
 
