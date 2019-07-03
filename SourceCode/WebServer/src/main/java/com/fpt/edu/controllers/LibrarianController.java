@@ -425,47 +425,44 @@ public class LibrarianController extends BaseController {
 	public ResponseEntity<String> getQueueInfo() throws JsonProcessingException {
 		HashMap<Long, RequestQueue> requestQueueMap = (HashMap<Long, RequestQueue>) this.requestQueueManager.getRequestMap();
 		JSONArray response = new JSONArray();
-		Iterator<Map.Entry<Long, RequestQueue>> iterator  = requestQueueMap.entrySet().iterator();
+		Iterator<Map.Entry<Long, RequestQueue>> iterator = requestQueueMap.entrySet().iterator();
 		JSONArray result = new JSONArray();
 		ObjectMapper mapper = new ObjectMapper();
-		while (iterator.hasNext()){
+		while (iterator.hasNext()) {
 			JSONObject bookQueueNode = new JSONObject();
 			Map.Entry<Long, RequestQueue> currentBookQueue = iterator.next();
 			BookDetail bookDetail = bookDetailsServices.getBookById(currentBookQueue.getKey());
-			bookQueueNode.put("bookDetail",new JSONObject(mapper.writeValueAsString(bookDetail)));
+			bookQueueNode.put("bookDetail", new JSONObject(mapper.writeValueAsString(bookDetail)));
 			PriorityQueue<Request> borrowQueue = currentBookQueue.getValue().getBorrowRequestQueue();
 			JSONArray borrowArr = new JSONArray();
 			Iterator<Request> borrowRequestIterator = borrowQueue.iterator();
-			convertQueueToJSONARR(borrowRequestIterator,borrowArr);
+			convertQueueToJSONARR(borrowRequestIterator, borrowArr);
 			PriorityQueue<Request> returnQueue = currentBookQueue.getValue().getReturnRequestQueue();
 			Iterator<Request> returnRequestIterator = returnQueue.iterator();
 			JSONArray returnArr = new JSONArray();
-			convertQueueToJSONARR(returnRequestIterator,returnArr);
-			bookQueueNode.put("borrowRequest",borrowArr);
-			bookQueueNode.put("returnRequest",returnArr);
-			result.put(bookQueueNode);
+			convertQueueToJSONARR(returnRequestIterator, returnArr);
+			if (borrowArr.length() > 0 || returnArr.length() > 0) {
+				bookQueueNode.put("borrowRequest", borrowArr);
+				bookQueueNode.put("returnRequest", returnArr);
+				result.put(bookQueueNode);
+			}
 		}
 		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
 	}
 
 
-
-
-
-
-	private void convertQueueToJSONARR(Iterator<Request> iterator, JSONArray jsonArr ) throws JsonProcessingException {
+	private void convertQueueToJSONARR(Iterator<Request> iterator, JSONArray jsonArr) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		while (iterator.hasNext()){
+		while (iterator.hasNext()) {
 			Request currentRequest = iterator.next();
 			JSONObject requestData = new JSONObject(mapper.writeValueAsString(currentRequest));
 			User user = currentRequest.getUser();
-			requestData.put("user",new JSONObject(mapper.writeValueAsString(user)));
+			requestData.put("user", new JSONObject(mapper.writeValueAsString(user)));
 			requestData.remove("bookDetail");
 			jsonArr.put(requestData);
 		}
 
 	}
-
 
 
 }
