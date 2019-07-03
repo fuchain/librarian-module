@@ -44,4 +44,13 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
 	List<Request> getPendingMatchingList(@Param("status1") int status1,
 										 @Param("status2") int status2);
 
+
+
+	@Query(value = "SELECT COUNT(r) FROM Request r WHERE r.status =:status")
+	long countRequestByStatus(@Param("status") int status);
+
+
+
+
+
 }

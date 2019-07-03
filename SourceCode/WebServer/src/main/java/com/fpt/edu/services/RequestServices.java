@@ -69,9 +69,12 @@ public class RequestServices implements Observer {
 		return requestRepository.getNumerOfRequest(userId, type, status1, status2);
 	}
 
-//	public void deleteRequest(Long requestId){
-//    	requestRepository.deleteById(requestId);
-//	}
+	@Transactional
+	public long countRequestByStatus(int status) {
+		return requestRepository.countRequestByStatus(status);
+	}
+
+
 
 
 }
