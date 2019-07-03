@@ -651,7 +651,7 @@ public class RequestController extends BaseController {
 		// Check receiver is active or not
 		User receiver = userServices.getUserByEmail(principal.getName());
 		if (receiver.isDisabled()) {
-			throw new Exception("User id: " + receiver.getId() + " is not active. Cannot make borrow request");
+			return new ResponseEntity<>("User id: " + receiver.getId() + " is not active. Cannot make borrow request", HttpStatus.BAD_REQUEST);
 		}
 
 		// Get pin from Request Body
@@ -1075,6 +1075,7 @@ public class RequestController extends BaseController {
 
 	@Autowired
 	AmazonS3 s3Client;
+
 	@ApiOperation(value = "Create a transaction", response = Request.class)
 	@PostMapping("/upload")
 	public ResponseEntity<String> testUploadFile(@RequestParam("file") MultipartFile file) {
