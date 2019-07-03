@@ -410,6 +410,14 @@ public class LibrarianController extends BaseController {
 		JSONObject jsonResult = new JSONObject();
 		AtomicBoolean callback = new AtomicBoolean(false);
 		Date sendTime = new Date();
+
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			jsonResult.put("message", "The sender is not librarian role");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
+		}
+
 		JSONObject bodyObject = new JSONObject(body);
 		Long bookId = bodyObject.getLong("book_id");
 
@@ -463,7 +471,7 @@ public class LibrarianController extends BaseController {
 				if (jsonResult.get("status_code").equals(HttpStatus.OK.value())) {
 					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 				} else {
-					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
 		}
@@ -472,6 +480,7 @@ public class LibrarianController extends BaseController {
 	@ApiOperation(value = "Librarian reuse book", response = JSONObject.class)
 	@PutMapping("/reuse_book")
 	public ResponseEntity<JSONObject> reuseBook(@RequestBody String body, Principal principal) throws Exception {
+		// Init data
 		JSONObject jsonResult = new JSONObject();
 		AtomicBoolean callback = new AtomicBoolean(false);
 		Date sendTime = new Date();
@@ -483,9 +492,9 @@ public class LibrarianController extends BaseController {
 			return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
 		}
 
+		// Get book
 		JSONObject bodyObject = new JSONObject(body);
 		Long bookId = bodyObject.getLong("book_id");
-
 		Book book = bookServices.getBookById(bookId);
 
 		if (!book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
@@ -494,7 +503,6 @@ public class LibrarianController extends BaseController {
 		}
 
 		BookMetadata bookMetadata = book.getMetadata();
-		bookMetadata.setCurrentKeeper(librarian.getEmail());
 		bookMetadata.resetRejectCount();
 		bookMetadata.setStatus(EBookStatus.IN_USE.getValue());
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
@@ -513,7 +521,6 @@ public class LibrarianController extends BaseController {
 				String transactionId = transaction.getId();
 				book.setLastTxId(transactionId);
 				book.setStatus(EBookStatus.IN_USE.getValue());
-				book.setUser(librarian);
 				bookServices.updateBook(book);
 
 				jsonResult.put("message", "Submit transaction successfully");
@@ -537,7 +544,7 @@ public class LibrarianController extends BaseController {
 				if (jsonResult.get("status_code").equals(HttpStatus.OK.value())) {
 					return new ResponseEntity<>(jsonResult, HttpStatus.OK);
 				} else {
-					return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<>(jsonResult, HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
 		}
