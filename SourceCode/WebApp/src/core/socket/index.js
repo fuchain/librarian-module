@@ -20,6 +20,19 @@ function init() {
       iconPack: "feather",
       icon: "icon-x"
     });
+
+    window.vue.$vs.loading({
+      color: "white",
+      background: "darkorange",
+      text: "Đang đăng xuất"
+    });
+
+    setTimeout(function() {
+      window.vue.$auth.clearAuth();
+      window.vue.$router.push("/login");
+
+      window.vue.$vs.loading.close();
+    }, 500);
   });
 
   window.socket = socket.on("notification", function({ message, type, id }) {
