@@ -53,7 +53,7 @@ public class Constant {
 	public static final String NOTIFICATION_TYPE_REQUESTING = "requesting";
 	public static final String NOTIFICATION_TYPE_RETURNING = "returning";
 	public static final String NOTIFICATION_TYPE_BOOKINSTANCE = "bookinstance";
-	public static final String LIBRARIAN_EMAIL = "librarian";
+	public static final String LIBRARIAN_EMAIL = "librarian@fe.edu.vn";
 
 	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
 
