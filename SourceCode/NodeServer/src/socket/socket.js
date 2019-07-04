@@ -11,11 +11,12 @@ function initSocketModule(server) {
     );
     io.origins("*:*");
 
-    io.use(function(socket, next) {
+    io.use(async function(socket, next) {
         if (socket.handshake.query && socket.handshake.query.token) {
             try {
                 const payload = verifyJWT(socket.handshake.query.token);
                 socket.payload = payload;
+                const email = payload.sub;
 
                 const loggedInSocketID = await getRedisItem(email);
                 if (loggedInSocketID) {
@@ -26,7 +27,6 @@ function initSocketModule(server) {
                     });
                 }
 
-                const email = payload.sub;
                 setRedisItem(email, socket.id);
 
                 next();

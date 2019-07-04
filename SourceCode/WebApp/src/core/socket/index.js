@@ -10,6 +10,18 @@ function init() {
     transports: ["websocket"]
   });
 
+  window.socket = socket.on("logout", function() {
+    window.vue.$vs.notify({
+      fixed: true,
+      title: "Có người khác đăng nhập tài khoản",
+      text: "Bạn sẽ bị đăng xuất",
+      color: "danger",
+      position: "top-center",
+      iconPack: "feather",
+      icon: "icon-x"
+    });
+  });
+
   window.socket = socket.on("notification", function({ message, type, id }) {
     window.vue.$vs.notify({
       fixed: true,
