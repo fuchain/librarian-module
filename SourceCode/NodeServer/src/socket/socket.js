@@ -7,14 +7,14 @@ export let io;
 async function addUser(email) {
     try {
         const users = await getRedisItem("users");
-        if (users) {
-            const arr = JSON.parse(users);
-            if (!arr.find(e => e === email)) {
-                arr.push(email);
 
-                const arrStr = JSON.stringify(arr);
-                await setRedisItem("users", arrStr);
-            }
+        const arr = JSON.parse(users) || [];
+        if (!arr.find(e => e === email)) {
+            arr.push(email);
+            const arrStr = JSON.stringify(arr);
+            await setRedisItem("users", arrStr);
+
+            notifyOnlineChange(arr);
         }
     } catch (err) {
         throw err;
@@ -24,17 +24,29 @@ async function addUser(email) {
 async function removeUser(email) {
     try {
         const users = await getRedisItem("users");
-        if (users) {
-            const arr = JSON.parse(users);
-            if (!arr.find(e => e === email)) {
-                const filteredArr = arr.filter(e => e !== email);
 
-                const arrStr = JSON.stringify(filteredArr);
-                await setRedisItem("users", arrStr);
-            }
+        if (users) {
+            const arr = JSON.parse(users) || [];
+
+            const filteredArr = arr.filter(e => e !== email);
+
+            const arrStr = JSON.stringify(filteredArr);
+            await setRedisItem("users", arrStr);
+
+            notifyOnlineChange(filteredArr);
         }
     } catch (err) {
         throw err;
+    }
+}
+
+async function notifyOnlineChange(users) {
+    const librarian = await getRedisItem("librarian@fe.edu.vn");
+
+    if (librarian) {
+        io.to(librarian).emit("online", {
+            users: users || []
+        });
     }
 }
 
