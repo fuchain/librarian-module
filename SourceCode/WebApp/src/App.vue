@@ -110,6 +110,10 @@ export default {
       }
     }
   },
+  created() {
+    // Socket
+    initSocket();
+  },
   async mounted() {
     this.toggleClassInBody(themeConfig.theme);
 
@@ -132,9 +136,6 @@ export default {
       }
 
       this.$vs.loading.close();
-
-      // Socket
-      initSocket();
     }
   },
   errorCaptured(err, vm, info) {
