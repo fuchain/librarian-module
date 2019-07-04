@@ -3,14 +3,41 @@ import auth from "@auth";
 import $http from "@http";
 import redirect from "@core/socket/redirect";
 
+export let socket;
+
 function init() {
   // Socket
-  const socket = io.connect($http.socketUrl, {
+  socket = io.connect($http.socketUrl, {
     query: "token=" + auth.getAccessToken(),
     transports: ["websocket"]
   });
 
-  window.socket = socket.on("notification", function({ message, type, id }) {
+  socket.on("logout", function() {
+    window.vue.$vs.notify({
+      fixed: true,
+      title: "Có người khác đăng nhập tài khoản",
+      text: "Bạn sẽ bị đăng xuất",
+      color: "danger",
+      position: "top-center",
+      iconPack: "feather",
+      icon: "icon-x"
+    });
+
+    window.vue.$vs.loading({
+      color: "white",
+      background: "darkorange",
+      text: "Đang đăng xuất"
+    });
+
+    setTimeout(function() {
+      window.vue.$auth.clearAuth();
+      window.vue.$router.push("/login");
+
+      window.vue.$vs.loading.close();
+    }, 500);
+  });
+
+  socket.on("notification", function({ message, type, id }) {
     window.vue.$vs.notify({
       fixed: true,
       title: "Thông báo mới",

@@ -11,7 +11,7 @@
               class="p-4 shadow-drop rounded-lg d-theme-dark-bg cursor-pointer flex items-center justify-center text-lg font-medium w-32"
             >
               <span class="mr-2">Làm</span>
-              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
+              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
             </div>
 
             <vs-dropdown-menu>
@@ -30,7 +30,7 @@
             <span
               class="mr-2"
             >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} of {{ dataList.length }}</span>
-            <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
+            <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
           <vs-dropdown-menu>
             <vs-dropdown-item @click="itemsPerPage=10">
@@ -51,6 +51,7 @@
         <vs-th>Email</vs-th>
         <vs-th>Họ tên</vs-th>
         <vs-th>Số điện thoại</vs-th>
+        <vs-th>Trực tuyến</vs-th>
         <vs-th>Vô hiệu hóa</vs-th>
         <vs-th></vs-th>
       </template>
@@ -81,7 +82,15 @@
 
             <vs-td>
               <p>
-                <vs-switch value="tr.disabled"/>
+                <vs-chip
+                  :color="onlineUserState[indextr] ? 'primary' : 'danger'"
+                >{{ onlineUserState[indextr] ? "online" : "offline" }}</vs-chip>
+              </p>
+            </vs-td>
+
+            <vs-td>
+              <p>
+                <vs-switch value="tr.disabled" />
               </p>
             </vs-td>
 
@@ -121,7 +130,7 @@
               <img
                 :src="data[indextr].bookDetail.thumbnail || '/images/book-thumbnail.jpg'"
                 style="max-width: 65px;"
-              >
+              />
             </vs-td>
             <vs-td :data="data[indextr].bookDetail.name">{{data[indextr].bookDetail.name}}</vs-td>
             <vs-td :data="data[indextr].status">{{data[indextr].status}}</vs-td>
@@ -139,6 +148,7 @@
 </template>
 
 <script>
+import { socket } from "@core/socket";
 export default {
   data() {
     return {
@@ -146,7 +156,9 @@ export default {
       isMounted: false,
       keepingPopup: false,
       keepingName: "",
-      keepingList: []
+      keepingList: [],
+      onlineUsers: [],
+      onlineUserState: []
     };
   },
   props: {
@@ -179,10 +191,40 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+    },
+    checkUserOnline(email) {
+      return this.onlineUsers.find(e => e === email) ? true : false;
+    },
+    trackOnline() {
+      const trackArr = this.dataList.map(e => {
+        return this.checkUserOnline(e.email);
+      });
+
+      this.onlineUserState = trackArr;
     }
   },
   mounted() {
     this.isMounted = true;
+
+    this.$http
+      .get(`${this.$http.nodeUrl}/notifications/online`)
+      .then(response => {
+        const data = response.data;
+
+        this.onlineUsers = data;
+        this.trackOnline();
+      });
+    if (socket) {
+      socket.on(
+        "online",
+        function({ users }) {
+          this.onlineUsers = [].concat(users) || [].concat([]);
+          this.trackOnline();
+        }.bind(this)
+      );
+    } else {
+      console.log("Socket not init!");
+    }
   }
 };
 </script>

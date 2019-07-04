@@ -1,5 +1,5 @@
 import redis from "redis";
-import { promisify } from "util";
+import { promisify, callbackify } from "util";
 import env from "@utils/env";
 
 export const client = redis.createClient(6379, env.redisHost || "redis");
@@ -21,7 +21,15 @@ function initRedisModule() {
 }
 
 export function setRedisItem(key, value) {
-    client.set(getKey(key), value);
+    return new Promise(function(resolve, reject) {
+        client.set(getKey(key), value, function(err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
 }
 
 export async function getRedisItem(key) {
@@ -33,7 +41,15 @@ export async function getRedisItem(key) {
 }
 
 export function deleteRedisItem(key) {
-    client.del(getKey(key));
+    return new Promise(function(resolve, reject) {
+        client.del(getKey(key), function(err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
 }
 
 export default initRedisModule;

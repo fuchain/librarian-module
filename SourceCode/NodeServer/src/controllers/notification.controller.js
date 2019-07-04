@@ -1,4 +1,4 @@
-import { io } from "../socket/socket";
+import { io, getOnlineUsers } from "../socket/socket";
 
 import { getRedisItem } from "@utils/redis";
 import { Notification } from "@models";
@@ -99,4 +99,20 @@ const touchNotification = async (req, res) => {
     }
 };
 
-export default { pushNotification, getNotification, touchNotification };
+const getOnline = async (req, res) => {
+    try {
+        res.send(await getOnlineUsers());
+    } catch (err) {
+        res.status(400);
+        res.send({
+            message: err.toString()
+        });
+    }
+};
+
+export default {
+    pushNotification,
+    getNotification,
+    touchNotification,
+    getOnline
+};
