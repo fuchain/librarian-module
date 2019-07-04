@@ -157,7 +157,7 @@ export default {
       info: info.toString()
     };
 
-    if (!webpackHotUpdate) {
+    if (!window.webpackHotUpdate) {
       this.$http.post(`${this.$http.nodeUrl}/logs`, {
         type: "error",
         source: "webapp",
