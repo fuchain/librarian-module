@@ -3,14 +3,16 @@ import auth from "@auth";
 import $http from "@http";
 import redirect from "@core/socket/redirect";
 
+export let socket;
+
 function init() {
   // Socket
-  const socket = io.connect($http.socketUrl, {
+  socket = io.connect($http.socketUrl, {
     query: "token=" + auth.getAccessToken(),
     transports: ["websocket"]
   });
 
-  window.socket = socket.on("logout", function() {
+  socket.on("logout", function() {
     window.vue.$vs.notify({
       fixed: true,
       title: "Có người khác đăng nhập tài khoản",
@@ -35,7 +37,7 @@ function init() {
     }, 500);
   });
 
-  window.socket = socket.on("notification", function({ message, type, id }) {
+  socket.on("notification", function({ message, type, id }) {
     window.vue.$vs.notify({
       fixed: true,
       title: "Thông báo mới",
