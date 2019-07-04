@@ -32,13 +32,10 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	private BookDetail bookDetail;
 	@OneToMany(cascade = CascadeType.PERSIST)
 	@JsonIgnore
-	private List<Transaction> transactions;
-	@OneToMany(cascade = CascadeType.PERSIST)
-	@JsonIgnore
 	private List<Request> requests;
 	// current keeper of the book
 	@ManyToOne()
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id", nullable = true)
 	@JsonIgnore
 	private User user;
 	@Column(name = "asset_id")
@@ -166,19 +163,16 @@ public class Book extends AbstractTimestampEntity implements Serializable {
 	}
 
 	public void setUser(User user) {
-		if (this.getUser() != null && this.getUser().getListBooks().equals(user.getId())) {
-			this.setLastTransferSuccess(new Date());
+		if (user != null) {
+			if (this.getUser() != null && this.getUser().getListBooks().equals(user.getId())) {
+				this.setLastTransferSuccess(new Date());
+			}
+			this.user = user;
+			this.getMetadata().setCurrentKeeper(user.getEmail());
+		} else {
+			// this code handle for case remove book. that mean book doesn't keeping by anyone
+			this.user = null;
 		}
-		this.user = user;
-		this.getMetadata().setCurrentKeeper(user.getEmail());
-	}
-
-	public List<Transaction> getTransactions() {
-		return transactions;
-	}
-
-	public void setTransactions(List<Transaction> transactions) {
-		this.transactions = transactions;
 	}
 
 	public List<Request> getRequests() {

@@ -26,6 +26,7 @@ public class Constant {
 	public static final int DEFAULT_OFFSET = 20;
 	public static final String AUTHORITIES_HEADER = "roles";
 	public static final String ROLES_LIBRARIAN = "librarian";
+	public static final String ROLES_READER = "reader";
 	public static final int BIGCHAIN_REQUEST_TIMEOUT = 60;
 	public static final String EMPTY_VALUE = "";
 	public static final String ISBN = "isbn";
@@ -51,7 +52,8 @@ public class Constant {
 	public static final String NOTIFICATION_TYPE_KEEPING = "keeping";
 	public static final String NOTIFICATION_TYPE_REQUESTING = "requesting";
 	public static final String NOTIFICATION_TYPE_RETURNING = "returning";
-	public static final String LIBRARIAN_EMAIL = "librarian";
+	public static final String NOTIFICATION_TYPE_BOOKINSTANCE = "bookinstance";
+	public static final String LIBRARIAN_EMAIL = "librarian@fe.edu.vn";
 
 	//---------------------------------- THIS IS FOR BIGCHAIN ----------------------------------
 

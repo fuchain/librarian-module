@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.Role;
 import com.fpt.edu.entities.User;
+import com.fpt.edu.services.RoleServices;
 import com.fpt.edu.services.UserServices;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -32,10 +33,12 @@ import static com.fpt.edu.security.SecurityConstants.SECRET;
 @RequestMapping("auth")
 public class AuthenticationController {
 	private final UserServices userServices;
+	private final RoleServices roleServices;
 
 	@Autowired
-	public AuthenticationController(UserServices userServices) {
+	public AuthenticationController(UserServices userServices, RoleServices roleServices) {
 		this.userServices = userServices;
+		this.roleServices = roleServices;
 	}
 
 	private static String generateJwtTokenResponse(User user, String picture) {
@@ -43,17 +46,15 @@ public class AuthenticationController {
 		long expireDateUnixTime = System.currentTimeMillis() / 1000L + EXPIRATION_TIME;
 		Date expireDate = new Date(expireDateUnixTime * 1000);
 
-		List<Role> roles;
-		if (user.getRoles() == null) {
-			roles = new ArrayList<>();
+		Role role;
+		if (user.getRole() == null) {
+			role = new Role("reader");
 		} else {
-			roles = user.getRoles();
+			role = user.getRole();
 		}
 
-		String[] authorities = new String[roles.size()];
-		for (int i = 0; i < roles.size(); i++) {
-			authorities[i] = roles.get(i).getName();
-		}
+		String[] authorities = new String[1];
+		authorities[0] = role.getName();
 
 		String responseToken = JWT.create()
 			.withClaim("id", user.getId())
@@ -77,9 +78,9 @@ public class AuthenticationController {
 	@ApiOperation(value = "Add new user", response = String.class)
 	@PostMapping("new")
 	public ResponseEntity<String> signUp(@RequestBody User user) {
-		userServices.addNewUser(user);
+		User newUser = userServices.addNewUser(user);
 
-		return UserController.getJSONResponseUserProfile(user);
+		return UserController.getJSONResponseUserProfile(newUser);
 	}
 
 	private String getEmailDomain(String email) {

@@ -3,7 +3,8 @@ package com.fpt.edu.common.enums;
 public enum EBookStatus {
 
 	IN_USE("in use"),
-	DAMAGED("damanged");
+	LOCKED("locked"),
+	DAMAGED("damaged");
 
 	private String value;
 

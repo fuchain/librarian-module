@@ -1,7 +1,10 @@
 package com.fpt.edu.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.common.request_queue_simulate.RequestQueue;
 import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.helpers.SchedulerJob;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
@@ -13,6 +16,7 @@ import com.fpt.edu.exceptions.InvalidExpressionException;
 import com.fpt.edu.services.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.iterators.EntrySetMapIterator;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,9 +34,9 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping("librarian")
@@ -43,8 +47,8 @@ public class LibrarianController extends BaseController {
 	@Autowired
 	private NotificationService notificationService;
 
-	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationService notificationService) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
+	public LibrarianController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationService notificationService) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation("Get all users")
@@ -72,7 +76,15 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Disable a user", response = User.class)
 	@PutMapping("/users/{id}")
-	public ResponseEntity<User> disableUser(@PathVariable Long id, @RequestParam("disable") boolean disable) {
+	public ResponseEntity<User> disableUser(@PathVariable Long id,
+											@RequestParam("disable") boolean disable,
+											Principal principal) {
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
 		User user = userServices.getByUserId(id);
 
 		user.setDisabled(disable);
@@ -161,12 +173,14 @@ public class LibrarianController extends BaseController {
 
 	@ApiOperation(value = "Librarian transfers book for readers", response = String.class)
 	@PostMapping("/give_book")
-	public ResponseEntity<String> transferBook(
-		@RequestParam Long book_detail_id,
-		Principal principal
-	) throws EntityNotFoundException {
+	public ResponseEntity<String> transferBook(@RequestParam Long book_detail_id, Principal principal)
+		throws EntityNotFoundException {
+
 		// Check sender is librarian
 		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			return new ResponseEntity<>("Sender is not librarian role", HttpStatus.BAD_REQUEST);
+		}
 
 		// Check this book has matching or not
 		Book book = bookServices.getByUserAndBookDetail(librarian.getId(), book_detail_id);
@@ -259,6 +273,9 @@ public class LibrarianController extends BaseController {
 	) throws InvalidExpressionException, SchedulerException {
 		// Check sender is librarian or not
 		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			return new ResponseEntity<>("The sender is not librarian role", HttpStatus.BAD_REQUEST);
+		}
 
 		// Get data from request body
 		JSONObject bodyObject = new JSONObject(body);
@@ -300,6 +317,9 @@ public class LibrarianController extends BaseController {
 	public ResponseEntity<String> getSchedulerStatus(Principal principal) throws SchedulerException {
 		// Check sender is librarian or not
 		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			return new ResponseEntity<>("The sender is not librarian role", HttpStatus.BAD_REQUEST);
+		}
 
 		JSONObject jsonResult = new JSONObject();
 
@@ -353,6 +373,9 @@ public class LibrarianController extends BaseController {
 	@PostMapping("/notification")
 	public ResponseEntity<String> pushNotification(@RequestBody String body, Principal principal) throws IOException, UnirestException {
 		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			return new ResponseEntity<>("The sender is not librarian role", HttpStatus.BAD_REQUEST);
+		}
 
 		JSONObject bodyObject = new JSONObject(body);
 		String email = bodyObject.getString("email");
@@ -363,5 +386,214 @@ public class LibrarianController extends BaseController {
 
 		return new ResponseEntity<>("Push notification successfully", HttpStatus.OK);
 	}
+
+	@ApiOperation(value = "Get book instance total of book detail at library", response = String.class)
+	@GetMapping("/book_total")
+	public ResponseEntity<String> getLibrayBookTotal(@RequestParam Long book_detail_id, Principal principal) {
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			return new ResponseEntity<>("The sender is not librarian role", HttpStatus.BAD_REQUEST);
+		}
+
+		long total = bookServices.getBookTotalAtLibrary(book_detail_id, librarian.getId());
+
+		JSONObject jsonResult = new JSONObject();
+		jsonResult.put("total", total);
+
+		return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "Librarian ends life cycle of book", response = JSONObject.class)
+	@PutMapping("/end_book")
+	public ResponseEntity<String> endBookLife(@RequestBody String body, Principal principal) throws Exception {
+		JSONObject jsonResult = new JSONObject();
+		AtomicBoolean callback = new AtomicBoolean(false);
+		Date sendTime = new Date();
+
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			jsonResult.put("message", "The sender is not librarian role");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
+		}
+
+		JSONObject bodyObject = new JSONObject(body);
+		Long bookId = bodyObject.getLong("book_id");
+
+		Book book = bookServices.getBookById(bookId);
+
+		if (!book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+			jsonResult.put("message", "This book is in 'locked' status");
+			return new ResponseEntity<>(jsonResult.toString(), HttpStatus.BAD_REQUEST);
+		}
+
+		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.setCurrentKeeper(Constant.EMPTY_VALUE);
+		bookMetadata.setStatus(EBookStatus.DAMAGED.getValue());
+		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+		BigchainTransactionServices services = new BigchainTransactionServices();
+		services.doTransfer(
+			book.getLastTxId(),
+			book.getAssetId(), bookMetadata.getData(),
+			book.getUser().getEmail(), Constant.EMPTY_VALUE,
+			(transaction, response) -> { // success
+
+				String transactionId = transaction.getId();
+				book.setLastTxId(transactionId);
+
+				// Update in DB
+				book.setUser(null);
+				book.setStatus(EBookStatus.DAMAGED.getValue());
+				bookServices.updateBook(book);
+
+				jsonResult.put("message", "End book lifecycle successfully");
+				jsonResult.put("status_code", HttpStatus.OK.value());
+
+				callback.set(true);
+			},
+			(transaction, response) -> { // failed
+				callback.set(true);
+			}
+		);
+
+		// Wait until the BigChain has callback or request timeout
+		Date now;
+		while (true) {
+			now = new Date();
+			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+			if (duration > Constant.BIGCHAIN_REQUEST_TIMEOUT || callback.get()) {
+				if (jsonResult.get("status_code").equals(HttpStatus.OK.value())) {
+					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
+				} else {
+					return new ResponseEntity<>(jsonResult.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
+	}
+
+	@ApiOperation(value = "Librarian reuse book", response = JSONObject.class)
+	@PutMapping("/reuse_book")
+	public ResponseEntity<JSONObject> reuseBook(@RequestBody String body, Principal principal) throws Exception {
+		// Init data
+		JSONObject jsonResult = new JSONObject();
+		AtomicBoolean callback = new AtomicBoolean(false);
+		Date sendTime = new Date();
+
+		// Check sender is librarian or not
+		User librarian = userServices.getUserByEmail(principal.getName());
+		if (!librarian.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+			jsonResult.put("message", "The sender is not librarian role");
+			return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
+		}
+
+		// Get book
+		JSONObject bodyObject = new JSONObject(body);
+		Long bookId = bodyObject.getLong("book_id");
+		Book book = bookServices.getBookById(bookId);
+
+		if (!book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+			jsonResult.put("message", "This book is in 'locked' status");
+			return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
+		}
+
+		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.resetRejectCount();
+		bookMetadata.setStatus(EBookStatus.IN_USE.getValue());
+		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
+
+		// Set default value for response
+		jsonResult.put("message", "failed to submit transaction");
+		jsonResult.put("status_code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+		BigchainTransactionServices services = new BigchainTransactionServices();
+		services.doTransfer(
+			book.getLastTxId(),
+			book.getAssetId(), bookMetadata.getData(),
+			book.getUser().getEmail(), librarian.getEmail(),
+			(transaction, response) -> { // success
+
+				String transactionId = transaction.getId();
+				book.setLastTxId(transactionId);
+				book.setStatus(EBookStatus.IN_USE.getValue());
+				bookServices.updateBook(book);
+
+				jsonResult.put("message", "Submit transaction successfully");
+				jsonResult.put("status_code", HttpStatus.OK.value());
+
+				callback.set(true);
+			},
+			(transaction, response) -> { // failed
+
+				callback.set(true);
+			}
+		);
+
+		// Wait until Bigchain has callback or request time out
+		Date now;
+		while (true) {
+			now = new Date();
+			long duration = utils.getDuration(sendTime, now, TimeUnit.SECONDS);
+
+			if (duration > Constant.BIGCHAIN_REQUEST_TIMEOUT || callback.get()) {
+				if (jsonResult.get("status_code").equals(HttpStatus.OK.value())) {
+					return new ResponseEntity<>(jsonResult, HttpStatus.OK);
+				} else {
+					return new ResponseEntity<>(jsonResult, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
+	}
+
+
+	@ApiOperation(value = "Get Queue Overview", response = String.class)
+	@RequestMapping(value = "/queue/overview", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> getQueueInfo() throws JsonProcessingException {
+		HashMap<Long, RequestQueue> requestQueueMap = (HashMap<Long, RequestQueue>) this.requestQueueManager.getRequestMap();
+		JSONArray response = new JSONArray();
+		Iterator<Map.Entry<Long, RequestQueue>> iterator = requestQueueMap.entrySet().iterator();
+		JSONArray result = new JSONArray();
+		ObjectMapper mapper = new ObjectMapper();
+		while (iterator.hasNext()) {
+			JSONObject bookQueueNode = new JSONObject();
+			Map.Entry<Long, RequestQueue> currentBookQueue = iterator.next();
+			BookDetail bookDetail = bookDetailsServices.getBookById(currentBookQueue.getKey());
+			bookQueueNode.put("bookDetail", new JSONObject(mapper.writeValueAsString(bookDetail)));
+			PriorityQueue<Request> borrowQueue = currentBookQueue.getValue().getBorrowRequestQueue();
+			JSONArray borrowArr = new JSONArray();
+			Iterator<Request> borrowRequestIterator = borrowQueue.iterator();
+			convertQueueToJSONARR(borrowRequestIterator, borrowArr);
+			PriorityQueue<Request> returnQueue = currentBookQueue.getValue().getReturnRequestQueue();
+			Iterator<Request> returnRequestIterator = returnQueue.iterator();
+			JSONArray returnArr = new JSONArray();
+			convertQueueToJSONARR(returnRequestIterator, returnArr);
+			if (borrowArr.length() > 0 || returnArr.length() > 0) {
+				bookQueueNode.put("borrowRequest", borrowArr);
+				bookQueueNode.put("returnRequest", returnArr);
+				result.put(bookQueueNode);
+			}
+		}
+		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+	}
+
+
+	private void convertQueueToJSONARR(Iterator<Request> iterator, JSONArray jsonArr) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		while (iterator.hasNext()) {
+			Request currentRequest = iterator.next();
+			JSONObject requestData = new JSONObject(mapper.writeValueAsString(currentRequest));
+			User user = currentRequest.getUser();
+			requestData.put("user", new JSONObject(mapper.writeValueAsString(user)));
+			requestData.remove("bookDetail");
+			jsonArr.put(requestData);
+		}
+
+	}
+
 
 }

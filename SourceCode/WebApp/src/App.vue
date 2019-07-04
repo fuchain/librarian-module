@@ -120,13 +120,14 @@ export default {
         scale: "1.5",
         type: "sound"
       });
+
       try {
         await this.$store.dispatch("getProfile");
+        await this.$store.dispatch("getNotification");
         !this.$auth.isAdmin() && (await this.$store.dispatch("getNumOfBooks"));
       } catch (e) {
         // Catch error
         console.log(e);
-
         this.$router.push("/error");
       }
 
@@ -156,11 +157,13 @@ export default {
       info: info.toString()
     };
 
-    this.$http.post(`${this.$http.nodeUrl}/logs`, {
-      type: "error",
-      source: "webapp",
-      metadata: JSON.stringify(metadata)
-    });
+    if (!window.webpackHotUpdate) {
+      this.$http.post(`${this.$http.nodeUrl}/logs`, {
+        type: "error",
+        source: "webapp",
+        metadata: JSON.stringify(metadata)
+      });
+    }
 
     this.$router.push("/error");
     if (this.$vs.loading) this.$vs.loading.close();

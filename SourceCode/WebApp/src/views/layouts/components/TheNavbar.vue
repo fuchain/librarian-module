@@ -124,7 +124,7 @@
                   v-for="(ntf, index) in unreadNotifications"
                   :key="index"
                   class="flex justify-between px-4 py-4 notification cursor-pointer"
-                  @click="notificationRedirect(ntf.type)"
+                  @click="notificationRedirect(ntf)"
                 >
                   <div class="flex items-start">
                     <feather-icon
@@ -183,14 +183,14 @@
                 </li>
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                  @click="$router.push('/apps/email')"
+                  @click="$router.push('/notifications')"
                 >
                   <feather-icon icon="MailIcon" svgClasses="w-4 h-4"></feather-icon>
                   <span class="ml-2">Hộp thư</span>
                 </li>
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                  @click="$router.push('/apps/chat')"
+                  @click="$router.push('/notifications')"
                 >
                   <feather-icon icon="MessageSquareIcon" svgClasses="w-4 h-4"></feather-icon>
                   <span class="ml-2">Tin nhắn</span>
@@ -303,7 +303,7 @@ export default {
     },
 
     unreadNotifications() {
-      return this.$store.state.notifications;
+      return this.$store.state.notifications.filter(e => e.isRead === false);
     }
   },
   methods: {
@@ -347,8 +347,8 @@ export default {
         500
       );
     },
-    notificationRedirect(type) {
-      redirect(type);
+    notificationRedirect(notification) {
+      redirect(notification);
     }
   },
   directives: {

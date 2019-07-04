@@ -36,3 +36,19 @@ export function parseBookSearchItem(data) {
     };
   });
 }
+
+export function parseSingleItem(e) {
+  return {
+    id: e.id,
+    name: e.name,
+    description: e.description,
+    image: e.thumbnail || "/images/book-thumbnail.jpg",
+    code:
+      e.parseedSubjectCode &&
+      e.parseedSubjectCode.length &&
+      e.parseedSubjectCode[0]
+        ? e.parseedSubjectCode[0]
+        : "N/A",
+    type: "info"
+  };
+}

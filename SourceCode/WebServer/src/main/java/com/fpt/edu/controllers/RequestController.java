@@ -1,9 +1,10 @@
 package com.fpt.edu.controllers;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImageHelper;
 import com.fpt.edu.common.helpers.ImportHelper;
-import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.request_queue_simulate.Message;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -14,10 +15,12 @@ import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.Hibernate;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
@@ -32,10 +35,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RequestController extends BaseController {
 	public RequestController(UserServices userServices, BookDetailsServices bookDetailsServices,
 							 BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices,
-							 RequestServices requestServices, TransactionServices transactionServices,
+							 RequestServices requestServices,
 							 PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager,
 							 NotificationService notificationService) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation(value = "Get a request by its id")
@@ -126,6 +129,11 @@ public class RequestController extends BaseController {
 
 			// Update transfer status of book
 			Book book = bookServices.getBookById(bookId);
+
+			if (book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+				return new ResponseEntity<>("Book status is locked, cannot make a request to return", HttpStatus.BAD_REQUEST);
+			}
+
 			book.setTransferStatus(EBookTransferStatus.TRANSFERRING.getValue());
 			bookServices.updateBook(book);
 
@@ -401,6 +409,7 @@ public class RequestController extends BaseController {
 		book.setUser(receiver);
 
 		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.setStatus(book.getStatus());
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 		// Submit transaction to BlockChain
 		BigchainTransactionServices services = new BigchainTransactionServices();
@@ -428,13 +437,6 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
-				//insert a transaction to DB Postgresql
-				Transaction tran = new Transaction();
-				tran.setBook(book);
-				tran.setReturner(returner);
-				tran.setBorrower(receiver);
-				transactionServices.insertTransaction(tran);
-
 				// Override value in response
 				jsonResult.put("message", "confirm book transfer successfully");
 				jsonResult.put("status_code", HttpStatus.OK);
@@ -459,7 +461,7 @@ public class RequestController extends BaseController {
 				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
-					Constant.NOTIFICATION_TYPE_KEEPING
+					Constant.NOTIFICATION_TYPE_BOOKINSTANCE + ":" + book.getId()
 				);
 
 				callback.set(true);
@@ -500,7 +502,7 @@ public class RequestController extends BaseController {
 	@ApiOperation(value = "Get Match ID", response = JSONObject.class)
 	@GetMapping("/{id}/matched")
 	public ResponseEntity<String> getMatchedIdOfRequest(@PathVariable Long id) throws Exception {
-		Matching matched = matchingServices.getByRequestId(id);
+		Matching matched = matchingServices.getByRequestId(id, EMatchingStatus.PAIRED.getValue(), EMatchingStatus.PENDING.getValue());
 		JSONObject jsonResponse = new JSONObject();
 		if (matched != null) {
 			jsonResponse.put("matching_id", matched.getId());
@@ -640,7 +642,6 @@ public class RequestController extends BaseController {
 
 		// Get book info from matching
 		Book book = matching.getBook();
-
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
 
@@ -650,7 +651,7 @@ public class RequestController extends BaseController {
 		// Check receiver is active or not
 		User receiver = userServices.getUserByEmail(principal.getName());
 		if (receiver.isDisabled()) {
-			throw new Exception("User id: " + receiver.getId() + " is not active. Cannot make borrow request");
+			return new ResponseEntity<>("User id: " + receiver.getId() + " is not active. Cannot make borrow request", HttpStatus.BAD_REQUEST);
 		}
 
 		// Get pin from Request Body
@@ -689,9 +690,17 @@ public class RequestController extends BaseController {
 			throw new PinExpiredException("Pin is expired");
 		}
 
+		Book book = matching.getBook();
+		// Check book status
+		if (book.getStatus().equals(EBookStatus.LOCKED.getValue())) {
+			if (!receiver.getRole().getName().equals(Constant.ROLES_LIBRARIAN)) {
+				return new ResponseEntity<>("Book status is locked, cannot transfer to other reader", HttpStatus.BAD_REQUEST);
+			}
+		}
+
 		// Create a borrowing request
 		Request borrowingRequest = new Request();
-		borrowingRequest.setBook(matching.getBook());
+		borrowingRequest.setBook(book);
 		borrowingRequest.setUser(receiver);
 		borrowingRequest.setStatus(ERequestStatus.COMPLETED.getValue());
 		borrowingRequest.setType(ERequestType.BORROWING.getValue());
@@ -741,6 +750,7 @@ public class RequestController extends BaseController {
 		Date sendTime = new Date();
 
 		BookMetadata bookMetadata = book.getMetadata();
+		bookMetadata.setStatus(book.getStatus());
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 
 		BigchainTransactionServices services = new BigchainTransactionServices();
@@ -757,13 +767,6 @@ public class RequestController extends BaseController {
 				// Update transfer status of book
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
-
-				// Insert a transaction to DB Postgresql
-				Transaction tran = new Transaction();
-				tran.setBook(book);
-				tran.setReturner(returner);
-				tran.setBorrower(receiver);
-				transactionServices.insertTransaction(tran);
 
 				// Response to client
 				jsonResult.put("message", "confirm book transfer successfully");
@@ -788,7 +791,7 @@ public class RequestController extends BaseController {
 				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction chuyển sách của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
-					Constant.NOTIFICATION_TYPE_KEEPING
+					Constant.NOTIFICATION_TYPE_BOOKINSTANCE + ":" + book.getId()
 				);
 
 				callback.set(true);
@@ -924,16 +927,15 @@ public class RequestController extends BaseController {
 		Long matchingId = bodyObject.getLong("matching_id");
 		String reason = bodyObject.getString("reason");
 
-
 		Matching matching = matchingServices.getMatchingById(matchingId);
 		if (matching == null) {
-			throw new Exception("Matching id: " + matchingId + " not found");
+			return new ResponseEntity<>("Matching id: " + matchingId + " not found", HttpStatus.BAD_REQUEST);
 		}
 		if (!matching.getBorrowerRequest().getUser().getId().equals(receiver.getId())) {
-			throw new Exception("User id: " + receiver.getId() + " is not the receiver");
+			return new ResponseEntity<>("User id: " + receiver.getId() + " is not the receiver", HttpStatus.BAD_REQUEST);
 		}
 		if (matching.getStatus() != EMatchingStatus.PENDING.getValue()) {
-			throw new Exception("Cannot reject matching with status: " + matching.getStatus());
+			return new ResponseEntity<>("Cannot reject matching with status: " + matching.getStatus(), HttpStatus.BAD_REQUEST);
 		}
 
 		// Get hash value
@@ -962,6 +964,14 @@ public class RequestController extends BaseController {
 		bookMetadata.setRejectorEmail(receiver.getEmail());
 		// Update reject count
 		bookMetadata.increaseLastRejectCount();
+
+		// Update book status
+		if (bookMetadata.isLastRejectCountOver()) {
+			bookMetadata.setStatus(EBookStatus.LOCKED.getValue());
+		} else {
+			bookMetadata.setStatus(book.getStatus());
+		}
+
 		// Set new transaction timestamp
 		bookMetadata.setTransactionTimestamp(String.valueOf(System.currentTimeMillis() / 1000));
 
@@ -1006,14 +1016,18 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
-				//insert a transaction to DB Postgresql
-				Transaction tran = new Transaction();
-				tran.setBook(book);
-				tran.setType(ETransactionType.REJECTED.getValue());
-				transactionServices.insertTransaction(tran);
-
 				if (bookMetadata.isLastRejectCountOver()) { // If reject count > 5
+					// Update book status
+					book.setStatus(EBookStatus.LOCKED.getValue());
+					bookServices.updateBook(book);
 
+					// Push notification to librarian
+					notificationService.pushNotification(
+						Constant.LIBRARIAN_EMAIL,
+						"Sách " + book.getBookDetail().getName() + "- #" + book.getId() + " đã bị từ chối " +
+							bookMetadata.getRejectCount() + " lần.",
+						Constant.NOTIFICATION_TYPE_BOOKINSTANCE + ":" + book.getId()
+					);
 				}
 
 				// Override value in response
@@ -1036,10 +1050,11 @@ public class RequestController extends BaseController {
 				book.setTransferStatus(EBookTransferStatus.TRANSFERRED.getValue());
 				bookServices.updateBook(book);
 
+				// Push notification to librarian
 				notificationService.pushNotification(
 					Constant.LIBRARIAN_EMAIL,
 					"Transaction từ chối của sách có ID là " + book.getId() + " của " + returner.getEmail() + " và " + receiver.getEmail() + " đã thất bại",
-					Constant.NOTIFICATION_TYPE_KEEPING
+					Constant.NOTIFICATION_TYPE_BOOKINSTANCE + ":" + book.getId()
 				);
 
 				callback.set(true);
@@ -1056,6 +1071,29 @@ public class RequestController extends BaseController {
 				return new ResponseEntity<>(jsonResult.toString(), HttpStatus.OK);
 			}
 		}
+	}
+
+	@Autowired
+	AmazonS3 s3Client;
+
+	@ApiOperation(value = "Create a transaction", response = Request.class)
+	@PostMapping("/upload")
+	public ResponseEntity<String> testUploadFile(@RequestParam("file") MultipartFile file) {
+		String fileUrl = utils.uploadFile(file);
+		JSONObject responseObj = new JSONObject();
+		responseObj.put("url", fileUrl);
+		return new ResponseEntity<>(responseObj.toString(), HttpStatus.CREATED);
+	}
+
+	@ApiOperation(value = "Get Request Overview", response = String.class)
+	@RequestMapping(value = "/overview", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> getQueueInfo() throws JsonProcessingException {
+		long pedingRequest = requestServices.countRequestByStatus(ERequestStatus.PENDING.getValue());
+		long matchingRequest = requestServices.countRequestByStatus(ERequestStatus.MATCHING.getValue());
+		JSONObject result = new JSONObject();
+		result.put("totalPendingRequest", pedingRequest);
+		result.put("totalMatchingRequest", matchingRequest);
+		return new ResponseEntity<>(result.toString(), HttpStatus.OK);
 	}
 
 }

@@ -28,15 +28,38 @@ public class BookMetadata {
 		String currentKeeper,
 		String status
 	) {
-		this.data = new TreeMap<>();
-		this.data.put(CURRENT_KEEPER, currentKeeper);
-		this.data.put(BOOK_STATUS, status);
-		this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
-		this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
-		this.data.put(REJECT_REASON, EMPTY_VALUE);
-		this.data.put(IMAGE_HASH, EMPTY_VALUE);
-		this.data.put(IMAGE_LINK, EMPTY_VALUE);
-		this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
+		String refreshBigchain = System.getenv("REFRESH_BIGCHAIN");
+		boolean isRestoring = refreshBigchain == null ? false : true;
+		if (!isRestoring) {
+			this.data = new TreeMap<>();
+			this.data.put(CURRENT_KEEPER, currentKeeper);
+			this.data.put(BOOK_STATUS, status);
+			this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
+			this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
+			this.data.put(REJECT_REASON, EMPTY_VALUE);
+			this.data.put(IMAGE_HASH, EMPTY_VALUE);
+			this.data.put(IMAGE_LINK, EMPTY_VALUE);
+			this.data.put(REJECTOR_EMAIL, EMPTY_VALUE);
+		} else {
+			this.applyOldModel(currentKeeper, status, isRestoring);
+		}
+	}
+
+	// This is for old model, used to refresh bigchain
+	private void applyOldModel(
+		String currentKeeper,
+		String status,
+		boolean isRestoring
+	) {
+		if (isRestoring) {
+			this.data = new TreeMap<>();
+			this.data.put(CURRENT_KEEPER, currentKeeper);
+			this.data.put(BOOK_STATUS, status);
+			this.data.put(TX_TIMESTAMP, EMPTY_VALUE);
+			this.data.put(REJECT_COUNT, String.valueOf(MIN_REJECT_COUNT));
+			this.data.put(REJECT_REASON, EMPTY_VALUE);
+			this.data.put(IMAGE_HASH, EMPTY_VALUE);
+		}
 	}
 
 	// This constructor is used to get metadata from blockchain
@@ -103,6 +126,10 @@ public class BookMetadata {
 		this.data.put(REJECT_COUNT, String.valueOf(this.getRejectCount() + 1));
 	}
 
+	public void resetRejectCount() {
+		this.data.put(REJECT_COUNT, String.valueOf(0));
+	}
+
 	@JsonIgnore
 	public int getRejectCount() {
 		String rejectCount = this.data.get(REJECT_COUNT);
@@ -111,7 +138,7 @@ public class BookMetadata {
 
 	@JsonIgnore
 	public boolean isLastRejectCountOver() {
-		return this.getRejectCount() >= MAX_REJECT_COUNT;
+		return this.getRejectCount() > MAX_REJECT_COUNT;
 	}
 
 	@JsonIgnore

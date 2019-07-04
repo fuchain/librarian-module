@@ -1,15 +1,17 @@
-import models from "@models";
+import { Review } from "@models";
 
 const list = async (req, res, next) => {
-    const listTrackings = await models.review.findAll();
-    const jsonList = listTrackings.map(e => {
+    const result = await Review.find();
+
+    const reviews = result.map(e => {
         return {
             email: e.email,
             review: JSON.parse(e.review),
             updatedAt: e.updatedAt
         };
     });
-    res.send(jsonList);
+
+    res.send(reviews);
 };
 
 const create = async (req, res) => {
@@ -19,8 +21,8 @@ const create = async (req, res) => {
         return;
     }
 
-    const isExisted = await models.review.findOne({
-        where: { email: req.email }
+    const isExisted = await Review.findOne({
+        email: req.email
     });
 
     if (isExisted) {
@@ -34,14 +36,19 @@ const create = async (req, res) => {
     const body = req.body;
 
     try {
-        const newReview = await models.review.create({
+        const newReview = new Review({
             email: req.email,
             review: JSON.stringify(body)
         });
+
+        await newReview.save();
+
         res.send(newReview);
     } catch (err) {
         res.status(400);
-        res.send(err);
+        res.send({
+            message: err
+        });
     }
 };
 

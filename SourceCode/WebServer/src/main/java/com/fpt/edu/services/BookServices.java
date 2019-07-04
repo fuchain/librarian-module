@@ -77,15 +77,17 @@ public class BookServices {
 		return book.getBcLastTransaction();
 	}
 
-	public Book getByUserAndBookDetail(Long userId, Long bookDetailId){
+	public Book getByUserAndBookDetail(Long userId, Long bookDetailId) {
 		List<Book> bookList = (List<Book>) bookRepository.getByUserAndBookDetail(userId, bookDetailId);
 		return bookList.size() > 0 ? bookList.get(0) : null;
 	}
 
-	public long countNumberOfBookDetails(){
+	public long countNumberOfBookDetails() {
 		return bookRepository.count();
 	}
 
-
+	public long getBookTotalAtLibrary(Long bookDetailId, Long userId) {
+		return bookRepository.getBookTotalAtLibrary(bookDetailId, userId);
+	}
 
 }

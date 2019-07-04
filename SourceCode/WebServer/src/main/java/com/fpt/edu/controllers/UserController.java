@@ -24,8 +24,8 @@ import java.util.List;
 @RestController
 @RequestMapping("users")
 public class UserController extends BaseController {
-	public UserController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, TransactionServices transactionServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationService notificationService) {
-		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, transactionServices, publishSubscribe, requestQueueManager, notificationService);
+	public UserController(UserServices userServices, BookDetailsServices bookDetailsServices, BookServices bookServices, ImportHelper importHelper, MatchingServices matchingServices, RequestServices requestServices, PublishSubscribe publishSubscribe, RequestQueueManager requestQueueManager, NotificationService notificationService) {
+		super(userServices, bookDetailsServices, bookServices, importHelper, matchingServices, requestServices, publishSubscribe, requestQueueManager, notificationService);
 	}
 
 	@ApiOperation(value = "Get a list of current book")
@@ -66,11 +66,9 @@ public class UserController extends BaseController {
 		responseJSON.put("id", user.getId());
 		responseJSON.put("email", user.getEmail());
 		responseJSON.put("fullname", user.getFullName());
-		String phoneNumber=Constant.EMPTY_VALUE;
-		if(user.getPhone()!=null){
-			phoneNumber= phoneNumber;
-		}
-		responseJSON.put("phone", phoneNumber);
+		String phoneNumber = user.getPhone();
+		String phone = phoneNumber == null ? Constant.EMPTY_VALUE : phoneNumber;
+		responseJSON.put("phone", phone);
 
 		return ResponseEntity.ok().body(responseJSON.toString());
 	}
@@ -80,7 +78,6 @@ public class UserController extends BaseController {
 	public ResponseEntity<String> getMe(Principal principal) {
 		String email = principal.getName();
 		User user = userServices.getUserByEmail(email);
-
 		return getJSONResponseUserProfile(user);
 	}
 
@@ -147,7 +144,7 @@ public class UserController extends BaseController {
 	}
 
 	@ApiOperation(value = "Get user information by email", response = JSONObject.class)
-	@GetMapping(value = "",produces = Constant.APPLICATION_JSON)
+	@GetMapping(value = "", produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<String> getUserByEmail(@RequestParam String email) {
 		User user = userServices.getUserByEmail(email);
 		return getJSONResponseUserProfile(user);

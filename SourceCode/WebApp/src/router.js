@@ -36,42 +36,42 @@ const router = new Router({
         },
         {
           path: "coin",
-          component: () => import("@/modules/student/coin/Coin.vue")
+          component: () => import("@/modules/reader/coin/Coin.vue")
         },
         {
           path: "review-ux",
-          component: () => import("@/modules/student/review-ux/ReviewUX.vue")
+          component: () => import("@/modules/reader/review-ux/ReviewUX.vue")
         },
         {
           path: "books/keeping",
           component: () =>
-            import("@/modules/student/books-keeping/BooksKeeping.vue")
+            import("@/modules/reader/books-keeping/BooksKeeping.vue")
         },
         {
           path: "books/return",
           name: "book-return",
           component: () =>
-            import("@/modules/student/books-return/BooksReturn.vue"),
+            import("@/modules/reader/books-return/BooksReturn.vue"),
           props: true
         },
         {
           path: "books/returning",
           component: () =>
-            import("@/modules/student/books-returning/BooksReturning.vue")
+            import("@/modules/reader/books-returning/BooksReturning.vue")
         },
         {
           path: "books/request",
           component: () =>
-            import("@/modules/student/books-request/BooksRequest.vue")
+            import("@/modules/reader/books-request/BooksRequest.vue")
         },
         {
           path: "books/requesting",
           component: () =>
-            import("@/modules/student/books-requesting/BooksRequesting.vue")
+            import("@/modules/reader/books-requesting/BooksRequesting.vue")
         },
         {
           path: "books/pair",
-          component: () => import("@/modules/student/books-pair/BooksPair.vue")
+          component: () => import("@/modules/reader/books-pair/BooksPair.vue")
         },
         {
           path: "librarian/statistics",
@@ -92,6 +92,13 @@ const router = new Router({
         },
         {
           path: "librarian/book-details-manage/:id",
+          component: () =>
+            import(
+              "@/modules/librarian/book-instance-manage/BookInstanceManage.vue"
+            )
+        },
+        {
+          path: "librarian/book-details-manage/:id/:bookid",
           component: () =>
             import(
               "@/modules/librarian/book-instance-manage/BookInstanceManage.vue"
@@ -119,6 +126,10 @@ const router = new Router({
         {
           path: "librarian/scheduler",
           component: () => import("@/modules/librarian/scheduler/Scheduler.vue")
+        },
+        {
+          path: "librarian/queue",
+          component: () => import("@/modules/librarian/queue/Queue.vue")
         }
       ]
     },
@@ -182,6 +193,8 @@ router.beforeEach((to, from, next) => {
         }
       } else {
         if (to.path === "/") {
+          next({ path: "/librarian/statistics" });
+        } else if (to.path.includes("/books/")) {
           next({ path: "/librarian/statistics" });
         }
       }

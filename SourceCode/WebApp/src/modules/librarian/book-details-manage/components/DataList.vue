@@ -1,6 +1,6 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <h2 class="mb-8 ml-4">Quản lí đầu sách</h2>
+    <h2 class="mb-8 ml-4">Quản lí {{ totalBookDetails || 0 }} đầu sách</h2>
 
     <div class="vx-row">
       <div class="vx-col sm:w-2/3 w-2/3">
@@ -25,7 +25,7 @@
               class="p-4 shadow-drop rounded-lg d-theme-dark-bg cursor-pointer flex items-center justify-center text-lg font-medium w-32"
             >
               <span class="mr-2">Làm</span>
-              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4"/>
+              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
             </div>
 
             <vs-dropdown-menu>
@@ -60,7 +60,7 @@
             </vs-td>
 
             <vs-td class="img-container">
-              <img :src="tr.image || '/images/book-thumbnail.jpg'" class="product-img">
+              <img :src="tr.image || '/images/book-thumbnail.jpg'" class="product-img" />
             </vs-td>
 
             <vs-td>
@@ -100,7 +100,8 @@ export default {
     return {
       isMounted: false,
       addNewDataSidebar: false,
-      searchText: ""
+      searchText: "",
+      totalBookDetails: 0
     };
   },
   props: {
@@ -150,6 +151,14 @@ export default {
   },
   mounted() {
     this.isMounted = true;
+
+    this.$http
+      .get(`${this.$http.baseUrl}/librarian/overviews`)
+      .then(response => {
+        const { totalBookDetails } = response.data;
+
+        this.totalBookDetails = totalBookDetails;
+      });
   }
 };
 </script>

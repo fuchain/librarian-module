@@ -34,7 +34,7 @@ public interface BookRepository extends PagingAndSortingRepository<Book, Long> {
 		value = "" +
 			"SELECT b " +
 			"FROM Book b " +
-			"WHERE b.bookDetail.id = :bookDetailId"
+			"WHERE b.bookDetail.id = :bookDetailId and b.user is not null"
 	)
 	Page<Book> findBookListByBookDetailId(
 		@Param("bookDetailId") Long bookDetailId,
@@ -42,5 +42,9 @@ public interface BookRepository extends PagingAndSortingRepository<Book, Long> {
 
 	@Query(value = "SELECT b FROM Book b WHERE b.user.id = :userId AND b.bookDetail.id = :bookDetailId")
 	Collection<Book> getByUserAndBookDetail(@Param("userId") Long userId,
-	                                        @Param("bookDetailId") Long bookDetailId);
+											@Param("bookDetailId") Long bookDetailId);
+
+	@Query(value = "SELECT COUNT(b) FROM Book b WHERE b.bookDetail.id = :book_detail_id AND b.user.id = :user_id")
+	long getBookTotalAtLibrary(@Param("book_detail_id") Long book_detail_id,
+							  @Param("user_id") Long user_id);
 }

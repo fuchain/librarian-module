@@ -3,7 +3,7 @@
     <!-- JUMBOTRON -->
     <div class="faq-jumbotron">
       <div class="faq-jumbotron-content lg:p-32 md:p-24 sm:p-16 p-8 rounded-lg mb-base">
-        <h1 class="mb-1 text-white">Sử dụng App để mượn/trả sách thư viện?</h1>
+        <h1 class="mb-1 text-white">Sử dụng App để mượn trả sách thư viện?</h1>
         <p
           class="text-white"
         >Nếu chưa quen về việc sử dụng app thư viện, các bạn có thể xem hướng dẫn tại đây</p>
@@ -202,7 +202,7 @@ export default {
 <style lang="scss">
 #faq-page {
   .faq-jumbotron-content {
-    background-image: url("../assets/images/pages/faq.jpg");
+    background-image: url("../assets/images/pages/lib.jpeg");
     background-size: cover;
   }
 

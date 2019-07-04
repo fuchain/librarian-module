@@ -1,4 +1,5 @@
 import * as localStorage from "@localstorage";
+import moment from "moment";
 
 const mutations = {
   // ////////////////////////////////////////////
@@ -109,9 +110,13 @@ const mutations = {
   // Notification
   ADD_NOTIFICATION(state, notification) {
     const newList = state.notifications.concat(notification);
-    newList.sort((a, b) => b.time - a.time);
+    newList.sort((a, b) => moment(b.time).unix() - moment(a.time).unix());
 
     state.notifications = newList;
+  },
+
+  RESET_NOTIFICATION(state) {
+    state.notifications = [];
   }
 };
 
