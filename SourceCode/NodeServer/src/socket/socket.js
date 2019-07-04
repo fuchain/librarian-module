@@ -1,5 +1,5 @@
 import { verifyJWT } from "@utils/jwt";
-import { setRedisItem, deleteRedisItem } from "@utils/redis";
+import { getRedisItem, setRedisItem, deleteRedisItem } from "@utils/redis";
 import redisAdapter from "socket.io-redis";
 
 export let io;
@@ -16,6 +16,15 @@ function initSocketModule(server) {
             try {
                 const payload = verifyJWT(socket.handshake.query.token);
                 socket.payload = payload;
+
+                const loggedInSocketID = await getRedisItem(email);
+                if (loggedInSocketID) {
+                    io.to(loggedInSocketID).emit("logout", {
+                        message: "Another user logged in",
+                        type: "logout",
+                        id: null
+                    });
+                }
 
                 const email = payload.sub;
                 setRedisItem(email, socket.id);
