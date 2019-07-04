@@ -101,7 +101,7 @@ const touchNotification = async (req, res) => {
 
 const getOnline = async (req, res) => {
     try {
-        return await getOnlineUsers();
+        res.send(await getOnlineUsers());
     } catch (err) {
         res.status(400);
         res.send({
