@@ -25,9 +25,11 @@ function initSocketModule(server) {
                         type: "logout",
                         id: null
                     });
+
+                    deleteRedisItem(email);
                 }
 
-                setRedisItem(email, socket.id);
+                await setRedisItem(email, socket.id);
 
                 next();
             } catch (err) {
@@ -39,10 +41,14 @@ function initSocketModule(server) {
     });
 
     io.on("connection", socket => {
-        socket.on("disconnect", () => {
+        socket.on("disconnect", async () => {
             const email = socket.payload.sub;
 
-            deleteRedisItem(email);
+            try {
+                deleteRedisItem(email);
+            } catch (err) {
+                console.log(err);
+            }
         });
     });
 }
