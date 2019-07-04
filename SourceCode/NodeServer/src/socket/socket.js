@@ -19,6 +19,11 @@ function initSocketModule(server) {
                 const email = payload.sub;
 
                 const loggedInSocketID = await getRedisItem(email);
+
+                io.to(socket.id).emit("info", {
+                    previousConnect: loggedInSocketID || "null"
+                });
+
                 if (loggedInSocketID) {
                     io.to(loggedInSocketID).emit("logout", {
                         message: "Another user logged in",
@@ -26,7 +31,8 @@ function initSocketModule(server) {
                         id: null
                     });
 
-                    deleteRedisItem(email);
+                    await deleteRedisItem(email);
+                    io.sockets.connected[loggedInSocketID].disconnect();
                 }
 
                 await setRedisItem(email, socket.id);
@@ -45,7 +51,7 @@ function initSocketModule(server) {
             const email = socket.payload.sub;
 
             try {
-                deleteRedisItem(email);
+                await deleteRedisItem(email);
             } catch (err) {
                 console.log(err);
             }
