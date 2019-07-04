@@ -8,12 +8,16 @@ const defaultSender = "librarian@fe.edu.vn",
     defaultText = "Phòng thư viện xin gửi thông báo đến bạn",
     defaultHtml = "<strong>Phòng thư viện xin gửi thông báo đến bạn</strong>";
 
-export function sendEmail(datas) {
+export async function sendEmail(datas) {
     const to = datas.to || "",
         from = datas.from || defaultSender,
         subject = datas.subject || defaultSubject,
         text = datas.text || defaultText,
         html = datas.html || defaultHtml;
 
-    sgMail.send({ to, from, subject, text, html });
+    try {
+        return await sgMail.send({ to, from, subject, text, html });
+    } catch (err) {
+        throw err;
+    }
 }
