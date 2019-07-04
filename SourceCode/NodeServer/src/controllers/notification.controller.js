@@ -17,18 +17,19 @@ const pushNotification = async (req, res) => {
             type
         });
         await newNotification.save();
-        
-        sendEmail({
+
+        const emailData = await sendEmail({
             to: email,
             text: message,
             html: message
-        })
+        });
 
         if (!socketId) {
             res.status(200);
             res.send({
                 message:
-                    "Message sent, but that user is not connecting to our service"
+                    "Message sent, but that user is not connecting to our service",
+                email: emailData
             });
 
             return;
