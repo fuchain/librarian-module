@@ -4,6 +4,55 @@ import redisAdapter from "socket.io-redis";
 
 export let io;
 
+async function addUser(email) {
+    try {
+        const users = await getRedisItem("users");
+        if (users) {
+            const arr = JSON.parse(users);
+            if (!arr.find(e => e === email)) {
+                arr.push(email);
+
+                const arrStr = JSON.stringify(arr);
+                await setRedisItem("users", arrStr);
+            }
+        }
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function removeUser(email) {
+    try {
+        const users = await getRedisItem("users");
+        if (users) {
+            const arr = JSON.parse(users);
+            if (!arr.find(e => e === email)) {
+                const filteredArr = arr.filter(e => e !== email);
+
+                const arrStr = JSON.stringify(filteredArr);
+                await setRedisItem("users", arrStr);
+            }
+        }
+    } catch (err) {
+        throw err;
+    }
+}
+
+export async function getOnlineUsers() {
+    try {
+        const users = await getRedisItem("users");
+        if (users) {
+            const usersArr = JSON.parse(users);
+
+            return usersArr;
+        } else {
+            return [];
+        }
+    } catch (err) {
+        throw err;
+    }
+}
+
 function initSocketModule(server) {
     io = require("socket.io")(server);
     io.adapter(
@@ -33,9 +82,11 @@ function initSocketModule(server) {
 
                     await deleteRedisItem(email);
                     io.sockets.connected[loggedInSocketID].disconnect();
+                    await removeUser(email);
                 }
 
                 await setRedisItem(email, socket.id);
+                await addUser(email);
 
                 next();
             } catch (err) {
@@ -52,6 +103,7 @@ function initSocketModule(server) {
 
             try {
                 await deleteRedisItem(email);
+                await removeUser(email);
             } catch (err) {
                 console.log(err);
             }
