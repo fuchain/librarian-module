@@ -78,8 +78,7 @@ public class UserController extends BaseController {
 	public ResponseEntity<String> getMe(Principal principal) {
 		String email = principal.getName();
 		User user = userServices.getUserByEmail(email);
-
-		return new ResponseEntity<>(user.toString(), HttpStatus.OK);
+		return getJSONResponseUserProfile(user);
 	}
 
 	@ApiOperation(value = "Update user profile", response = String.class)
