@@ -26,7 +26,7 @@ export function setRedisItem(key, value) {
             if (err) {
                 reject(err);
             } else {
-                resolve(ok);
+                resolve();
             }
         });
     });
@@ -46,7 +46,7 @@ export function deleteRedisItem(key) {
             if (err) {
                 reject(err);
             } else {
-                resolve(ok);
+                resolve();
             }
         });
     });
