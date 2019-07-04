@@ -35,6 +35,7 @@ public class NotificationService {
 				.header("Content-Type", Constant.APPLICATION_JSON)
 				.body(jsonObject.toString())
 				.asJson();
+			LOGGER.info("Response from notification service: " + response.toString());
 		} catch (UnirestException e) {
 			LOGGER.error("Cannot send request to the endpoint: " + endPoint);
 		}
