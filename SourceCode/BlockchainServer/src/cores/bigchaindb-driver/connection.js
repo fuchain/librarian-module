@@ -19,6 +19,10 @@ export default class Connection {
         });
     }
 
+    getNodePath() {
+        return this.path;
+    }
+
     getApiUrls(endpoint) {
         return (
             this.path +

@@ -1,7 +1,8 @@
 const driver = require("./cores/bigchaindb-driver");
 
 // BigchainDB server instance (e.g. https://example.com/api/v1/)
-const API_PATH = "https://testnet.bigchain.fptu.tech/api/v1/";
+import env from "@cores/env";
+const API_PATH = env.bigchainHost;
 
 // Create a new keypair.
 const alice = new driver.Ed25519Keypair();
