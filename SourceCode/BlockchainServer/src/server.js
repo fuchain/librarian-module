@@ -8,7 +8,6 @@ import routes from "@routes";
 import models from "@models";
 import { checkEnvLoaded } from "@utils/env";
 
-import initSocketModule from "./socket/socket";
 import initRedisModule from "@utils/redis";
 
 const app = express();
@@ -16,10 +15,12 @@ const server = require("http").Server(app);
 
 async function main() {
     try {
+        // Check is env is not null
         checkEnvLoaded();
 
-        // Init DB
+        // Init MongoDB and Redis
         models();
+        initRedisModule();
 
         // Compression gzip
         app.use(compression());
@@ -38,15 +39,12 @@ async function main() {
         // Middlewares
         app.use(morgan("tiny"));
 
-        // Init roues
+        // Init routes
         app.use("/api/v1", routes);
 
         server.listen(5002, function() {
             console.log("App is listening on port 5002!");
         });
-
-        initSocketModule(server);
-        initRedisModule();
     } catch (error) {
         console.error(error);
         process.exit(1);

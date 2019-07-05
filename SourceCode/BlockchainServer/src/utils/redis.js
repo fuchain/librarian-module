@@ -1,5 +1,5 @@
 import redis from "redis";
-import { promisify, callbackify } from "util";
+import { promisify } from "util";
 import env from "@utils/env";
 
 export const client = redis.createClient(6379, env.redisHost || "redis");
