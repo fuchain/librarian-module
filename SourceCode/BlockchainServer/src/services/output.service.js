@@ -8,4 +8,12 @@ async function getSpent(publicKey) {
     }
 }
 
-export default { getSpent };
+async function getUnspent(publicKey) {
+    try {
+        return await conn.listOutputs(publicKey, false);
+    } catch (err) {
+        throw err;
+    }
+}
+
+export default { getSpent, getUnspent };
