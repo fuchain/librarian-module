@@ -1,6 +1,5 @@
-import coreIncludes from 'core-js/library/fn/array/includes'
-import coreObjectEntries from 'core-js/library/fn/object/entries'
-
+import coreIncludes from "core-js/library/fn/array/includes";
+import coreObjectEntries from "core-js/library/fn/object/entries";
 
 /**
  * @private
@@ -10,14 +9,22 @@ import coreObjectEntries from 'core-js/library/fn/object/entries'
  */
 function filterFromObject(obj, filter, { isInclusion = true } = {}) {
     if (filter && Array.isArray(filter)) {
-        return applyFilterOnObject(obj, isInclusion ? ((_, key) => coreIncludes(filter, key))
-            : ((_, key) => !coreIncludes(filter, key)))
-    } else if (filter && typeof filter === 'function') {
+        return applyFilterOnObject(
+            obj,
+            isInclusion
+                ? (_, key) => coreIncludes(filter, key)
+                : (_, key) => !coreIncludes(filter, key)
+        );
+    } else if (filter && typeof filter === "function") {
         // Flip the filter fn's return if it's for inclusion
-        return applyFilterOnObject(obj, isInclusion ? filter
-            : (...args) => !filter(...args))
+        return applyFilterOnObject(
+            obj,
+            isInclusion ? filter : (...args) => !filter(...args)
+        );
     } else {
-        throw new Error('The given filter is not an array or function. Exclude aborted')
+        throw new Error(
+            "The given filter is not an array or function. Exclude aborted"
+        );
     }
 }
 
@@ -28,17 +35,17 @@ function filterFromObject(obj, filter, { isInclusion = true } = {}) {
  */
 function applyFilterOnObject(obj, filterFn) {
     if (filterFn == null) {
-        return Object.assign({}, obj)
+        return Object.assign({}, obj);
     }
 
-    const filteredObj = {}
+    const filteredObj = {};
     coreObjectEntries(obj).forEach(([key, val]) => {
         if (filterFn(val, key)) {
-            filteredObj[key] = val
+            filteredObj[key] = val;
         }
-    })
+    });
 
-    return filteredObj
+    return filteredObj;
 }
 
 /**
@@ -51,7 +58,7 @@ function applyFilterOnObject(obj, filterFn) {
  * @return {Object} The new object
  */
 function selectFromObject(obj, filter) {
-    return filterFromObject(obj, filter)
+    return filterFromObject(obj, filter);
 }
 
 /**
@@ -64,5 +71,5 @@ function selectFromObject(obj, filter) {
  * @return {Object} Sanitized Javascript object
  */
 export default function sanitize(obj) {
-    return selectFromObject(obj, (val) => !!val)
+    return selectFromObject(obj, val => !!val);
 }
