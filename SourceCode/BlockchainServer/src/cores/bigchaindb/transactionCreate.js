@@ -1,7 +1,7 @@
 const driver = require("@cores/bigchaindb-driver");
 
 export default function(asset, metadata, publicKey) {
-    const tx = driver.Transaction.makeCreateTransaction(
+    const txCreate = driver.Transaction.makeCreateTransaction(
         // Define the asset to store
         asset,
 
@@ -18,5 +18,5 @@ export default function(asset, metadata, publicKey) {
         publicKey
     );
 
-    return tx;
+    return txCreate;
 }

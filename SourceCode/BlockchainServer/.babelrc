@@ -17,6 +17,7 @@
                 "alias": {
                     "@routes": "./src/routes",
                     "@controllers": "./src/controllers",
+                    "@services": "./src/services",
                     "@models": "./src/models",
                     "@middlewares": "./src/middlewares",
                     "@cores": "./src/cores"
