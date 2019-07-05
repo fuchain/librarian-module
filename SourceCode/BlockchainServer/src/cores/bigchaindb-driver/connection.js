@@ -1,3 +1,4 @@
+import axios from "axios";
 import request from "./request";
 
 const HEADER_BLACKLIST = ["content-type"];
@@ -21,6 +22,14 @@ export default class Connection {
 
     getNodePath() {
         return this.path;
+    }
+
+    async pingNode() {
+        try {
+            axios.get(this.path);
+        } catch (err) {
+            throw err;
+        }
     }
 
     getApiUrls(endpoint) {

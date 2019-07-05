@@ -9,12 +9,16 @@ import models from "@models";
 import { checkEnvLoaded } from "@cores/env";
 
 import initRedisModule from "@cores/redis";
+import { pingBigchainDB } from "@cores/bigchaindb";
 
 const app = express();
 const server = require("http").Server(app);
 
 async function main() {
     try {
+        // Init BigchainDB
+        pingBigchainDB();
+
         // Check is env is not null
         checkEnvLoaded();
 
