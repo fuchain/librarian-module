@@ -13,7 +13,7 @@ const conn = mongoose.createConnection(
 function init() {
     conn.on("error", console.error.bind(console, "MongoDB connection error:"));
     conn.once("open", function() {
-        console.log("Connected to MongoDB!");
+        console.log("MongoDB connected to:", env.dbHost);
     });
 }
 

@@ -12,7 +12,7 @@ function getKey(key) {
 
 function initRedisModule() {
     client.on("connect", function() {
-        console.log("Redis connected!");
+        console.log("Redis connected to:", env.redisHost);
     });
 
     client.on("error", function(error) {
