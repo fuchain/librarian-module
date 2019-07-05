@@ -13,18 +13,12 @@ Some main dependencies of this repository:
 
 ## Installation
 
-Prerequisites: Node.js (>=6.x, 8.x preferred), npm version 3+ and Git.
+Prerequisites: Node.js (>=6.x, 8.x preferred), npm and Git.
 
-If you don't have Yarn, install it by running:
-
-```
-$ npm install -g yarn
-```
-
-Install dependencies via yarn:
+Install dependencies via npm:
 
 ```
-$ yarn
+$ npm install
 ```
 
 Config environment at `.env` file, example at `.env.example`.
@@ -34,7 +28,7 @@ Config environment at `.env` file, example at `.env.example`.
 Running in development mode with `nodemon`:
 
 ```
-$ yarn serve
+$ npm run serve
 ```
 
 ### Production
@@ -42,11 +36,11 @@ $ yarn serve
 Build production dist files and run:
 
 ```
-$ yarn build && yarn start
+$ npm run build && npm run start
 ```
 
 Or build production Docker image:
 
 ```
-$ docker build -t nodejs-api . && docker run -d --name nodejs-api -p 5000:3000 nodejs-api:latest
+$ docker build -t ibrarian-blockchainserver . && docker run -d --name ibrarian-blockchainserver -p 5000:3000 ibrarian-blockchainserver:latest
 ```
