@@ -8,6 +8,6 @@ COPY . .
 
 RUN yarn
 
-EXPOSE 5002
+EXPOSE 5000
 
 ENTRYPOINT ["yarn","serve"]

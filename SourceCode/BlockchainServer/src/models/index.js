@@ -1,8 +1,5 @@
 import mongoose from "mongoose";
-import env from "@utils/env";
-
-import reviewSchema from "@models/review.schema";
-import notificationSchema from "@models/notification.schema";
+import env from "@cores/env";
 
 const conn = mongoose.createConnection(
     `mongodb://${env.dbHost}:27017/${env.dbName}`,
@@ -20,7 +17,6 @@ function init() {
     });
 }
 
-export const Review = conn.model("Review", reviewSchema);
-export const Notification = conn.model("Notification", notificationSchema);
+// export const ModelA = conn.model("ModelA", modelASchema);
 
 export default init;

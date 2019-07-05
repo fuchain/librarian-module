@@ -6,9 +6,9 @@ import morgan from "morgan";
 
 import routes from "@routes";
 import models from "@models";
-import { checkEnvLoaded } from "@utils/env";
+import { checkEnvLoaded } from "@cores/env";
 
-import initRedisModule from "@utils/redis";
+import initRedisModule from "@cores/redis";
 
 const app = express();
 const server = require("http").Server(app);
@@ -42,8 +42,8 @@ async function main() {
         // Init routes
         app.use("/api/v1", routes);
 
-        server.listen(5002, function() {
-            console.log("App is listening on port 5002!");
+        server.listen(5000, function() {
+            console.log("App is listening on port 5000!");
         });
     } catch (error) {
         console.error(error);

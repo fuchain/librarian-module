@@ -37,4 +37,4 @@ EXPOSE 3000
 ENTRYPOINT ["node","./dist/server.js"]
 
 # docker build -t librarian-blockchainserver .
-# docker run -d --name librarian-blockchainserver -p 5002:5002 librarian-blockchainserver:latest
+# docker run -d --name librarian-blockchainserver -p 5000:5000 librarian-blockchainserver:latest
