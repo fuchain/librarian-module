@@ -21,21 +21,21 @@
                     <strong>chìa khóa không hợp lệ</strong> vui lòng cung cấp chìa khóa
                   </p>
                 </div>
-                <form v-on:submit.prevent="doLogin">
+                <form v-on:submit.prevent="submitKey">
                   <vs-input
                     type="password"
                     name="password"
                     icon="icon icon-lock"
                     icon-pack="feather"
                     label-placeholder="Chuỗi chìa khóa bí mật"
-                    v-model="password"
+                    v-model="bip39"
                     class="w-full mt-6 no-icon-border my-5"
                   />
 
                   <vs-button
                     class="float-right mb-8"
                     icon="fingerprint"
-                    :disabled="!email || !password"
+                    :disabled="!bip39"
                   >Kí xác thực</vs-button>
                 </form>
               </div>
@@ -48,13 +48,23 @@
 </template>
 
 <script>
-export default {
-  mounted() {
-    const alice = new BigchainDB.Ed25519Keypair(
-      window.bip39.mnemonicToSeed("yourString").slice(0, 32)
-    );
+import generateKeyPair from "@core/crypto/generateKeyPair";
 
-    console.log(alice);
+export default {
+  data() {
+    return {
+      bip39: ""
+    };
+  },
+  methods: {
+    async submitKey() {
+      const keypair = await generateKeyPair(this.bip39);
+
+      this.$localStorage.setItem("publicKey", keypair.publicKey);
+      this.$localStorage.setItem("privateKey", keypair.privateKey);
+
+      this.$router.push("/");
+    }
   }
 };
 </script>

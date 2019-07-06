@@ -1,4 +1,4 @@
-const driver = require("./core/bigchaindb-driver");
+const driver = require("./core/bigchaindb-driver);
 
 // BigchainDB server instance (e.g. https://example.com/api/v1/)
 import env from "@core/env";

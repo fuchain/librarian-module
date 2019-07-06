@@ -11,6 +11,8 @@
   "dependencies": {
     "apexcharts": "^3.6.5",
     "axios": "^0.18.0",
+    "bigchaindb-driver": "4.0.0",
+    "bip39": "^3.0.2",
     "core-js": "^2.6.5",
     "date-fns": "^2.0.0-alpha.27",
     "jwt-decode": "^2.2.0",
