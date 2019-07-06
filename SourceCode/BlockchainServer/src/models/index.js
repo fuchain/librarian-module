@@ -1,22 +1,31 @@
-import mongoose from "mongoose";
+const MongoClient = require("mongodb").MongoClient;
 import env from "@core/env";
 
-const conn = mongoose.createConnection(
-    `mongodb://${env.dbHost}:27017/${env.dbName}`,
-    {
-        auth: { authSource: "admin" },
-        user: env.dbUser,
-        pass: env.dbPass
-    }
-);
+// Connection URL
+const url = `mongodb://${env.dbHost}:27017`;
 
-function init() {
-    conn.on("error", console.error.bind(console, "MongoDB connection error:"));
-    conn.once("open", function() {
-        console.log("MongoDB connected to:", env.dbHost);
+// Database Name
+const dbName = `${env.dbName}`;
+
+// Create a new MongoClient
+const client = new MongoClient(url, { promiseLibrary: Promise });
+
+export let db;
+
+export async function initMongoDB() {
+    // Use connect method to connect to the Server
+    return new Promise(function(resolve, reject) {
+        client.connect(function(err) {
+            if (err) {
+                reject(new Error("Cannot connect to MongoDB:", env.dbHost));
+            }
+
+            console.log("MongoDB connected to:", env.dbHost);
+            db = client.db(dbName);
+
+            resolve();
+
+            // client.close();
+        });
     });
 }
-
-// export const ModelA = conn.model("ModelA", modelASchema);
-
-export default init;
