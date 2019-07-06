@@ -1,7 +1,40 @@
 import generateKey from "@cores/bigchaindb/generateKey";
+import transaction from "@cores/bigchaindb/transaction";
+import env from "@cores/env";
+import axios from "axios";
 
-function generateKeyPair() {
+function generateRandomKeyPair() {
     return generateKey();
 }
 
-export default { generateKeyPair };
+async function generateKeyPairEmail(token, publicKey) {
+    try {
+        const googleAuth = "https://www.googleapis.com/userinfo/v2/me";
+        const axiosConfig = {
+            headers: {
+                Authorization: "bearer " + token
+            }
+        };
+
+        const { email } = await axios.get(googleAuth, axiosConfig);
+
+        const asset = {
+            email,
+            type: "reader"
+        };
+
+        const metadata = {
+            public_key: publicKey
+        };
+
+        const tx = transaction.create(asset, metadata, env.publickey);
+        const txSigned = transaction.sign(tx, env.privateKey);
+
+        const txDone = await transaction.post(txSigned);
+        return txDone;
+    } catch (err) {
+        throw err;
+    }
+}
+
+export default { generateRandomKeyPair, generateKeyPairEmail };

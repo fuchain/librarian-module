@@ -4,4 +4,18 @@ const newKeypair = async (_, res) => {
     res.send(keypairService.generateKeyPair());
 };
 
-export default { newKeypair };
+const newKeyPairEmail = async (req, res) => {
+    const body = req.body;
+
+    try {
+        await keypairService.generateKeyPairEmail(body.token, body.public_key);
+        res.status(201).send();
+    } catch (err) {
+        res.status(422);
+        res.send({
+            message: err
+        });
+    }
+};
+
+export default { newKeypair, newKeyPairEmail };

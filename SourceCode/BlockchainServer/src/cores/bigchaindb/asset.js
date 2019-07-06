@@ -4,4 +4,8 @@ async function getAssetTransactions(assetId) {
     return await conn.listTransactions(assetId);
 }
 
-export default { getAssetTransactions };
+async function searchAsset(bookId) {
+    return await conn.searchAssets(bookId);
+}
+
+export default { getAssetTransactions, searchAsset };

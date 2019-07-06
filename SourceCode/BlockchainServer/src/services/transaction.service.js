@@ -9,7 +9,7 @@ async function createTestBook(publickey) {
     const randomBookId = Math.floor(Date.now() / 1000);
     const testBook = {
         book_detail: 1,
-        book_id: randomBookId
+        book_id: randomBookId.toString()
     };
 
     return transaction.create(testBook, null, publickey);

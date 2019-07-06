@@ -8,7 +8,9 @@ export function checkEnvLoaded() {
         !process.env.DB_PASS ||
         !process.env.DB_NAME ||
         !process.env.REDIS_HOST ||
-        !process.env.BIGCHAIN_HOST
+        !process.env.BIGCHAIN_HOST ||
+        !process.env.PUBLIC_KEY ||
+        !process.env.PRIVATE_KEY
     ) {
         console.error("Cannot load .env file!");
         process.exit(1);
@@ -21,5 +23,7 @@ export default {
     dbPass: process.env.DB_PASS,
     dbName: process.env.DB_NAME,
     redisHost: process.env.REDIS_HOST,
-    bigchainHost: process.env.BIGCHAIN_HOST
+    bigchainHost: process.env.BIGCHAIN_HOST,
+    publickey: process.env.PUBLIC_KEY,
+    privateKey: process.env.PRIVATE_KEY
 };

@@ -1,5 +1,6 @@
 import transactionService from "@services/transaction.service";
 import outputService from "@services/output.service";
+import bookService from "@services/book.service";
 
 const create = async (req, res) => {
     const body = req.body;
@@ -84,4 +85,25 @@ const getUnspent = async (req, res) => {
     }
 };
 
-export default { create, transfer, sign, post, getSpent, getUnspent };
+const searchBook = async (req, res) => {
+    const body = req.body;
+
+    try {
+        res.send(await bookService.searchBook(body.book_id));
+    } catch (err) {
+        res.status(400);
+        res.send({
+            message: err
+        });
+    }
+};
+
+export default {
+    create,
+    transfer,
+    sign,
+    post,
+    getSpent,
+    getUnspent,
+    searchBook
+};
