@@ -1,6 +1,5 @@
 package com.fpt.edu.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fpt.edu.common.helpers.ImportHelper;
 import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
@@ -8,9 +7,9 @@ import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
 import com.fpt.edu.entities.BookDetail;
 import com.fpt.edu.exceptions.EntityIdMismatchException;
-import com.fpt.edu.exceptions.EntityNotFoundException;
 import com.fpt.edu.services.*;
 import io.swagger.annotations.ApiOperation;
+import org.json.JSONObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -30,54 +29,71 @@ public class BookDetailController extends BaseController {
 	@ApiOperation(value = "Get a list of book details", response = String.class)
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = Constant.APPLICATION_JSON)
 	public ResponseEntity<List<BookDetail>> findBookDetailsById(
-		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE+"") int page,
-		@RequestParam(name = "size", required = false,defaultValue = Constant.DEFAULT_OFFSET+"") int size
-	) throws EntityNotFoundException, JsonProcessingException {
-		Pageable pageable = PageRequest.of(page-1,size);
-    	return new ResponseEntity<>(bookDetailsServices.getAllBookDetails(pageable), HttpStatus.OK);
+		@RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE + "") int page,
+		@RequestParam(name = "size", required = false, defaultValue = Constant.DEFAULT_OFFSET + "") int size
+	) {
+		Pageable pageable = PageRequest.of(page - 1, size);
+		return new ResponseEntity<>(bookDetailsServices.getAllBookDetails(pageable), HttpStatus.OK);
 	}
 
-    @ApiOperation(value = "Create a book detail ", response = BookDetail.class)
-    @PostMapping("")
-    public ResponseEntity<BookDetail> createBookDetail(@RequestBody BookDetail bookDetail) {
-        return new ResponseEntity<>(bookDetailsServices.saveBookDetail(bookDetail), HttpStatus.OK);
-    }
+	@ApiOperation(value = "Create a book detail ", response = BookDetail.class)
+	@PostMapping("")
+	public ResponseEntity<BookDetail> createBookDetail(@RequestBody BookDetail bookDetail) {
+		return new ResponseEntity<>(bookDetailsServices.saveBookDetail(bookDetail), HttpStatus.OK);
+	}
 
-    @ApiOperation(value = "Get a book detail by its id", response = BookDetail.class)
-    @GetMapping("/{id}")
-    public ResponseEntity<BookDetail> getBookDetail(@PathVariable Long id) {
-        BookDetail bookDetail = bookDetailsServices.getBookById(id);
-        return new ResponseEntity<>(bookDetail, HttpStatus.OK);
-    }
+	@ApiOperation(value = "Get a book detail by its id", response = String.class)
+	@GetMapping(value = "/{id}", produces = Constant.APPLICATION_JSON)
+	public ResponseEntity<String> getBookDetail(@PathVariable Long id) {
+		JSONObject result;
+		BookDetail bookDetail = bookDetailsServices.getBookById(id);
 
-    @ApiOperation(value = "Update a book detail", response = BookDetail.class)
-    @PutMapping("/{id}")
-    public ResponseEntity<BookDetail> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail bookDetail)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, EntityIdMismatchException {
-        if (!bookDetail.getId().equals(id)) {
-            throw new EntityIdMismatchException("Book id: " + id + " does not match " + bookDetail.getId());
-        }
+		if (bookDetail == null) {
+			result = getResponse("Book detail id " + id + " not found", HttpStatus.BAD_REQUEST.value(), null);
+			return new ResponseEntity<>(result.toString(), HttpStatus.BAD_REQUEST);
+		} else {
+			result = getResponse("Get data successfully", HttpStatus.OK.value(), bookDetail);
+			return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+		}
+	}
 
-        bookDetailsServices.getBookById(bookDetail.getId());
+	private JSONObject getResponse(String message, int status_code, Object data) {
+		JSONObject result = new JSONObject();
+		result.put("message", message);
+		result.put("status_code", status_code);
+		result.put("data", data);
 
-        BookDetail updateBookDetail = bookDetailsServices.updateBookDetail(bookDetail);
-        return new ResponseEntity<>(updateBookDetail, HttpStatus.OK);
-    }
+		return result;
+	}
 
-    @ApiOperation(value = "Delete a book detail")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBookDetail(@PathVariable Long id) {
-        bookDetailsServices.deleteBookDetail(id);
+	@ApiOperation(value = "Update a book detail", response = BookDetail.class)
+	@PutMapping("/{id}")
+	public ResponseEntity<BookDetail> updateBookDetail(@PathVariable Long id, @RequestBody BookDetail bookDetail)
+		throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, EntityIdMismatchException {
+		if (!bookDetail.getId().equals(id)) {
+			throw new EntityIdMismatchException("Book id: " + id + " does not match " + bookDetail.getId());
+		}
 
-        return new ResponseEntity<>("success", HttpStatus.OK);
-    }
+		bookDetailsServices.getBookById(bookDetail.getId());
 
-    @ApiOperation(value = "Search for a book detail", response = BookDetail.class)
-    @GetMapping("search")
-    public ResponseEntity<List<BookDetail>> searchBook(@RequestParam("name") String name,@RequestParam(name = "page", required = false, defaultValue =Constant.DEFAULT_PAGE+"") int page,@RequestParam(name = "size", required = false,defaultValue = Constant.DEFAULT_OFFSET+"") int size ) {
-		Pageable pageable = PageRequest.of(page-1,size);
-        List<BookDetail> books = bookDetailsServices.searchBookDetails(name.toLowerCase(),pageable);
+		BookDetail updateBookDetail = bookDetailsServices.updateBookDetail(bookDetail);
+		return new ResponseEntity<>(updateBookDetail, HttpStatus.OK);
+	}
 
-        return new ResponseEntity<>(books, HttpStatus.OK);
-    }
+	@ApiOperation(value = "Delete a book detail")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteBookDetail(@PathVariable Long id) {
+		bookDetailsServices.deleteBookDetail(id);
+
+		return new ResponseEntity<>("success", HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "Search for a book detail", response = BookDetail.class)
+	@GetMapping("search")
+	public ResponseEntity<List<BookDetail>> searchBook(@RequestParam("name") String name, @RequestParam(name = "page", required = false, defaultValue = Constant.DEFAULT_PAGE + "") int page, @RequestParam(name = "size", required = false, defaultValue = Constant.DEFAULT_OFFSET + "") int size) {
+		Pageable pageable = PageRequest.of(page - 1, size);
+		List<BookDetail> books = bookDetailsServices.searchBookDetails(name.toLowerCase(), pageable);
+
+		return new ResponseEntity<>(books, HttpStatus.OK);
+	}
 }

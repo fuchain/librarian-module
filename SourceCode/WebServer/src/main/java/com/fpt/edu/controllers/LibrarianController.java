@@ -6,7 +6,7 @@ import com.fpt.edu.common.enums.*;
 import com.fpt.edu.common.helpers.ImportHelper;
 import com.fpt.edu.common.request_queue_simulate.RequestQueue;
 import com.fpt.edu.services.NotificationService;
-import com.fpt.edu.common.helpers.SchedulerJob;
+import com.fpt.edu.common.helpers.GarbageJob;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
 import com.fpt.edu.constant.Constant;
@@ -16,7 +16,6 @@ import com.fpt.edu.exceptions.InvalidExpressionException;
 import com.fpt.edu.services.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.iterators.EntrySetMapIterator;
 import org.aspectj.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -300,7 +299,7 @@ public class LibrarianController extends BaseController {
 		jobDataMap.put("MatchingServices", matchingServices);
 		jobDataMap.put("NotificationHelper", notificationService);
 
-		JobDetail jobDetail = JobBuilder.newJob(SchedulerJob.class).setJobData(jobDataMap).build();
+		JobDetail jobDetail = JobBuilder.newJob(GarbageJob.class).setJobData(jobDataMap).build();
 
 		Trigger trigger = TriggerBuilder.newTrigger().withIdentity("CronTrigger")
 			.withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
