@@ -1,6 +1,6 @@
-import generateKey from "@cores/bigchaindb/generateKey";
-import transaction from "@cores/bigchaindb/transaction";
-import env from "@cores/env";
+import generateKey from "@core/bigchaindb/generateKey";
+import transaction from "@core/bigchaindb/transaction";
+import env from "@core/env";
 import axios from "axios";
 
 function generateRandomKeyPair() {

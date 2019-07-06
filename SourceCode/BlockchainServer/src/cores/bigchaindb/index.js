@@ -1,5 +1,5 @@
-const driver = require("@cores/bigchaindb-driver");
-import env from "@cores/env";
+const driver = require("@core/bigchaindb-driver");
+import env from "@core/env";
 
 const conn = new driver.Connection(env.bigchainHost);
 

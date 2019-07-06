@@ -20,7 +20,7 @@
                     "@services": "./src/services",
                     "@models": "./src/models",
                     "@middlewares": "./src/middlewares",
-                    "@cores": "./src/cores"
+                    "@core": "./src/core"
                 }
             }
         ]

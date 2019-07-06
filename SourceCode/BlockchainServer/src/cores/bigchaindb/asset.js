@@ -1,4 +1,4 @@
-import conn from "@cores/bigchaindb";
+import conn from "@core/bigchaindb";
 
 async function getAssetTransactions(assetId) {
     return await conn.listTransactions(assetId);

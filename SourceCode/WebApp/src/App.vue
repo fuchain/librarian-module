@@ -117,7 +117,13 @@ export default {
   async mounted() {
     this.toggleClassInBody(themeConfig.theme);
 
-    if (this.$auth.isAuthenticated()) {
+    if (
+      this.$auth.isAuthenticated() &&
+      (!this.$localStorage.getItem("privateKey") &&
+        !this.$localStorage.getItem("publicKey"))
+    ) {
+      this.$router.push("/keypair");
+    } else if (this.$auth.isAuthenticated()) {
       this.$vs.loading({
         background: "primary",
         color: "white",

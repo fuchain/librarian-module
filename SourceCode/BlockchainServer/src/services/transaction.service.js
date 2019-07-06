@@ -1,5 +1,5 @@
-import transaction from "@cores/bigchaindb/transaction";
-import asset from "@cores/bigchaindb/asset";
+import transaction from "@core/bigchaindb/transaction";
+import asset from "@core/bigchaindb/asset";
 
 function signTx(tx, privateKey) {
     return transaction.sign(tx, privateKey);
