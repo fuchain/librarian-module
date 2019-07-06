@@ -72,6 +72,14 @@ public class BookDetail extends AbstractTimestampEntity implements Serializable 
 		return parsedCode;
 	}
 
+
+	@JsonProperty
+	public int book_amount () {
+		return this.getBooks().size();
+	}
+
+
+
 	@OneToMany(mappedBy = "bookDetail", cascade = { CascadeType.PERSIST })
 	@JsonIgnore
 	private List<Book> books;

@@ -1,6 +1,7 @@
 package com.fpt.edu.controllers;
 
 import com.fpt.edu.common.helpers.ImportHelper;
+import com.fpt.edu.exceptions.NotFoundException;
 import com.fpt.edu.services.NotificationService;
 import com.fpt.edu.common.request_queue_simulate.PublishSubscribe;
 import com.fpt.edu.common.request_queue_simulate.RequestQueueManager;
@@ -44,16 +45,13 @@ public class BookDetailController extends BaseController {
 
 	@ApiOperation(value = "Get a book detail by its id", response = String.class)
 	@GetMapping(value = "/{id}", produces = Constant.APPLICATION_JSON)
-	public ResponseEntity<String> getBookDetail(@PathVariable Long id) {
+	public ResponseEntity<BookDetail> getBookDetail(@PathVariable Long id) throws NotFoundException {
 		JSONObject result;
 		BookDetail bookDetail = bookDetailsServices.getBookById(id);
-
 		if (bookDetail == null) {
-			result = getResponse("Book detail id " + id + " not found", HttpStatus.BAD_REQUEST.value(), null);
-			return new ResponseEntity<>(result.toString(), HttpStatus.BAD_REQUEST);
+			throw new NotFoundException("Book detail id " + id + " not found");
 		} else {
-			result = getResponse("Get data successfully", HttpStatus.OK.value(), bookDetail);
-			return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+			return new ResponseEntity<>(bookDetail, HttpStatus.OK);
 		}
 	}
 
