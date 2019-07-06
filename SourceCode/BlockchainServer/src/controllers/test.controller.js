@@ -1,4 +1,4 @@
-import transactionService from "@services/transaction.service";
+import transferService from "@services/transfer.service";
 import outputService from "@services/output.service";
 import bookService from "@services/book.service";
 
@@ -6,7 +6,7 @@ async function create(req, res) {
     const body = req.body;
 
     try {
-        res.send(await transactionService.createTestBook(body.public_key));
+        res.send(await transferService.createTestBook(body.public_key));
     } catch (err) {
         res.status(400);
         res.send({
@@ -20,7 +20,7 @@ async function transfer(req, res) {
 
     try {
         res.send(
-            await transactionService.transferTestBook(
+            await transferService.transferTestBook(
                 body.asset_id,
                 body.public_key
             )
@@ -37,7 +37,7 @@ async function sign(req, res) {
     const body = req.body;
 
     try {
-        res.send(transactionService.signTx(body.tx, body.private_key));
+        res.send(transferService.signTx(body.tx, body.private_key));
     } catch (err) {
         res.status(400);
         res.send({
@@ -50,7 +50,7 @@ async function post(req, res) {
     const body = req.body;
 
     try {
-        res.send(await transactionService.postTx(body.tx));
+        res.send(await transferService.postTx(body.tx));
     } catch (err) {
         res.status(400);
         res.send({
