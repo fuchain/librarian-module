@@ -8,8 +8,9 @@ function signTx(tx, privateKey) {
 async function createTestBook(publickey) {
     const randomBookId = Math.floor(Date.now() / 1000);
     const testBook = {
-        book_detail: 1,
-        book_id: randomBookId.toString()
+        book_detail: "bd_1",
+        book_id: randomBookId.toString(),
+        type: "book"
     };
 
     return transaction.create(testBook, null, publickey);

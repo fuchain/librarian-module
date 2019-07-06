@@ -45,6 +45,7 @@ export default class Connection {
                 transactionsCommit: "transactions?mode=commit",
                 transactionsDetail: "transactions/%(transactionId)s",
                 assets: "assets",
+                assetsDetail: "transactions?asset_id=",
                 metadata: "metadata",
                 votes: "votes"
             }[endpoint]
@@ -66,6 +67,13 @@ export default class Connection {
                 blockHeight
             }
         });
+    }
+
+    /**
+     * @param assetId
+     */
+    getAsset(assetId) {
+        return this._req(this.getApiUrls("assetsDetail") + assetId);
     }
 
     /**

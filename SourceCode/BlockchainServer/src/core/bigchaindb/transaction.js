@@ -55,4 +55,12 @@ function post(txSigned) {
     }
 }
 
-export default { create, transfer, sign, post };
+async function get(txId) {
+    try {
+        return await conn.getTransaction(txId);
+    } catch (err) {
+        throw err;
+    }
+}
+
+export default { create, transfer, sign, post, get };
