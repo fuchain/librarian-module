@@ -1,7 +1,7 @@
 import keypairService from "@services/keypair.service";
 
 const newKeypair = async (_, res) => {
-    res.send(keypairService.generateKeyPair());
+    res.send(keypairService.generateRandomKeyPair());
 };
 
 const newKeyPairEmail = async (req, res) => {
