@@ -4,7 +4,7 @@ async function createTransfer(req, res) {
     const body = req.body;
 
     try {
-        const tx = transferService.createTransferRequest(
+        const tx = await transferService.createTransferRequest(
             body.asset_id,
             body.to.public_key // this is public key of the receiver
         );

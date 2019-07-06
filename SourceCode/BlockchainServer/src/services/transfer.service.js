@@ -42,6 +42,9 @@ async function createTransferRequest(assetId, publicKey) {
 
     try {
         const lastTxs = await asset.getAssetTransactions(assetId);
+        if (!lastTxs || !lastTxs.length) {
+            throw new Error("asset_id not available");
+        }
         const previousTx = lastTxs.length ? lastTxs[lastTxs.length - 1] : null;
 
         const metadata = {
@@ -63,7 +66,7 @@ function createReceiverConfirmAsset(transferTxSigned, publicKey) {
     };
 
     const metadata = {
-        confirm_for: transferTx
+        confirm_for: transferTxSigned
     };
 
     return transaction.create(confirmAsset, metadata, publicKey);
