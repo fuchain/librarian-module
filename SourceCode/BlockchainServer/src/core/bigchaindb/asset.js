@@ -8,4 +8,8 @@ async function searchAsset(bookId) {
     return await conn.searchAssets(bookId);
 }
 
-export default { getAssetTransactions, searchAsset };
+async function searchEmail(email) {
+    return await conn.searchAssets(email);
+}
+
+export default { getAssetTransactions, searchAsset, searchEmail };

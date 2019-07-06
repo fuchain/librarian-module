@@ -1,4 +1,4 @@
-import { verifyJWT } from "@core/jwt;
+import { verifyJWT } from "@core/jwt";
 
 export function jwtAuthentication(req, res, next) {
     const token = getToken(req);

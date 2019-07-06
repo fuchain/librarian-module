@@ -2,7 +2,7 @@ import transactionService from "@services/transaction.service";
 import outputService from "@services/output.service";
 import bookService from "@services/book.service";
 
-const create = async (req, res) => {
+async function create(req, res) {
     const body = req.body;
 
     try {
@@ -13,9 +13,9 @@ const create = async (req, res) => {
             message: err
         });
     }
-};
+}
 
-const transfer = async (req, res) => {
+async function transfer(req, res) {
     const body = req.body;
 
     try {
@@ -31,9 +31,9 @@ const transfer = async (req, res) => {
             message: err
         });
     }
-};
+}
 
-const sign = (req, res) => {
+async function sign(req, res) {
     const body = req.body;
 
     try {
@@ -44,9 +44,9 @@ const sign = (req, res) => {
             message: err
         });
     }
-};
+}
 
-const post = async (req, res) => {
+async function post(req, res) {
     const body = req.body;
 
     try {
@@ -57,9 +57,9 @@ const post = async (req, res) => {
             message: err
         });
     }
-};
+}
 
-const getSpent = async (req, res) => {
+async function getSpent(req, res) {
     const body = req.body;
 
     try {
@@ -70,9 +70,9 @@ const getSpent = async (req, res) => {
             message: err
         });
     }
-};
+}
 
-const getUnspent = async (req, res) => {
+async function getUnspent(req, res) {
     const body = req.body;
 
     try {
@@ -83,9 +83,9 @@ const getUnspent = async (req, res) => {
             message: err
         });
     }
-};
+}
 
-const searchBook = async (req, res) => {
+async function searchBook(req, res) {
     const body = req.body;
 
     try {
@@ -96,7 +96,7 @@ const searchBook = async (req, res) => {
             message: err
         });
     }
-};
+}
 
 export default {
     create,

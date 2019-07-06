@@ -3,7 +3,8 @@ import controller from "@controllers/authentication.controller";
 
 const router = express.Router();
 
-router.route("/random").get(controller.newKeypair);
-router.route("/email").post(controller.newKeyPairEmail);
+router.route("/keypair/random").get(controller.randomKeypair);
+router.route("/keypair/email").post(controller.verifyKeyPairEmail);
+router.route("/google/token").post(controller.googleAuthentication);
 
 export default router;

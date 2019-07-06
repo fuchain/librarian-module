@@ -183,12 +183,14 @@ export default {
       });
 
       this.$http
-        .post(`${this.$http.baseUrl}/auth/google`, { token: accessToken })
+        .post(`${this.$http.baseUrl}/auth/google/token`, {
+          token: accessToken,
+          public_key: this.$localStorage.getItem("publicKey")
+        })
         .then(async response => {
           // Set data;
           const data = response.data;
           this.$auth.setAccessToken(data.token);
-          this.$auth.setAccessTokenExpiresAt(data.expire.toString());
           this.$localStorage.setItem("picture", data.picture);
 
           // Get profile

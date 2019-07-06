@@ -1,21 +1,43 @@
 import keypairService from "@services/keypair.service";
 
-const newKeypair = async (_, res) => {
+const randomKeypair = async (_, res) => {
     res.send(keypairService.generateRandomKeyPair());
 };
 
-const newKeyPairEmail = async (req, res) => {
+async function verifyKeyPairEmail(req, res) {
     const body = req.body;
 
     try {
-        await keypairService.generateKeyPairEmail(body.token, body.public_key);
-        res.status(201).send();
+        const created = await keypairService.verifyKeyPairEmail(
+            body.token,
+            body.public_key
+        );
+        res.status(201).send({
+            message: created ? "created" : "verfied"
+        });
     } catch (err) {
         res.status(422);
         res.send({
             message: err
         });
     }
-};
+}
 
-export default { newKeypair, newKeyPairEmail };
+async function googleAuthentication(req, res) {
+    const body = req.body;
+
+    try {
+        const { token, status } = await keypairService.verifyKeyPairEmail(
+            body.token,
+            body.public_key
+        );
+        res.status(200).send({ token, status });
+    } catch (err) {
+        res.status(422);
+        res.send({
+            message: err.toString()
+        });
+    }
+}
+
+export default { randomKeypair, verifyKeyPairEmail, googleAuthentication };
