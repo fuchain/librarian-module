@@ -5,7 +5,7 @@ import cors from "cors";
 import morgan from "morgan";
 
 import routes from "@routes";
-import models from "@models";
+import { initMongoDB } from "@models";
 import { checkEnvLoaded } from "@core/env";
 
 import initRedisModule from "@core/redis";
@@ -23,8 +23,8 @@ async function main() {
         checkEnvLoaded();
 
         // Init MongoDB and Redis
-        models();
-        initRedisModule();
+        await initMongoDB();
+        await initRedisModule();
 
         // Compression gzip
         app.use(compression());

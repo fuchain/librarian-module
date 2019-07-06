@@ -10,5 +10,6 @@ router.route("/post").post(controller.post);
 router.route("/spent").post(controller.getSpent);
 router.route("/unspent").post(controller.getUnspent);
 router.route("/search").post(controller.searchBook);
+router.route("/db").get(controller.dbTest);
 
 export default router;
