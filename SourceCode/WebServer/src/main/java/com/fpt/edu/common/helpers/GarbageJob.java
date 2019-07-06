@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SchedulerJob implements Job {
+public class GarbageJob implements Job {
 
 	private final Logger LOGGER = LogManager.getLogger(getClass());
 	private RequestServices requestServices;
