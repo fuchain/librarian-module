@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import env from "@cores/env";
+import env from "@core/env";
 
 const conn = mongoose.createConnection(
     `mongodb://${env.dbHost}:27017/${env.dbName}`,

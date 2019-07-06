@@ -3,6 +3,7 @@ import controller from "@controllers/authentication.controller";
 
 const router = express.Router();
 
-router.route("/random").get(controller.newKeypair);
+router.route("/keypair/random").get(controller.randomKeypair);
+router.route("/keypair/email").post(controller.verifyKeyPairEmail);
 
 export default router;

@@ -9,5 +9,6 @@ router.route("/sign").post(controller.sign);
 router.route("/post").post(controller.post);
 router.route("/spent").post(controller.getSpent);
 router.route("/unspent").post(controller.getUnspent);
+router.route("/search").post(controller.searchBook);
 
 export default router;

@@ -1,6 +1,6 @@
 import redis from "redis";
 import { promisify } from "util";
-import env from "@cores/env";
+import env from "@core/env";
 
 export const client = redis.createClient(6379, env.redisHost || "redis");
 const getAsync = promisify(client.get).bind(client);

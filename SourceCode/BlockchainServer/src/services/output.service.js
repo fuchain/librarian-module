@@ -1,8 +1,8 @@
-import conn from "@cores/bigchaindb";
+import conn from "@core/bigchaindb";
 
 async function getSpent(publicKey) {
     try {
-        await conn.listOutputs(publicKey, true);
+        return await conn.listOutputs(publicKey, true);
     } catch (err) {
         throw err;
     }

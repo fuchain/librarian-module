@@ -1,4 +1,4 @@
-const driver = require("@cores/bigchaindb-driver");
+const driver = require("@core/bigchaindb-driver");
 
 export default function() {
     const newKeyPair = new driver.Ed25519Keypair();

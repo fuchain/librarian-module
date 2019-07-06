@@ -1,20 +1,23 @@
-import transaction from "@cores/bigchaindb/transaction";
-import asset from "@cores/bigchaindb/asset";
+import transaction from "@core/bigchaindb/transaction";
+import asset from "@core/bigchaindb/asset";
 
 function signTx(tx, privateKey) {
     return transaction.sign(tx, privateKey);
 }
 
+// Just for test
 async function createTestBook(publickey) {
     const randomBookId = Math.floor(Date.now() / 1000);
     const testBook = {
-        book_detail: 1,
-        book_id: randomBookId
+        book_detail: "bd_1",
+        book_id: randomBookId.toString(),
+        type: "book"
     };
 
     return transaction.create(testBook, null, publickey);
 }
 
+// Just for test
 async function transferTestBook(assetId, publickey) {
     const lastTxs = await asset.getAssetTransactions(assetId);
     const previousTx = lastTxs.length ? lastTxs[lastTxs.length - 1] : null;

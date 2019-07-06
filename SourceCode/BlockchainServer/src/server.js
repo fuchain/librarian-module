@@ -6,10 +6,10 @@ import morgan from "morgan";
 
 import routes from "@routes";
 import models from "@models";
-import { checkEnvLoaded } from "@cores/env";
+import { checkEnvLoaded } from "@core/env";
 
-import initRedisModule from "@cores/redis";
-import { pingBigchainDB } from "@cores/bigchaindb";
+import initRedisModule from "@core/redis";
+import { pingBigchainDB } from "@core/bigchaindb";
 
 const app = express();
 const server = require("http").Server(app);

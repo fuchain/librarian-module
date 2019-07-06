@@ -41,7 +41,7 @@ const actions = {
   // Profile
   async getProfile({ commit }) {
     try {
-      const { data } = await $http.get(`${$http.baseUrl}/users/profile`);
+      const { data } = await $http.get(`${$http.baseUrl}/user/profile`);
       commit("PROFILE_UPDATED", data);
     } catch (e) {
       // Catch error

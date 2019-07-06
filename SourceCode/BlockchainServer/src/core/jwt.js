@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
 
-export function createJWT(id) {
+export function createJWT(email) {
     return jwt.sign(
         {
-            data: id
+            email: email,
+            roles: "reader"
         },
-        "tudeptrai",
+        "Capstone",
         { expiresIn: "24h" }
     );
 }

@@ -148,6 +148,10 @@ const router = new Router({
           component: () => import("@/views/Login.vue")
         },
         {
+          path: "/keypair",
+          component: () => import("@/views/KeyPair.vue")
+        },
+        {
           path: "/error",
           component: () => import("@/views/Error500.vue")
         }

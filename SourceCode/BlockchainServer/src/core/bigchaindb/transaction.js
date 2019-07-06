@@ -1,5 +1,5 @@
-import conn from "@cores/bigchaindb";
-const driver = require("@cores/bigchaindb-driver");
+import conn from "@core/bigchaindb";
+const driver = require("@core/bigchaindb-driver");
 
 function create(asset, metadata, publicKey) {
     const txCreate = driver.Transaction.makeCreateTransaction(
@@ -55,4 +55,12 @@ function post(txSigned) {
     }
 }
 
-export default { create, transfer, sign, post };
+async function get(txId) {
+    try {
+        return await conn.getTransaction(txId);
+    } catch (err) {
+        throw err;
+    }
+}
+
+export default { create, transfer, sign, post, get };
