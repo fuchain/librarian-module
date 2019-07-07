@@ -3,6 +3,7 @@ import controller from "@controllers/test.controller";
 
 const router = express.Router();
 
+router.route("/test").get(controller.test);
 router.route("/create").post(controller.create);
 router.route("/transfer").post(controller.transfer);
 router.route("/sign").post(controller.sign);

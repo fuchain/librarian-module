@@ -24,6 +24,6 @@ export default {
     dbName: process.env.DB_NAME,
     redisHost: process.env.REDIS_HOST,
     bigchainHost: process.env.BIGCHAIN_HOST,
-    publickey: process.env.PUBLIC_KEY,
+    publicKey: process.env.PUBLIC_KEY,
     privateKey: process.env.PRIVATE_KEY
 };

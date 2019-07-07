@@ -14,7 +14,9 @@ async function getProfile(req, res) {
         res.send(profile);
     }
 
-    return res.status(422).send();
+    return res.status(422).send({
+        message: "Cannot find profile with your public key"
+    });
 }
 
 async function getCurrentBook(req, res) {
@@ -25,29 +27,71 @@ async function getCurrentBook(req, res) {
     res.send(books);
 }
 
+async function getReturningBook(req, res) {
+    const body = req.body;
+
+    try {
+        const books = await userService.getInQueueBook(body.public_key, true);
+
+        res.send(books);
+    } catch (err) {
+        res.status(400).send({
+            message: err instanceof Error ? err.toString() : err
+        });
+    }
+}
+
+async function getRequestingBook(req, res) {
+    const body = req.body;
+
+    try {
+        const books = await userService.getInQueueBook(body.public_key, false);
+
+        res.send(books);
+    } catch (err) {
+        res.status(400).send({
+            message: err instanceof Error ? err.toString() : err
+        });
+    }
+}
+
 async function getKeepingAmount(req, res) {
     const body = req.body;
 
-    const books = await userService.getCurrentBook(body.public_key);
+    try {
+        const books = await userService.getCurrentBook(body.public_key);
 
-    res.send({
-        keeping: books.length,
-        returning: 0,
-        requesting: 0
-    });
+        res.send({
+            keeping: books.length,
+            returning: 0,
+            requesting: 0
+        });
+    } catch (err) {
+        res.status(400).send({
+            message: err instanceof Error ? err.toString() : err
+        });
+    }
 }
 
 async function getTransferHistory(req, res) {
     const body = req.body;
 
-    const books = await userService.getTransferHistory(body.public_key);
+    try {
+        const books = await userService.getTransferHistory(body.public_key);
 
-    res.send(books);
+        res.send(books);
+    } catch (err) {
+        res.status(400).send({
+            message: err instanceof Error ? err.toString() : err
+        });
+    }
 }
 
 export default {
     getProfile,
     getCurrentBook,
+    getReturningBook,
+    getRequestingBook,
     getKeepingAmount,
     getTransferHistory
 };
