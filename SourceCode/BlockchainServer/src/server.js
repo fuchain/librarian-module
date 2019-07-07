@@ -16,6 +16,7 @@ const server = require("http").Server(app);
 
 import importDBQueue from "@queues/importdb.queue";
 import matchingQueue from "@queues/matching.queue";
+import pairQueue from "@queues/pair.queue";
 
 async function main() {
     try {
@@ -27,7 +28,7 @@ async function main() {
 
         // Init MongoDB and Redis
         await initMongoDB();
-        // await initRedisModule();
+        await initRedisModule();
 
         // Compression gzip
         app.use(compression());
@@ -52,6 +53,8 @@ async function main() {
         // Queues
         await matchingQueue.run();
         await importDBQueue.run();
+        await pairQueue.run();
+        await pairQueue.addJob();
 
         server.listen(5000, function() {
             console.log("App is listening on port 5000!");
