@@ -1,6 +1,7 @@
 import outputService from "@services/output.service";
 import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
+import { fillBookInfo } from "@core/parser/bookdetail";
 
 async function getProfile(publicKey) {
     const listAssets = await asset.searchPublicKey(publicKey);
@@ -21,9 +22,10 @@ async function getCurrentBook(publicKey) {
             return listAssets;
         });
 
-        const result = Promise.all(promises);
+        const result = await Promise.all(promises);
+        const bookDetailFill = await fillBookInfo(result);
 
-        return result;
+        return bookDetailFill;
     } catch (err) {
         throw err;
     }

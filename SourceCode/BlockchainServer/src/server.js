@@ -17,6 +17,7 @@ const server = require("http").Server(app);
 import importDBQueue from "@queues/importdb.queue";
 import matchingQueue from "@queues/matching.queue";
 import pairQueue from "@queues/pair.queue";
+import pairUpdateQueue from "@queues/pair.update.queue";
 
 async function main() {
     try {
@@ -55,6 +56,7 @@ async function main() {
         await importDBQueue.run();
         await pairQueue.run();
         await pairQueue.addJob();
+        await pairUpdateQueue.run();
 
         server.listen(5000, function() {
             console.log("App is listening on port 5000!");

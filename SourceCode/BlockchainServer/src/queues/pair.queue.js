@@ -3,6 +3,7 @@ const pairQueue = new Queue("pair");
 
 // Dependency to run this queue
 import { db } from "@models";
+import { addJob as addJobPairUpdate } from "@queues/pair.update.queue";
 
 // Watch and Run job queue
 function run() {
@@ -26,7 +27,7 @@ async function doJob() {
             .toArray();
 
         if (!notMatchedArr.length) {
-            throw new Error("Nothing to do!");
+            return false;
         }
 
         // List Book Details
@@ -52,24 +53,17 @@ async function doJob() {
                     ? returnArr.length
                     : requestArr.length;
 
-            return Array.from(Array(shorterLength)).map(async (_, index) => {
+            if (!shorterLength) {
+                return false;
+            }
+
+            Array.from(Array(shorterLength)).map((_, index) => {
                 // This is a match!
                 const matchedReturner = returnArr[index];
                 const matchedRequester = requestArr[index];
 
-                await matchingCollection.updateOne(matchedReturner, {
-                    $set: {
-                        matched: true,
-                        matchWith: matchedRequester.email
-                    }
-                });
-
-                await matchingCollection.updateOne(matchedRequester, {
-                    $set: {
-                        matched: true,
-                        matchWith: matchedReturner.email
-                    }
-                });
+                // Add a job to update db and push
+                addJobPairUpdate(matchedReturner, matchedRequester);
             });
         });
 
