@@ -16,7 +16,7 @@ async function doJob(id) {
         headers: {
             Authorization:
                 "Bearer " +
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsaWJyYXJpYW5AZmUuZWR1LnZuIiwicm9sZXMiOlsibGlicmFyaWFuIl0sImV4cCI6MTU2MjUwNTc1MH0.s6-e0IpvGIm2Zkjua9qDBZQdN-Junx3aTGiI7KJWYiwXq-zf2gkLNTQx9kr40ubb5Q476afe6hRWghQ-R7buqQ"
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsaWJyYXJpYW5AZmUuZWR1LnZuIiwicm9sZXMiOlsibGlicmFyaWFuIl0sImV4cCI6MTU3NzgzNjgwMH0.I5DEYij7PfMo7nqcDARiBWmQT91Yv9R5Pi-9U82_PTNdI_mm9btvm9QGPh8CsO7Bs76SRkp7JNE8-VtzrjuA1g"
         }
     };
 

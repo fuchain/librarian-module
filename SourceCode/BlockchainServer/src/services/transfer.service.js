@@ -1,5 +1,6 @@
 import transaction from "@core/bigchaindb/transaction";
 import asset from "@core/bigchaindb/asset";
+import uuidv4 from "uuid/v4";
 
 function signTx(tx, privateKey) {
     return transaction.sign(tx, privateKey);
@@ -15,10 +16,10 @@ async function postTx(tx) {
 
 // Just for test
 async function createTestBook(publickey) {
-    const randomBookId = Math.floor(Date.now() / 1000);
+    const bookId = uuidv4();
     const testBook = {
-        book_detail: "bd_1",
-        book_id: randomBookId.toString(),
+        book_detail: "7",
+        book_id: bookId,
         type: "book"
     };
 
