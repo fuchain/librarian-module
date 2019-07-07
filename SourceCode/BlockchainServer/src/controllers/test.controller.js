@@ -1,7 +1,7 @@
 import transferService from "@services/transfer.service";
 import outputService from "@services/output.service";
 import bookService from "@services/book.service";
-import createImportDBJob from "@queues/importdb.queue";
+import importDBQueue from "@queues/importdb.queue";
 
 async function create(req, res) {
     const body = req.body;
@@ -101,7 +101,7 @@ async function searchBook(req, res) {
 
 async function dbTest(_, res) {
     try {
-        await createImportDBJob();
+        await importDBQueue.addJob();
 
         res.send({
             message: "Done!"
