@@ -6,7 +6,9 @@ import { db } from "@models";
 import axios from "axios";
 
 // Watch and Run job queue
-importQueue.process(jobCallback);
+function run() {
+    importQueue.process(jobCallback);
+}
 
 // Describe what to do in the job
 async function doJob(id) {
@@ -41,7 +43,7 @@ async function doJob(id) {
         };
 
         // Run query
-        const collection = db.collection("book_detail");
+        const collection = db.collection("book_details");
 
         await collection.insertMany([bookDetail]);
         console.log(`Success inserted book_detail ${id}!`);
@@ -66,12 +68,10 @@ async function jobCallback(job, done) {
     done();
 }
 
-async function createImportDBJob() {
+async function addJob() {
     // Clean the queue
     console.log("Cleaning the importDB job queue...");
-    await importQueue.clean(0);
-    console.log("Done!");
-    console.log("Creating jobs...");
+    await importQueue.clean(1000);
 
     // There are 2151 rows in db so we will create 2151 jobs :)
     const loopTime = 2151;
@@ -94,4 +94,7 @@ async function createImportDBJob() {
     return true;
 }
 
-export default createImportDBJob;
+export default {
+    run,
+    addJob
+};

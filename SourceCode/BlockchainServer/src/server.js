@@ -14,6 +14,9 @@ import { pingBigchainDB } from "@core/bigchaindb";
 const app = express();
 const server = require("http").Server(app);
 
+import importDBQueue from "@queues/importdb.queue";
+import matchingQueue from "@queues/matching.queue";
+
 async function main() {
     try {
         // Init BigchainDB
@@ -24,7 +27,7 @@ async function main() {
 
         // Init MongoDB and Redis
         await initMongoDB();
-        await initRedisModule();
+        // await initRedisModule();
 
         // Compression gzip
         app.use(compression());
@@ -45,6 +48,10 @@ async function main() {
 
         // Init routes
         app.use("/api/v1", routes);
+
+        // Queues
+        await matchingQueue.run();
+        await importDBQueue.run();
 
         server.listen(5000, function() {
             console.log("App is listening on port 5000!");
