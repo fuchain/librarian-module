@@ -11,7 +11,9 @@ async function createTransfer(req, res) {
 
         res.send(tx);
     } catch (err) {
-        res.status(422).send(err);
+        res.status(422).send({
+            message: err instanceof Error ? err.toString() : err
+        });
     }
 }
 
@@ -44,7 +46,9 @@ async function receiverSigned(req, res) {
             confirm_asset_posted: confirmAssetPosted
         });
     } catch (err) {
-        res.status(422).send(err);
+        res.status(422).send({
+            message: err instanceof Error ? err.toString() : err
+        });
     }
 }
 

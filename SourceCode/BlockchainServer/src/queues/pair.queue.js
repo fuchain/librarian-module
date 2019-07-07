@@ -10,7 +10,7 @@ function run() {
     pairQueue.process(jobCallback);
 }
 
-function makeAUniqueArray(arr) {
+function makeDistictArray(arr) {
     const arrFiltered = arr.map(e => e.bookDetailId);
     return Array.from(new Set(arrFiltered));
 }
@@ -30,20 +30,22 @@ async function doJob() {
             return false;
         }
 
-        // List Book Details
-        const bookDetailsArrUnique = makeAUniqueArray(notMatchedArr);
+        // Get book detail distinct from the not matched elements
+        const bookDetailsIdsUnique = makeDistictArray(notMatchedArr);
 
-        const pairArr = bookDetailsArrUnique.map(e => {
-            const temp = notMatchedArr.filter(el => {
+        // Create a queue for each book detail, each queue have two array (for returner and requester)
+        const queuesByBookDetails = bookDetailsIdsUnique.map(e => {
+            const bookDetailQueue = notMatchedArr.filter(el => {
                 return el.bookDetailId === e;
             });
 
-            return temp;
+            return bookDetailQueue;
         });
 
-        pairArr.map(bArr => {
-            const returnArr = bArr.filter(match => !match.bookId);
-            const requestArr = bArr.filter(match => match.bookId);
+        // Query in each book detail queue to get a match couple
+        queuesByBookDetails.map(aBookDetailQueue => {
+            const returnArr = aBookDetailQueue.filter(match => !match.bookId);
+            const requestArr = aBookDetailQueue.filter(match => match.bookId);
 
             returnArr.sort((a, b) => b.time - a.time);
             requestArr.sort((a, b) => b.time - a.time);
@@ -57,7 +59,8 @@ async function doJob() {
                 return false;
             }
 
-            Array.from(Array(shorterLength)).map((_, index) => {
+            const loopByShorterLength = Array.from(Array(shorterLength));
+            loopByShorterLength.map((_, index) => {
                 // This is a match!
                 const matchedReturner = returnArr[index];
                 const matchedRequester = requestArr[index];

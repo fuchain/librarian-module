@@ -16,7 +16,7 @@ async function verifyKeyPairEmail(req, res) {
     } catch (err) {
         res.status(422);
         res.send({
-            message: err
+            message: err instanceof Error ? err.toString() : err
         });
     }
 }

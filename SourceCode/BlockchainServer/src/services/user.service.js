@@ -2,6 +2,7 @@ import outputService from "@services/output.service";
 import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
+import { db } from "@models";
 
 async function getProfile(publicKey) {
     const listAssets = await asset.searchPublicKey(publicKey);
@@ -25,6 +26,28 @@ async function getCurrentBook(publicKey) {
         const result = await Promise.all(promises);
         const bookDetailFill = await fillBookInfo(result);
 
+        return bookDetailFill.filter(book => book.book_detail);
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function getInQueueBook(publicKey, isGetReturning = true) {
+    try {
+        const email = await asset.getEmailFromPublicKey(publicKey);
+
+        const matchingCollection = db.collection("matchings");
+        const inQueueBooks = await matchingCollection
+            .find({
+                email,
+                bookId: {
+                    $exists: isGetReturning ? true : false
+                }
+            })
+            .toArray();
+
+        const bookDetailFill = await fillBookInfo(inQueueBooks, "bookDetailId");
+
         return bookDetailFill;
     } catch (err) {
         throw err;
@@ -44,15 +67,14 @@ async function getTransferHistory(publicKey) {
         const result = await Promise.all(promises);
 
         return result.map(tx => {
-            const assetObj = tx.asset.data;
-            assetObj.asset_id = tx.id;
+            const assetId = tx.operation === "CREATE" ? tx.id : tx.asset.id;
 
             return {
                 id: tx.id,
                 returner: tx.inputs[0].owners_before[0],
                 receiver: tx.outputs[0].public_keys[0],
                 operation: tx.operation,
-                asset: assetObj
+                asset_id: assetId
             };
         });
     } catch (err) {
@@ -60,4 +82,9 @@ async function getTransferHistory(publicKey) {
     }
 }
 
-export default { getProfile, getCurrentBook, getTransferHistory };
+export default {
+    getProfile,
+    getCurrentBook,
+    getInQueueBook,
+    getTransferHistory
+};

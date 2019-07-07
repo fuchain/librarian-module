@@ -1,6 +1,8 @@
 import conn from "@core/bigchaindb";
 const driver = require("@core/bigchaindb-driver");
 
+import env from "@core/env";
+
 function create(asset, metadata, publicKey) {
     const txCreate = driver.Transaction.makeCreateTransaction(
         // Define the asset to store
@@ -63,4 +65,19 @@ async function get(txId) {
     }
 }
 
-export default { create, transfer, sign, post, get };
+function isLibrarianTx(tx) {
+    if (
+        !tx ||
+        !tx.inputs ||
+        !tx.inputs.length ||
+        !tx.inputs[0].owners_before ||
+        !tx.inputs[0].owners_before.length
+    )
+        return false;
+
+    const owner = tx.inputs[0].owners_before[0];
+
+    return owner === env.publicKey ? true : false;
+}
+
+export default { create, transfer, sign, post, get, isLibrarianTx };

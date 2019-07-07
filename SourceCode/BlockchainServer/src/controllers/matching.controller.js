@@ -21,7 +21,7 @@ async function createRequest(req, res) {
         }
     } catch (err) {
         res.status(422).send({
-            message: err
+            message: err instanceof Error ? err.toString() : err
         });
     }
 }

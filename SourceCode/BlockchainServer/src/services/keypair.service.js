@@ -20,7 +20,7 @@ async function generateKeyPairEmail(email, publicKey) {
             public_key: publicKey
         };
 
-        const tx = transaction.create(asset, metadata, env.publickey);
+        const tx = transaction.create(asset, metadata, env.publicKey);
         const txSigned = transaction.sign(tx, env.privateKey);
 
         const txDone = await transaction.post(txSigned);

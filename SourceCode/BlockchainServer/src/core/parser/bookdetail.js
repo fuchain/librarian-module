@@ -1,9 +1,9 @@
 import { db } from "@models";
 
-export async function fillBookInfo(bookArr) {
+export async function fillBookInfo(bookArr, bookFieldInArr = "book_detail") {
     try {
         const bookDetailIds = await bookArr.map(book =>
-            parseInt(book.book_detail)
+            parseInt(book[bookFieldInArr])
         );
 
         const bookDetailsCollection = db.collection("book_details");
@@ -24,13 +24,11 @@ export async function fillBookInfo(bookArr) {
             .toArray();
 
         return bookArr.map(book => {
-            return {
-                book_id: book.book_id,
-                asset_id: book.asset_id,
-                book_detail: bookDetailIdArr.find(
-                    e => e.id === parseInt(book.book_detail)
-                )
-            };
+            book[bookFieldInArr] = bookDetailIdArr.find(
+                e => e.id === parseInt(book[bookFieldInArr])
+            );
+
+            return book;
         });
     } catch (err) {
         throw err;
