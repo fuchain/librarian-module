@@ -3,7 +3,7 @@ import matchingQueue from "@queues/matching.queue";
 async function createMatchingRequest(email, bookDetailId, bookId) {
     try {
         // Constraint
-        if (!email || !bookDetailId || !bookId) {
+        if (!email || !bookDetailId) {
             throw new Error("Invalid request");
         }
 
