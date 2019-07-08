@@ -6,6 +6,8 @@ const randomKeypair = async (_, res) => {
 };
 
 async function verifyKeyPairEmail(req, res) {
+    const body = req.body;
+
     const { token, status } = await keypairService.verifyKeyPairEmail(
         body.token,
         body.public_key
