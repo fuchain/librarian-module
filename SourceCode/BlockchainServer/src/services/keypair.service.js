@@ -10,24 +10,20 @@ function generateRandomKeyPair() {
 }
 
 async function generateKeyPairEmail(email, publicKey) {
-    try {
-        const asset = {
-            email,
-            type: "reader"
-        };
+    const asset = {
+        email,
+        type: "reader"
+    };
 
-        const metadata = {
-            public_key: publicKey
-        };
+    const metadata = {
+        public_key: publicKey
+    };
 
-        const tx = transaction.create(asset, metadata, env.publicKey);
-        const txSigned = transaction.sign(tx, env.privateKey);
+    const tx = transaction.create(asset, metadata, env.publicKey);
+    const txSigned = transaction.sign(tx, env.privateKey);
 
-        const txDone = await transaction.post(txSigned);
-        return txDone;
-    } catch (err) {
-        throw err;
-    }
+    const txDone = await transaction.post(txSigned);
+    return txDone;
 }
 
 async function checkTokenGoogle(token) {
@@ -53,20 +49,16 @@ async function isEmailExisted(email) {
 }
 
 async function verifyKeyPairEmail(token, publicKey) {
-    try {
-        const { email } = await checkTokenGoogle(token);
-        const found = await isEmailExisted(email);
+    const { email } = await checkTokenGoogle(token);
+    const found = await isEmailExisted(email);
 
-        if (!found) {
-            const tx = await generateKeyPairEmail(email, publicKey);
-            return tx
-                ? { token: createJWT(email), status: "created" }
-                : { token: createJWT(email), status: "verified" };
-        } else {
-            return { token: createJWT(email), status: "verified" };
-        }
-    } catch (err) {
-        throw err;
+    if (!found) {
+        const tx = await generateKeyPairEmail(email, publicKey);
+        return tx
+            ? { token: createJWT(email), status: "created" }
+            : { token: createJWT(email), status: "verified" };
+    } else {
+        return { token: createJWT(email), status: "verified" };
     }
 }
 

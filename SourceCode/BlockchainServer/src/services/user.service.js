@@ -14,72 +14,60 @@ async function getProfile(publicKey) {
 }
 
 async function getCurrentBook(publicKey) {
-    try {
-        const transactionIds = await outputService.getUnspent(publicKey);
-        const promises = transactionIds.map(e => {
-            const transactionId = e.transaction_id;
-            const listAssets = asset.getBookFromTransactionId(transactionId);
+    const transactionIds = await outputService.getUnspent(publicKey);
+    const promises = transactionIds.map(e => {
+        const transactionId = e.transaction_id;
+        const listAssets = asset.getBookFromTransactionId(transactionId);
 
-            return listAssets;
-        });
+        return listAssets;
+    });
 
-        const result = await Promise.all(promises);
-        const bookDetailFill = await fillBookInfo(result);
+    const result = await Promise.all(promises);
+    const bookDetailFill = await fillBookInfo(result);
 
-        return bookDetailFill.filter(book => book.book_detail);
-    } catch (err) {
-        throw err;
-    }
+    return bookDetailFill.filter(book => book.book_detail);
 }
 
 async function getInQueueBook(publicKey, isGetReturning = true) {
-    try {
-        const email = await asset.getEmailFromPublicKey(publicKey);
+    const email = await asset.getEmailFromPublicKey(publicKey);
 
-        const matchingCollection = db.collection("matchings");
-        const inQueueBooks = await matchingCollection
-            .find({
-                email,
-                bookId: {
-                    $exists: isGetReturning ? true : false
-                }
-            })
-            .toArray();
+    const matchingCollection = db.collection("matchings");
+    const inQueueBooks = await matchingCollection
+        .find({
+            email,
+            bookId: {
+                $exists: isGetReturning ? true : false
+            }
+        })
+        .toArray();
 
-        const bookDetailFill = await fillBookInfo(inQueueBooks, "bookDetailId");
+    const bookDetailFill = await fillBookInfo(inQueueBooks, "bookDetailId");
 
-        return bookDetailFill;
-    } catch (err) {
-        throw err;
-    }
+    return bookDetailFill;
 }
 
 async function getTransferHistory(publicKey) {
-    try {
-        const txIds = await outputService.getSpent(publicKey);
-        const promises = txIds.map(e => {
-            const txId = e.transaction_id;
-            const tx = transaction.get(txId);
+    const txIds = await outputService.getSpent(publicKey);
+    const promises = txIds.map(e => {
+        const txId = e.transaction_id;
+        const tx = transaction.get(txId);
 
-            return tx;
-        });
+        return tx;
+    });
 
-        const result = await Promise.all(promises);
+    const result = await Promise.all(promises);
 
-        return result.map(tx => {
-            const assetId = tx.operation === "CREATE" ? tx.id : tx.asset.id;
+    return result.map(tx => {
+        const assetId = tx.operation === "CREATE" ? tx.id : tx.asset.id;
 
-            return {
-                id: tx.id,
-                returner: tx.inputs[0].owners_before[0],
-                receiver: tx.outputs[0].public_keys[0],
-                operation: tx.operation,
-                asset_id: assetId
-            };
-        });
-    } catch (err) {
-        throw err;
-    }
+        return {
+            id: tx.id,
+            returner: tx.inputs[0].owners_before[0],
+            receiver: tx.outputs[0].public_keys[0],
+            operation: tx.operation,
+            asset_id: assetId
+        };
+    });
 }
 
 export default {

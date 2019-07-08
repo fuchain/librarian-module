@@ -1,3 +1,4 @@
+import errorHandler from "@core/handlers/error.handler";
 import userService from "@services/user.service";
 
 async function getProfile(req, res) {
@@ -30,68 +31,44 @@ async function getCurrentBook(req, res) {
 async function getReturningBook(req, res) {
     const body = req.body;
 
-    try {
-        const books = await userService.getInQueueBook(body.public_key, true);
+    const books = await userService.getInQueueBook(body.public_key, true);
 
-        res.send(books);
-    } catch (err) {
-        res.status(400).send({
-            message: err instanceof Error ? err.toString() : err
-        });
-    }
+    res.send(books);
 }
 
 async function getRequestingBook(req, res) {
     const body = req.body;
 
-    try {
-        const books = await userService.getInQueueBook(body.public_key, false);
+    const books = await userService.getInQueueBook(body.public_key, false);
 
-        res.send(books);
-    } catch (err) {
-        res.status(400).send({
-            message: err instanceof Error ? err.toString() : err
-        });
-    }
+    res.send(books);
 }
 
 async function getKeepingAmount(req, res) {
     const body = req.body;
 
-    try {
-        const books = await userService.getCurrentBook(body.public_key);
+    const books = await userService.getCurrentBook(body.public_key);
 
-        res.send({
-            keeping: books.length,
-            returning: 0,
-            requesting: 0
-        });
-    } catch (err) {
-        res.status(400).send({
-            message: err instanceof Error ? err.toString() : err
-        });
-    }
+    res.send({
+        keeping: books.length,
+        returning: 0,
+        requesting: 0
+    });
 }
 
 async function getTransferHistory(req, res) {
     const body = req.body;
 
-    try {
-        const books = await userService.getTransferHistory(body.public_key);
+    const books = await userService.getTransferHistory(body.public_key);
 
-        res.send(books);
-    } catch (err) {
-        res.status(400).send({
-            message: err instanceof Error ? err.toString() : err
-        });
-    }
+    res.send(books);
 }
 
-export default {
+export default errorHandler({
     getProfile,
     getCurrentBook,
     getReturningBook,
     getRequestingBook,
     getKeepingAmount,
     getTransferHistory
-};
+});

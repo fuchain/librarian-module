@@ -51,6 +51,15 @@ async function main() {
         // Init routes
         app.use("/api/v1", routes);
 
+        // Global error handler
+        app.use((err, www, res, zzz) => {
+            if (err) {
+                res.status(400).send({
+                    message: err.toString()
+                });
+            }
+        });
+
         // Queues
         await matchingQueue.run();
         await importDBQueue.run();

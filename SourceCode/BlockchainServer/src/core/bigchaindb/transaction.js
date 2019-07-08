@@ -48,21 +48,13 @@ function sign(tx, privateKey) {
 }
 
 function post(txSigned) {
-    try {
-        const retrievedTx = conn.postTransactionCommit(txSigned);
+    const retrievedTx = conn.postTransactionCommit(txSigned);
 
-        return retrievedTx;
-    } catch (err) {
-        throw err;
-    }
+    return retrievedTx;
 }
 
 async function get(txId) {
-    try {
-        return await conn.getTransaction(txId);
-    } catch (err) {
-        throw err;
-    }
+    return await conn.getTransaction(txId);
 }
 
 function isLibrarianTx(tx) {

@@ -1,3 +1,4 @@
+import errorHandler from "@core/handlers/error.handler";
 import keypairService from "@services/keypair.service";
 
 const randomKeypair = async (_, res) => {
@@ -5,20 +6,15 @@ const randomKeypair = async (_, res) => {
 };
 
 async function verifyKeyPairEmail(req, res) {
-    const body = req.body;
-
-    try {
-        const { token, status } = await keypairService.verifyKeyPairEmail(
-            body.token,
-            body.public_key
-        );
-        res.status(201).send({ token, status });
-    } catch (err) {
-        res.status(422);
-        res.send({
-            message: err instanceof Error ? err.toString() : err
-        });
-    }
+    const { token, status } = await keypairService.verifyKeyPairEmail(
+        body.token,
+        body.public_key
+    );
+    res.status(201).send({ token, status });
+    res.status(422);
+    res.send({
+        message: err instanceof Error ? err.toString() : err
+    });
 }
 
-export default { randomKeypair, verifyKeyPairEmail };
+export default errorHandler({ randomKeypair, verifyKeyPairEmail });
