@@ -1,3 +1,4 @@
+import errorHandler from "@core/handlers/error.handler";
 import bookService from "@services/book.service";
 
 async function getAllBookDetails(_, res) {
@@ -13,6 +14,6 @@ async function getAllBookDetails(_, res) {
     }
 }
 
-export default {
+export default errorHandler({
     getAllBookDetails
-};
+});

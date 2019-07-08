@@ -1,3 +1,4 @@
+import errorHandler from "@core/handlers/error.handler";
 import matchingService from "@services/matching.service";
 
 async function createRequest(req, res) {
@@ -26,6 +27,6 @@ async function createRequest(req, res) {
     }
 }
 
-export default {
+export default errorHandler({
     createRequest
-};
+});

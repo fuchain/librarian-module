@@ -1,3 +1,4 @@
+import errorHandler from "@core/handlers/error.handler";
 import transferService from "@services/transfer.service";
 
 async function createTransfer(req, res) {
@@ -52,8 +53,8 @@ async function receiverSigned(req, res) {
     }
 }
 
-export default {
+export default errorHandler({
     createTransfer,
     sendTxSignedToReceiver,
     receiverSigned
-};
+});

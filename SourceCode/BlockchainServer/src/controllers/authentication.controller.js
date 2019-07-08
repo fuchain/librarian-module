@@ -1,3 +1,4 @@
+import errorHandler from "@core/handlers/error.handler";
 import keypairService from "@services/keypair.service";
 
 const randomKeypair = async (_, res) => {
@@ -21,4 +22,4 @@ async function verifyKeyPairEmail(req, res) {
     }
 }
 
-export default { randomKeypair, verifyKeyPairEmail };
+export default errorHandler({ randomKeypair, verifyKeyPairEmail });

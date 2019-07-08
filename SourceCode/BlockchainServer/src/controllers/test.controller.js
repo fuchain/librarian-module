@@ -1,3 +1,4 @@
+import errorHandler from "@core/handlers/error.handler";
 import transferService from "@services/transfer.service";
 import outputService from "@services/output.service";
 import bookService from "@services/book.service";
@@ -134,7 +135,7 @@ async function dbTest(_, res) {
     }
 }
 
-export default {
+export default errorHandler({
     test,
     create,
     transfer,
@@ -144,4 +145,4 @@ export default {
     getUnspent,
     searchBook,
     dbTest
-};
+});
