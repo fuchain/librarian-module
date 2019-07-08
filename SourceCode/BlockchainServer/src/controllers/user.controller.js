@@ -11,8 +11,6 @@ async function getProfile(req, res) {
             type: found[0].asset.data.type
         };
 
-        throw new Error("Hello");
-
         res.send(profile);
     }
 
