@@ -1,19 +1,11 @@
 import conn from "@core/bigchaindb";
 
 async function getSpent(publicKey) {
-    try {
-        return await conn.listOutputs(publicKey, true);
-    } catch (err) {
-        throw err;
-    }
+    return await conn.listOutputs(publicKey, true);
 }
 
 async function getUnspent(publicKey) {
-    try {
-        return await conn.listOutputs(publicKey, false);
-    } catch (err) {
-        throw err;
-    }
+    return await conn.listOutputs(publicKey, false);
 }
 
 export default { getSpent, getUnspent };
