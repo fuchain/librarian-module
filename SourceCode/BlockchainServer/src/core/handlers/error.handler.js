@@ -7,4 +7,12 @@ function errorHandler(fn) {
     };
 }
 
-export default errorHandler;
+function addErrorHandlerWrapper(controllers) {
+    Object.keys(controllers).forEach(function(key) {
+        controllers[key] = errorHandler(controllers[key]);
+    });
+
+    return controllers;
+}
+
+export default addErrorHandlerWrapper;

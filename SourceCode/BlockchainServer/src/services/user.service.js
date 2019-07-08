@@ -5,6 +5,7 @@ import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@models";
 
 async function getProfile(publicKey) {
+    throw new Error("hehe");
     const listAssets = await asset.searchPublicKey(publicKey);
     if (listAssets.length) {
         return await asset.getAsset(listAssets[0].id);

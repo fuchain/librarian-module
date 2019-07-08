@@ -1,3 +1,4 @@
+import errorHandler from "@core/handlers/error.handler";
 import userService from "@services/user.service";
 
 async function getProfile(req, res) {
@@ -87,11 +88,11 @@ async function getTransferHistory(req, res) {
     }
 }
 
-export default {
+export default errorHandler({
     getProfile,
     getCurrentBook,
     getReturningBook,
     getRequestingBook,
     getKeepingAmount,
     getTransferHistory
-};
+});
