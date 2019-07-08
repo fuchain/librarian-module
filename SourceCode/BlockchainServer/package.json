@@ -34,7 +34,7 @@
         "start": "node ./dist/server.js",
         "build": "babel src -d dist",
         "serve": "nodemon --exec babel-node ./src/server.js",
-        "format": "prettier --write --trailing-comma es5 --print-width 120 --single-quote --tab-width 4 'lib/**/*.js' 'test/**/*.js' 'index.d.ts' 'test/**/*.ts'"
+        "format": "prettier --write --trailing-comma none --print-width 80 --tab-width 4 'src/**/*.js' 'src/*.js'"
     },
     "devDependencies": {
         "@babel/cli": "^7.4.4",
