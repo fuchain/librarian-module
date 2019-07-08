@@ -4,18 +4,12 @@ import transferService from "@services/transfer.service";
 async function createTransfer(req, res) {
     const body = req.body;
 
-    try {
-        const tx = await transferService.createTransferRequest(
-            body.asset_id,
-            body.to.public_key // this is public key of the receiver
-        );
+    const tx = await transferService.createTransferRequest(
+        body.asset_id,
+        body.to.public_key // this is public key of the receiver
+    );
 
-        res.send(tx);
-    } catch (err) {
-        res.status(422).send({
-            message: err instanceof Error ? err.toString() : err
-        });
-    }
+    res.send(tx);
 }
 
 async function sendTxSignedToReceiver(req, res) {
@@ -34,23 +28,17 @@ async function sendTxSignedToReceiver(req, res) {
 async function receiverSigned(req, res) {
     const body = req.body;
 
-    try {
-        const {
-            transferTxPosted,
-            confirmAssetPosted
-        } = await transferService.postToDoneTransfer(body.tx); // this is two posted transaction
+    const {
+        transferTxPosted,
+        confirmAssetPosted
+    } = await transferService.postToDoneTransfer(body.tx); // this is two posted transaction
 
-        // send event to returner that everything is done
+    // send event to returner that everything is done
 
-        res.send({
-            transfer_tx_posted: transferTxPosted,
-            confirm_asset_posted: confirmAssetPosted
-        });
-    } catch (err) {
-        res.status(422).send({
-            message: err instanceof Error ? err.toString() : err
-        });
-    }
+    res.send({
+        transfer_tx_posted: transferTxPosted,
+        confirm_asset_posted: confirmAssetPosted
+    });
 }
 
 export default errorHandler({
