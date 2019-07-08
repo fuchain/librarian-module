@@ -52,11 +52,15 @@ async function main() {
         app.use("/api/v1", routes);
 
         // Global error handler
-        app.use((err, www, res, zzz) => {
+        app.use((err, _, res, next) => {
             if (err) {
                 res.status(400).send({
-                    message: err.toString()
+                    message: err instanceof Error ? err.toString() : err,
+                    stack:
+                        err.stack && typeof err.stack === "string" && err.stack
                 });
+            } else {
+                next();
             }
         });
 

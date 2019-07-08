@@ -11,10 +11,6 @@ async function verifyKeyPairEmail(req, res) {
         body.public_key
     );
     res.status(201).send({ token, status });
-    res.status(422);
-    res.send({
-        message: err instanceof Error ? err.toString() : err
-    });
 }
 
 export default errorHandler({ randomKeypair, verifyKeyPairEmail });
