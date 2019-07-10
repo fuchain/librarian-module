@@ -6,10 +6,10 @@ import morgan from "morgan";
 
 import routes from "@routes";
 import models from "@models";
-import { checkEnvLoaded } from "@utils/env";
+import { checkEnvLoaded } from "@core/env";
 
 import initSocketModule from "./socket/socket";
-import initRedisModule from "@utils/redis";
+import initRedisModule from "@core/redis";
 
 const app = express();
 const server = require("http").Server(app);

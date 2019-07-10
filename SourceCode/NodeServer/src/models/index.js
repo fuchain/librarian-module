@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import env from "@utils/env";
+import env from "@core/env";
 
 import reviewSchema from "@models/review.schema";
 import notificationSchema from "@models/notification.schema";
