@@ -4,15 +4,58 @@ import userService from "@services/user.service";
 async function getProfile(req, res) {
     const body = req.body;
 
-    const found = await userService.getProfile(body.public_key);
+    const user = await userService.getProfile(body.public_key);
 
-    if (found) {
+    if (user) {
         const profile = {
-            email: found[0].asset.data.email,
-            type: found[0].asset.data.type
+            email: user.email,
+            type: user.type,
+            fullname: user.fullname,
+            phone: user.phone
         };
 
+        if (req.email !== profile.email) {
+            res.status(422).send({
+                message: "Your token and public key are not match"
+            });
+        }
+
         res.send(profile);
+        return;
+    }
+
+    return res.status(422).send({
+        message: "Cannot find profile with your public key"
+    });
+}
+
+async function updateProfile(req, res) {
+    const body = req.body;
+
+    const user = await userService.getProfile(body.public_key);
+
+    if (user) {
+        const profile = {
+            email: user.email,
+            type: user.type,
+            fullname: user.fullname,
+            phone: user.phone
+        };
+
+        if (req.email !== profile.email) {
+            res.status(422).send({
+                message: "Your token and public key are not match"
+            });
+        }
+
+        const updatedUser = await userService.updateProfile(
+            req.email,
+            body.fullname,
+            body.phone
+        );
+
+        res.send(updatedUser);
+        return;
     }
 
     return res.status(422).send({
@@ -66,6 +109,7 @@ async function getTransferHistory(req, res) {
 
 export default errorHandler({
     getProfile,
+    updateProfile,
     getCurrentBook,
     getReturningBook,
     getRequestingBook,

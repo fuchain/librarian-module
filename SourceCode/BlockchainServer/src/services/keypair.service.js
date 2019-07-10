@@ -4,12 +4,13 @@ import asset from "@core/bigchaindb/asset";
 import env from "@core/env";
 import axios from "axios";
 import { createJWT } from "@core/jwt";
+import { db } from "@models";
 
 function generateRandomKeyPair() {
     return generateKey();
 }
 
-async function generateKeyPairEmail(email, publicKey) {
+async function generateKeyPairEmail(email, publicKey, fullname) {
     const asset = {
         email,
         type: "reader"
@@ -19,10 +20,21 @@ async function generateKeyPairEmail(email, publicKey) {
         public_key: publicKey
     };
 
+    // Submit transaction
     const tx = transaction.create(asset, metadata, env.publicKey);
     const txSigned = transaction.sign(tx, env.privateKey);
-
     const txDone = await transaction.post(txSigned);
+
+    // Create user row in DB
+    const userCollection = db.collection("users");
+    await userCollection.insertMany([
+        {
+            email,
+            fullname,
+            phone: null
+        }
+    ]);
+
     return txDone;
 }
 
@@ -34,10 +46,13 @@ async function checkTokenGoogle(token) {
         }
     };
 
-    const response = await axios.get(googleAuth, axiosConfig);
-    const email = response.data.email;
+    const { data } = await axios.get(googleAuth, axiosConfig);
 
-    return { email };
+    const email = data.email;
+    const name = data.name;
+    const picture = data.picture;
+
+    return { email, name, picture };
 }
 
 async function isEmailExisted(email) {
@@ -49,16 +64,22 @@ async function isEmailExisted(email) {
 }
 
 async function verifyKeyPairEmail(token, publicKey) {
-    const { email } = await checkTokenGoogle(token);
+    const { email, name, picture } = await checkTokenGoogle(token);
     const found = await isEmailExisted(email);
 
     if (!found) {
-        const tx = await generateKeyPairEmail(email, publicKey);
+        const tx = await generateKeyPairEmail(email, publicKey, name);
         return tx
             ? { token: createJWT(email), status: "created" }
             : { token: createJWT(email), status: "verified" };
     } else {
-        return { token: createJWT(email), status: "verified" };
+        return {
+            token: createJWT(email),
+            status: "verified",
+            email,
+            name,
+            picture
+        };
     }
 }
 

@@ -15,13 +15,32 @@
             <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white bg-dark">
               <div class="p-8">
                 <div class="vx-card__title mb-8">
-                  <h4 class="mb-4">Thư viện FPTU University</h4>
-                  <p>
-                    Bạn đã đăng nhập email nhưng
-                    <strong>chìa khóa không hợp lệ</strong> vui lòng cung cấp chìa khóa
-                  </p>
+                  <h4 class="mb-4">Ví sách FPTU University</h4>
+                  <p
+                    v-if="!mode"
+                  >Hệ thống không phát hiện ra chìa khóa bí mật của bạn trên thiết bị. Bạn đã tạo chìa khóa chưa?</p>
+                  <p
+                    v-else-if="mode === 'create'"
+                  >Vui lòng chọn khóa an toàn (32 kí tự bí mật), trong đó có bao gồm mã số sinh viên của bạn, sau khi tạo nhớ cất giữ khóa cẩn thận.</p>
+                  <p
+                    v-else
+                  >Nhập vào khóa đã tạo của bạn (32 kí tự bí mật). Vui lòng chỉ nhận khóa này trên thiết bị của bạn.</p>
                 </div>
-                <form v-on:submit.prevent="submitKey">
+                <div v-if="!mode">
+                  <vs-button
+                    color="red"
+                    class="w-full mb-4"
+                    icon="create"
+                    @click="mode = 'create'"
+                  >Bây giờ tạo</vs-button>
+                  <vs-button
+                    color="primary"
+                    class="w-full"
+                    icon="vpn_key"
+                    @click="mode = 'verify'"
+                  >Đã tạo rồi</vs-button>
+                </div>
+                <form v-on:submit.prevent="submitKey" v-if="mode">
                   <vs-input
                     type="password"
                     name="password"
@@ -29,14 +48,15 @@
                     icon-pack="feather"
                     label-placeholder="Chuỗi chìa khóa bí mật"
                     v-model="bip39"
+                    maxlength="32"
                     class="w-full mt-6 no-icon-border my-5"
                   />
 
                   <vs-button
                     class="float-right mb-8"
                     icon="fingerprint"
-                    :disabled="!bip39"
-                  >Kí xác thực</vs-button>
+                    :disabled="bip39.length < 32"
+                  >{{ mode === 'create' ? "Tạo khóa bí mật mới" : "Xác nhận khóa bí mật"}}</vs-button>
                 </form>
               </div>
             </div>
@@ -53,11 +73,16 @@ import generateKeyPair from "@core/crypto/generateKeyPair";
 export default {
   data() {
     return {
-      bip39: ""
+      bip39: "",
+      mode: null
     };
   },
   methods: {
     async submitKey() {
+      if (!this.bip39) {
+        return;
+      }
+
       const keypair = await generateKeyPair(this.bip39);
 
       this.$localStorage.setItem("publicKey", keypair.publicKey);
@@ -68,7 +93,6 @@ export default {
   }
 };
 </script>
-
 
 <style lang="scss">
 #page-login {

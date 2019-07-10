@@ -5,7 +5,7 @@
         <span>Họ tên</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" v-model="fullname"/>
+        <vs-input class="w-full" v-model="fullname" />
       </div>
     </div>
     <div class="vx-row mb-6">
@@ -13,7 +13,7 @@
         <span>Email</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" type="email" :value="email" disabled/>
+        <vs-input class="w-full" type="email" :value="email" disabled />
       </div>
     </div>
     <div class="vx-row mb-6">
@@ -21,7 +21,13 @@
         <span>Số điện thoại</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" v-model="phone"/>
+        <vs-input class="w-full" v-model="phone" />
+      </div>
+    </div>
+    <div class="vx-row mb-6">
+      <div class="vx-col sm:w-1/3 w-full"></div>
+      <div class="vx-col sm:w-2/3 w-full">
+        <vs-alert active="true" icon="vpn_key">Chìa khóa chứng thực hợp lệ</vs-alert>
       </div>
     </div>
     <div class="vx-row">

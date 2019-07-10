@@ -7,10 +7,54 @@ import { db } from "@models";
 async function getProfile(publicKey) {
     const listAssets = await asset.searchPublicKey(publicKey);
     if (listAssets.length) {
-        return await asset.getAsset(listAssets[0].id);
+        const found = await asset.getAsset(listAssets[0].id);
+
+        const email = found[0].asset.data.email;
+        const type = found[0].asset.data.type;
+
+        const userCollection = db.collection("users");
+        const userInDB = await userCollection.findOne({
+            email
+        });
+
+        if (!userInDB) {
+            return null;
+        }
+
+        const phone = userInDB.phone;
+        const fullname = userInDB.fullname;
+
+        return { email, type, fullname, phone };
     }
 
     return null;
+}
+
+async function updateProfile(email, fullname, phone) {
+    const phoneInt = parseInt(phone);
+    if (isNaN(phoneInt) || phoneInt.toString().length < 9) {
+        throw new Error("Not valid phone number");
+    }
+
+    if (!fullname) {
+        throw new Error("Not valid full name");
+    }
+
+    const userCollection = db.collection("users");
+    await userCollection.updateOne(
+        { email },
+        {
+            $set: {
+                fullname: fullname,
+                phone: phone
+            }
+        }
+    );
+
+    return {
+        fullname,
+        phone
+    };
 }
 
 async function getCurrentBook(publicKey) {
@@ -72,6 +116,7 @@ async function getTransferHistory(publicKey) {
 
 export default {
     getProfile,
+    updateProfile,
     getCurrentBook,
     getInQueueBook,
     getTransferHistory

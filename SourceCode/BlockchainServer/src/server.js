@@ -19,6 +19,8 @@ import matchingQueue from "@queues/matching.queue";
 import pairQueue from "@queues/pair.queue";
 import pairUpdateQueue from "@queues/pair.update.queue";
 
+import { globalErrorHandler } from "@controllers/error.controller";
+
 async function main() {
     try {
         // Init BigchainDB
@@ -52,17 +54,7 @@ async function main() {
         app.use("/api/v1", routes);
 
         // Global error handler
-        app.use((err, _, res, next) => {
-            if (err) {
-                res.status(400).send({
-                    message: err instanceof Error ? err.toString() : err,
-                    stack:
-                        err.stack && typeof err.stack === "string" && err.stack
-                });
-            } else {
-                next();
-            }
-        });
+        app.use(globalErrorHandler);
 
         // Queues
         await matchingQueue.run();

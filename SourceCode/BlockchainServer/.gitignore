@@ -3,3 +3,4 @@ dist
 .env
 sendgrid.env
 .vscode
+.idea
