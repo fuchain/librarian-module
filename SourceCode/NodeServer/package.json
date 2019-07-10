@@ -1,7 +1,7 @@
 {
-    "name": "node-server",
+    "name": "ioserver-server",
     "version": "1.0.0",
-    "description": "Node server for Librarian Module",
+    "description": "I/O server for Librarian Module",
     "main": "./src/server.js",
     "author": "Huynh Minh Tu",
     "license": "MIT",
