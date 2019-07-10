@@ -1,8 +1,8 @@
 import { io, getOnlineUsers } from "../socket/socket";
 
-import { getRedisItem } from "@utils/redis";
+import { getRedisItem } from "@core/redis";
 import { Notification } from "@models";
-import { sendEmail } from "@utils/sendgrid";
+import { sendEmail } from "@core/sendgrid";
 
 const pushNotification = async (req, res) => {
     const { email, message, type } = req.body;

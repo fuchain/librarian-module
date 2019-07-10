@@ -1,5 +1,5 @@
 import sgMail from "@sendgrid/mail";
-import env from "@utils/env";
+import env from "@core/env";
 
 sgMail.setApiKey(env.sendgridKey);
 

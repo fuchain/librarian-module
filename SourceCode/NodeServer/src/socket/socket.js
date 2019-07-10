@@ -1,5 +1,5 @@
-import { verifyJWT } from "@utils/jwt";
-import { getRedisItem, setRedisItem, deleteRedisItem } from "@utils/redis";
+import { verifyJWT } from "@core/jwt";
+import { getRedisItem, setRedisItem, deleteRedisItem } from "@core/redis";
 import redisAdapter from "socket.io-redis";
 
 export let io;
