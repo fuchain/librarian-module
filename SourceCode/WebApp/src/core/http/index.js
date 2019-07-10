@@ -1,5 +1,6 @@
 import axios from "axios";
 import auth from "@auth";
+import getLocalStorageItem from "../local-storage/getItem";
 import endpoints from "./endpoints";
 
 const config = {
@@ -54,6 +55,9 @@ function doGetRequest(to, data = {}, params = {}, headers = {}) {
 }
 
 function doPostRequest(to, data = {}, params = {}, headers = {}) {
+  if (!data.public_key && getLocalStorageItem("publicKey")) {
+    data.public_key = getLocalStorageItem("publicKey");
+  }
   return request({
     to,
     method: "POST",

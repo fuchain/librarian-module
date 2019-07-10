@@ -1,0 +1,17 @@
+{
+    "__blockchain_server_queues": [
+        {
+            "name": "blockchain",
+            "port": 6379,
+            "host": "localhost",
+            "hostId": "Blockchain Queue"
+        }
+    ],
+    "queues": [
+        {
+            "name": "matching",
+            "hostId": "Blockchain Queue",
+            "type": "bull"
+        }
+    ]
+}

@@ -148,6 +148,10 @@ const router = new Router({
           component: () => import("@/views/Login.vue")
         },
         {
+          path: "/keypair",
+          component: () => import("@/views/KeyPair.vue")
+        },
+        {
           path: "/error",
           component: () => import("@/views/Error500.vue")
         }
@@ -177,7 +181,9 @@ router.afterEach(() => {
 
 // Authentication
 router.beforeEach((to, from, next) => {
-  if (to.path === "/login") {
+  if (to.path === "/keypair") {
+    next();
+  } else if (to.path === "/login") {
     if (auth.isAuthenticated()) {
       next({ path: "/" });
     } else {

@@ -117,7 +117,17 @@ export default {
   async mounted() {
     this.toggleClassInBody(themeConfig.theme);
 
-    if (this.$auth.isAuthenticated()) {
+    if (!this.$localStorage.getItem("publicKey")) {
+      this.$router.push("/keypair");
+    }
+
+    if (
+      this.$auth.isAuthenticated() &&
+      (!this.$localStorage.getItem("privateKey") &&
+        !this.$localStorage.getItem("publicKey"))
+    ) {
+      this.$router.push("/keypair");
+    } else if (this.$auth.isAuthenticated()) {
       this.$vs.loading({
         background: "primary",
         color: "white",
@@ -142,6 +152,8 @@ export default {
     // Print log error
     console.log("Error: ", err.toString());
     console.log("Info: ", info.toString());
+
+    console.log("123");
 
     this.error = true;
 

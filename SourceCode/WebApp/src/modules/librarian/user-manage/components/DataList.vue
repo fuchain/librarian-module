@@ -73,7 +73,7 @@
             </vs-td>
 
             <vs-td>
-              <p class="font-medium">{{ tr.fullName || "Chưa cập nhật" }}</p>
+              <p class="font-medium">{{ tr.fullname || "Chưa cập nhật" }}</p>
             </vs-td>
 
             <vs-td>
