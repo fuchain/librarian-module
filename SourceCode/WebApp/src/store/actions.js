@@ -41,7 +41,7 @@ const actions = {
   // Profile
   async getProfile({ commit }) {
     try {
-      const { data } = await $http.get(`${$http.baseUrl}/user/profile`);
+      const { data } = await $http.post(`${$http.baseUrl}/user/profile`);
       commit("PROFILE_UPDATED", data);
     } catch (e) {
       // Catch error
@@ -52,9 +52,12 @@ const actions = {
   // Update profile
   async updateProfile({ commit }, { fullname, phone }) {
     try {
-      const { data } = await $http.put(
-        `${$http.baseUrl}/users/update_profile`,
-        { fullname, phone }
+      const { data } = await $http.post(
+        `${$http.baseUrl}/user/update_profile`,
+        {
+          fullname,
+          phone
+        }
       );
       commit("PROFILE_UPDATED_SUCCESS", data);
     } catch (e) {
@@ -66,7 +69,7 @@ const actions = {
   // Get num of books
   async getNumOfBooks({ commit }) {
     try {
-      const { data } = await $http.get(`${$http.baseUrl}/users/book_infos`);
+      const { data } = await $http.post(`${$http.baseUrl}/user/keeping_amount`);
       commit("NUM_OF_BOOK_UPDATED", data);
     } catch (e) {
       // Catch error

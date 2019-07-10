@@ -1,7 +1,7 @@
 import errorHandler from "@core/handlers/error.handler";
 import matchingService from "@services/matching.service";
 
-async function createRequest(req, res) {
+function createRequest(req, res) {
     const body = req.body;
 
     const sent = matchingService.createMatchingRequest(

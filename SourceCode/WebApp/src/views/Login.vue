@@ -16,7 +16,11 @@
               <div class="p-8">
                 <div class="vx-card__title mb-8">
                   <h4 class="mb-4">Thư viện FPTU University</h4>
-                  <p>Vui lòng đăng nhập bằng email trường để sử dụng dịch vụ.</p>
+                  <vs-alert
+                    class="mt-2 mb-2"
+                    active="true"
+                    icon="vpn_key"
+                  >Chìa khóa chứng thực hợp lệ</vs-alert>
                 </div>
                 <form v-on:submit.prevent="doLogin">
                   <vs-input
@@ -41,11 +45,7 @@
                   <div class="flex flex-wrap justify-between my-5">
                     <vs-checkbox v-model="remember" class="mb-3">Lưu mật khẩu</vs-checkbox>
                   </div>
-                  <vs-button
-                    class="float-right"
-                    icon="fingerprint"
-                    :disabled="!email || !password"
-                  >Đăng nhập</vs-button>
+                  <vs-button class="float-right mb-6" icon="fingerprint" disabled>Đăng nhập</vs-button>
                 </form>
 
                 <vs-divider>HOẶC</vs-divider>
@@ -99,58 +99,8 @@ export default {
     };
   },
   methods: {
-    doLogin: function() {
-      if (!this.email || !this.password) {
-        this.$vs.notify({
-          title: "Không hợp lệ",
-          text: "Email hoặc mật khẩu bị thiếu",
-          color: "warning",
-          position: "top-right"
-        });
-
-        return;
-      }
-
-      this.$vs.loading({
-        background: "darkorange",
-        color: "white",
-        text: "Đang xác thực"
-      });
-
-      this.$http
-        .post(`${this.$http.baseUrl}/auth/login`, {
-          email: this.email,
-          password: this.password
-        })
-        .then(async response => {
-          // Set data;
-          const data = response.data;
-          this.$auth.setAccessToken(data.token);
-          this.$auth.setAccessTokenExpiresAt(data.expire.toString());
-
-          // Get profile
-          await this.$store.dispatch("getProfile");
-          await this.$store.dispatch("getNumOfBooks");
-
-          // Get notification
-          await this.$store.dispatch("getNotification");
-
-          // Socket
-          initSocket();
-
-          this.$router.push("/");
-        })
-        .catch(() => {
-          this.$vs.notify({
-            title: "Không hợp lệ",
-            text: "Email hoặc mật khẩu bị sai",
-            color: "danger",
-            position: "top-right"
-          });
-        })
-        .finally(() => {
-          this.$vs.loading.close();
-        });
+    doLogin() {
+      //
     },
     loginWithGoogle: function() {
       const clientId =
@@ -183,7 +133,7 @@ export default {
       });
 
       this.$http
-        .post(`${this.$http.baseUrl}/auth/google/token`, {
+        .post(`${this.$http.baseUrl}/auth/keypair/email`, {
           token: accessToken,
           public_key: this.$localStorage.getItem("publicKey")
         })
@@ -206,13 +156,25 @@ export default {
           this.$router.push("/");
         })
         .catch(err => {
-          console.log(err);
+          if (
+            err &&
+            err.response &&
+            err.response.data &&
+            err.response.data.message
+          ) {
+            this.$vs.notify({
+              title: "Response from system",
+              text: err.response.data.message,
+              color: "danger",
+              position: "top-right",
+              fixed: true
+            });
+          }
 
           this.$vs.notify({
             title: "Không hợp lệ",
-            text:
-              "Email không nằm trong danh sách hệ thống, vui lòng liên hệ nhà trường",
-            color: "danger",
+            text: "Đăng nhập không hợp lệ",
+            color: "warning",
             position: "top-right"
           });
         })

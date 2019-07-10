@@ -1,12 +1,12 @@
 import { verifyJWT } from "@core/jwt";
 
-export function jwtAuthentication(req, res, next) {
+export default function jwtMiddlewareAuthentication(req, res, next) {
     const token = getToken(req);
 
     try {
         const payload = verifyJWT(token);
-        const { sub } = payload;
-        req.email = sub;
+        const { email } = payload;
+        req.email = email;
         next();
     } catch (err) {
         res.status(401);

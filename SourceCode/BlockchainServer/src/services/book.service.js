@@ -15,4 +15,14 @@ async function getAllBookDetail() {
     return listBookDetails;
 }
 
-export default { searchBook, getAllBookDetail };
+async function searchBookDetail(text) {
+    const bookDetailCollection = db.collection("book_details");
+    const listBookDetails = await bookDetailCollection
+        .find({ $text: { $search: text } })
+        .limit(50)
+        .toArray();
+
+    return listBookDetails;
+}
+
+export default { searchBook, getAllBookDetail, searchBookDetail };

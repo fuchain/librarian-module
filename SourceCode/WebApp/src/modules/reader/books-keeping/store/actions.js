@@ -3,7 +3,7 @@ import $http from "@http";
 const actions = {
   async getBooks({ commit }) {
     try {
-      const { data } = await $http.get(`${$http.baseUrl}/users/current_books`);
+      const { data } = await $http.post(`${$http.baseUrl}/user/current_book`);
       commit("BOOKS_UPDATED", data);
     } catch (e) {
       // Catch error

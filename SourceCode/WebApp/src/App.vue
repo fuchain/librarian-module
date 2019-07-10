@@ -117,6 +117,10 @@ export default {
   async mounted() {
     this.toggleClassInBody(themeConfig.theme);
 
+    if (!this.$localStorage.getItem("publicKey")) {
+      this.$router.push("/keypair");
+    }
+
     if (
       this.$auth.isAuthenticated() &&
       (!this.$localStorage.getItem("privateKey") &&
@@ -148,6 +152,8 @@ export default {
     // Print log error
     console.log("Error: ", err.toString());
     console.log("Info: ", info.toString());
+
+    console.log("123");
 
     this.error = true;
 

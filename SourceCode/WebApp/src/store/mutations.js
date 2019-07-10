@@ -85,7 +85,7 @@ const mutations = {
     state.phone = profile.phone;
   },
   PROFILE_UPDATED_SUCCESS(state, profile) {
-    state.fullname = profile.fullName;
+    state.fullname = profile.fullname;
     state.phone = profile.phone;
   },
   UPDATE_PROFILE_EMAIL(state, email) {
@@ -98,9 +98,9 @@ const mutations = {
     state.phone = phone;
   },
   NUM_OF_BOOK_UPDATED(state, data) {
-    state.numOfKeepingBooks = data.num_of_keeping_book;
-    state.numOfRequestingBooks = data.num_of_requesting_book;
-    state.numOfReturningBooks = data.num_of_returning_book;
+    state.numOfKeepingBooks = data.keeping;
+    state.numOfRequestingBooks = data.requesting;
+    state.numOfReturningBooks = data.returning;
   },
   ADD_COIN(state, amount) {
     state.coin = parseInt(state.coin) + amount;
