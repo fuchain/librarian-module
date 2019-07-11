@@ -6,19 +6,23 @@
 	"main": "./src/server.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "node src/server.js",
 		"start": "node ./dist/server.js",
 		"build": "babel src -d dist",
 		"serve": "nodemon --exec babel-node ./src/server.js"
 	},
 	"author": "Blockchain capstone team",
 	"license": "MIT",
-	"dependencies": {},
+	"dependencies": {
+		"js-logger": "1.6.0"
+	},
 	"devDependencies": {
 		"@babel/cli": "7.4.4",
 		"@babel/core": "7.4.4",
 		"@babel/node": "7.2.2",
 		"@babel/preset-env": "7.4.4",
 		"babel-plugin-module-resolver": "3.2.0",
+		"dotenv": "^8.0.0",
 		"nodemon": "1.19.0"
 	}
 }
