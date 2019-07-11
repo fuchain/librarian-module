@@ -19,11 +19,11 @@ docker-compose up
 Prerequisites: Node.js (>=6.x, 10.x preferred), npm version 3+ and Git.
 
 ```
-yarn install
+npm install
 ```
 
 Start serve with daemon:
 
 ```
-yarn serve
+npm run serve
 ```
