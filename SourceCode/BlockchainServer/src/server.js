@@ -56,6 +56,13 @@ async function main() {
         // Global error handler
         app.use(globalErrorHandler);
 
+        // Default page
+        app.use("/", function(_, res) {
+            res.send({
+                message: "You cannot access this endpoint"
+            });
+        });
+
         // Queues
         await matchingQueue.run();
         await importDBQueue.run();
