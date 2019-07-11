@@ -1,0 +1,11 @@
+version: "3.1"
+
+services:
+    observe_server:
+        image: node:10.15.3
+        container_name: observe_server
+        volumes:
+            - ./:/app
+        ports:
+            - 5003:5003
+        tty: true

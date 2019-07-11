@@ -1,0 +1,24 @@
+{
+	"name": "observe-server",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Observe server is responsible for listening on streaming api from bigchain",
+	"main": "./src/server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node ./dist/server.js",
+		"build": "babel src -d dist",
+		"serve": "nodemon --exec babel-node ./src/server.js"
+	},
+	"author": "Blockchain capstone team",
+	"license": "MIT",
+	"dependencies": {},
+	"devDependencies": {
+		"@babel/cli": "7.4.4",
+		"@babel/core": "7.4.4",
+		"@babel/node": "7.2.2",
+		"@babel/preset-env": "7.4.4",
+		"babel-plugin-module-resolver": "3.2.0",
+		"nodemon": "1.19.0"
+	}
+}
