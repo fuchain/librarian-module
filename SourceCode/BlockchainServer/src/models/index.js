@@ -2,7 +2,7 @@ const MongoClient = require("mongodb").MongoClient;
 import env from "@core/env";
 
 // Connection URL
-const url = `mongodb://${env.dbHost}:27017`;
+const url = `mongodb://${env.dbHost}`;
 
 // Database Name
 const dbName = `${env.dbName}`;
