@@ -12,8 +12,9 @@ export function checkEnvLoaded() {
         !process.env.PUBLIC_KEY ||
         !process.env.PRIVATE_KEY
     ) {
-        console.error("Cannot load .env file!");
-        process.exit(1);
+        console.error(
+            "Cannot load .env file, please ensure that you are using env args!"
+        );
     }
 }
 
