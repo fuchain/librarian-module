@@ -2,10 +2,9 @@
 
 Roadmap:
 
-- Deployment for Web Server
-- Deployment for Web App
-- Deployment for Postgres
+- Deployment for Web Servers
+- Deployment for Web Apps
 - Deployment for Redis
-- Simple Deployment template for BigchainDB
+- Ansible deployment for BigchainDB
 
 Updating.

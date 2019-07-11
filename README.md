@@ -5,21 +5,26 @@ FPT University Summer 2019 - Capstone Project
 ## Document
 
 Document is at `./Documents`
+We also have a legacy Java system at `./Documents/LegacyJava`
 
 ## Source Code
 
 Source code is at `./SourceCode`
 
-Start all services by run `make start` (with Docker compose)
+Start all services by run `make start` (with Docker compose installed)
 
 ## Stacks:
 
-- JavaEE, Gradle, Spring Boot
-- Javascript ES6, Vue, Webpack
+- Javascript ES6
+- Node.js, Express.js
+- Vue.js, Webpack, Babel
 - Socket.io
-- BigchainDB, Postgres
-- Redis
+- MongoDB
+- BigchainDB
+- Redis (caching & message broker)
 - Docker, Docker Compose, Docker Swarm
+- Ansible script (deployment)
+- Groovy language (Jenkins)
 
 ## Members:
 
