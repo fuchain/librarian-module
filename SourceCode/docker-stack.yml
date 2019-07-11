@@ -110,7 +110,7 @@ services:
         max_attempts: 3
         window: 120s
 
-  nodeserver:
+  ioserver:
     image: fptu/librarian-ioserver:latest
     ports:
       - 5002:5002

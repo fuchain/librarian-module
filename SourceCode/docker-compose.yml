@@ -94,7 +94,7 @@ services:
 
   ioserver:
     build:
-      context: ./NodeServer
+      context: ./IOServer
       dockerfile: ./dev.Dockerfile
     ports:
       - 5002:5002
