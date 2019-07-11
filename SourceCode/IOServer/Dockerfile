@@ -28,7 +28,6 @@ COPY --from=builder /root/src/app/package-lock.json /root/src/app/package-lock.j
 RUN npm install
 
 COPY --from=builder /root/src/app/dist /root/src/app/dist
-COPY --from=builder /root/src/app/.env /root/src/app/.env
 
 EXPOSE 3000
 

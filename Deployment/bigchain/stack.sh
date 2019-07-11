@@ -11,7 +11,7 @@ umask 022
 
 # defaults
 stack_branch=${STACK_BRANCH:="master"}
-stack_repo=${STACK_REPO:="bigchaindb/bigchaindb"}
+stack_repo=${STACK_REPO:="huynhminhtufu/bigchaindb"}
 stack_size=${STACK_SIZE:=4}
 stack_type=${STACK_TYPE:="docker"}
 stack_type_provider=${STACK_TYPE_PROVIDER:=""}

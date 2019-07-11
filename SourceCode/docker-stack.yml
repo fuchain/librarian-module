@@ -20,6 +20,25 @@ services:
         max_attempts: 3
         window: 120s
 
+  redisbc:
+    image: redis:alpine
+    ports:
+      - 6380:6379
+    volumes:
+      - redisbc-data:/data
+    networks:
+      - node
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
   mongodbbc:
     image: mongo
     ports:
@@ -28,9 +47,6 @@ services:
       - mongodbbc-data:/data/db
     networks:
       - node
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: capstone
-      MONGO_INITDB_ROOT_PASSWORD: capstone
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -85,7 +101,7 @@ services:
         window: 120s
 
   blockchainserver:
-    image: fptu/librarian-blcokchainserver:latest
+    image: fptu/librarian-blockchainserver:latest
     ports:
       - 5000:5000
     networks:
@@ -97,8 +113,11 @@ services:
       DB_HOST: mongodbbc
       DB_USER: capstone
       DB_PASS: capstone
-      DB_NAME: librariannode
-      REDIS_HOST: redis
+      DB_NAME: librarianblockchain
+      REDIS_HOST: redisbc
+      BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
+      PUBLIC_KEY: 8dVeGJUXmX97GikETEaYVuzBjZNUa15ogi25EhoDAVyj
+      PRIVATE_KEY: FM7yiZRZdcWnbDFZFLudC8xLHt57ArKLUVET8YsuimAV
     deploy:
       replicas: 1
       update_config:
@@ -110,7 +129,7 @@ services:
         max_attempts: 3
         window: 120s
 
-  nodeserver:
+  ioserver:
     image: fptu/librarian-ioserver:latest
     ports:
       - 5002:5002
@@ -171,6 +190,7 @@ networks:
 
 volumes:
   redis-data:
+  redisbc-data:
   mongodbbc-data:
   mongodbio-data:
   jenkins-data:
