@@ -1,0 +1,13 @@
+log4j.rootLogger=DEBUG, consoleAppender, fileAppender
+
+log4j.appender.consoleAppender=org.apache.log4j.ConsoleAppender
+log4j.appender.consoleAppender.layout=org.apache.log4j.PatternLayout
+log4j.appender.consoleAppender.layout.ConversionPattern=[%t] %-5p %c %x - %m%n
+
+log4j.appender.fileAppender=org.apache.log4j.RollingFileAppender
+log4j.appender.fileAppender.layout=org.apache.log4j.PatternLayout
+log4j.appender.fileAppender.layout.ConversionPattern=[%t] %-5p %c %x - %m%n
+log4j.appender.fileAppender.File=demoApplication.log
+log4j.appender.LOGFILE=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.LOGFILE.RollingPolicy=org.apache.log4j.rolling.TimeBasedRollingPolicy
+log4j.appender.LOGFILE.RollingPolicy.FileNamePattern=/logs/application_%d{yyyy-MM-dd}.log

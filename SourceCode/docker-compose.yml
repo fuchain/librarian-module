@@ -12,28 +12,27 @@ services:
       - node
     restart: always
 
-  postgres:
-    image: postgres
-    container_name: librarian-postgres-dev
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - backend
-    restart: always
-    environment:
-      POSTGRES_USER: capstone
-      POSTGRES_PASSWORD: capstone
-      POSTGRES_DB: librarianmodule
-
-  mongodb:
+  mongodbbc:
     image: mongo
-    container_name: librarian-mongodb-dev
+    container_name: librarian-mongodbbc-dev
     ports:
         - 27018:27017
     volumes:
-      - mongodb-data:/data/db
+      - mongodbbc-data:/data/db
+    networks:
+      - node
+    restart: always
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: capstone
+        MONGO_INITDB_ROOT_PASSWORD: capstone
+  
+  mongodbio:
+    image: mongo
+    container_name: librarian-mongodbio-dev
+    ports:
+        - 27019:27017
+    volumes:
+      - mongodbio-data:/data/db
     networks:
       - node
     restart: always
@@ -69,25 +68,31 @@ services:
     volumes:
       - ./VisualizeApp/src:/root/src/app/src
       - ./VisualizeApp/public:/root/src/app/public
-      
-  webserver:
+
+  bcserver:
     build:
-      context: ./WebServer
+      context: ./BlockchainServer
       dockerfile: ./dev.Dockerfile
     ports:
       - 5000:5000
     networks:
-      - backend
+      - node
     depends_on:
-      - postgres
-    image: librarian-webserver-dev
-    container_name: librarian-webserver-dev
+      - mongodbbc
+      - redis
+    image: librarian-bcserver-dev
+    container_name: librarian-bcserver-dev
     volumes:
-      - ./WebServer/src:/root/src/api/src
+      - ./BlockchainServer/src:/root/src/node/src
+      - ./BlockchainServer/.env:/root/src/node/.env
     environment:
-    - SPRING_PROFILES_ACTIVE=docker
+      DB_HOST: mongodbbc
+      DB_USER: capstone
+      DB_PASS: capstone
+      DB_NAME: librariannode
+      REDIS_HOST: redis
 
-  nodeserver:
+  ioserver:
     build:
       context: ./NodeServer
       dockerfile: ./dev.Dockerfile
@@ -96,40 +101,25 @@ services:
     networks:
       - node
     depends_on:
-      - postgresn
+      - mongodbio
       - redis
-    image: librarian-nodeserver-dev
-    container_name: librarian-nodeserver-dev
+    image: librarian-ioserver-dev
+    container_name: librarian-ioserver-dev
     volumes:
-      - ./NodeServer/src:/root/src/node/src
-      - ./NodeServer/.env:/root/src/node/.env
-      - ./NodeServer/sendgrid.env:/root/src/node/sendgrid.env
+      - ./IOServer/src:/root/src/node/src
+      - ./IOServer/.env:/root/src/node/.env
     environment:
-      DB_HOST: mongodb
+      DB_HOST: mongodbio
       DB_USER: capstone
       DB_PASS: capstone
       DB_NAME: librariannode
       REDIS_HOST: redis
       SENDGRID_API_KEY: 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
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: librarian-pgadmin-dev
-    ports:
-      - 1002:80
-    depends_on:
-      - postgres
-      - postgresn
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@fptu.tech
-      PGADMIN_DEFAULT_PASSWORD: capstone
-
 networks:
-  backend:
   node:
 
 volumes:
   redis-data:
-  postgres-data:
-  mongodb-data:
+  mongodbbc-data:
+  mongodbio-data:

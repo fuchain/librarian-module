@@ -1,3 +1,4 @@
+import os from "os";
 import express from "express";
 import testRoutes from "@routes/test.route";
 
@@ -12,9 +13,16 @@ import bookRoutes from "@routes/book.route";
 
 const router = express.Router();
 
+router.get("/", (_, res) => {
+    res.send({
+        hostname: os.hostname()
+    });
+});
+
 router.get("/status", (_, res) =>
     res.send({
-        message: "Server is up!"
+        message: "Server is up!",
+        uptime: `${os.uptime()} seconds`
     })
 );
 

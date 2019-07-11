@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                       http://www.springframework.org/schema/beans/spring-beans.xsd
+                       http://www.springframework.org/schema/context
+                       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.fpt.edu.services" />
+    <context:component-scan base-package="com.fpt.edu.controllers" />
+    <context:component-scan base-package="com.fpt.edu.controllerAdvice" />
+    <context:component-scan base-package="com.fpt.edu.configs" />
+    <context:component-scan base-package="com.fpt.edu.security" />
+    <context:component-scan base-package="com.fpt.edu.common.helpers" />
+    <context:component-scan base-package="com.fpt.edu.common" />
+    <bean id="bigchainDbConfig" class="com.fpt.edu.configs.BigchainDbConfig">
+        <constructor-arg value="${fptu.tech.bigchaindb.host}"/>
+    </bean>
+
+</beans>

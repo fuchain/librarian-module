@@ -10,6 +10,28 @@ pipeline {
                 }
             }
         }
+        stage('Build Blockchain') {
+            when {
+                expression {
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/BlockchainServer'")
+                    return !matches
+                }
+            }
+            steps {
+                build 'blockchainserver-staging'
+            }
+        }
+        stage('Build I/O') {
+            when {
+                expression {
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/IOServer'")
+                    return !matches
+                }
+            }
+            steps {
+                build 'ioserver-staging'
+            }
+        }
         stage('Build WebApp') {
             when {
                 expression {
@@ -19,28 +41,6 @@ pipeline {
             }
             steps {
                 build 'webapp-staging'
-            }
-        }
-        stage('Build Java') {
-            when {
-                expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebServer'")
-                    return !matches
-                }
-            }
-            steps {
-                build 'webserver-staging'
-            }
-        }
-        stage('Build Node') {
-            when {
-                expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/NodeServer'")
-                    return !matches
-                }
-            }
-            steps {
-                build 'nodeserver-staging'
             }
         }
         stage('Build VisualizeApp') {
