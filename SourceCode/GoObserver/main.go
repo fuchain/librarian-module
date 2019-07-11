@@ -6,11 +6,14 @@ import (
 	"os"
 	"time"
 
+	"github.com/huynhminhtufu/observe-worker/transaction"
+
 	"golang.org/x/net/websocket"
 )
 
 // BigchainDB Websocket Address and Port
-const address string = "testnet.bigchain.fptu.tech:32796"
+const wsaddress string = "testnet.bigchain.fptu.tech:32796"
+const address string = "http://testnet.bigchain.fptu.tech/api/v1"
 
 func main() {
 	initWebsocketClient()
@@ -30,12 +33,12 @@ type Item struct {
 func initWebsocketClient() {
 	fmt.Println("Starting client...")
 
-	ws, err := websocket.Dial(fmt.Sprintf("ws://%s/api/v1/streams/valid_transactions", address), "", fmt.Sprintf("http://%s/", address))
+	ws, err := websocket.Dial(fmt.Sprintf("ws://%s/api/v1/streams/valid_transactions", wsaddress), "", fmt.Sprintf("http://%s/", wsaddress))
 	if err != nil {
 		fmt.Printf("Dial failed: %s\n", err.Error())
 		os.Exit(1)
 	} else {
-		fmt.Println("Connected to websocket stream:", address)
+		fmt.Println("Connected to websocket stream:", wsaddress)
 	}
 
 	incomingMessages := make(chan string)
@@ -60,6 +63,9 @@ func initWebsocketClient() {
 			fmt.Printf("Height: %d\n", data.Height)
 			fmt.Printf("AssetID: %s\n", data.AssetID)
 			fmt.Printf("TransactionID: %s\n", data.TransactionID)
+
+			transaction := transaction.GetTransaction(data.TransactionID, address)
+			fmt.Printf("Transaction detail is: %v", transaction)
 		}
 	}
 }
