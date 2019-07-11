@@ -4,11 +4,11 @@ RUN mkdir -p /root/src/app
 WORKDIR /root/src/app
 ENV PATH /root/src/app/node_modules/.bin:$PATH
 
-COPY package.json yarn.lock ./
-RUN yarn --pure-lockfile
+COPY package.json package-lock.json ./
+RUN npm install
 
 COPY . .
-RUN yarn build
+RUN npm run build
 
 FROM nginx:alpine
 
@@ -17,7 +17,7 @@ WORKDIR /root/src/app
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /root/src/app/build /var/www/html
 
-LABEL "com.datadoghq.ad.check_names"='["vue"]'
+LABEL "com.datadoghq.ad.check_names"='["react"]'
 LABEL "com.datadoghq.ad.init_configs"='[{}]'
 LABEL "com.datadoghq.ad.logs"='[{"source": "react", "service": "webapp"}]'
 
