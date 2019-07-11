@@ -35,7 +35,7 @@ func initWebsocketClient() {
 		fmt.Printf("Dial failed: %s\n", err.Error())
 		os.Exit(1)
 	} else {
-		fmt.Println("Connected!")
+		fmt.Println("Connected to websocket stream:", address)
 	}
 
 	incomingMessages := make(chan string)
