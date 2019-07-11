@@ -1,6 +1,4 @@
 SourceCode/WebApp/public/* linguist-vendored
 SourceCode/WebApp/src/assets/* linguist-vendored
 Documents/* linguist-documentation
-Migration/* linguist-documentation
 *.css linguist-language=Javascript
-*.sql linguist-language=Java
