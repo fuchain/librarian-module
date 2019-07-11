@@ -43,5 +43,5 @@ $ npm run build && npm run start
 Or build production Docker image:
 
 ```
-$ docker build -t ibrarian-blockchainserver . && docker run -d --name ibrarian-blockchainserver -p 5000:3000 ibrarian-blockchainserver:latest
+$ docker build -t ibrarian-blockchainserver . && docker run -d --name ibrarian-blockchainserver -p 5000:5000 ibrarian-blockchainserver:latest
 ```
