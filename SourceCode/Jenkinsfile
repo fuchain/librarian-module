@@ -21,21 +21,21 @@ pipeline {
                 build 'webapp-staging'
             }
         }
-        stage('Build Java') {
+        stage('Build Blockchain') {
             when {
                 expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebServer'")
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/BlockchainServer'")
                     return !matches
                 }
             }
             steps {
-                build 'webserver-staging'
+                build 'blockchainserver-staging'
             }
         }
-        stage('Build Node') {
+        stage('Build I/O') {
             when {
                 expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/NodeServer'")
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/IOServer'")
                     return !matches
                 }
             }

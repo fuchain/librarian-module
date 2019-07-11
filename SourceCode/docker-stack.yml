@@ -20,29 +20,27 @@ services:
         max_attempts: 3
         window: 120s
 
-  postgres:
-    image: postgres
-    command: postgres -c 'max_connections=500'
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - backend
-    environment:
-      POSTGRES_USER: capstone
-      POSTGRES_PASSWORD: capstone
-      POSTGRES_DB: librarianmodule
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-
-  mongodb:
+  mongodbbc:
     image: mongo
     ports:
       - 27018:27017
     volumes:
-      - mongodb-data:/data/db
+      - mongodbbc-data:/data/db
+    networks:
+      - node
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: capstone
+      MONGO_INITDB_ROOT_PASSWORD: capstone
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  mongodbio:
+    image: mongo
+    ports:
+      - 27019:27017
+    volumes:
+      - mongodbio-data:/data/db
     networks:
       - node
     environment:
@@ -86,16 +84,21 @@ services:
         max_attempts: 3
         window: 120s
 
-  webserver:
-    image: fptu/librarian-webserver:latest
+  blockchainserver:
+    image: fptu/librarian-blcokchainserver:latest
     ports:
       - 5000:5000
     networks:
-      - backend
+      - node
     depends_on:
-      - postgres
+      - mongodbbc
+      - redis
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      DB_HOST: mongodbbc
+      DB_USER: capstone
+      DB_PASS: capstone
+      DB_NAME: librariannode
+      REDIS_HOST: redis
     deploy:
       replicas: 1
       update_config:
@@ -108,42 +111,21 @@ services:
         window: 120s
 
   nodeserver:
-    image: fptu/librarian-nodeserver:latest
+    image: fptu/librarian-ioserver:latest
     ports:
       - 5002:5002
     networks:
       - node
     depends_on:
-      - postgresn
+      - mongodbio
       - redis
     environment:
-      DB_HOST: mongodb
+      DB_HOST: mongodbio
       DB_USER: capstone
       DB_PASS: capstone
       DB_NAME: librariannode
       REDIS_HOST: redis
       SENDGRID_API_KEY: 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
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 3
-        window: 120s
-
-  pgadmin:
-    image: dpage/pgadmin4
-    ports:
-      - 1002:80
-    depends_on:
-      - postgres
-      - postgresn
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@fptu.tech
-      PGADMIN_DEFAULT_PASSWORD: capstone
     deploy:
       replicas: 1
       update_config:
@@ -185,11 +167,10 @@ services:
         constraints: [node.role == manager]
 
 networks:
-  backend:
   node:
 
 volumes:
   redis-data:
-  postgres-data:
-  mongodb-data:
+  mongodbbc-data:
+  mongodbio-data:
   jenkins-data:
