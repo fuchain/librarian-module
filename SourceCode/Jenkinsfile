@@ -10,17 +10,6 @@ pipeline {
                 }
             }
         }
-        stage('Build WebApp') {
-            when {
-                expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebApp'")
-                    return !matches
-                }
-            }
-            steps {
-                build 'webapp-staging'
-            }
-        }
         stage('Build Blockchain') {
             when {
                 expression {
@@ -40,7 +29,18 @@ pipeline {
                 }
             }
             steps {
-                build 'nodeserver-staging'
+                build 'ioserver-staging'
+            }
+        }
+        stage('Build WebApp') {
+            when {
+                expression {
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebApp'")
+                    return !matches
+                }
+            }
+            steps {
+                build 'webapp-staging'
             }
         }
         stage('Build VisualizeApp') {

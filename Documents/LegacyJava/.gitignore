@@ -1,0 +1,51 @@
+*.bak
+target/
+.settings/
+
+*.project
+*.prefs
+*.classpath
+*.jsdtscope
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+*.settings
+*.classpath
+*.class
+bin/
+target/
+/iiap-document/
+/iPOS/
+*.project
+pom.properies
+*.MF
+out
+
+logs
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+build
+.idea
+
+application.properties
