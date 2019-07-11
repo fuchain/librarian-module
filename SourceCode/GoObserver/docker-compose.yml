@@ -7,5 +7,5 @@ services:
     image: observe-worker
     container_name: observe-worker
     volumes:
-      - .:/root/src/app
+      - .:/go/src/github.com/huynhminhtufu/observe-worker
     tty: true
