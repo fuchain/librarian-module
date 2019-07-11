@@ -12,6 +12,12 @@ async function test(_, res) {
     res.send(test);
 }
 
+async function createTestAsset(_, res) {
+    const testAsset = await transferService.createTestAsset();
+
+    res.send(testAsset);
+}
+
 async function create(req, res) {
     const body = req.body;
 
@@ -66,6 +72,7 @@ async function dbTest(_, res) {
 
 export default errorHandler({
     test,
+    createTestAsset,
     create,
     transfer,
     sign,
