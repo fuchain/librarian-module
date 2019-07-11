@@ -8,7 +8,6 @@ import routes from "@routes";
 import { initMongoDB } from "@models";
 import { checkEnvLoaded } from "@core/env";
 
-import initRedisModule from "@core/redis";
 import { pingBigchainDB } from "@core/bigchaindb";
 
 const app = express();
@@ -29,9 +28,8 @@ async function main() {
         // Check is env is not null
         checkEnvLoaded();
 
-        // Init MongoDB and Redis
+        // Init MongoDB
         await initMongoDB();
-        await initRedisModule();
 
         // Compression gzip
         app.use(compression());

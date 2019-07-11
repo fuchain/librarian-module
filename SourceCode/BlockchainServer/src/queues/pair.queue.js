@@ -1,5 +1,6 @@
 import Queue from "bull";
-const pairQueue = new Queue("pair");
+import env from "@core/env";
+const pairQueue = new Queue("pair", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
 import { db } from "@models";
