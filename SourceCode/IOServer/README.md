@@ -1,4 +1,4 @@
-# Node.js RESTful API with Express
+# I/O Server Node.js
 
 A starter repository for scaffolding capstone projects.
 
@@ -7,24 +7,20 @@ A starter repository for scaffolding capstone projects.
 Some main dependencies of this repository:
 
 -   Express.js Server
--   Sequelize.js ORM
+-   Mongoose ODM
 -   ES6
 -   CORS + Bcrypt + Authentication
+-   WebSocket with Socket.io
+-   Sendgrid for mailing service
 
 ## Installation
 
 Prerequisites: Node.js (>=6.x, 8.x preferred), npm version 3+ and Git.
 
-If you don't have Yarn, install it by running:
+Install dependencies via npm:
 
 ```
-$ npm install -g yarn
-```
-
-Install dependencies via yarn:
-
-```
-$ yarn
+$ npm install
 ```
 
 Config environment at `.env` file, example at `.env.example`.
@@ -34,7 +30,7 @@ Config environment at `.env` file, example at `.env.example`.
 Running in development mode with `nodemon`:
 
 ```
-$ yarn serve
+$ npm run serve
 ```
 
 ### Production
@@ -42,11 +38,11 @@ $ yarn serve
 Build production dist files and run:
 
 ```
-$ yarn build && yarn start
+$ npm run build && npm run start
 ```
 
 Or build production Docker image:
 
 ```
-$ docker build -t nodejs-api . && docker run -d --name nodejs-api -p 5000:3000 nodejs-api:latest
+$ docker build -t ioserver . && docker run -d --name ioserver -p 5002:5002 ioserver:latest
 ```

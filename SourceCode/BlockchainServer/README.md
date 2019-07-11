@@ -1,4 +1,4 @@
-# Node.js RESTful API with Express
+# Blockchain Server Node.js
 
 A starter repository for scaffolding capstone projects.
 
@@ -7,9 +7,10 @@ A starter repository for scaffolding capstone projects.
 Some main dependencies of this repository:
 
 -   Express.js Server
--   Mongoose
+-   MongoDB Driver
 -   ES6
 -   CORS + Bcrypt + Authentication
+-   Cryptos + BigchainDB Driver
 
 ## Installation
 
