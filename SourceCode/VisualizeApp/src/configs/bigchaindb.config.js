@@ -35,7 +35,7 @@ const cluster = [
   },
   {
     name: "testnet",
-    port: 9985
+    port: 32796
   }
 ];
 

@@ -29,7 +29,7 @@ RUN npm install
 
 COPY --from=builder /root/src/app/dist /root/src/app/dist
 
-EXPOSE 3000
+EXPOSE 5002
 
 ENTRYPOINT ["node","./dist/server.js"]
 

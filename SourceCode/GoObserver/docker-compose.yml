@@ -1,0 +1,11 @@
+version: "3"
+services:
+  observe-worker:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: observe-worker
+    container_name: observe-worker
+    volumes:
+      - .:/go/src/github.com/huynhminhtufu/observe-worker
+    tty: true
