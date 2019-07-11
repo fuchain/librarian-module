@@ -1,4 +1,5 @@
 import transaction from "@core/bigchaindb/transaction";
+import keypairService from "@services/keypair.service";
 import asset from "@core/bigchaindb/asset";
 import uuidv4 from "uuid/v4";
 
@@ -11,15 +12,30 @@ async function postTx(tx) {
 }
 
 // Just for test
-async function createTestBook(publickey) {
+async function createTestBook(publicKey) {
     const bookId = uuidv4();
     const testBook = {
-        book_detail: "7",
+        book_detail: "9",
         book_id: bookId,
         type: "book"
     };
 
-    return transaction.create(testBook, null, publickey);
+    return transaction.create(testBook, null, publicKey);
+}
+
+// Just for test
+async function createTestAsset() {
+    const { publicKey, privateKey } = keypairService.generateRandomKeyPair();
+
+    const testAsset = {
+        type: "test"
+    };
+
+    const txCreaed = await transaction.create(testAsset, null, publicKey);
+    const txSigned = await signTx(txCreaed, privateKey);
+    const txPosted = await postTx(txSigned);
+
+    return txPosted;
 }
 
 // Just for test
@@ -83,6 +99,7 @@ async function postToDoneTransfer(confirmAssetSigned) {
 export default {
     signTx,
     createTestBook,
+    createTestAsset,
     transferTestBook,
     postTx,
     createTransferRequest,
