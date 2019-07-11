@@ -11,7 +11,6 @@ export function checkEnvLoaded() {
         !process.env.SENDGRID_API_KEY
     ) {
         console.error("Cannot load .env file!");
-        process.exit(1);
     }
 }
 
