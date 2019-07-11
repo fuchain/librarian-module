@@ -20,6 +20,25 @@ services:
         max_attempts: 3
         window: 120s
 
+  redisbc:
+    image: redis:alpine
+    ports:
+      - 6380:6379
+    volumes:
+      - redisbc-data:/data
+    networks:
+      - node
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
   mongodbbc:
     image: mongo
     ports:
@@ -95,7 +114,7 @@ services:
       DB_USER: capstone
       DB_PASS: capstone
       DB_NAME: librarianblockchain
-      REDIS_HOST: redis
+      REDIS_HOST: redisbc
       BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
       PUBLIC_KEY: 8dVeGJUXmX97GikETEaYVuzBjZNUa15ogi25EhoDAVyj
       PRIVATE_KEY: FM7yiZRZdcWnbDFZFLudC8xLHt57ArKLUVET8YsuimAV
@@ -171,6 +190,7 @@ networks:
 
 volumes:
   redis-data:
+  redisbc-data:
   mongodbbc-data:
   mongodbio-data:
   jenkins-data:
