@@ -1,5 +1,6 @@
 import setupSocket from "@services/socket";
 import logger from "noogger";
+import transactionPool from "./pools";
 
 function main() {
     try {
