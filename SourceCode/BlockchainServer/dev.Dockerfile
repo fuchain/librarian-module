@@ -1,4 +1,4 @@
-FROM node:10.16.0 as builder
+FROM node:10.16.0
 
 RUN mkdir -p /root/src/node
 WORKDIR /root/src/node

@@ -22,6 +22,7 @@ services:
 
   redisbc:
     image: redis:alpine
+    command: redis-server --appendonly yes
     ports:
       - 6380:6379
     volumes:

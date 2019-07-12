@@ -4,8 +4,6 @@ dotenv.config();
 export function checkEnvLoaded() {
     if (
         !process.env.DB_HOST ||
-        !process.env.DB_USER ||
-        !process.env.DB_PASS ||
         !process.env.DB_NAME ||
         !process.env.REDIS_HOST ||
         !process.env.BIGCHAIN_HOST ||
@@ -13,15 +11,13 @@ export function checkEnvLoaded() {
         !process.env.PRIVATE_KEY
     ) {
         console.error(
-            "Cannot load .env file, please ensure that you are using env args!"
+            "Cannot load local .env file, please ensure that you are using env args (eg: docker-compose)!"
         );
     }
 }
 
 export default {
     dbHost: process.env.DB_HOST,
-    dbUser: process.env.DB_USER,
-    dbPass: process.env.DB_PASS,
     dbName: process.env.DB_NAME,
     redisHost: process.env.REDIS_HOST,
     bigchainHost: process.env.BIGCHAIN_HOST,
