@@ -1,6 +1,7 @@
 import transaction from "@core/bigchaindb/transaction";
 import keypairService from "@services/keypair.service";
 import asset from "@core/bigchaindb/asset";
+import env from "@core/env";
 import uuidv4 from "uuid/v4";
 
 function signTx(tx, privateKey) {
@@ -48,6 +49,24 @@ async function transferTestBook(assetId, publickey) {
     };
 
     return transaction.transfer(previousTx, publickey, metadata);
+}
+
+async function createBookForBookDetailId(bookDetailID) {
+    // A UUIDv4 for book instance ID
+    const bookId = uuidv4();
+
+    const book = {
+        book_detail: bookDetailID.toString(),
+        book_id: bookId,
+        type: "book"
+    };
+
+    // Create new book tx, sign it, and post it to bigchain
+    const txCreated = transaction.create(book, null, env.publicKey);
+    const txSigned = transaction.sign(txCreated, env.privateKey); // Librarian own this brand new book, so he/she will sign this tx
+    const txPosted = await transaction.post(txSigned);
+
+    return txPosted;
 }
 
 async function createTransferRequest(assetId, publicKey) {
@@ -102,6 +121,7 @@ export default {
     createTestAsset,
     transferTestBook,
     postTx,
+    createBookForBookDetailId,
     createTransferRequest,
     createReceiverConfirmAsset,
     postToDoneTransfer
