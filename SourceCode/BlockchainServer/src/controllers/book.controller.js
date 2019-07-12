@@ -9,6 +9,21 @@ async function searchBookDetails(req, res) {
     res.send(listBookDetails);
 }
 
+async function getBookDetail(req, res) {
+    const id = req.params.id;
+
+    const bookDetail = await bookService.getBookDetail(id);
+
+    if (!bookDetail) {
+        res.status(422).send({
+            message: "Cannot find that book detail"
+        });
+    }
+
+    res.send(bookDetail);
+}
+
 export default errorHandler({
-    searchBookDetails
+    searchBookDetails,
+    getBookDetail
 });
