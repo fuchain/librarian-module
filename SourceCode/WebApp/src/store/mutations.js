@@ -102,10 +102,6 @@ const mutations = {
     state.numOfRequestingBooks = data.requesting;
     state.numOfReturningBooks = data.returning;
   },
-  ADD_COIN(state, amount) {
-    state.coin = parseInt(state.coin) + amount;
-    localStorage.setItem("fucoin", parseInt(state.coin));
-  },
 
   // Notification
   ADD_NOTIFICATION(state, notification) {

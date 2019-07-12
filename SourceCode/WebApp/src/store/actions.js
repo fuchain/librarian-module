@@ -77,11 +77,6 @@ const actions = {
     }
   },
 
-  // Add coin
-  addCoin({ commit }, amount) {
-    commit("ADD_COIN", amount);
-  },
-
   // Notification
   addNotification({ commit }, notification) {
     commit("ADD_NOTIFICATION", notification);

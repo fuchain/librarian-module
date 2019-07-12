@@ -25,6 +25,23 @@
       </div>
     </div>
     <div class="vx-row mb-6">
+      <div class="vx-col sm:w-1/3 w-full">
+        <span>
+          Địa chỉ
+          <strong>ví sách</strong>
+        </span>
+      </div>
+      <div class="vx-col sm:w-2/3 w-full">
+        <vs-input class="w-full" :value="$localStorage.getItem('publicKey')" disabled />
+      </div>
+    </div>
+    <div class="vx-row mb-6">
+      <div class="vx-col sm:w-1/3 w-full"></div>
+      <div class="vx-col sm:w-2/3 w-full">
+        <canvas id="canvas"></canvas>
+      </div>
+    </div>
+    <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full"></div>
       <div class="vx-col sm:w-2/3 w-full">
         <vs-alert active="true" icon="vpn_key">Chìa khóa chứng thực hợp lệ</vs-alert>
@@ -39,6 +56,8 @@
 </template>
 
 <script>
+import QRCode from "qrcode";
+
 export default {
   computed: {
     email: {
@@ -111,6 +130,19 @@ export default {
         position: "top-center"
       });
     }
+  },
+  mounted() {
+    const canvas = document.getElementById("canvas");
+    QRCode.toCanvas(
+      canvas,
+      `https://library.fptu.tech/wallet?public_key=${this.$localStorage.getItem(
+        "publicKey"
+      )}`,
+      { width: 200 },
+      function(error) {
+        if (error) console.error(error);
+      }
+    );
   }
 };
 </script>

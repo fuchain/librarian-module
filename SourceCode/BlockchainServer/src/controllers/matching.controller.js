@@ -5,7 +5,7 @@ function createRequest(req, res) {
     const body = req.body;
 
     const sent = matchingService.createMatchingRequest(
-        body.email,
+        body.public_key,
         body.book_detail_id,
         body.book_id
     );
