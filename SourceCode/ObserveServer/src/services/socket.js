@@ -27,12 +27,9 @@ function setupSocket() {
         connection.on("error", onError);
         connection.on("close", onClose);
     });
-
+    const { wsProtocol, wsPort, host, prefix, streamApi } = bigchaindb;
     wsClient.connect(
-        bigchaindb.protocol +
-            bigchaindb.host +
-            bigchaindb.prefix +
-            bigchaindb.streamApi
+        `${wsProtocol}://${host}:${wsPort}/${prefix}/${streamApi}`
     );
 }
 
