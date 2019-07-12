@@ -1,20 +1,20 @@
 import bigchaindb from "@core/env";
-import Logger from "js-logger";
+import logger from "noogger";
 import { client as WebSocketClient } from "websocket";
 
-Logger.useDefaults();
 const prefixMessage = "Response from " + bigchaindb.host + ": ";
 
 function onMessage(message) {
-    Logger.info(prefixMessage + message.utf8Data);
+    const data = JSON.parse(message.utf8Data);
+    logger.info(prefixMessage + message.utf8Data);
 }
 
 function onError(error) {
-    Logger.error(prefixMessage + error);
+    logger.error(prefixMessage + error);
 }
 
 function onClose() {
-    Logger.info(prefixMessage + "connection closed.");
+    logger.info(prefixMessage + "connection closed.");
 }
 
 function setupSocket() {
@@ -22,7 +22,7 @@ function setupSocket() {
 
     wsClient.on("connectFailed", onError);
     wsClient.on("connect", connection => {
-        Logger.info(prefixMessage + "connection established.");
+        logger.info(prefixMessage + "connection established.");
         connection.on("message", onMessage);
         connection.on("error", onError);
         connection.on("close", onClose);

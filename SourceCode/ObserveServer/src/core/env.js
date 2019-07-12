@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
-import Logger from "js-logger";
+import logger from "noogger";
 
 dotenv.config();
-Logger.useDefaults();
 
 export function checkEnvLoaded() {
     if (
@@ -11,7 +10,7 @@ export function checkEnvLoaded() {
         !process.env.BIGCHAIN_API_PREFIX ||
         !process.env.BIGCHAIN_STREAM_PATH
     ) {
-        Logger.error("Cannot load .env file!");
+        logger.error("Cannot load .env file!");
         process.exit(1);
     }
 }

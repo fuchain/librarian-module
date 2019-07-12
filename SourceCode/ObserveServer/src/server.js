@@ -1,13 +1,11 @@
 import setupSocket from "@services/socket";
-import Logger from "js-logger";
-
-Logger.useDefaults();
+import logger from "noogger";
 
 function main() {
     try {
         setupSocket();
     } catch (error) {
-        Logger.error(error);
+        logger.error(error);
         process.exit(1);
     }
 }
