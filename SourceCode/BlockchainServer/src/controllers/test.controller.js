@@ -4,12 +4,14 @@ import outputService from "@services/output.service";
 import bookService from "@services/book.service";
 import importDBQueue from "@queues/importdb.queue";
 
-import asset from "@core/bigchaindb/asset";
+import insertQueue from "@queues/insert.queue";
 
 async function test(_, res) {
-    const test = await asset.getPublicKeyFromEmail("tuhmse62531@fpt.edu.vn");
+    await insertQueue.addJob();
 
-    res.send(test);
+    res.send({
+        message: "Done mate!"
+    });
 }
 
 async function createTestAsset(_, res) {
