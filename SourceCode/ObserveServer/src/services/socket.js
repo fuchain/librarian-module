@@ -17,7 +17,7 @@ function onClose() {
     Logger.info(prefixMessage + "connection closed.");
 }
 
-export default function setupSocket() {
+function setupSocket() {
     const wsClient = new WebSocketClient();
 
     wsClient.on("connectFailed", onError);
@@ -35,3 +35,5 @@ export default function setupSocket() {
             bigchaindb.streamApi
     );
 }
+
+export default setupSocket;
