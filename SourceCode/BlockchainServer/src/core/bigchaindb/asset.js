@@ -9,8 +9,8 @@ async function getAssetTransactions(assetId) {
     return await conn.listTransactions(assetId);
 }
 
-async function searchAsset(bookId) {
-    return await conn.searchAssets(bookId);
+async function searchAsset(searchText) {
+    return await conn.searchAssets(searchText);
 }
 
 async function searchEmail(email) {
