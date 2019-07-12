@@ -22,7 +22,7 @@ async function doJob() {
         // Add book instance
         bookDetails.forEach(e => {
             const amount = e.amount;
-            for (const _ of amount) {
+            for (let i = 0; i < amount; i++) {
                 insertTxQueue.addJob(e.id);
             }
         });

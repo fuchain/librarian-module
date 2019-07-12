@@ -7,7 +7,7 @@ import transferService from "@services/transfer.service";
 
 // Watch and Run job queue
 function run() {
-    insertTxQueue.process(jobCallback);
+    insertTxQueue.process(5, jobCallback);
 }
 
 // Describe what to do in the job
