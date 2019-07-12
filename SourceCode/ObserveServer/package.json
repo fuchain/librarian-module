@@ -5,7 +5,7 @@
 	"description": "Observe server is responsible for listening on streaming api from bigchain",
 	"main": "./src/server.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "nodemon --exec babel-node ./src/linhph/test.js",
 		"dev": "node src/server.js",
 		"start": "node ./dist/server.js",
 		"build": "babel src -d dist",
@@ -15,6 +15,7 @@
 	"author": "Blockchain capstone team",
 	"license": "MIT",
 	"dependencies": {
+		"axios": "0.19.0",
 		"js-logger": "1.6.0",
 		"websocket": "1.0.29"
 	},
