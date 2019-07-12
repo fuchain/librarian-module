@@ -18,11 +18,17 @@ async function getProfile(publicKey) {
         });
 
         if (!userInDB) {
-            return null;
+            userCollection.insertMany([
+                {
+                    email,
+                    fullname: null,
+                    phone: null
+                }
+            ]);
         }
 
-        const phone = userInDB.phone;
-        const fullname = userInDB.fullname;
+        const phone = userInDB && userInDB.phone;
+        const fullname = userInDB && userInDB.fullname;
 
         return { email, type, fullname, phone };
     }
@@ -80,7 +86,7 @@ async function getInQueueBook(publicKey, isGetReturning = true) {
         .find({
             email,
             bookId: {
-                $exists: isGetReturning ? true : false
+                $ne: isGetReturning ? null : false
             }
         })
         .toArray();

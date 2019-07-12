@@ -31,7 +31,7 @@
               <div class="flex flex-wrap">
                 <div
                   class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
-                  @click="submit(item.name)"
+                  @click="submit(item.id)"
                 >
                   <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
@@ -138,7 +138,7 @@ export default {
       this.$vs.loading();
 
       this.$http
-        .get(`${this.$http.baseUrl}/bookdetails/search?name=${this.searchText}`)
+        .get(`${this.$http.baseUrl}/book/search?text=${this.searchText}`)
         .then(response => {
           const data = response.data;
 
@@ -156,14 +156,13 @@ export default {
           }
         });
     },
-    submit(bookName) {
-      if (!this.searchText.trim() || !bookName) return;
+    submit(bookId) {
+      if (!this.searchText.trim() || !bookId) return;
       this.$vs.loading();
 
       this.$http
-        .post(`${this.$http.baseUrl}/requests`, {
-          type: 1,
-          book_name: bookName
+        .post(`${this.$http.baseUrl}/matching/create_request`, {
+          book_detail_id: bookId
         })
         .then(() => {
           this.$vs.notify({
@@ -182,7 +181,7 @@ export default {
           this.$vs.loading.close();
           this.$vs.notify({
             title: "Thất bại",
-            text: "Bạn đã có yêu cầu mượn sách này rồi",
+            text: "Đã xảy ra lỗi",
             color: "warning",
             position: "top-center"
           });

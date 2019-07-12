@@ -90,12 +90,14 @@ async function getRequestingBook(req, res) {
 async function getKeepingAmount(req, res) {
     const body = req.body;
 
-    const books = await userService.getCurrentBook(body.public_key);
+    const keeping = await userService.getCurrentBook(body.public_key);
+    const returning = await userService.getInQueueBook(body.public_key, true);
+    const requesting = await userService.getInQueueBook(body.public_key, false);
 
     res.send({
-        keeping: books.length,
-        returning: 0,
-        requesting: 0
+        keeping: keeping.length,
+        returning: returning.length,
+        requesting: requesting.length
     });
 }
 

@@ -29,9 +29,6 @@ const state = {
   numOfRequestingBooks: 0,
   numOfReturningBooks: 0,
 
-  // Coin
-  coin: localStorage.getItem("fucoin") || 0,
-
   // Notification
   notifications: []
 };

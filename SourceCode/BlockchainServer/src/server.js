@@ -58,7 +58,7 @@ async function main() {
 
         // Default page
         app.use("/", function(_, res) {
-            res.send({
+            res.status(403).send({
                 message: "You cannot access this endpoint"
             });
         });
