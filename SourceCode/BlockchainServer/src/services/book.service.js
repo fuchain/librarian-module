@@ -17,6 +17,12 @@ async function getAllBookDetail() {
 
 async function searchBookDetail(text) {
     const bookDetailCollection = db.collection("book_details");
+
+    // Find if text index is not existed to create one
+    await bookDetailCollection.createIndex({
+        name: "text"
+    });
+
     const listBookDetails = await bookDetailCollection
         .find({ $text: { $search: text } })
         .limit(50)
@@ -25,4 +31,25 @@ async function searchBookDetail(text) {
     return listBookDetails;
 }
 
-export default { searchBook, getAllBookDetail, searchBookDetail };
+async function getBookDetail(id) {
+    const bookDetailCollection = db.collection("book_details");
+
+    if (isNaN(id)) {
+        return null;
+    }
+
+    const idInt = parseInt(id);
+
+    const bookDetail = await bookDetailCollection.findOne({
+        id: idInt
+    });
+
+    return bookDetail;
+}
+
+export default {
+    searchBook,
+    getAllBookDetail,
+    searchBookDetail,
+    getBookDetail
+};
