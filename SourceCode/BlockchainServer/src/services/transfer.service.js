@@ -62,7 +62,7 @@ async function transferAndPostTestBook(fraud = false) {
 
     if (!fraud) {
         const txTransferPosted = await postTx(transferTxSigned);
-        const txReceptPosted = await postTx(fraudreceptTxSigned);
+        const txReceptPosted = await postTx(receptTxSigned);
 
         return {
             transer_tx: txTransferPosted,
