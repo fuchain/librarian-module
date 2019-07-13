@@ -40,6 +40,9 @@ async function getEmailFromPublicKey(publicKey) {
 }
 
 async function getPublicKeyFromEmail(email) {
+    // Lower it first
+    email = email.toLowerCase();
+
     const listTx = await conn.searchAssets(email);
 
     if (!listTx || !listTx.length) throw new Error("Transaction not valid");
