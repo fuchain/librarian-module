@@ -12,7 +12,7 @@ function generateRandomKeyPair() {
 
 async function generateKeyPairEmail(email, publicKey, fullname) {
     const asset = {
-        email,
+        email: email.toLowerCase(),
         type: "reader"
     };
 
