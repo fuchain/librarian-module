@@ -15,8 +15,12 @@
             {
                 "root": ["./src"],
                 "alias": {
+                    "@constants": "./src/constants",
                     "@core": "./src/core",
+                    "@handlers": "./src/handlers",
+                    "@pools": "./src/pools",
                     "@services": "./src/services",
+                    "@workers": "./src/workers"
                 }
             }
         ]

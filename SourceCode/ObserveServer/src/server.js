@@ -1,13 +1,18 @@
-import setupSocket from "@services/socket";
-import Logger from "js-logger";
+import logger from "noogger";
+import streamer from "@handlers/streamer.handler";
+import scheduler from "@handlers/scheduler.handler";
 
-Logger.useDefaults();
+function initPool() {
+    global.transactionPool = [];
+}
 
 function main() {
     try {
-        setupSocket();
+        initPool();
+        streamer.start();
+        scheduler.start();
     } catch (error) {
-        Logger.error(error);
+        logger.error(error);
         process.exit(1);
     }
 }
