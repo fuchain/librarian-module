@@ -1,10 +1,9 @@
-import setupSocket from "@services/socket";
+import socket from "@core/socket";
 import logger from "noogger";
-import transactionPool from "./pools";
 
 function main() {
     try {
-        setupSocket();
+        socket.setupSocket();
     } catch (error) {
         logger.error(error);
         process.exit(1);

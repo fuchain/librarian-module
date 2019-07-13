@@ -1,7 +1,7 @@
 import {
     ADD_CREATE_TRANSACTION,
     ADD_TRANSFER_TRANSACTION
-} from "./transaction.constant";
+} from "@constants/action_type.constant";
 
 function addCreateTransaction(transactionPool, action) {
     return {

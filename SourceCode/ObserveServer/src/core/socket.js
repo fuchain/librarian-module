@@ -7,6 +7,10 @@ const prefixMessage = "Response from " + bigchaindb.host + ": ";
 function onMessage(message) {
     const data = JSON.parse(message.utf8Data);
     logger.info(prefixMessage + message.utf8Data);
+    console.log("height: " + data.height);
+    console.log("asset_id: " + data.asset_id);
+    console.log("transaction_id: " + data.transaction_id);
+    console.log("logger: " + logger.module);
 }
 
 function onError(error) {
@@ -33,4 +37,4 @@ function setupSocket() {
     );
 }
 
-export default setupSocket;
+export default { setupSocket };
