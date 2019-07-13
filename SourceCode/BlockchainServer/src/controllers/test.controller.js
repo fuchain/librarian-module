@@ -32,6 +32,14 @@ async function transferTestBook(_, res) {
     res.send(testBookTransfer);
 }
 
+async function transferTestBookFraud(_, res) {
+    const testBookTransfer = await transferService.transferAndPostTestBook(
+        true
+    );
+
+    res.send(testBookTransfer);
+}
+
 async function create(req, res) {
     const body = req.body;
 
@@ -89,6 +97,7 @@ export default errorHandler({
     createTestAsset,
     createTestBook,
     transferTestBook,
+    transferTestBookFraud,
     create,
     transfer,
     sign,
