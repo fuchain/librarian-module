@@ -12,7 +12,7 @@ function onClose() {
     logger.info(prefixMessage + "connection closed.");
 }
 
-function setupSocket(handler) {
+function setupSocket(handleData) {
     const wsClient = new WebSocketClient();
 
     wsClient.on("connectFailed", onError);
@@ -20,8 +20,7 @@ function setupSocket(handler) {
         logger.info(prefixMessage + "connection established.");
         connection.on("message", message => {
             const data = JSON.parse(message.utf8Data);
-            logger.info(prefixMessage + message.utf8Data);
-            handler(date);
+            handleData(data);
         });
         connection.on("error", onError);
         connection.on("close", onClose);

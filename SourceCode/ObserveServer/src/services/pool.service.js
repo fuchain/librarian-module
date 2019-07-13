@@ -1,18 +1,48 @@
 import logger from "noogger";
+import bigchainService from "@services/bigchain.service";
 
-function addTransaction(transaction) {
-    global.transactionPool.push(transaction);
+function addTransaction(message) {
+    if (message.asset_id != message.transaction_id) {
+        global.transactionPool = [
+            ...global.transactionPool,
+            {
+                id: message.transaction_id,
+                asset_id: message.asset_id
+            }
+        ];
+    }
 }
 
-function validateTransactionPool() {
-    logger.info("Validating transaction pool....")
+async function validateTransactionPool() {
+    logger.info("Validating transaction pool...\n\n");
+
+    // Copy transaction pool to temporary memory
     const transactions = [...global.transactionPool];
+
+    // Clean transaction pool
     global.transactionPool = [];
-    transactions.map(transaction => {
-        // query to bigchain to check with CREATE tx
+
+    await transactions.map(async transaction => {
+        const assets = await bigchainService.searchAssetByTxId(transaction.id);
+
+        if (!assets[0]) {
+            if (transaction.retry) {
+                logger.error("Transaction exception: " + transaction.id);
+            } else {
+                // Update back to transaction pool
+                global.transactionPool = [
+                    ...global.transactionPool,
+                    {
+                        id: transaction.id,
+                        asset_id: transaction.asset_id,
+                        retry: true
+                    }
+                ];
+            }
+        } else {
+            // nothing, skip :)
+        }
     });
-    // check tmp pool is empty or not
-    // send exception to log service of tmp pool is not empty
 }
 
 export default {
