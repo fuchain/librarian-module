@@ -7,6 +7,11 @@ async function getAllBookDetails(_, res) {
     res.send(listBookDetails);
 }
 
+function getAllUsers(req, res){
+    res.send('getAllUsers');
+}
+
 export default errorHandler({
-    getAllBookDetails
+    getAllBookDetails,
+    getAllUsers
 });
