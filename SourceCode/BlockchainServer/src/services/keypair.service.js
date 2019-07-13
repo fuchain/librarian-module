@@ -11,6 +11,9 @@ function generateRandomKeyPair() {
 }
 
 async function generateKeyPairEmail(email, publicKey, fullname) {
+    // Lower case
+    email = email.toLowerCase();
+
     const asset = {
         email: email.toLowerCase(),
         type: "reader"
@@ -56,6 +59,9 @@ async function checkTokenGoogle(token) {
 }
 
 async function isEmailExisted(email) {
+    // Lower case
+    email = email.toLowerCase();
+
     const arr = await asset.searchEmail(email);
 
     const found = arr.find(e => e.data.email === email);
