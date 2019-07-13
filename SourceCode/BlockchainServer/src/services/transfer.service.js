@@ -16,12 +16,67 @@ async function postTx(tx) {
 async function createTestBook(publicKey) {
     const bookId = uuidv4();
     const testBook = {
-        book_detail: "9",
+        book_detail: "10",
         book_id: bookId,
         type: "book"
     };
 
     return transaction.create(testBook, null, publicKey);
+}
+
+// Just for test
+async function createAndPostTestBook() {
+    const bookId = uuidv4();
+    const testBook = {
+        book_detail: "7",
+        book_id: bookId,
+        type: "book"
+    };
+
+    const txCreated = await transaction.create(testBook, null, env.publicKey);
+    const txSigned = await signTx(txCreated, env.privateKey);
+    const txPosted = await postTx(txSigned);
+
+    return txPosted;
+}
+
+// Just for test
+async function transferAndPostTestBook(fraud = false) {
+    const txCreate = await createAndPostTestBook();
+    const assetId = txCreate.id;
+    const transferTx = await transferTestBook(
+        assetId,
+        "KDeJKo7BhPRCsVwmBjnmuceeFwg1jE6zuLoRnkXy3bL"
+    );
+    const transferTxSigned = await signTx(transferTx, env.privateKey);
+
+    // Creaate recept
+    const receptTx = createReceiverConfirmAsset(
+        transferTxSigned,
+        "KDeJKo7BhPRCsVwmBjnmuceeFwg1jE6zuLoRnkXy3bL"
+    );
+    const receptTxSigned = await signTx(
+        receptTx,
+        "DKDeMCSqxPQ6vgqddGPzpWPmVvnP61YkU1v77Wwkm8t9"
+    );
+
+    if (!fraud) {
+        const txTransferPosted = await postTx(transferTxSigned);
+        const txReceptPosted = await postTx(receptTxSigned);
+
+        return {
+            transer_tx: txTransferPosted,
+            recept_tx: txReceptPosted
+        };
+    }
+
+    // Fraud here
+    const txTransferPosted = await postTx(transferTxSigned);
+
+    return {
+        transer_tx: txTransferPosted,
+        recept_tx: "This is fraud so it will be null"
+    };
 }
 
 // Just for test
@@ -89,15 +144,13 @@ function createReceiverConfirmAsset(transferTxSigned, publicKey) {
     // public_key here is public key of the receiver (confirmer)
 
     const confirmAsset = {
-        transaction_id: transferTxSigned.id,
-        confirm_date: Math.floor(Date.now() / 1000)
+        confirm_for_tx: transferTxSigned,
+        confirm_for_id: transferTxSigned.id,
+        confirm_date: Math.floor(Date.now() / 1000),
+        type: "recept"
     };
 
-    const metadata = {
-        confirm_for: transferTxSigned
-    };
-
-    return transaction.create(confirmAsset, metadata, publicKey);
+    return transaction.create(confirmAsset, null, publicKey);
 }
 
 async function postToDoneTransfer(confirmAssetSigned) {
@@ -118,6 +171,8 @@ async function postToDoneTransfer(confirmAssetSigned) {
 export default {
     signTx,
     createTestBook,
+    createAndPostTestBook,
+    transferAndPostTestBook,
     createTestAsset,
     transferTestBook,
     postTx,
