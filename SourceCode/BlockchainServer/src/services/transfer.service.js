@@ -25,6 +25,51 @@ async function createTestBook(publicKey) {
 }
 
 // Just for test
+async function createAndPostTestBook() {
+    const bookId = uuidv4();
+    const testBook = {
+        book_detail: "7",
+        book_id: bookId,
+        type: "book"
+    };
+
+    const txCreated = await transaction.create(testBook, null, env.publicKey);
+    const txSigned = await signTx(txCreated, env.privateKey);
+    const txPosted = await postTx(txSigned);
+
+    return txPosted;
+}
+
+// Just for test
+async function transferAndPostTestBook(publicKey) {
+    const txCreate = await createAndPostTestBook();
+    const assetId = txCreate.id;
+    const transferTx = await transferTestBook(
+        assetId,
+        "KDeJKo7BhPRCsVwmBjnmuceeFwg1jE6zuLoRnkXy3bL"
+    );
+    const transferTxSigned = await signTx(transferTx, env.privateKey);
+
+    // Creaate recept
+    const receptTx = createReceiverConfirmAsset(
+        transferTxSigned,
+        "KDeJKo7BhPRCsVwmBjnmuceeFwg1jE6zuLoRnkXy3bL"
+    );
+    const receptTxSigned = await signTx(
+        receptTx,
+        "DKDeMCSqxPQ6vgqddGPzpWPmVvnP61YkU1v77Wwkm8t9"
+    );
+
+    const txTransferPosted = await postTx(transferTxSigned);
+    const txReceptPosted = await postTx(receptTxSigned);
+
+    return {
+        transer_tx: txTransferPosted,
+        recept_tx: txReceptPosted
+    };
+}
+
+// Just for test
 async function createTestAsset() {
     const { publicKey, privateKey } = keypairService.generateRandomKeyPair();
 
@@ -116,6 +161,8 @@ async function postToDoneTransfer(confirmAssetSigned) {
 export default {
     signTx,
     createTestBook,
+    createAndPostTestBook,
+    transferAndPostTestBook,
     createTestAsset,
     transferTestBook,
     postTx,
