@@ -41,7 +41,7 @@ async function createAndPostTestBook() {
 }
 
 // Just for test
-async function transferAndPostTestBook(publicKey) {
+async function transferAndPostTestBook(fraud = false) {
     const txCreate = await createAndPostTestBook();
     const assetId = txCreate.id;
     const transferTx = await transferTestBook(
@@ -60,12 +60,22 @@ async function transferAndPostTestBook(publicKey) {
         "DKDeMCSqxPQ6vgqddGPzpWPmVvnP61YkU1v77Wwkm8t9"
     );
 
+    if (!fraud) {
+        const txTransferPosted = await postTx(transferTxSigned);
+        const txReceptPosted = await postTx(fraudreceptTxSigned);
+
+        return {
+            transer_tx: txTransferPosted,
+            recept_tx: txReceptPosted
+        };
+    }
+
+    // Fraud here
     const txTransferPosted = await postTx(transferTxSigned);
-    const txReceptPosted = await postTx(receptTxSigned);
 
     return {
         transer_tx: txTransferPosted,
-        recept_tx: txReceptPosted
+        recept_tx: "This is fraud so it will be null"
     };
 }
 
