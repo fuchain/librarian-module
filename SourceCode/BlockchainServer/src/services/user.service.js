@@ -120,10 +120,17 @@ async function getTransferHistory(publicKey) {
     });
 }
 
+async function getAllUsers(){
+    const users = await asset.getAllUsers('reader');
+
+    return users;
+}
+
 export default {
     getProfile,
     updateProfile,
     getCurrentBook,
     getInQueueBook,
-    getTransferHistory
+    getTransferHistory,
+    getAllUsers
 };

@@ -78,6 +78,12 @@ async function getBookFromTransactionId(transactionId) {
     return null;
 }
 
+async function getAllUsers(type){
+    const users = await conn.searchAssets(type);
+
+    return users;
+}
+
 export default {
     getAsset,
     getAssetTransactions,
@@ -86,5 +92,6 @@ export default {
     searchPublicKey,
     getEmailFromPublicKey,
     getPublicKeyFromEmail,
-    getBookFromTransactionId
+    getBookFromTransactionId,
+    getAllUsers
 };
