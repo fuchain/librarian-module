@@ -16,7 +16,7 @@ async function postTx(tx) {
 async function createTestBook(publicKey) {
     const bookId = uuidv4();
     const testBook = {
-        book_detail: "9",
+        book_detail: "10",
         book_id: bookId,
         type: "book"
     };
@@ -89,15 +89,13 @@ function createReceiverConfirmAsset(transferTxSigned, publicKey) {
     // public_key here is public key of the receiver (confirmer)
 
     const confirmAsset = {
-        transaction_id: transferTxSigned.id,
-        confirm_date: Math.floor(Date.now() / 1000)
+        confirm_for_tx: transferTxSigned,
+        confirm_for_id: transferTxSigned.id,
+        confirm_date: Math.floor(Date.now() / 1000),
+        type: "recept"
     };
 
-    const metadata = {
-        confirm_for: transferTxSigned
-    };
-
-    return transaction.create(confirmAsset, metadata, publicKey);
+    return transaction.create(confirmAsset, null, publicKey);
 }
 
 async function postToDoneTransfer(confirmAssetSigned) {
