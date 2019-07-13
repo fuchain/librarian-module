@@ -22,7 +22,7 @@ async function validateTransactionPool() {
     // Clean transaction pool
     global.transactionPool = [];
 
-    await transactions.map(async transaction => {
+    transactions.forEach(async transaction => {
         const assets = await bigchainService.searchAssetByTxId(transaction.id);
 
         if (!assets[0]) {
