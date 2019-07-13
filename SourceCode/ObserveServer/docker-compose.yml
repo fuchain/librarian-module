@@ -2,7 +2,9 @@ version: "3.1"
 
 services:
     observe_server:
-        image: node:10.15.3
+        build:
+            context: ./
+            dockerfile: dev.Dockerfile
         container_name: observe_server
         volumes:
             - ./:/app
