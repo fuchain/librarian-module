@@ -22,9 +22,15 @@ async function getBookByUser(req, res) {
 
     res.send(bookdetailList);
 }
+async function getBookInstanceList(req, res){
+    const book_detail_id = req.params.book_detail_id;
+    const bookList = await bookService.getBookInstanceList(book_detail_id);
+    res.send(bookList);
+}
 
 export default errorHandler({
     getAllBookDetails,
     getAllUsers,
-    getBookByUser
+    getBookByUser,
+    getBookInstanceList
 });

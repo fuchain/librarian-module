@@ -47,9 +47,16 @@ async function getBookDetail(id) {
     return bookDetail;
 }
 
+async function getBookInstanceList(bookDetailId){
+    const bookList =  await asset.searchAsset(bookDetailId);
+
+    return bookList.filter(e => e.data.book_detail);
+}
+
 export default {
     searchBook,
     getAllBookDetail,
     searchBookDetail,
-    getBookDetail
+    getBookDetail,
+    getBookInstanceList
 };
