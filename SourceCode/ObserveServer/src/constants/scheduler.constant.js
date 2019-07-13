@@ -1,1 +1,1 @@
-export const SCHEDULE_TIME = 900;
+export const SCHEDULE_TIME = 60000;

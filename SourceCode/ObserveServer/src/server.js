@@ -1,6 +1,6 @@
-// import socket from "@core/socket";
 import logger from "noogger";
 import streamer from "@handlers/streamer.handler";
+import scheduler from "@handlers/scheduler.handler";
 
 function initPool() {
     global.transactionPool = [];
@@ -9,7 +9,8 @@ function initPool() {
 function main() {
     try {
         initPool();
-        streamer.setupSocket();
+        streamer.start();
+        scheduler.start();
     } catch (error) {
         logger.error(error);
         process.exit(1);
