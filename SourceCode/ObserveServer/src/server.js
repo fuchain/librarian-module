@@ -1,9 +1,15 @@
-import socket from "@core/socket";
+// import socket from "@core/socket";
 import logger from "noogger";
+import streamer from "@handlers/streamer.handler";
+
+function initPool() {
+    global.transactionPool = [];
+}
 
 function main() {
     try {
-        socket.setupSocket();
+        initPool();
+        streamer.setupSocket();
     } catch (error) {
         logger.error(error);
         process.exit(1);
