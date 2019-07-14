@@ -1,6 +1,9 @@
 import errorHandler from "@core/handlers/error.handler";
 import bookService from "@services/book.service";
 import userService from "@services/user.service";
+import {
+    db
+} from "@models"
 
 async function getAllBookDetails(_, res) {
     const listBookDetails = await bookService.getAllBookDetail();
@@ -31,7 +34,7 @@ async function getBookInstanceList(req, res) {
 async function getHistoryOfBookInstance(req, res) {
     const bookId = req.body.book_id;
     const transactionList = await bookService.getHistoryOfBookInstance(bookId);
-    if(!transactionList){
+    if (!transactionList) {
         return res.status(400).send({
             message: "Cannot find any asset with book id = " + bookId
         });
@@ -40,10 +43,26 @@ async function getHistoryOfBookInstance(req, res) {
     res.send(transactionList);
 }
 
+async function getOverview(_, res) {
+    const bookDetailsCollection = db.collection("book_details");
+    const bookDetailTotal = await bookDetailsCollection.find().count();
+
+    const bookInstanceTotal = await bookService.getBookInstanceTotal('book');
+
+    const userTotal = await userService.getUserTotal('reader');
+
+    res.send({
+        book_detail_total: bookDetailTotal,
+        book_instance_total: bookInstanceTotal,
+        user_total: userTotal
+    });
+}
+
 export default errorHandler({
     getAllBookDetails,
     getAllUsers,
     getBookByUser,
     getBookInstanceList,
-    getHistoryOfBookInstance
+    getHistoryOfBookInstance,
+    getOverview
 });

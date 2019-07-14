@@ -72,11 +72,20 @@ async function getHistoryOfBookInstance(bookID) {
     return await asset.getAssetTransactions(assetId);
 }
 
+async function getBookInstanceTotal(type){
+    const bookList = await asset.searchAsset(type);
+    if(!bookList.length){
+        return 0;
+    }
+    return bookList.length;
+}
+
 export default {
     searchBook,
     getAllBookDetail,
     searchBookDetail,
     getBookDetail,
     getBookInstanceList,
-    getHistoryOfBookInstance
+    getHistoryOfBookInstance,
+    getBookInstanceTotal
 };

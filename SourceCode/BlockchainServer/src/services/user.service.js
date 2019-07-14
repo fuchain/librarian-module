@@ -145,11 +145,20 @@ async function getAllUsers(type) {
     return data;
 }
 
+async function getUserTotal(type){
+    const userList = await asset.searchAsset(type);
+    if(!userList.length){
+        return 0;
+    }
+    return userList.length;
+}
+
 export default {
     getProfile,
     updateProfile,
     getCurrentBook,
     getInQueueBook,
     getTransferHistory,
-    getAllUsers
+    getAllUsers,
+    getUserTotal
 };
