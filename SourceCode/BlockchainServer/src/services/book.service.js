@@ -1,5 +1,10 @@
 import asset from "@core/bigchaindb/asset";
-import { db } from "@models";
+import {
+    db
+} from "@models";
+import {
+    isRegExp
+} from "util";
 
 async function searchBook(id) {
     return await asset.searchAsset(id);
@@ -24,7 +29,11 @@ async function searchBookDetail(text) {
     });
 
     const listBookDetails = await bookDetailCollection
-        .find({ $text: { $search: text } })
+        .find({
+            $text: {
+                $search: text
+            }
+        })
         .limit(50)
         .toArray();
 
@@ -47,10 +56,20 @@ async function getBookDetail(id) {
     return bookDetail;
 }
 
-async function getBookInstanceList(bookDetailId){
-    const bookList =  await asset.searchAsset(bookDetailId);
+async function getBookInstanceList(bookDetailId) {
+    const bookList = await asset.searchAsset(bookDetailId);
 
     return bookList.filter(e => e.data.book_detail);
+}
+
+async function getHistoryOfBookInstance(bookID) {
+    const assetIds = await asset.searchAsset(bookID);
+    if (!assetIds.length) {
+        return null;
+    }
+
+    const assetId = assetIds[0].id;
+    return await asset.getAssetTransactions(assetId);
 }
 
 export default {
@@ -58,5 +77,6 @@ export default {
     getAllBookDetail,
     searchBookDetail,
     getBookDetail,
-    getBookInstanceList
+    getBookInstanceList,
+    getHistoryOfBookInstance
 };
