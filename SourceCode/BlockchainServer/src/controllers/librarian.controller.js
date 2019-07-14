@@ -58,11 +58,27 @@ async function getOverview(_, res) {
     });
 }
 
+// Get book instance total of book detail at librarian
+async function getBookTotalByBDID(req, res) {
+    let total = 0;
+    const bookDetailId = req.body.book_detail_id;
+
+    const bookList = await bookService.getBookInstanceList(bookDetailId);
+    if(bookList.length){
+        total = bookList.length;
+    }
+
+    res.send({
+        total
+    });
+}
+
 export default errorHandler({
     getAllBookDetails,
     getAllUsers,
     getBookByUser,
     getBookInstanceList,
     getHistoryOfBookInstance,
-    getOverview
+    getOverview,
+    getBookTotalByBDID
 });
