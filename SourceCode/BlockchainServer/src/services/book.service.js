@@ -1,10 +1,5 @@
 import asset from "@core/bigchaindb/asset";
-import {
-    db
-} from "@models";
-import {
-    isRegExp
-} from "util";
+import { db } from "@models";
 
 async function searchBook(id) {
     return await asset.searchAsset(id);
@@ -72,9 +67,9 @@ async function getHistoryOfBookInstance(bookID) {
     return await asset.getAssetTransactions(assetId);
 }
 
-async function getBookInstanceTotal(type){
+async function getBookInstanceTotal(type) {
     const bookList = await asset.searchAsset(type);
-    if(!bookList.length){
+    if (!bookList.length) {
         return 0;
     }
     return bookList.length;

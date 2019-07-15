@@ -1,9 +1,7 @@
 import errorHandler from "@core/handlers/error.handler";
 import bookService from "@services/book.service";
 import userService from "@services/user.service";
-import {
-    db
-} from "@models"
+import { db } from "@models";
 
 async function getAllBookDetails(_, res) {
     const listBookDetails = await bookService.getAllBookDetail();
@@ -12,7 +10,7 @@ async function getAllBookDetails(_, res) {
 }
 
 async function getAllUsers(_, res) {
-    const users = await userService.getAllUsers('reader');
+    const users = await userService.getAllUsers("reader");
 
     res.send(users);
 }
@@ -47,9 +45,9 @@ async function getOverview(_, res) {
     const bookDetailsCollection = db.collection("book_details");
     const bookDetailTotal = await bookDetailsCollection.find().count();
 
-    const bookInstanceTotal = await bookService.getBookInstanceTotal('book');
+    const bookInstanceTotal = await bookService.getBookInstanceTotal("book");
 
-    const userTotal = await userService.getUserTotal('reader');
+    const userTotal = await userService.getUserTotal("reader");
 
     res.send({
         book_detail_total: bookDetailTotal,
@@ -64,7 +62,7 @@ async function getBookTotalByBDID(req, res) {
     const bookDetailId = req.body.book_detail_id;
 
     const bookList = await bookService.getBookInstanceList(bookDetailId);
-    if(bookList.length){
+    if (bookList.length) {
         total = bookList.length;
     }
 
