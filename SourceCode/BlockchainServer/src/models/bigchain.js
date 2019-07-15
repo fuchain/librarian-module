@@ -28,8 +28,3 @@ export async function initBigchainMongoDB() {
         });
     });
 }
-
-// import { db } from "@models/bigchain";
-// const array = await db.collection("transactions").find({
-//     public_key: "123"
-// }).toArray();
