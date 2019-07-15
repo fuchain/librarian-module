@@ -1,13 +1,9 @@
 import outputService from "@services/output.service";
 import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
-import {
-    fillBookInfo
-} from "@core/parser/bookdetail";
-import {
-    db
-} from "@models";
-import util from "util"
+import { fillBookInfo } from "@core/parser/bookdetail";
+import { db } from "@models";
+import util from "util";
 
 async function getProfile(publicKey) {
     const listAssets = await asset.searchPublicKey(publicKey);
@@ -23,11 +19,13 @@ async function getProfile(publicKey) {
         });
 
         if (!userInDB) {
-            userCollection.insertMany([{
-                email,
-                fullname: null,
-                phone: null
-            }]);
+            userCollection.insertMany([
+                {
+                    email,
+                    fullname: null,
+                    phone: null
+                }
+            ]);
         }
 
         const phone = userInDB && userInDB.phone;
@@ -55,14 +53,17 @@ async function updateProfile(email, fullname, phone) {
     }
 
     const userCollection = db.collection("users");
-    await userCollection.updateOne({
-        email
-    }, {
-        $set: {
-            fullname: fullname,
-            phone: phone
+    await userCollection.updateOne(
+        {
+            email
+        },
+        {
+            $set: {
+                fullname: fullname,
+                phone: phone
+            }
         }
-    });
+    );
 
     return {
         fullname,
@@ -145,9 +146,9 @@ async function getAllUsers(type) {
     return data;
 }
 
-async function getUserTotal(type){
+async function getUserTotal(type) {
     const userList = await asset.searchAsset(type);
-    if(!userList.length){
+    if (!userList.length) {
         return 0;
     }
     return userList.length;
