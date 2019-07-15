@@ -1,8 +1,13 @@
 import outputService from "@services/output.service";
 import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
-import { fillBookInfo } from "@core/parser/bookdetail";
-import { db } from "@models";
+import {
+    fillBookInfo
+} from "@core/parser/bookdetail";
+import {
+    db
+} from "@models";
+import util from "util"
 
 async function getProfile(publicKey) {
     const listAssets = await asset.searchPublicKey(publicKey);
@@ -18,19 +23,22 @@ async function getProfile(publicKey) {
         });
 
         if (!userInDB) {
-            userCollection.insertMany([
-                {
-                    email,
-                    fullname: null,
-                    phone: null
-                }
-            ]);
+            userCollection.insertMany([{
+                email,
+                fullname: null,
+                phone: null
+            }]);
         }
 
         const phone = userInDB && userInDB.phone;
         const fullname = userInDB && userInDB.fullname;
 
-        return { email, type, fullname, phone };
+        return {
+            email,
+            type,
+            fullname,
+            phone
+        };
     }
 
     return null;
@@ -47,15 +55,14 @@ async function updateProfile(email, fullname, phone) {
     }
 
     const userCollection = db.collection("users");
-    await userCollection.updateOne(
-        { email },
-        {
-            $set: {
-                fullname: fullname,
-                phone: phone
-            }
+    await userCollection.updateOne({
+        email
+    }, {
+        $set: {
+            fullname: fullname,
+            phone: phone
         }
-    );
+    });
 
     return {
         fullname,
@@ -120,10 +127,38 @@ async function getTransferHistory(publicKey) {
     });
 }
 
+async function getAllUsers(type) {
+    const users = await asset.getAllUsers(type);
+
+    const listPromises = users.map(async user => {
+        const assetTxs = await asset.getAsset(user.id);
+        const createTx = assetTxs[0];
+        const publicKey = createTx.metadata.public_key;
+
+        return {
+            email: user.data.email,
+            public_key: publicKey
+        };
+    });
+
+    const data = await Promise.all(listPromises);
+    return data;
+}
+
+async function getUserTotal(type){
+    const userList = await asset.searchAsset(type);
+    if(!userList.length){
+        return 0;
+    }
+    return userList.length;
+}
+
 export default {
     getProfile,
     updateProfile,
     getCurrentBook,
     getInQueueBook,
-    getTransferHistory
+    getTransferHistory,
+    getAllUsers,
+    getUserTotal
 };

@@ -6,6 +6,7 @@ import morgan from "morgan";
 
 import routes from "@routes";
 import { initMongoDB } from "@models";
+import { initBigchainMongoDB } from "@models/bigchain";
 import { checkEnvLoaded } from "@core/env";
 
 import { pingBigchainDB } from "@core/bigchaindb";
@@ -32,6 +33,9 @@ async function main() {
 
         // Init MongoDB
         await initMongoDB();
+
+        // Init Bigchain MongoDB
+        await initBigchainMongoDB();
 
         // Compression gzip
         app.use(compression());
