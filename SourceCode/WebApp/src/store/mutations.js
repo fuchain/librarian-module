@@ -1,4 +1,3 @@
-import * as localStorage from "@localstorage";
 import moment from "moment";
 
 const mutations = {

@@ -1,8 +1,6 @@
 import navbarSearchAndPinList from "@/views/layouts/components/navbarSearchAndPinList";
 import themeConfig, { colors } from "@/../themeConfig.js";
 
-import * as localStorage from "@localstorage";
-
 const state = {
   // Theme's state
   isSidebarActive: true,
