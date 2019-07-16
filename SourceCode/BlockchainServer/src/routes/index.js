@@ -10,6 +10,7 @@ import librarianRoutes from "@routes/librarian.route";
 import transferRoutes from "@routes/transfer.route";
 import matchingRoutes from "@routes/matching.route";
 import bookRoutes from "@routes/book.route";
+import fetchRoutes from "@routes/fetch.route"
 
 const router = express.Router();
 
@@ -33,5 +34,6 @@ router.use("/librarian", librarianRoutes);
 router.use("/transfer", transferRoutes);
 router.use("/matching", matchingRoutes);
 router.use("/book", bookRoutes);
+router.use("/fetch", fetchRoutes);
 
 export default router;
