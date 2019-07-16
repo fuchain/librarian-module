@@ -6,8 +6,8 @@
           <div class="vx-row">
             <div class="vx-col hidden sm:hidden md:hidden lg:block lg:w-1/2 mx-auto self-center">
               <img
-                src="https://duythanhcse.files.wordpress.com/2018/03/blockchain-logo-blue61.png"
-                style="width: 300px;"
+                src="https://i.imgur.com/9i3SXf0.png"
+                style="width: 100px;"
                 alt="login"
                 class="mx-auto"
               />
@@ -85,8 +85,10 @@ export default {
 
       const keypair = await generateKeyPair(this.bip39);
 
-      this.$localStorage.setItem("publicKey", keypair.publicKey);
-      this.$localStorage.setItem("privateKey", keypair.privateKey);
+      console.log(keypair);
+
+      // this.$localStorage.setItem("publicKey", keypair.publicKey);
+      // this.$localStorage.setItem("privateKey", keypair.privateKey);
 
       this.$router.push("/");
     }

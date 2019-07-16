@@ -45,7 +45,9 @@
                   <div class="flex flex-wrap justify-between my-5">
                     <vs-checkbox v-model="remember" class="mb-3">Lưu mật khẩu</vs-checkbox>
                   </div>
+
                   <vs-button class="float-right mb-6" icon="fingerprint" disabled>Đăng nhập</vs-button>
+                  <vs-button color="danger" icon="close">Gỡ chìa khóa</vs-button>
                 </form>
 
                 <vs-divider>HOẶC</vs-divider>
