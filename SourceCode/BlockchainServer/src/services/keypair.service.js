@@ -70,7 +70,9 @@ async function isEmailExisted(email) {
 }
 
 async function verifyKeyPairEmail(token, publicKey) {
-    const { email, name, picture } = await checkTokenGoogle(token);
+    const data = await checkTokenGoogle(token);
+    const { name, picture } = data;
+    const email = data.email.toLowerCase();
     const found = await isEmailExisted(email);
 
     if (!found) {

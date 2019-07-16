@@ -112,6 +112,14 @@ const mutations = {
 
   RESET_NOTIFICATION(state) {
     state.notifications = [];
+  },
+  OPEN_TRANSACTION_POPUP(state, tx) {
+    state.transactionPopupOpen = true;
+    state.transactionPopupTx = tx;
+  },
+  CLOSE_TRANSACTION_POPUP(state) {
+    state.transactionPopupOpen = false;
+    state.transactionPopupTx = null;
   }
 };
 

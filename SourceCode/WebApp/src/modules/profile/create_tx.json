@@ -1,0 +1,67 @@
+{
+  "id": null,
+  "operation": "CREATE",
+  "outputs": [
+    {
+      "condition": {
+        "details": {
+          "type": "ed25519-sha-256",
+          "public_key": "Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9"
+        },
+        "uri": "ni:///sha-256;zUBFOD_N8gms3l3W3FyCuazr1oe9SeK7SOlxcKvRlLY?fpt=ed25519-sha-256&cost=131072"
+      },
+      "amount": "1",
+      "public_keys": ["Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9"]
+    }
+  ],
+  "inputs": [
+    {
+      "fulfillment": null,
+      "fulfills": null,
+      "owners_before": ["Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9"]
+    }
+  ],
+  "metadata": null,
+  "asset": {
+    "data": {
+      "confirm_for_tx": {
+        "id": "c8998d7245c794a43f5e11125f58109ed8b0202d55a75cbb9a2d818bb97b6c98",
+        "operation": "TRANSFER",
+        "outputs": [
+          {
+            "condition": {
+              "details": {
+                "type": "ed25519-sha-256",
+                "public_key": "Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9"
+              },
+              "uri": "ni:///sha-256;zUBFOD_N8gms3l3W3FyCuazr1oe9SeK7SOlxcKvRlLY?fpt=ed25519-sha-256&cost=131072"
+            },
+            "amount": "1",
+            "public_keys": ["Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9"]
+          }
+        ],
+        "inputs": [
+          {
+            "fulfillment": "pGSAIASqwAk0pIeD0yL8FYqbvVmNDTg9DV2G0ELfFpj21v3PgUAe2L6s70QWhtPmRw3KcI7AreXq_WDh3fRqc2BOKom_yr07XOxHkkCnqx8GXMblPtjYH87YpkyMQBs7IMdE30gK",
+            "fulfills": {
+              "output_index": 0,
+              "transaction_id": "6034946d04b776cffed5d737ff51b5def61d515f18a072ac35f44d51f7f1c7b6"
+            },
+            "owners_before": ["KDeJKo7BhPRCsVwmBjnmuceeFwg1jE6zuLoRnkXy3bL"]
+          }
+        ],
+        "metadata": {
+          "transfer_date": 1563280235
+        },
+        "asset": {
+          "id": "4a26b3e29df0a9a1258d4bd9d9bf2f611489578f95ecb916a068fe2ebaa89142"
+        },
+        "version": "2.0"
+      },
+      "confirm_for_id": "c8998d7245c794a43f5e11125f58109ed8b0202d55a75cbb9a2d818bb97b6c98",
+      "confirm_date": 1563280250,
+      "type": "recept"
+    }
+  },
+  "version": "2.0"
+}

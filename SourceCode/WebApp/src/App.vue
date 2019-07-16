@@ -3,6 +3,8 @@
     <router-view v-if="!error"></router-view>
     <error-500 v-if="error"></error-500>
     <vx-tour :steps="steps" />
+
+    <global-popup></global-popup>
   </div>
 </template>
 
@@ -13,6 +15,8 @@ import themeConfig from "@/../themeConfig.js";
 import Error500 from "./views/Error500";
 
 import initSocket from "@core/socket";
+
+import GlobalPopup from "@/views/components/GlobalPopup.vue";
 
 const VxTour = () => import("@/views/components/VxTour.vue");
 
@@ -82,7 +86,8 @@ export default {
   },
   components: {
     Error500,
-    VxTour
+    VxTour,
+    GlobalPopup
   },
   methods: {
     toggleClassInBody(className) {

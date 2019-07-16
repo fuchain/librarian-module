@@ -28,7 +28,11 @@ const state = {
   numOfReturningBooks: 0,
 
   // Notification
-  notifications: []
+  notifications: [],
+
+  // Transaction Popup
+  transactionPopupOpen: false,
+  transactionPopupTx: null
 };
 
 export default state;
