@@ -6,8 +6,8 @@
           <div class="vx-row">
             <div class="vx-col hidden sm:hidden md:hidden lg:block lg:w-1/2 mx-auto self-center">
               <img
-                src="@/assets/images/pages/login.png"
-                style="width: 300px;"
+                src="@/assets/images/logo/logopng.png"
+                style="width: 150px;"
                 alt="login"
                 class="mx-auto"
               />
@@ -47,7 +47,6 @@
                   </div>
 
                   <vs-button class="float-right mb-6" icon="fingerprint" disabled>Đăng nhập</vs-button>
-                  <vs-button color="danger" icon="close">Gỡ chìa khóa</vs-button>
                 </form>
 
                 <vs-divider>HOẶC</vs-divider>

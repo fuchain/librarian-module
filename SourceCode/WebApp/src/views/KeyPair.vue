@@ -6,8 +6,8 @@
           <div class="vx-row">
             <div class="vx-col hidden sm:hidden md:hidden lg:block lg:w-1/2 mx-auto self-center">
               <img
-                src="https://i.imgur.com/9i3SXf0.png"
-                style="width: 100px;"
+                src="@/assets/images/logo/logopng.png"
+                style="width: 150px;"
                 alt="login"
                 class="mx-auto"
               />
