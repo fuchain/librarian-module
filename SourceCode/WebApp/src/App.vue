@@ -137,7 +137,6 @@ export default {
         !this.$auth.isAdmin() && (await this.$store.dispatch("getNumOfBooks"));
       } catch (e) {
         // Catch error
-        console.log(e);
         this.$router.push("/error");
       }
 
@@ -148,8 +147,6 @@ export default {
     // Print log error
     console.log("Error: ", err.toString());
     console.log("Info: ", info.toString());
-
-    console.log("123");
 
     this.error = true;
 
