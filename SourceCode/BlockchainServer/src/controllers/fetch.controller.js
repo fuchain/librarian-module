@@ -13,6 +13,20 @@ async function getBookDetailFromAssetId(req, res){
     res.send(bookDetail);
 }
 
+async function getEmail(req, res){
+    const publicKey = req.body.public_key;
+    const email = await fetchService.getEmail(publicKey);
+    if(!email){
+        res.status(400).send({
+            message: "Cannot find any email with this public key"
+        });
+    }
+    res.send({
+        email
+    });
+}
+
 export default errorHandler({
-    getBookDetailFromAssetId
+    getBookDetailFromAssetId,
+    getEmail
 });

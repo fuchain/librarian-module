@@ -20,12 +20,21 @@ async function getBookDetail(assetId) {
         id: parseInt(bookDetailId)
     });
 
-    if(!bookDetail){
+    if (!bookDetail) {
         return null;
     }
     return bookDetail;
 }
 
+async function getEmail(publicKey) {
+    const email = await asset.getEmailFromPublicKey(publicKey);
+    if(!email){
+        return null;
+    }
+
+    return email;
+}
 export default {
-    getBookDetail
+    getBookDetail,
+    getEmail
 };
