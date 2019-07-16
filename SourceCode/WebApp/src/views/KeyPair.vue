@@ -85,10 +85,8 @@ export default {
 
       const keypair = await generateKeyPair(this.bip39);
 
-      console.log(keypair);
-
-      // this.$localStorage.setItem("publicKey", keypair.publicKey);
-      // this.$localStorage.setItem("privateKey", keypair.privateKey);
+      this.$localStorage.setItem("publicKey", keypair.publicKey);
+      this.$localStorage.setItem("privateKey", keypair.privateKey);
 
       this.$router.push("/");
     }
