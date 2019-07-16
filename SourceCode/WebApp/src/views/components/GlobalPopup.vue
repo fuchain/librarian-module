@@ -62,13 +62,6 @@
     <div class="vx-row" v-if="!signedTx">
       <div class="vx-col sm:w-2/3 w-full ml-auto">
         <vs-button
-          color="warning"
-          type="border"
-          class="mr-3 mb-2 w-full"
-          icon="close"
-          @click="cancelTransaction"
-        >Huỷ bỏ</vs-button>
-        <vs-button
           class="mb-2 w-full"
           icon="fingerprint"
           @click="openConfirm"
@@ -77,7 +70,7 @@
     </div>
 
     <vs-popup title="Xác nhận" :active.sync="confirmPopup" class="confirm-tx-popup">
-      Bạn có chắc chắn muốn kí vào giao dịch này?
+      Bạn có chắc chắn muốn kí vào giao dịch này? Chữ kí là không thể chối cãi.
       <vs-divider border-style="dashed" />
       <div class="float-right">
         <vs-button icon="check" @click="acceptAndSign">Kí xác nhận</vs-button>
@@ -167,9 +160,6 @@ export default {
         fixed: true,
         icon: "check"
       });
-    },
-    cancelTransaction() {
-      this.isActive = false;
     },
     loadData() {
       if (!this.tx) return;

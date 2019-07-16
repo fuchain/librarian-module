@@ -8,7 +8,7 @@
         alt="graphic-404"
         class="mx-auto mb-4"
         style="max-width: 250px"
-      >
+      />
       <h1 class="mb-12 pl-4 pr-4 text-5xl d-theme-heading-color">Xảy ra lỗi trên ứng dụng!</h1>
       <p
         class="mb-16 d-theme-text-inverse ml-4 mr-8"
@@ -28,6 +28,9 @@
 
 <script>
 export default {
+  props: {
+    error: Object
+  },
   methods: {
     doReload() {
       window.location.href = "/";
@@ -48,6 +51,11 @@ export default {
         }.bind(this),
         500
       );
+    }
+  },
+  mounted() {
+    if (!this.error) {
+      this.$router.push("/");
     }
   }
 };
