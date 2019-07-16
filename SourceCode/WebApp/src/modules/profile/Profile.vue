@@ -52,11 +52,36 @@
         <vs-button class="mr-3 mb-2" @click="submit" icon="check">Cập nhật thông tin</vs-button>
       </div>
     </div>
+
+    <vs-divider  border-style="dashed" color="dark">Kiểm thử tính năng</vs-divider>
+
+    <div class="vx-row">
+      <div class="vx-col sm:w-2/3 w-full ml-auto">
+        <vs-button
+          color="success"
+          class="mr-3 mb-2"
+          @click="test()"
+          icon="build"
+        >Kiểm thử giao dịch trả</vs-button>
+      </div>
+    </div>
+    <div class="vx-row">
+      <div class="vx-col sm:w-2/3 w-full ml-auto">
+        <vs-button
+          color="warning"
+          class="mr-3 mb-2"
+          @click="test(true)"
+          icon="build"
+        >Kiểm thử giao dịch nhận</vs-button>
+      </div>
+    </div>
   </vx-card>
 </template>
 
 <script>
 import QRCode from "qrcode";
+import transferTx from "./transfer_tx.json";
+import createTx from "./create_tx.json";
 
 export default {
   computed: {
@@ -129,6 +154,13 @@ export default {
         color: "primary",
         position: "top-center"
       });
+    },
+    test(bool = false) {
+      if (!bool) {
+        this.$store.dispatch("openTxPopup", transferTx);
+      } else {
+        this.$store.dispatch("openTxPopup", createTx);
+      }
     }
   },
   mounted() {
