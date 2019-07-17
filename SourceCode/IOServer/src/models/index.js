@@ -5,7 +5,7 @@ import reviewSchema from "@models/review.schema";
 import notificationSchema from "@models/notification.schema";
 
 const conn = mongoose.createConnection(
-    `mongodb://${env.dbHost}:27017/${env.dbName}`,
+    `mongodb://${env.dbHost}/${env.dbName}`,
     {
         auth: { authSource: "admin" },
         user: env.dbUser,
