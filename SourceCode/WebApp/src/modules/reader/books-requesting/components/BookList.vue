@@ -185,13 +185,13 @@ export default {
         this.$vs.loading();
 
         this.$http
-          .put(`${this.$http.baseUrl}/requests/cancel`, {
-            request_id: item.requestId
+          .post(`${this.$http.baseUrl}/matching/cancel_request`, {
+            book_detail_id: item.bookDetailId
           })
           .then(() => {
             this.$vs.notify({
               title: "Thành công",
-              text: "Huỷ bỏ yêu cầu nhận sách thành công",
+              text: "Đã gửi yêu cầu hủy bỏ việc mượn sách",
               color: "primary",
               position: "top-center"
             });
