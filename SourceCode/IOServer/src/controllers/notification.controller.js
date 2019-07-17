@@ -5,7 +5,7 @@ import { Notification } from "@models";
 import { sendEmail } from "@core/sendgrid";
 
 const pushNotification = async (req, res) => {
-    const { email, message, type } = req.body;
+    const { email, message, type, noemail } = req.body;
 
     try {
         const socketId = await getRedisItem(email);
@@ -18,11 +18,13 @@ const pushNotification = async (req, res) => {
         });
         await newNotification.save();
 
-        const emailData = await sendEmail({
-            to: email,
-            text: message,
-            html: message
-        });
+        const emailData = noemail
+            ? "No email sent!"
+            : await sendEmail({
+                  to: email,
+                  text: message,
+                  html: message
+              });
 
         if (!socketId) {
             res.status(200);
@@ -42,7 +44,7 @@ const pushNotification = async (req, res) => {
         });
 
         res.status(201);
-        res.send({ message: `Sent to ${socketId}` });
+        res.send({ message: `Sent to ${socketId}`, email: emailData });
         return;
     } catch (err) {
         res.status(400);
