@@ -5,7 +5,7 @@ import notificationRoutes from "@routes/notification.route";
 
 const router = express.Router();
 
-router.get("/status", (req, res) => res.send("Server is up!"));
+router.get("/status", (_, res) => res.send("Server is up!"));
 
 router.use("/logs", logRoutes);
 router.use("/reviews", reviewRoutes);
