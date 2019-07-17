@@ -81,23 +81,40 @@ async function getCurrentBook(publicKey) {
     });
 
     const result = await Promise.all(promises);
+
     const bookDetailFill = await fillBookInfo(result);
 
-    return bookDetailFill.filter(book => book.book_detail);
+    const currentKeepingBooks = bookDetailFill.filter(book => book.book_detail);
+    const returningBooks = await getInQueueBook(publicKey);
+
+    const currentBooks = currentKeepingBooks.filter(e => {
+        const find = returningBooks.find(f => f.bookId === e.asset_id);
+        return find ? false : true;
+    });
+
+    return currentBooks;
 }
 
 async function getInQueueBook(publicKey, isGetReturning = true) {
     const email = await asset.getEmailFromPublicKey(publicKey);
 
     const matchingCollection = db.collection("matchings");
-    const inQueueBooks = await matchingCollection
-        .find({
-            email,
-            bookId: {
-                $ne: isGetReturning ? null : false
-            }
-        })
-        .toArray();
+
+    const inQueueBooks = isGetReturning
+        ? await matchingCollection
+              .find({
+                  email,
+                  bookId: {
+                      $ne: null
+                  }
+              })
+              .toArray()
+        : await matchingCollection
+              .find({
+                  email,
+                  bookId: null
+              })
+              .toArray();
 
     const bookDetailFill = await fillBookInfo(inQueueBooks, "bookDetailId");
 

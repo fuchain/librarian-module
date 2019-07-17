@@ -139,7 +139,7 @@ export default {
       try {
         await this.$store.dispatch("getProfile");
         await this.$store.dispatch("getNotification");
-        !this.$auth.isAdmin() && (await this.$store.dispatch("getNumOfBooks"));
+        !this.$auth.isAdmin() && this.$store.dispatch("getNumOfBooks");
       } catch (e) {
         // Catch error
         this.$router.push("/error");

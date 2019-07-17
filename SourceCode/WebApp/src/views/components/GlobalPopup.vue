@@ -146,20 +146,82 @@ export default {
       this.confirmPopup = true;
     },
     acceptAndSign() {
-      this.signedTx = signTx(this.tx);
+      const signedTx = signTx(this.tx);
 
-      // this.isActive = false;
-      this.confirmPopup = false;
+      if (this.tx.operation === "TRANSFER") {
+        this.$vs.loading();
+        this.$http
+          .post(`${this.$http.baseUrl}/transfer/sign`, {
+            tx: signedTx
+          })
+          .then(() => {
+            this.$vs.notify({
+              title: "Thành công",
+              text:
+                "Kí xác nhận thành công, bạn sẽ nhận được phản hồi khi có kết quả",
+              color: "primary",
+              position: "top-center",
+              fixed: true,
+              icon: "check"
+            });
 
-      this.$vs.notify({
-        title: "Thành công",
-        text:
-          "Kí xác nhận thành công, bạn sẽ nhận được phản hồi khi có kết quả",
-        color: "primary",
-        position: "top-center",
-        fixed: true,
-        icon: "check"
-      });
+            this.signedTx = signedTx;
+            this.confirmPopup = false;
+
+            // Close
+            this.$store.dispatch("closeTxPopup");
+            this.$router.push("/");
+          })
+          .catch(() => {
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Có lỗi xảy ra",
+              color: "warning",
+              position: "top-center",
+              fixed: true,
+              icon: "error"
+            });
+          })
+          .finally(() => {
+            this.$vs.loading.close();
+          });
+      } else {
+        this.$vs.loading();
+        this.$http
+          .post(`${this.$http.baseUrl}/transfer/done`, {
+            tx: signedTx
+          })
+          .then(() => {
+            this.$vs.notify({
+              title: "Thành công",
+              text: "Kí xác nhận thành công",
+              color: "primary",
+              position: "top-center",
+              fixed: true,
+              icon: "check"
+            });
+
+            this.signedTx = signedTx;
+            this.confirmPopup = false;
+
+            // Close
+            this.$store.dispatch("closeTxPopup");
+            this.$router.push("/books/keeping");
+          })
+          .catch(() => {
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Có lỗi xảy ra",
+              color: "warning",
+              position: "top-center",
+              fixed: true,
+              icon: "error"
+            });
+          })
+          .finally(() => {
+            this.$vs.loading.close();
+          });
+      }
     },
     loadData() {
       if (!this.tx) return;

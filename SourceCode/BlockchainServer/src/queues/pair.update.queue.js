@@ -8,6 +8,9 @@ import { db } from "@models";
 // Watch and Run job queue
 function run() {
     pairUpdateQueue.process(jobCallback);
+    pairUpdateQueue.on("completed", function(job, result) {
+        console.log("Matched and updated!");
+    });
 }
 
 // Describe what to do in the job
@@ -17,23 +20,38 @@ async function doJob(returner, requester) {
 
         const matchingCollection = db.collection("matchings");
 
-        await matchingCollection.updateOne(returner, {
-            $set: {
-                matched: true,
-                matchWith: requester.email
+        await matchingCollection.updateOne(
+            {
+                email: returner.email,
+                bookDetailId: returner.bookDetailId,
+                bookId: returner.bookId,
+                matched: false
+            },
+            {
+                $set: {
+                    matched: true,
+                    matchWith: requester.email,
+                    matchAt: Math.floor(Date.now() / 1000)
+                }
             }
-        });
+        );
 
-        await matchingCollection.updateOne(requester, {
-            $set: {
-                matched: true,
-                matchWith: returner.email
+        await matchingCollection.updateOne(
+            {
+                email: requester.email,
+                bookDetailId: requester.bookDetailId,
+                matched: false
+            },
+            {
+                $set: {
+                    matched: true,
+                    matchWith: returner.email,
+                    matchAt: Math.floor(Date.now() / 1000)
+                }
             }
-        });
+        );
 
         return true;
-
-        // Send event push for them here
     } catch (err) {
         console.log("Error when pair update: ", err);
         throw err;

@@ -31,7 +31,7 @@ export default {
     async getList() {
       this.$vs.loading();
       await this.$store.dispatch(`${STORE_KEY}/getBooks`);
-      await this.$store.dispatch("getNumOfBooks");
+      this.$store.dispatch("getNumOfBooks");
       this.$vs.loading.close();
     }
   }
