@@ -5,8 +5,8 @@ export function jwtAuthentication(req, res, next) {
 
     try {
         const payload = verifyJWT(token);
-        const { sub } = payload;
-        req.email = sub;
+        const { email } = payload;
+        req.email = email;
         next();
     } catch (err) {
         res.status(401);
