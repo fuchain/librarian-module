@@ -14,12 +14,7 @@ import { pingBigchainDB } from "@core/bigchaindb";
 const app = express();
 const server = require("http").Server(app);
 
-import importDBQueue from "@queues/importdb.queue";
-import matchingQueue from "@queues/matching.queue";
-import pairQueue from "@queues/pair.queue";
-import pairUpdateQueue from "@queues/pair.update.queue";
-import insertQueue from "@queues/insert.queue";
-import insertTxQueue from "@queues/insert.tx.queue";
+import initQueues from "@queues/";
 
 import { globalErrorHandler } from "@controllers/error.controller";
 
@@ -67,14 +62,7 @@ async function main() {
             });
         });
 
-        // Queues
-        await matchingQueue.run();
-        await importDBQueue.run();
-        await pairQueue.run();
-        await pairQueue.addJob();
-        await pairUpdateQueue.run();
-        await insertQueue.run();
-        await insertTxQueue.run();
+        await initQueues();
 
         server.listen(5000, function() {
             console.log("App is listening on port 5000!");

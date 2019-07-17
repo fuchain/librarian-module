@@ -26,17 +26,8 @@
     </div>
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
-        <span>
-          Địa chỉ
-          <strong>ví sách</strong>
-        </span>
+        <span>Chuyển sách cho tôi</span>
       </div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" :value="$localStorage.getItem('publicKey')" disabled />
-      </div>
-    </div>
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full"></div>
       <div class="vx-col sm:w-2/3 w-full">
         <canvas id="canvas"></canvas>
       </div>
@@ -53,7 +44,7 @@
       </div>
     </div>
 
-    <vs-divider  border-style="dashed" color="dark">Kiểm thử tính năng</vs-divider>
+    <!-- <vs-divider border-style="dashed" color="dark">Kiểm thử tính năng</vs-divider>
 
     <div class="vx-row">
       <div class="vx-col sm:w-2/3 w-full ml-auto">
@@ -74,7 +65,7 @@
           icon="build"
         >Kiểm thử giao dịch nhận</vs-button>
       </div>
-    </div>
+    </div>-->
   </vx-card>
 </template>
 
@@ -167,9 +158,7 @@ export default {
     const canvas = document.getElementById("canvas");
     QRCode.toCanvas(
       canvas,
-      `https://library.fptu.tech/wallet?public_key=${this.$localStorage.getItem(
-        "publicKey"
-      )}`,
+      `https://library.fptu.tech/transfer/?email=${this.email}`,
       { width: 200 },
       function(error) {
         if (error) console.error(error);
