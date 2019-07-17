@@ -56,7 +56,7 @@ export async function getOnlineUsers() {
         if (users) {
             const usersArr = JSON.parse(users);
 
-            return usersArr;
+            return usersArr.filter(e => e);
         } else {
             return [];
         }

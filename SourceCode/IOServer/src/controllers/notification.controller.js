@@ -109,7 +109,7 @@ const touchNotification = async (req, res) => {
     }
 };
 
-const getOnline = async (req, res) => {
+const getOnline = async (_, res) => {
     try {
         res.send(await getOnlineUsers());
     } catch (err) {
