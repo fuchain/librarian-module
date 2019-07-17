@@ -10,13 +10,14 @@ const pushNotification = async (req, res) => {
     try {
         const socketId = await getRedisItem(email);
 
+        const newNotification = new Notification({
+            email,
+            message,
+            type
+        });
+
         if (!nosave) {
             // Save to database
-            const newNotification = new Notification({
-                email,
-                message,
-                type
-            });
             await newNotification.save();
         }
 
@@ -33,7 +34,8 @@ const pushNotification = async (req, res) => {
             res.send({
                 message:
                     "Message sent, but that user is not connecting to our service",
-                email: emailData
+                email: emailData,
+                save: nosave ? "Not saved to DB" : "Saved"
             });
 
             return;
@@ -46,7 +48,11 @@ const pushNotification = async (req, res) => {
         });
 
         res.status(201);
-        res.send({ message: `Sent to ${socketId}`, email: emailData });
+        res.send({
+            message: `Sent to ${socketId}`,
+            email: emailData,
+            save: nosave ? "Not saved to DB" : "Saved"
+        });
         return;
     } catch (err) {
         res.status(400);
