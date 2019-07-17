@@ -116,7 +116,9 @@ const actions = {
     commit("OPEN_TRANSACTION_POPUP", tx);
   },
   async closeTxPopup({ commit }) {
-    commit("CLOSE_TRANSACTION_POPUP");
+    setTimeout(function() {
+      commit("CLOSE_TRANSACTION_POPUP");
+    }, 5000);
   }
 };
 

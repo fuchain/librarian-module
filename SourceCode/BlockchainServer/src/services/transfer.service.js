@@ -3,6 +3,7 @@ import keypairService from "@services/keypair.service";
 import asset from "@core/bigchaindb/asset";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
+import axios from "axios";
 
 function signTx(tx, privateKey) {
     return transaction.sign(tx, privateKey);
@@ -124,8 +125,13 @@ async function createBookForBookDetailId(bookDetailID) {
     return txPosted;
 }
 
-async function createTransferRequest(assetId, publicKey) {
-    // public_key here is public key of the receiver
+async function createTransferRequest(assetId, email) {
+    // email, public_key here is public key of the receiver
+    const publicKey = await asset.getPublicKeyFromEmail(email);
+
+    if (!publicKey) {
+        throw new Error("Cannot get publickey of the receiver");
+    }
 
     const lastTxs = await asset.getAssetTransactions(assetId);
     if (!lastTxs || !lastTxs.length) {
@@ -140,7 +146,7 @@ async function createTransferRequest(assetId, publicKey) {
     return transaction.transfer(previousTx, publicKey, metadata);
 }
 
-function createReceiverConfirmAsset(transferTxSigned, publicKey) {
+async function createReceiverConfirmAsset(transferTxSigned, publicKey) {
     // public_key here is public key of the receiver (confirmer)
 
     const confirmAsset = {
@@ -150,7 +156,22 @@ function createReceiverConfirmAsset(transferTxSigned, publicKey) {
         type: "recept"
     };
 
-    return transaction.create(confirmAsset, null, publicKey);
+    const receptTx = transaction.create(confirmAsset, null, publicKey);
+
+    // send event to receiver to sign
+    const email = await asset.getEmailFromPublicKey(publicKey);
+
+    try {
+        await axios.post("https://napi.fptu.tech/api/v1/events/push", {
+            email,
+            type: "transaction",
+            message: receptTx
+        });
+    } catch (err) {
+        throw new Error("Cannot send to receiver");
+    }
+
+    return receptTx;
 }
 
 async function postToDoneTransfer(confirmAssetSigned) {
@@ -158,9 +179,20 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // need to review: need a retry job here? what happen if 1 of 2 request send failed!!?
 
     const transferTxPosted = await postTx(
-        confirmAssetSigned.metadata.confirm_for
+        confirmAssetSigned.asset.data.confirm_for_tx
     ); // the confirm asset contains the transfer transaction
     const confirmAssetPosted = await postTx(confirmAssetSigned);
+
+    // Notify for returnerr that things have been done!
+    const email = await asset.getEmailFromPublicKey(
+        transferTxPosted.inputs[0].owners_before[0]
+    );
+
+    await axios.post("https://napi.fptu.tech/api/v1/events/push", {
+        email,
+        type: "success",
+        message: "Sách của bạn đã được chuyển thành công"
+    });
 
     return {
         transferTxPosted,

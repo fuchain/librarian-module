@@ -12,30 +12,31 @@ function init() {
     transports: ["websocket"]
   });
 
-  socket.on("logout", function() {
-    window.vue.$vs.notify({
-      fixed: true,
-      title: "Có người khác đăng nhập tài khoản",
-      text: "Bạn sẽ bị đăng xuất",
-      color: "danger",
-      position: "top-center",
-      iconPack: "feather",
-      icon: "icon-x"
+  !window.webpackHotUpdate &&
+    socket.on("logout", function() {
+      window.vue.$vs.notify({
+        fixed: true,
+        title: "Có người khác đăng nhập tài khoản",
+        text: "Bạn sẽ bị đăng xuất",
+        color: "danger",
+        position: "top-center",
+        iconPack: "feather",
+        icon: "icon-x"
+      });
+
+      window.vue.$vs.loading({
+        color: "white",
+        background: "darkorange",
+        text: "Đang đăng xuất"
+      });
+
+      setTimeout(function() {
+        window.vue.$auth.clearAuth();
+        window.vue.$router.push("/login");
+
+        window.vue.$vs.loading.close();
+      }, 500);
     });
-
-    window.vue.$vs.loading({
-      color: "white",
-      background: "darkorange",
-      text: "Đang đăng xuất"
-    });
-
-    setTimeout(function() {
-      window.vue.$auth.clearAuth();
-      window.vue.$router.push("/login");
-
-      window.vue.$vs.loading.close();
-    }, 500);
-  });
 
   socket.on("notification", function({ message, type, id }) {
     window.vue.$vs.notify({
@@ -65,6 +66,26 @@ function init() {
       time: new Date().getTime(),
       category: "primary"
     });
+  });
+
+  socket.on("event", function({ message, type }) {
+    if (type === "transaction") {
+      window.vue.$store.dispatch("openTxPopup", message);
+    }
+
+    if (type === "success") {
+      window.vue.$store.dispatch("getNumOfBooks");
+
+      window.vue.$vs.notify({
+        fixed: true,
+        title: "Thành công",
+        text: message,
+        color: "primary",
+        position: "top-center",
+        iconPack: "feather",
+        icon: "icon-check"
+      });
+    }
   });
 }
 

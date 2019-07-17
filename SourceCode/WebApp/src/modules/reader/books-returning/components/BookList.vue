@@ -289,6 +289,9 @@ export default {
   },
   beforeDestroy() {
     clearInterval(countInterval);
+  },
+  mounted() {
+    console.log(this.books);
   }
 };
 </script>
