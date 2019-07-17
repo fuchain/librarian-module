@@ -5,18 +5,20 @@ import { Notification } from "@models";
 import { sendEmail } from "@core/sendgrid";
 
 const pushNotification = async (req, res) => {
-    const { email, message, type, noemail } = req.body;
+    const { email, message, type, noemail, nosave } = req.body;
 
     try {
         const socketId = await getRedisItem(email);
 
-        // Save to database
-        const newNotification = new Notification({
-            email,
-            message,
-            type
-        });
-        await newNotification.save();
+        if (!nosave) {
+            // Save to database
+            const newNotification = new Notification({
+                email,
+                message,
+                type
+            });
+            await newNotification.save();
+        }
 
         const emailData = noemail
             ? "No email sent!"
