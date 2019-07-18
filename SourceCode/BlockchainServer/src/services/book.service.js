@@ -1,5 +1,8 @@
 import asset from "@core/bigchaindb/asset";
-import { db } from "@models";
+import {
+    db
+} from "@models";
+import env from "core/env";
 
 async function searchBook(id) {
     return await asset.searchAsset(id);
@@ -75,6 +78,22 @@ async function getBookInstanceTotal(type) {
     return bookList.length;
 }
 
+async function getBookTotalAtLib(bookDetailId) {
+    const bookList = await getBookInstanceList(bookDetailId);
+
+    const remainBookList = await bookList.filter(async book => {
+        const transactionList = await asset.getAsset(book.id);
+        if (transactionList.length) {
+            const publicKey = transactionList[0].outputs[0].public_keys[0];
+            if (publicKey === env.publicKey) {
+                return true;
+            }
+        }
+        return false;
+    });
+    return remainBookList.length;
+}
+
 export default {
     searchBook,
     getAllBookDetail,
@@ -82,5 +101,6 @@ export default {
     getBookDetail,
     getBookInstanceList,
     getHistoryOfBookInstance,
-    getBookInstanceTotal
+    getBookInstanceTotal,
+    getBookTotalAtLib
 };
