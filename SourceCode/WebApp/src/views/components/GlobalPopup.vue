@@ -169,7 +169,7 @@ export default {
             this.confirmPopup = false;
 
             // Close
-            this.$store.dispatch("closeTxPopup");
+            this.$store.dispatch("closeTxPopup", 5000);
             this.$router.push("/");
           })
           .catch(() => {
@@ -205,7 +205,7 @@ export default {
             this.confirmPopup = false;
 
             // Close
-            this.$store.dispatch("closeTxPopup");
+            this.$store.dispatch("closeTxPopup", 5000);
             this.$router.push("/books/keeping");
           })
           .catch(() => {

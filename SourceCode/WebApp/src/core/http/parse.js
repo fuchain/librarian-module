@@ -1,6 +1,5 @@
 export function parseBookItem(data, type = "defaut") {
   return data.map(e => {
-    console.log(e);
     const bookDetailField = e.book_detail || e.bookDetailId;
     const bookDetailId = e.book_detail ? e.book_detail.id : e.bookDetailId.id;
     return {

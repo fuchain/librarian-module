@@ -115,10 +115,10 @@ const actions = {
   async openTxPopup({ commit }, tx) {
     commit("OPEN_TRANSACTION_POPUP", tx);
   },
-  async closeTxPopup({ commit }) {
+  async closeTxPopup({ commit }, time = 0) {
     setTimeout(function() {
       commit("CLOSE_TRANSACTION_POPUP");
-    }, 5000);
+    }, time);
   }
 };
 
