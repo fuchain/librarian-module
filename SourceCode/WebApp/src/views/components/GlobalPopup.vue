@@ -206,7 +206,7 @@ export default {
 
             // Close
             this.$store.dispatch("closeTxPopup", 5000);
-            this.$router.push("/books/keeping");
+            this.$router.push("/");
           })
           .catch(() => {
             this.$vs.notify({

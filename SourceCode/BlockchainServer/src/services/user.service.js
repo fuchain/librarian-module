@@ -131,17 +131,40 @@ async function getTransferHistory(publicKey) {
 
     const result = await Promise.all(promises);
 
-    return result.map(tx => {
+    const txItems = result.map(async tx => {
         const assetId = tx.operation === "CREATE" ? tx.id : tx.asset.id;
 
-        return {
-            id: tx.id,
-            returner: tx.inputs[0].owners_before[0],
-            receiver: tx.outputs[0].public_keys[0],
-            operation: tx.operation,
-            asset_id: assetId
-        };
+        try {
+            const returnerEmail = await asset.getEmailFromPublicKey(
+                tx.inputs[0].owners_before[0]
+            );
+            const receiverEmail = await asset.getEmailFromPublicKey(
+                tx.outputs[0].public_keys[0]
+            );
+
+            const transferDate =
+                (tx.metadata && tx.metadata.transfer_date) || null;
+
+            return {
+                id: tx.id,
+                returner: returnerEmail,
+                receiver: receiverEmail,
+                operation: tx.operation,
+                asset_id: assetId,
+                transfer_date: transferDate
+            };
+        } catch (err) {
+            return {
+                id: tx.id,
+                returner: tx.inputs[0].owners_before[0],
+                receiver: tx.outputs[0].public_keys[0],
+                operation: tx.operation,
+                asset_id: assetId
+            };
+        }
     });
+
+    return await Promise.all(txItems);
 }
 
 async function getAllUsers(type) {
