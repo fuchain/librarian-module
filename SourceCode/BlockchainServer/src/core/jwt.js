@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 
-export function createJWT(email) {
+export function createJWT(email, librarian = false) {
     return jwt.sign(
         {
             email: email,
-            roles: "reader"
+            roles: librarian ? "librarian" : "reader"
         },
         "Capstone",
         { expiresIn: "24h" }

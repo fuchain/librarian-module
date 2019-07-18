@@ -17,7 +17,8 @@ export function parseBookItem(data, type = "defaut") {
       status: "in use",
       matched: e.matched,
       user: e.matchWith || 0,
-      type
+      phone: e.matchPhone || 0,
+      type: e.book_detail ? "keeping" : "matching"
     };
   });
 }

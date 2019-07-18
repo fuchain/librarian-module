@@ -1,8 +1,6 @@
 import asset from "@core/bigchaindb/asset";
-import {
-    db
-} from "@models";
-import env from "@core/env"
+import { db } from "@models";
+import env from "@core/env";
 
 async function getBookDetail(assetId) {
     const transactionList = await asset.getAsset(assetId);
@@ -28,13 +26,13 @@ async function getBookDetail(assetId) {
 }
 
 async function getEmail(publicKey) {
-    if(publicKey === env.publicKey){
-        const librarianEmail = "librarian@fe.edu.vn";
+    if (publicKey === env.publicKey) {
+        const librarianEmail = "librarian@fptu.tech";
         return librarianEmail;
     }
 
     const email = await asset.getEmailFromPublicKey(publicKey);
-    if(!email){
+    if (!email) {
         return null;
     }
 

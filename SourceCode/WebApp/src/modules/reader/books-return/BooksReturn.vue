@@ -24,7 +24,7 @@
           <div class="vx-col w-full mt-5">
             <p>Mã sách</p>
             <p
-              style="font-size: 2rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
+              style="font-size: 2rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; direction: rtl;"
             >{{ (book && book.id) || 'Invalid' }}</p>
           </div>
         </vx-card>
@@ -99,37 +99,9 @@ export default {
     };
   },
   methods: {
-    async validateConfirm() {
-      this.$http
-        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Người nhận đã xác nhận mã PIN",
-            color: "primary",
-            position: "top-center"
-          });
-
-          this.$store.dispatch("getNumOfBooks");
-
-          setTimeout(
-            function() {
-              this.$router.push("/books/keeping");
-            }.bind(this),
-            500
-          );
-        })
-        .catch(err => {
-          // Catch
-          console.log(err);
-        })
-        .finally(() => {});
-    },
     async checkDone() {
       if (this.transferType === "auto") {
         this.$router.push("/books/returning");
-      } else {
-        this.validateConfirm();
       }
     },
     async fakeLoad(customTime) {

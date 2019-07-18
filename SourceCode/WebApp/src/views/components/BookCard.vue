@@ -9,9 +9,12 @@
         <!-- RATING & PRICE -->
         <div
           class="flex justify-between items-center"
-          v-if="item.status === 'in use' || item.type === 'info'"
+          v-if="item.type === 'info' || item.type === 'keeping'"
         >
-          <div class="bg-primary flex text-white py-1 px-2 rounded" v-if="item.time">
+          <div
+            class="bg-primary flex text-white py-1 px-2 rounded"
+            v-if="item.type !== 'matching' && item.type !== 'info'"
+          >
             <span class="text-sm mr-2" v>Mượn {{ item.time | moment("from") }}</span>
             <feather-icon icon="ClockIcon" svgClasses="h-4 w-4" />
           </div>
@@ -23,17 +26,17 @@
           <div class="bg-primary flex text-white py-1 px-2 rounded">
             <span
               class="text-sm mr-2"
-            >{{ item.user && item.user.email && $auth.getNameFromEmail(item.user.email) || "Đang ghép" }}</span>
+            >{{ item.user && $auth.getNameFromEmail(item.user) || "Đang ghép" }}</span>
             <feather-icon icon="UserIcon" svgClasses="h-4 w-4" />
           </div>
           <h6 class="font-bold">{{ item.code }}</h6>
         </div>
 
         <vs-progress
-          :indeterminate="!item.user"
-          :percent="item.user ? 100 : 0"
+          :indeterminate="!item.matched"
+          :percent="item.matched ? 100 : 0"
           color="primary"
-          v-if="item.status !== 'in use' && item.type !== 'info'"
+          v-if="item.type === 'matching'"
         >primary</vs-progress>
 
         <!-- TITLE & DESCRIPTION -->

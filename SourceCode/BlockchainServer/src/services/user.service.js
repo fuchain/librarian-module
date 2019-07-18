@@ -3,9 +3,19 @@ import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@models";
-import util from "util";
+import env from "@core/env";
 
 async function getProfile(publicKey) {
+    // If librarian
+    if (publicKey === env.publicKey) {
+        return {
+            email: "librarian@fptu.tech",
+            type: "librarian",
+            fullname: "Thủ thư",
+            phone: "0123456789"
+        };
+    }
+
     const listAssets = await asset.searchPublicKey(publicKey);
     if (listAssets.length) {
         const found = await asset.getAsset(listAssets[0].id);
@@ -132,17 +142,40 @@ async function getTransferHistory(publicKey) {
 
     const result = await Promise.all(promises);
 
-    return result.map(tx => {
+    const txItems = result.map(async tx => {
         const assetId = tx.operation === "CREATE" ? tx.id : tx.asset.id;
 
-        return {
-            id: tx.id,
-            returner: tx.inputs[0].owners_before[0],
-            receiver: tx.outputs[0].public_keys[0],
-            operation: tx.operation,
-            asset_id: assetId
-        };
+        try {
+            const returnerEmail = await asset.getEmailFromPublicKey(
+                tx.inputs[0].owners_before[0]
+            );
+            const receiverEmail = await asset.getEmailFromPublicKey(
+                tx.outputs[0].public_keys[0]
+            );
+
+            const transferDate =
+                (tx.metadata && tx.metadata.transfer_date) || null;
+
+            return {
+                id: tx.id,
+                returner: returnerEmail,
+                receiver: receiverEmail,
+                operation: tx.operation,
+                asset_id: assetId,
+                transfer_date: transferDate
+            };
+        } catch (err) {
+            return {
+                id: tx.id,
+                returner: tx.inputs[0].owners_before[0],
+                receiver: tx.outputs[0].public_keys[0],
+                operation: tx.operation,
+                asset_id: assetId
+            };
+        }
     });
+
+    return await Promise.all(txItems);
 }
 
 async function getAllUsers(type) {
@@ -171,6 +204,19 @@ async function getUserTotal(type) {
     return userList.length;
 }
 
+async function getPhoneFromEmail(email) {
+    const userCollection = db.collection("users");
+    const userInDB = await userCollection.findOne({
+        email
+    });
+
+    if (userInDB) {
+        return userInDB.phone;
+    }
+
+    return null;
+}
+
 export default {
     getProfile,
     updateProfile,
@@ -178,5 +224,6 @@ export default {
     getInQueueBook,
     getTransferHistory,
     getAllUsers,
-    getUserTotal
+    getUserTotal,
+    getPhoneFromEmail
 };

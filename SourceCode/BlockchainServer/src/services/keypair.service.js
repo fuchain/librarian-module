@@ -73,6 +73,18 @@ async function verifyKeyPairEmail(token, publicKey) {
     const data = await checkTokenGoogle(token);
     const { name, picture } = data;
     const email = data.email.toLowerCase();
+
+    // Check if it is librarian
+    if (email === "librarian@fptu.tech" && publicKey === env.publicKey) {
+        return {
+            token: createJWT(email, true),
+            status: "verified",
+            email,
+            name,
+            picture
+        };
+    }
+
     const found = await isEmailExisted(email);
 
     if (!found) {

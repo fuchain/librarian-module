@@ -66,8 +66,9 @@ const router = new Router({
             import("@/modules/reader/books-requesting/BooksRequesting.vue")
         },
         {
-          path: "books/pair",
-          component: () => import("@/modules/reader/books-pair/BooksPair.vue")
+          path: "transfer-history",
+          component: () =>
+            import("@/modules/reader/transfer-history/TransferHistory.vue")
         },
         {
           path: "librarian/statistics",
