@@ -44,7 +44,7 @@ async function doJob() {
         });
 
         // Query in each book detail queue to get a match couple
-        queuesByBookDetails.map(aBookDetailQueue => {
+        queuesByBookDetails.forEach(aBookDetailQueue => {
             const returnArr = aBookDetailQueue.filter(match => !match.bookId);
             const requestArr = aBookDetailQueue.filter(match => match.bookId);
 
@@ -61,7 +61,7 @@ async function doJob() {
             }
 
             const loopByShorterLength = Array.from(Array(shorterLength));
-            loopByShorterLength.map((_, index) => {
+            loopByShorterLength.forEach((_, index) => {
                 // This is a match!
                 const matchedReturner = returnArr[index];
                 const matchedRequester = requestArr[index];
