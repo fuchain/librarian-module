@@ -11,7 +11,7 @@ export default async function initQueues() {
         await importDBQueue.run();
         await pairQueue.run();
         // Pair queue will run every 1 minute
-        await pairQueue.addJob({ cron: "* * * * *" });
+        await pairQueue.addJob();
         await pairUpdateQueue.run();
         await insertQueue.run();
         await insertTxQueue.run();

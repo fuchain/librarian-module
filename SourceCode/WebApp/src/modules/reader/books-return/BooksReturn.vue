@@ -99,37 +99,9 @@ export default {
     };
   },
   methods: {
-    async validateConfirm() {
-      this.$http
-        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Người nhận đã xác nhận mã PIN",
-            color: "primary",
-            position: "top-center"
-          });
-
-          this.$store.dispatch("getNumOfBooks");
-
-          setTimeout(
-            function() {
-              this.$router.push("/books/keeping");
-            }.bind(this),
-            500
-          );
-        })
-        .catch(err => {
-          // Catch
-          console.log(err);
-        })
-        .finally(() => {});
-    },
     async checkDone() {
       if (this.transferType === "auto") {
         this.$router.push("/books/returning");
-      } else {
-        this.validateConfirm();
       }
     },
     async fakeLoad(customTime) {

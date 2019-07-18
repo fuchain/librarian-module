@@ -33,7 +33,7 @@
               <div
                 class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
                 v-if="item.user"
-                @click="beginConfirm(item)"
+                @click="confirm()"
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
@@ -60,60 +60,6 @@
     <vx-card class="mt-6" title="Bạn đang không yêu cầu mượn sách nào." v-else>
       <vs-button @click="$router.push('/books/request')" icon="search">Tìm mượn sách</vs-button>
     </vx-card>
-
-    <vs-popup title="Xác nhận" :active.sync="confirmPopup">
-      <div class="mb-4">
-        <vs-input
-          size="large"
-          class="w-full"
-          placeholder="Xác nhận mã PIN gồm 6 chữ số"
-          v-model="pin"
-        />
-      </div>
-      <div>
-        <vs-button
-          class="w-full"
-          @click="validateConfirm"
-          :disabled="pin.trim().length !== 6"
-        >Đồng ý nhận sách</vs-button>
-      </div>
-      <vs-divider>Hoặc</vs-divider>
-      <div class="mt-2">
-        <vs-button
-          color="danger"
-          class="w-full"
-          @click="doReject"
-          :disabled="pin.trim().length > 0"
-        >Từ chối nhận sách</vs-button>
-      </div>
-    </vs-popup>
-
-    <vs-popup title="Từ chối nhận sách" :active.sync="rejectPopup">
-      <p>Vui lòng nhập lí do từ chối nhận sách và xác nhận từ chối nhận sách:</p>
-      <div class="mt-2">
-        <vs-textarea label="Lí do từ chối nhận sách" v-model="reason"></vs-textarea>
-      </div>
-      <div class="mt-2">
-        <vs-upload
-          :action="$http.baseUrl + '/requests/upload' "
-          fileName="file"
-          :headers="uploadHeader"
-          @on-success="successUpload"
-          @on-error="failUpload"
-          text="Up ảnh bằng chứng"
-          limit="1"
-          :automatic="true"
-        />
-      </div>
-      <div class="mt-2">
-        <vs-button
-          color="danger"
-          class="w-full"
-          @click="confirmReject"
-          :disabled="!reason.trim() || !imageUrl"
-        >Từ chối nhận sách</vs-button>
-      </div>
-    </vs-popup>
   </div>
 </template>
 
@@ -126,16 +72,8 @@ export default {
   },
   data() {
     return {
-      confirmPopup: false,
-      rejectPopup: false,
-      pin: "",
-      reason: "",
-      requestId: 0,
-      matchingId: 0,
       showMatched: true,
-      searchText: "",
-      // Reject
-      imageUrl: ""
+      searchText: ""
     };
   },
   props: {
@@ -145,7 +83,7 @@ export default {
   },
   computed: {
     isMatchedNull() {
-      const matched = this.books.filter(e => e.status !== 1);
+      const matched = this.books.filter(e => e.matched);
       if (!matched.length) {
         return true;
       }
@@ -153,8 +91,8 @@ export default {
       return false;
     },
     isMatchingNull() {
-      const matched = this.books.filter(e => e.status === 1);
-      if (!matched.length) {
+      const matching = this.books.filter(e => !e.matched);
+      if (!matching.length) {
         return true;
       }
 
@@ -164,19 +102,14 @@ export default {
       if (!this.needTab()) return this.books;
 
       const showMatchedBooks = this.showMatched
-        ? this.books.filter(e => e.status === 2)
-        : this.books.filter(e => e.status === 1);
+        ? this.books.filter(e => e.matched)
+        : this.books.filter(e => !e.matched);
 
       if (!this.searchText.trim()) return showMatchedBooks;
 
       return showMatchedBooks.filter(e =>
         e.name.toLowerCase().includes(this.searchText.trim().toLowerCase())
       );
-    },
-    uploadHeader() {
-      return {
-        Authorization: `Bearer ${this.$auth.getAccessToken()}`
-      };
     }
   },
   methods: {
@@ -210,123 +143,24 @@ export default {
             this.$vs.loading.close();
           });
       } else {
-        window.location.href = `tel:${item.user.phone}`;
+        window.location.href = `tel:${item.phone}`;
       }
     },
-    async beginConfirm(item) {
-      this.$vs.loading();
-
-      this.$http
-        .get(`${this.$http.baseUrl}/requests/${item.requestId}/matched`)
-        .then(response => {
-          const matchingId = response.data.matching_id;
-          this.matchingId = matchingId;
-          this.requestId = item.requestId;
-          this.confirmPopup = true;
-        })
-        .finally(() => {
-          this.$vs.loading.close();
-        });
-    },
-    async validateConfirm() {
-      this.$vs.loading();
-      this.$http
-        .put(`${this.$http.baseUrl}/requests/transfer`, {
-          type: 2,
-          matchingId: this.matchingId,
-          pin: this.pin
-        })
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Nhận sách thành công",
-            color: "primary",
-            position: "top-center"
-          });
-
-          this.confirmPopup = false;
-          this.$store.dispatch("getNumOfBooks");
-
-          setTimeout(
-            function() {
-              this.$router.push("/books/keeping");
-            }.bind(this),
-            500
-          );
-        })
-        .catch(err => {
-          // Catch
-          console.log(err);
-
-          this.$vs.notify({
-            title: "Lỗi",
-            text: "Mã PIN không hợp lệ",
-            color: "warning",
-            position: "top-center"
-          });
-        })
-        .finally(() => {
-          this.$vs.loading.close();
-        });
-    },
-    doReject() {
-      this.confirmPopup = false;
-      this.rejectPopup = true;
-    },
-    async confirmReject() {
-      this.$vs.loading();
-
-      this.$http
-        .post(`${this.$http.baseUrl}/requests/reject`, {
-          image_url: this.imageUrl,
-          matching_id: this.matchingId,
-          reason: this.reason
-        })
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Từ chối nhận sách thành công",
-            color: "primary",
-            position: "top-center"
-          });
-
-          this.rejectPopup = false;
-          this.reason = "";
-          this.imageUrl = "";
-
-          this.callReload();
-        })
-        .catch(err => {
-          // Catch error
-          console.log(err);
-
-          this.$vs.notify({
-            title: "Lỗi",
-            text: "Có lỗi xảy ra, chưa thể từ chối nhận sách",
-            color: "warning",
-            position: "top-center"
-          });
-        })
-        .finally(() => {
-          this.$vs.loading.close();
-        });
-    },
-    successUpload(e) {
-      const response = JSON.parse(e.target.response);
-      const url = response.url;
-
-      this.imageUrl = url;
-    },
-    failUpload(e) {
-      console.log(e);
+    async confirm() {
+      this.$vs.notify({
+        title: "Chờ người gửi xác nhận",
+        text: "Vui lòng chờ người gửi xác nhận và gửi biên nhận cho bạn",
+        color: "warning",
+        position: "top-center"
+      });
     },
     callReload() {
       this.$emit("doReload");
     },
     needTab() {
-      const needArr = [1, 2];
+      const needArr = [true, false];
       const statusArr = this.books.map(e => {
-        return e.status;
+        return e.matched;
       });
 
       const needTab = needArr.every(i => statusArr.includes(i));
