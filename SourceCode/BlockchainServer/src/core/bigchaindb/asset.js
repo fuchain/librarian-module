@@ -24,7 +24,7 @@ async function searchPublicKey(pubickey) {
 
 async function getEmailFromPublicKey(publicKey) {
     if (publicKey === env.publicKey) {
-        return "librarian@fe.edu.vn";
+        return "librarian@fptu.tech";
     }
 
     const listTx = await conn.searchMetadata(publicKey);

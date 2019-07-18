@@ -50,7 +50,7 @@
                       @click="removeKey"
                     >Xóa chìa khóa trên thiết bị</span>
                   </div>
-                  <vs-button class="float-right mb-6" icon="fingerprint" disabled>Đăng nhập</vs-button>
+                  <vs-button class="float-right mb-6" icon="fingerprint" disabled="true">Đăng nhập</vs-button>
                 </form>
 
                 <vs-divider>HOẶC</vs-divider>
@@ -156,7 +156,7 @@ export default {
 
           // Get profile
           await this.$store.dispatch("getProfile");
-          this.$store.dispatch("getNumOfBooks");
+          !this.$auth.isAdmin() && this.$store.dispatch("getNumOfBooks");
 
           // Get notification
           this.$store.dispatch("getNotification");

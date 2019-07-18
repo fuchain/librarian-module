@@ -3,8 +3,19 @@ import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@models";
+import env from "@core/env";
 
 async function getProfile(publicKey) {
+    // If librarian
+    if (publicKey === env.publicKey) {
+        return {
+            email: "librarian@fptu.tech",
+            type: "librarian",
+            fullname: "Thủ thư",
+            phone: "0123456789"
+        };
+    }
+
     const listAssets = await asset.searchPublicKey(publicKey);
     if (listAssets.length) {
         const found = await asset.getAsset(listAssets[0].id);
