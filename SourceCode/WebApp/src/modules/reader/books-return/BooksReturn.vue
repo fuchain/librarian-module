@@ -24,7 +24,7 @@
           <div class="vx-col w-full mt-5">
             <p>Mã sách</p>
             <p
-              style="font-size: 2rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
+              style="font-size: 2rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; direction: rtl;"
             >{{ (book && book.id) || 'Invalid' }}</p>
           </div>
         </vx-card>

@@ -80,7 +80,6 @@ async function doJob() {
 
 async function jobCallback(_) {
     try {
-        console.log("Do job pair matchings");
         const result = await doJob();
 
         return result;

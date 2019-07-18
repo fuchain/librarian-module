@@ -165,6 +165,19 @@ export default {
           initSocket();
 
           this.$router.push("/");
+
+          setTimeout(
+            function() {
+              if (
+                this.$auth.isAuthenticated() &&
+                !this.$auth.isAdmin() &&
+                this.$tours["vuesaxTour"]
+              ) {
+                this.$tours["vuesaxTour"].start();
+              }
+            }.bind(this),
+            500
+          );
         })
         .catch(err => {
           if (

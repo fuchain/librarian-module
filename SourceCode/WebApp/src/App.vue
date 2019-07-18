@@ -147,6 +147,19 @@ export default {
 
       this.$vs.loading.close();
     }
+
+    setTimeout(
+      function() {
+        if (
+          this.$auth.isAuthenticated() &&
+          !this.$auth.isAdmin() &&
+          this.$tours["vuesaxTour"]
+        ) {
+          this.$tours["vuesaxTour"].start();
+        }
+      }.bind(this),
+      500
+    );
   },
   errorCaptured(err, vm, info) {
     // Print log error

@@ -1,5 +1,6 @@
 import conn from "@core/bigchaindb";
 import transaction from "@core/bigchaindb/transaction";
+import env from "core/env";
 
 async function getAsset(id) {
     return await conn.getAsset(id);
@@ -22,6 +23,10 @@ async function searchPublicKey(pubickey) {
 }
 
 async function getEmailFromPublicKey(publicKey) {
+    if (publicKey === env.publicKey) {
+        return "librarian@fe.edu.vn";
+    }
+
     const listTx = await conn.searchMetadata(publicKey);
 
     if (!listTx || !listTx.length) throw new Error("Transaction not valid");

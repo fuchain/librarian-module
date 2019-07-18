@@ -125,10 +125,10 @@ function userMenu(numOfBooks) {
       icon: "BookOpenIcon"
     },
     {
-      url: "/books/pair",
-      name: "Nhập mã nhận sách",
-      slug: "book-pair",
-      icon: "ShoppingBagIcon"
+      url: "/transfer-history",
+      name: "Lịch sử chuyển sách",
+      slug: "transfer-history",
+      icon: "FileTextIcon"
     },
     {
       url: "/review-ux",
