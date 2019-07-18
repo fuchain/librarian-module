@@ -52,10 +52,30 @@
                     class="w-full mt-6 no-icon-border my-5"
                   />
 
+                  <div v-if="mode === 'verify'">
+                    <vs-divider>Hoặc nhập chuỗi khóa</vs-divider>
+
+                    <vs-input
+                      icon="icon icon-check"
+                      icon-pack="feather"
+                      label-placeholder="Chìa khóa công khai"
+                      v-model="publicKey"
+                      class="w-full mt-6 no-icon-border my-5"
+                    />
+
+                    <vs-input
+                      icon="icon icon-check"
+                      icon-pack="feather"
+                      label-placeholder="Chìa khóa bí mật"
+                      v-model="privateKey"
+                      class="w-full mt-6 no-icon-border my-5"
+                    />
+                  </div>
+
                   <vs-button
                     class="float-right mb-8"
                     icon="fingerprint"
-                    :disabled="bip39.length < 32"
+                    :disabled="bip39.length < 32 && (!publicKey && !privateKey)"
                   >{{ mode === 'create' ? "Tạo khóa bí mật mới" : "Xác nhận khóa bí mật"}}</vs-button>
                 </form>
               </div>
@@ -74,12 +94,21 @@ export default {
   data() {
     return {
       bip39: "",
+      publicKey: "",
+      privateKey: "",
       mode: null
     };
   },
   methods: {
     async submitKey() {
       if (!this.bip39) {
+        if (this.publicKey && this.privateKey) {
+          this.$localStorage.setItem("publicKey", this.publicKey);
+          this.$localStorage.setItem("privateKey", this.privateKey);
+
+          this.$router.push("/");
+        }
+
         return;
       }
 

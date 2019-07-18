@@ -1,8 +1,18 @@
 import errorHandler from "@core/handlers/error.handler";
 import userService from "@services/user.service";
+import env from "@core/env";
 
 async function getProfile(req, res) {
     const body = req.body;
+
+    if (body.public_key === env.publicKey) {
+        res.send({
+            email: "librarian@fptu.tech",
+            type: "librarian",
+            fullname: "Thủ Thư",
+            phone: "0123456789"
+        });
+    }
 
     const user = await userService.getProfile(body.public_key);
 
