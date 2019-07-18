@@ -3,7 +3,6 @@ import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@models";
-import util from "util";
 
 async function getProfile(publicKey) {
     const listAssets = await asset.searchPublicKey(publicKey);
@@ -171,6 +170,19 @@ async function getUserTotal(type) {
     return userList.length;
 }
 
+async function getPhoneFromEmail(email) {
+    const userCollection = db.collection("users");
+    const userInDB = await userCollection.findOne({
+        email
+    });
+
+    if (userInDB) {
+        return userInDB.phone;
+    }
+
+    return null;
+}
+
 export default {
     getProfile,
     updateProfile,
@@ -178,5 +190,6 @@ export default {
     getInQueueBook,
     getTransferHistory,
     getAllUsers,
-    getUserTotal
+    getUserTotal,
+    getPhoneFromEmail
 };

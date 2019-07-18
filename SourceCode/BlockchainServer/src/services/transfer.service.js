@@ -4,6 +4,7 @@ import asset from "@core/bigchaindb/asset";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
 import axios from "axios";
+import { db } from "@models";
 
 function signTx(tx, privateKey) {
     return transaction.sign(tx, privateKey);
@@ -29,7 +30,7 @@ async function createTestBook(publicKey) {
 async function createAndPostTestBook() {
     const bookId = uuidv4();
     const testBook = {
-        book_detail: "7",
+        book_detail: "9",
         book_id: bookId,
         type: "book"
     };
@@ -51,8 +52,8 @@ async function transferAndPostTestBook(fraud = false) {
     );
     const transferTxSigned = await signTx(transferTx, env.privateKey);
 
-    // Creaate recept
-    const receptTx = createReceiverConfirmAsset(
+    // Create recept
+    const receptTx = await createReceiverConfirmAsset(
         transferTxSigned,
         "KDeJKo7BhPRCsVwmBjnmuceeFwg1jE6zuLoRnkXy3bL"
     );
@@ -62,7 +63,9 @@ async function transferAndPostTestBook(fraud = false) {
     );
 
     if (!fraud) {
-        const txTransferPosted = await postTx(transferTxSigned);
+        const txTransferPosted = await postTx(
+            receptTxSigned.asset.data.confirm_for_tx
+        );
         const txReceptPosted = await postTx(receptTxSigned);
 
         return {
@@ -188,6 +191,9 @@ async function postToDoneTransfer(confirmAssetSigned) {
         transferTxPosted.inputs[0].owners_before[0]
     );
 
+    // Remove matching from queues when done
+    await removeMatchingFromQueueWhenDone(transferTxPosted);
+
     await axios.post("https://napi.fptu.tech/api/v1/events/push", {
         email,
         type: "success",
@@ -198,6 +204,41 @@ async function postToDoneTransfer(confirmAssetSigned) {
         transferTxPosted,
         confirmAssetPosted
     };
+}
+
+async function removeMatchingFromQueueWhenDone(transferTxPosted) {
+    const bookAssetId = transferTxPosted.asset.id;
+    const txs = await asset.getAsset(bookAssetId);
+    const bookDetailId = txs.length ? txs[0].asset.data.book_detail : 0;
+
+    if (!bookDetailId) {
+        throw new Error("Cannot get bookDetailID");
+    }
+
+    const returnerPub = transferTxPosted.inputs[0].owners_before[0];
+    const receiverPub = transferTxPosted.outputs[0].public_keys[0];
+    const returner = await asset.getEmailFromPublicKey(returnerPub);
+    const receiver = await asset.getEmailFromPublicKey(receiverPub);
+
+    const matchingCollection = db.collection("matchings");
+    const returnerObj = {
+        email: returner,
+        bookDetailId: parseInt(bookDetailId),
+        bookId: bookAssetId,
+        matched: true,
+        matchWith: receiver
+    };
+    const receiverObj = {
+        email: receiver,
+        bookDetailId: parseInt(bookDetailId),
+        matched: true,
+        matchWith: returner
+    };
+
+    await matchingCollection.deleteOne(returnerObj);
+    await matchingCollection.deleteOne(receiverObj);
+
+    return true;
 }
 
 export default {

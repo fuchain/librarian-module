@@ -25,5 +25,7 @@
                 }
             }
         ]
-    ]
+    ],
+    "sourceMaps": "inline",
+    "retainLines": true
 }

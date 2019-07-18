@@ -3,14 +3,13 @@ import env from "@core/env";
 const pairUpdateQueue = new Queue("pair", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
+import userService from "@services/user.service";
 import { db } from "@models";
+import { request } from "http";
 
 // Watch and Run job queue
 function run() {
     pairUpdateQueue.process(jobCallback);
-    pairUpdateQueue.on("completed", function(job, result) {
-        console.log("Matched and updated!");
-    });
 }
 
 // Describe what to do in the job
@@ -19,6 +18,9 @@ async function doJob(returner, requester) {
         if (!returner || !requester) return false;
 
         const matchingCollection = db.collection("matchings");
+
+        returner.phone = await userService.getPhoneFromEmail(returner.email);
+        requester.phone = await userService.getPhoneFromEmail(request.email);
 
         await matchingCollection.updateOne(
             {
@@ -31,6 +33,7 @@ async function doJob(returner, requester) {
                 $set: {
                     matched: true,
                     matchWith: requester.email,
+                    matchPhone: requester.phone,
                     matchAt: Math.floor(Date.now() / 1000)
                 }
             }
@@ -46,6 +49,7 @@ async function doJob(returner, requester) {
                 $set: {
                     matched: true,
                     matchWith: returner.email,
+                    matchPhone: returner.phone,
                     matchAt: Math.floor(Date.now() / 1000)
                 }
             }

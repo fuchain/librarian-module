@@ -80,6 +80,7 @@ async function doJob() {
 
 async function jobCallback(_) {
     try {
+        console.log("Do job pair matchings");
         const result = await doJob();
 
         return result;
@@ -88,9 +89,10 @@ async function jobCallback(_) {
     }
 }
 
-async function addJob(cron) {
+async function addJob() {
     try {
-        await pairQueue.add(null, { repeat: cron });
+        await pairQueue.add();
+        await pairQueue.add(null, { repeat: { cron: "* * * * *" } });
 
         return true;
     } catch (err) {
