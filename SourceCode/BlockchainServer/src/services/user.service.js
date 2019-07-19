@@ -82,6 +82,11 @@ async function updateProfile(email, fullname, phone) {
 }
 
 async function getCurrentBook(publicKey) {
+    // Not for librarian
+    if (publicKey === env.publicKey) {
+        return [];
+    }
+
     const transactionIds = await outputService.getUnspent(publicKey);
     const promises = transactionIds.map(e => {
         const transactionId = e.transaction_id;

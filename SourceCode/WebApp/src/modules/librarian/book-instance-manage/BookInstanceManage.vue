@@ -106,7 +106,7 @@
       </template>
     </vs-table>
 
-    <vs-popup :title="'Lịch sử chuyển của sách #' + historyId" :active.sync="historyPopup">
+    <!-- <vs-popup :title="'Lịch sử chuyển của sách #' + historyId" :active.sync="historyPopup">
       <div class="mb-4" style="color: red;" v-if="fraudEmail">
         <p>Phát hiện thay đổi bất thường, người đang giữ sách trong cơ sở dữ liệu ({{ fraudEmail }}) không khớp với dữ liệu trong Blockchain.</p>
         <vs-button
@@ -192,7 +192,7 @@
       <div style="text-align: center; margin-bottom: 1rem;">
         <vs-button @click="doCancel">Hủy bỏ</vs-button>
       </div>
-    </vs-popup>
+    </vs-popup>-->
   </div>
 </template>
 
@@ -435,63 +435,58 @@ export default {
 
     this.$http
       .get(
-        `${this.$http.baseUrl}/librarian/book_details/${this.$route.params.id}/books?size=5000`
+        `${this.$http.baseUrl}/librarian/book_details/${this.$route.params.id}/books`
       )
       .then(response => {
         const data = response.data;
 
-        // Sort
-        data.sort((a, b) => {
-          return parseInt(b.updateDate) - parseInt(a.updateDate);
-        });
-
         this.dataList = [].concat(data);
 
-        if (this.$route.params.bookid && !isNaN(this.$route.params.bookid)) {
-          const instanceId = parseInt(this.$route.params.bookid);
-          const instance = this.dataList.find(e => e.id === instanceId);
+        // if (this.$route.params.bookid && !isNaN(this.$route.params.bookid)) {
+        //   const instanceId = parseInt(this.$route.params.bookid);
+        //   const instance = this.dataList.find(e => e.id === instanceId);
 
-          if (instance) {
-            this.openHistory(instance);
-          }
-        }
+        //   if (instance) {
+        //     this.openHistory(instance);
+        //   }
+        // }
       })
       .finally(() => {
         this.isMounted = true;
         this.$vs.loading.close();
       });
 
-    this.$http
-      .get(`${this.$http.baseUrl}/bookdetails/${this.$route.params.id}`)
-      .then(response => {
-        const data = response.data;
+    // this.$http
+    //   .get(`${this.$http.baseUrl}/bookdetails/${this.$route.params.id}`)
+    //   .then(response => {
+    //     const data = response.data;
 
-        this.bookDetail = {
-          id: data.id,
-          name: data.name,
-          description: data.description,
-          image: data.thumbnail || "/images/book-thumbnail.jpg",
-          code:
-            (data.parseedSubjectCode &&
-              data.parseedSubjectCode.length &&
-              data.parseedSubjectCode[0]) ||
-            "N/A",
-          status: "in use"
-        };
-      })
-      .catch(() => {
-        this.$router.push("/librarian/book-details-manage");
-      });
+    //     this.bookDetail = {
+    //       id: data.id,
+    //       name: data.name,
+    //       description: data.description,
+    //       image: data.thumbnail || "/images/book-thumbnail.jpg",
+    //       code:
+    //         (data.parseedSubjectCode &&
+    //           data.parseedSubjectCode.length &&
+    //           data.parseedSubjectCode[0]) ||
+    //         "N/A",
+    //       status: "in use"
+    //     };
+    //   })
+    //   .catch(() => {
+    //     this.$router.push("/librarian/book-details-manage");
+    //   });
 
-    this.$http
-      .get(
-        `${this.$http.baseUrl}/librarian/book_total?book_detail_id=${this.$route.params.id}`
-      )
-      .then(response => {
-        const data = response.data;
+    // this.$http
+    //   .get(
+    //     `${this.$http.baseUrl}/librarian/book_total?book_detail_id=${this.$route.params.id}`
+    //   )
+    //   .then(response => {
+    //     const data = response.data;
 
-        this.totalRemain = data.total;
-      });
+    //     this.totalRemain = data.total;
+    //   });
   }
 };
 </script>
