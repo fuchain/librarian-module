@@ -80,7 +80,7 @@
                 type="border"
                 @click="openBookDataList(tr)"
                 v-if="tr.amount > 0"
-              >Xem sách của đầu sách này</vs-button>
+              >Xem sách</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>

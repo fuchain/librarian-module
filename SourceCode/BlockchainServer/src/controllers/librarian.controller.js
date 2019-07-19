@@ -1,10 +1,8 @@
 import errorHandler from "@core/handlers/error.handler";
 import bookService from "@services/book.service";
 import userService from "@services/user.service";
-import transferService from "@services/transfer.service"
-import {
-    db
-} from "@models";
+import transferService from "@services/transfer.service";
+import { db } from "@models";
 
 async function getAllBookDetails(_, res) {
     const listBookDetails = await bookService.getAllBookDetail();
@@ -28,7 +26,10 @@ async function getBookByUser(req, res) {
 
 async function getBookInstanceList(req, res) {
     const book_detail_id = req.params.book_detail_id;
-    const bookList = await bookService.getBookInstanceList(book_detail_id);
+    const bookList = await bookService.getBookInstanceList(
+        book_detail_id,
+        true
+    );
     res.send(bookList);
 }
 
