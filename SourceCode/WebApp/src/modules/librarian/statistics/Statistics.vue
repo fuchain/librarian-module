@@ -37,8 +37,6 @@
 </template>
 
 <script>
-let overviewPolling;
-
 export default {
   computed: {
     name() {
@@ -54,13 +52,6 @@ export default {
   },
   mounted() {
     this.getOverview();
-
-    overviewPolling = setInterval(
-      function() {
-        this.getOverview();
-      }.bind(this),
-      2000
-    );
   },
   methods: {
     getOverview() {
@@ -68,19 +59,16 @@ export default {
         .get(`${this.$http.baseUrl}/librarian/overviews`)
         .then(response => {
           const {
-            totalBookInstances,
-            totalBookDetails,
-            totalUsers
+            book_detail_total,
+            book_instance_total,
+            user_total
           } = response.data;
 
-          this.totalBookInstances = totalBookInstances;
-          this.totalBookDetails = totalBookDetails;
-          this.totalUsers = totalUsers;
+          this.totalBookInstances = book_detail_total;
+          this.totalBookDetails = book_instance_total;
+          this.totalUsers = user_total;
         });
     }
-  },
-  beforeDestroy() {
-    clearInterval(overviewPolling);
   }
 };
 </script>

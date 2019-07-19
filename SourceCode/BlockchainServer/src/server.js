@@ -6,6 +6,7 @@ import morgan from "morgan";
 
 import routes from "@routes";
 import { initMongoDB } from "@models";
+import { initBigchainMongoDB } from "@models/bigchain";
 import { checkEnvLoaded } from "@core/env";
 
 import { pingBigchainDB } from "@core/bigchaindb";
@@ -13,10 +14,7 @@ import { pingBigchainDB } from "@core/bigchaindb";
 const app = express();
 const server = require("http").Server(app);
 
-import importDBQueue from "@queues/importdb.queue";
-import matchingQueue from "@queues/matching.queue";
-import pairQueue from "@queues/pair.queue";
-import pairUpdateQueue from "@queues/pair.update.queue";
+import initQueues from "@queues/";
 
 import { globalErrorHandler } from "@controllers/error.controller";
 
@@ -30,6 +28,9 @@ async function main() {
 
         // Init MongoDB
         await initMongoDB();
+
+        // Init Bigchain MongoDB
+        await initBigchainMongoDB();
 
         // Compression gzip
         app.use(compression());
@@ -56,17 +57,12 @@ async function main() {
 
         // Default page
         app.use("/", function(_, res) {
-            res.send({
+            res.status(403).send({
                 message: "You cannot access this endpoint"
             });
         });
 
-        // Queues
-        await matchingQueue.run();
-        await importDBQueue.run();
-        await pairQueue.run();
-        await pairQueue.addJob();
-        await pairUpdateQueue.run();
+        await initQueues();
 
         server.listen(5000, function() {
             console.log("App is listening on port 5000!");

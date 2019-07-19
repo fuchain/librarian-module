@@ -2,7 +2,9 @@ import redis from "redis";
 import { promisify, callbackify } from "util";
 import env from "@core/env";
 
-export const client = redis.createClient(6379, env.redisHost || "redis");
+export const client = redis.createClient({
+    url: `redis://${env.redisHost}` || "redis"
+});
 const getAsync = promisify(client.get).bind(client);
 
 const KEY_CONSTANT = "NODE_";

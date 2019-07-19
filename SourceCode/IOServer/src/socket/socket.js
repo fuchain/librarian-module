@@ -56,7 +56,7 @@ export async function getOnlineUsers() {
         if (users) {
             const usersArr = JSON.parse(users);
 
-            return usersArr;
+            return usersArr.filter(e => e);
         } else {
             return [];
         }
@@ -77,7 +77,7 @@ function initSocketModule(server) {
             try {
                 const payload = verifyJWT(socket.handshake.query.token);
                 socket.payload = payload;
-                const email = payload.sub;
+                const email = payload.email;
 
                 const loggedInSocketID = await getRedisItem(email);
 
@@ -111,7 +111,7 @@ function initSocketModule(server) {
 
     io.on("connection", socket => {
         socket.on("disconnect", async () => {
-            const email = socket.payload.sub;
+            const email = socket.payload.email;
 
             try {
                 await deleteRedisItem(email);

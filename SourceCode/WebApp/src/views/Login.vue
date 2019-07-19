@@ -6,8 +6,8 @@
           <div class="vx-row">
             <div class="vx-col hidden sm:hidden md:hidden lg:block lg:w-1/2 mx-auto self-center">
               <img
-                src="@/assets/images/pages/login.png"
-                style="width: 300px;"
+                src="@/assets/images/logo/logopng.png"
+                style="width: 150px;"
                 alt="login"
                 class="mx-auto"
               />
@@ -44,8 +44,13 @@
 
                   <div class="flex flex-wrap justify-between my-5">
                     <vs-checkbox v-model="remember" class="mb-3">Lưu mật khẩu</vs-checkbox>
+                    <span
+                      to="/pages/forgot-password"
+                      style="color: red; cursor: pointer;"
+                      @click="removeKey"
+                    >Xóa chìa khóa trên thiết bị</span>
                   </div>
-                  <vs-button class="float-right mb-6" icon="fingerprint" disabled>Đăng nhập</vs-button>
+                  <vs-button class="float-right mb-6" icon="fingerprint" disabled="true">Đăng nhập</vs-button>
                 </form>
 
                 <vs-divider>HOẶC</vs-divider>
@@ -120,6 +125,12 @@ export default {
       }
 
       return params["access_token"];
+    },
+    removeKey() {
+      this.$localStorage.removeItem("publicKey");
+      this.$localStorage.removeItem("privateKey");
+
+      this.$router.push("/keypair");
     }
   },
   mounted: function() {
@@ -145,15 +156,28 @@ export default {
 
           // Get profile
           await this.$store.dispatch("getProfile");
-          await this.$store.dispatch("getNumOfBooks");
+          !this.$auth.isAdmin() && this.$store.dispatch("getNumOfBooks");
 
           // Get notification
-          await this.$store.dispatch("getNotification");
+          this.$store.dispatch("getNotification");
 
           // Socket
           initSocket();
 
           this.$router.push("/");
+
+          setTimeout(
+            function() {
+              if (
+                this.$auth.isAuthenticated() &&
+                !this.$auth.isAdmin() &&
+                this.$tours["vuesaxTour"]
+              ) {
+                this.$tours["vuesaxTour"].start();
+              }
+            }.bind(this),
+            500
+          );
         })
         .catch(err => {
           if (
@@ -163,12 +187,15 @@ export default {
             err.response.data.message
           ) {
             this.$vs.notify({
-              title: "Response from system",
+              title: "Phản hồi từ hệ thống",
               text: err.response.data.message,
               color: "danger",
               position: "top-right",
               fixed: true
             });
+
+            this.$localStorage.removeItem("publicKey");
+            this.$localStorage.removeItem("privateKey");
           }
 
           this.$vs.notify({

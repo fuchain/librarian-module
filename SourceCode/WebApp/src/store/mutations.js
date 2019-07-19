@@ -1,4 +1,3 @@
-import * as localStorage from "@localstorage";
 import moment from "moment";
 
 const mutations = {
@@ -102,10 +101,6 @@ const mutations = {
     state.numOfRequestingBooks = data.requesting;
     state.numOfReturningBooks = data.returning;
   },
-  ADD_COIN(state, amount) {
-    state.coin = parseInt(state.coin) + amount;
-    localStorage.setItem("fucoin", parseInt(state.coin));
-  },
 
   // Notification
   ADD_NOTIFICATION(state, notification) {
@@ -117,6 +112,14 @@ const mutations = {
 
   RESET_NOTIFICATION(state) {
     state.notifications = [];
+  },
+  OPEN_TRANSACTION_POPUP(state, tx) {
+    state.transactionPopupOpen = true;
+    state.transactionPopupTx = tx;
+  },
+  CLOSE_TRANSACTION_POPUP(state) {
+    state.transactionPopupOpen = false;
+    state.transactionPopupTx = null;
   }
 };
 

@@ -77,11 +77,6 @@ const actions = {
     }
   },
 
-  // Add coin
-  addCoin({ commit }, amount) {
-    commit("ADD_COIN", amount);
-  },
-
   // Notification
   addNotification({ commit }, notification) {
     commit("ADD_NOTIFICATION", notification);
@@ -114,6 +109,16 @@ const actions = {
       // Catch error
       throw e;
     }
+  },
+
+  // Open Transaction Popup
+  async openTxPopup({ commit }, tx) {
+    commit("OPEN_TRANSACTION_POPUP", tx);
+  },
+  async closeTxPopup({ commit }, time = 0) {
+    setTimeout(function() {
+      commit("CLOSE_TRANSACTION_POPUP");
+    }, time);
   }
 };
 

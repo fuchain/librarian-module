@@ -1,8 +1,10 @@
 <template>
   <div id="app">
     <router-view v-if="!error"></router-view>
-    <error-500 v-if="error"></error-500>
+    <error-500 v-if="error" :error="error"></error-500>
     <vx-tour :steps="steps" />
+
+    <global-popup></global-popup>
   </div>
 </template>
 
@@ -13,6 +15,8 @@ import themeConfig from "@/../themeConfig.js";
 import Error500 from "./views/Error500";
 
 import initSocket from "@core/socket";
+
+import GlobalPopup from "@/views/components/GlobalPopup.vue";
 
 const VxTour = () => import("@/views/components/VxTour.vue");
 
@@ -71,10 +75,6 @@ export default {
           target: "#menu-item-300",
           content:
             "Vào đây khi bạn có mã nhận sách từ thư viện hoặc từ người chuyển sách cho bạn"
-        },
-        {
-          target: "#menu-item-400",
-          content: "<strong>FUCoin</strong> có thể xài để đổi quà ở Cóc Shop"
         }
       ]
     };
@@ -86,7 +86,8 @@ export default {
   },
   components: {
     Error500,
-    VxTour
+    VxTour,
+    GlobalPopup
   },
   methods: {
     toggleClassInBody(className) {
@@ -137,23 +138,33 @@ export default {
 
       try {
         await this.$store.dispatch("getProfile");
-        await this.$store.dispatch("getNotification");
-        !this.$auth.isAdmin() && (await this.$store.dispatch("getNumOfBooks"));
+        this.$store.dispatch("getNotification");
+        !this.$auth.isAdmin() && this.$store.dispatch("getNumOfBooks");
       } catch (e) {
         // Catch error
-        console.log(e);
         this.$router.push("/error");
       }
 
       this.$vs.loading.close();
     }
+
+    setTimeout(
+      function() {
+        if (
+          this.$auth.isAuthenticated() &&
+          !this.$auth.isAdmin() &&
+          this.$tours["vuesaxTour"]
+        ) {
+          this.$tours["vuesaxTour"].start();
+        }
+      }.bind(this),
+      500
+    );
   },
   errorCaptured(err, vm, info) {
     // Print log error
     console.log("Error: ", err.toString());
     console.log("Info: ", info.toString());
-
-    console.log("123");
 
     this.error = true;
 

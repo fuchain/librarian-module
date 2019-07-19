@@ -4,18 +4,40 @@ import outputService from "@services/output.service";
 import bookService from "@services/book.service";
 import importDBQueue from "@queues/importdb.queue";
 
-import asset from "@core/bigchaindb/asset";
+import insertQueue from "@queues/insert.queue";
 
 async function test(_, res) {
-    const test = await asset.getPublicKeyFromEmail("tuhmse62531@fpt.edu.vn");
+    await insertQueue.addJob();
 
-    res.send(test);
+    res.send({
+        message: "Done mate!"
+    });
 }
 
 async function createTestAsset(_, res) {
     const testAsset = await transferService.createTestAsset();
 
     res.send(testAsset);
+}
+
+async function createTestBook(_, res) {
+    const testBook = await transferService.createAndPostTestBook();
+
+    res.send(testBook);
+}
+
+async function transferTestBook(_, res) {
+    const testBookTransfer = await transferService.transferAndPostTestBook();
+
+    res.send(testBookTransfer);
+}
+
+async function transferTestBookFraud(_, res) {
+    const testBookTransfer = await transferService.transferAndPostTestBook(
+        true
+    );
+
+    res.send(testBookTransfer);
 }
 
 async function create(req, res) {
@@ -41,7 +63,7 @@ async function sign(req, res) {
 async function post(req, res) {
     const body = req.body;
 
-    res.send(await transferService.postTx(body.tx));
+    res.send(await transferService.postTx(body));
 }
 
 async function getSpent(req, res) {
@@ -73,6 +95,9 @@ async function dbTest(_, res) {
 export default errorHandler({
     test,
     createTestAsset,
+    createTestBook,
+    transferTestBook,
+    transferTestBookFraud,
     create,
     transfer,
     sign,

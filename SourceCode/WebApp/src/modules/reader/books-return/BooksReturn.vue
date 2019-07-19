@@ -23,7 +23,9 @@
           </div>
           <div class="vx-col w-full mt-5">
             <p>Mã sách</p>
-            <p style="font-size: 2rem;">{{ (book && book.id) || 'Invalid' }}</p>
+            <p
+              style="font-size: 2rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; direction: rtl;"
+            >{{ (book && book.id) || 'Invalid' }}</p>
           </div>
         </vx-card>
       </div>
@@ -48,12 +50,7 @@
       <div class="vx-row">
         <div class="vx-col w-full">
           <vx-card v-if="transferType === 'manual' && !isLoading">
-            <div style="font-size: 1.5rem; text-align: center;">Mã số PIN xác nhận</div>
-            <div style="font-size: 3rem; text-align: center;">{{ randomPIN }}</div>
-            <div style="text-align: center;">
-              Chỉ tồn tại trong
-              <strong>{{ remainTime }} giây</strong>
-            </div>
+            <vs-input class="w-full" label="Email người nhận" v-model="email" />
           </vx-card>
           <vx-card v-else>{{ isLoading ? "Đang xử lí..." : resultText }}</vx-card>
         </div>
@@ -77,10 +74,11 @@
 
         <button
           v-if="props.isLastStep && transferType !== 'auto'"
-          @click="doCancel"
           class="wizard-btn"
           style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
-        >Huỷ bỏ trả sách</button>
+          @click="manuallyReturn()"
+          :disabled="!email"
+        >Trả sách</button>
       </div>
     </template>
   </form-wizard>
@@ -89,9 +87,6 @@
 <script>
 import { FormWizard, TabContent } from "vue-form-wizard";
 import "vue-form-wizard/dist/vue-form-wizard.min.css";
-import { setInterval, clearInterval } from "timers";
-
-let countInterval;
 
 export default {
   data() {
@@ -100,43 +95,13 @@ export default {
       remainTime: 0,
       isLoading: false,
       resultText: "Đang tải",
-      randomPIN: "000000",
-      matchingId: 0,
-      requestId: 0
+      email: ""
     };
   },
   methods: {
-    async validateConfirm() {
-      this.$http
-        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Người nhận đã xác nhận mã PIN",
-            color: "primary",
-            position: "top-center"
-          });
-
-          this.$store.dispatch("getNumOfBooks");
-
-          setTimeout(
-            function() {
-              this.$router.push("/books/keeping");
-            }.bind(this),
-            500
-          );
-        })
-        .catch(err => {
-          // Catch
-          console.log(err);
-        })
-        .finally(() => {});
-    },
     async checkDone() {
       if (this.transferType === "auto") {
         this.$router.push("/books/returning");
-      } else {
-        this.validateConfirm();
       }
     },
     async fakeLoad(customTime) {
@@ -157,12 +122,12 @@ export default {
       return true;
     },
     async loadingPrepare() {
-      this.isLoading = true;
-
       if (this.transferType === "auto") {
+        this.isLoading = true;
+
         this.$http
-          .post(`${this.$http.baseUrl}/requests`, {
-            type: 2,
+          .post(`${this.$http.baseUrl}/matching/create_request`, {
+            book_detail_id: this.book.bookDetailId,
             book_id: this.book.id
           })
           .then(() => {
@@ -180,90 +145,37 @@ export default {
           .finally(() => {
             this.isLoading = false;
           });
-      } else {
-        this.$http
-          .post(`${this.$http.baseUrl}/requests/manually`, {
-            book_id: this.book.id
-          })
-          .then(response => {
-            this.randomPIN = response.data.pin.toString();
-            this.matchingId = response.data.matching_id;
-            this.requestId = response.data.request_id;
-            this.startCount();
-            this.$store.dispatch("getNumOfBooks");
-          })
-          .catch(err => {
-            // Catch
-            console.log(err);
-            this.resultText =
-              "Thông tin trả sách không hợp lệ. Lí do: bạn đã có yêu cầu trả sách này rồi.";
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
       }
 
       return true;
     },
-    startCount() {
-      this.remainTime = 300;
-
-      countInterval = setInterval(
-        function() {
-          this.remainTime = this.remainTime - 1;
-
-          this.validateConfirm();
-
-          if (this.remainTime <= 0) {
-            this.$vs.notify({
-              title: "Lỗi",
-              text: "Hết hạn xác nhận mã PIN, vui lòng thao tác lại từ đầu",
-              color: "warning",
-              position: "top-center"
-            });
-
-            clearInterval(countInterval);
-            this.$router.push("/books/keeping");
-          }
-        }.bind(this),
-        1000
-      );
-
-      this.validateConfirm();
-    },
-    doCancel() {
+    manuallyReturn() {
       this.$vs.loading();
 
       this.$http
-        .put(`${this.$http.baseUrl}/requests/cancel`, {
-          request_id: this.requestId
+        .post(`${this.$http.baseUrl}/transfer/create`, {
+          to: {
+            email: this.email
+          },
+          asset_id: this.book.id
         })
-        .then(() => {
+        .then(response => {
+          const tx = response.data;
+
+          this.$store.dispatch("openTxPopup", tx);
+        })
+        .catch(() => {
           this.$vs.notify({
-            title: "Thành công",
-            text: "Hủy bỏ việc trả sách thành công",
-            color: "primary",
+            title: "Thất bại",
+            text: "Có lỗi xảy ra, vui lòng thử lại",
+            color: "warning",
             position: "top-center"
           });
-
-          this.requestId = 0;
-
-          this.$store.dispatch("getNumOfBooks");
-
-          this.$router.push("/books/keeping");
-        })
-        .catch(e => {
-          // Catch error
-          console.log(e);
         })
         .finally(() => {
           this.$vs.loading.close();
         });
     }
-  },
-  beforeDestroy() {
-    clearInterval(countInterval);
-    if (this.requestId) this.doCancel();
   },
   components: {
     FormWizard,

@@ -3,7 +3,9 @@ import env from "@core/env";
 const pairUpdateQueue = new Queue("pair", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
+import userService from "@services/user.service";
 import { db } from "@models";
+import { request } from "http";
 
 // Watch and Run job queue
 function run() {
@@ -17,23 +19,43 @@ async function doJob(returner, requester) {
 
         const matchingCollection = db.collection("matchings");
 
-        await matchingCollection.updateOne(returner, {
-            $set: {
-                matched: true,
-                matchWith: requester.email
-            }
-        });
+        returner.phone = await userService.getPhoneFromEmail(returner.email);
+        requester.phone = await userService.getPhoneFromEmail(request.email);
 
-        await matchingCollection.updateOne(requester, {
-            $set: {
-                matched: true,
-                matchWith: returner.email
+        await matchingCollection.updateOne(
+            {
+                email: returner.email,
+                bookDetailId: returner.bookDetailId,
+                bookId: returner.bookId,
+                matched: false
+            },
+            {
+                $set: {
+                    matched: true,
+                    matchWith: requester.email,
+                    matchPhone: requester.phone,
+                    matchAt: Math.floor(Date.now() / 1000)
+                }
             }
-        });
+        );
+
+        await matchingCollection.updateOne(
+            {
+                email: requester.email,
+                bookDetailId: requester.bookDetailId,
+                matched: false
+            },
+            {
+                $set: {
+                    matched: true,
+                    matchWith: returner.email,
+                    matchPhone: returner.phone,
+                    matchAt: Math.floor(Date.now() / 1000)
+                }
+            }
+        );
 
         return true;
-
-        // Send event push for them here
     } catch (err) {
         console.log("Error when pair update: ", err);
         throw err;

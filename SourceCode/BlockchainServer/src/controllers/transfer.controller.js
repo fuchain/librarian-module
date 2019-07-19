@@ -6,7 +6,7 @@ async function createTransfer(req, res) {
 
     const tx = await transferService.createTransferRequest(
         body.asset_id,
-        body.to.public_key // this is public key of the receiver
+        body.to.email // this is public key of the receiver
     );
 
     res.send(tx);
@@ -15,14 +15,18 @@ async function createTransfer(req, res) {
 async function sendTxSignedToReceiver(req, res) {
     const body = req.body;
 
-    const transferTxSigned = transferService.createReceiverConfirmAsset(
+    // public_key of the receiver
+    const publicKey = body.tx.outputs[0].public_keys[0];
+
+    const transferTxSigned = await transferService.createReceiverConfirmAsset(
         body.tx,
-        body.tx.outputs[0].public_keys[0]
+        publicKey
     );
 
-    // send event to receiver to sign
-
-    res.send(transferTxSigned);
+    res.send({
+        message: "Transaction sent to receiver",
+        tx: transferTxSigned
+    });
 }
 
 async function receiverSigned(req, res) {
@@ -32,8 +36,6 @@ async function receiverSigned(req, res) {
         transferTxPosted,
         confirmAssetPosted
     } = await transferService.postToDoneTransfer(body.tx); // this is two posted transaction
-
-    // send event to returner that everything is done
 
     res.send({
         transfer_tx_posted: transferTxPosted,

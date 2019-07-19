@@ -3,8 +3,19 @@ import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@models";
+import env from "@core/env";
 
 async function getProfile(publicKey) {
+    // If librarian
+    if (publicKey === env.publicKey) {
+        return {
+            email: "librarian@fptu.tech",
+            type: "librarian",
+            fullname: "Thủ thư",
+            phone: "0123456789"
+        };
+    }
+
     const listAssets = await asset.searchPublicKey(publicKey);
     if (listAssets.length) {
         const found = await asset.getAsset(listAssets[0].id);
@@ -18,13 +29,24 @@ async function getProfile(publicKey) {
         });
 
         if (!userInDB) {
-            return null;
+            userCollection.insertMany([
+                {
+                    email,
+                    fullname: null,
+                    phone: null
+                }
+            ]);
         }
 
-        const phone = userInDB.phone;
-        const fullname = userInDB.fullname;
+        const phone = userInDB && userInDB.phone;
+        const fullname = userInDB && userInDB.fullname;
 
-        return { email, type, fullname, phone };
+        return {
+            email,
+            type,
+            fullname,
+            phone
+        };
     }
 
     return null;
@@ -42,7 +64,9 @@ async function updateProfile(email, fullname, phone) {
 
     const userCollection = db.collection("users");
     await userCollection.updateOne(
-        { email },
+        {
+            email
+        },
         {
             $set: {
                 fullname: fullname,
@@ -67,23 +91,40 @@ async function getCurrentBook(publicKey) {
     });
 
     const result = await Promise.all(promises);
+
     const bookDetailFill = await fillBookInfo(result);
 
-    return bookDetailFill.filter(book => book.book_detail);
+    const currentKeepingBooks = bookDetailFill.filter(book => book.book_detail);
+    const returningBooks = await getInQueueBook(publicKey);
+
+    const currentBooks = currentKeepingBooks.filter(e => {
+        const find = returningBooks.find(f => f.bookId === e.asset_id);
+        return find ? false : true;
+    });
+
+    return currentBooks;
 }
 
 async function getInQueueBook(publicKey, isGetReturning = true) {
     const email = await asset.getEmailFromPublicKey(publicKey);
 
     const matchingCollection = db.collection("matchings");
-    const inQueueBooks = await matchingCollection
-        .find({
-            email,
-            bookId: {
-                $exists: isGetReturning ? true : false
-            }
-        })
-        .toArray();
+
+    const inQueueBooks = isGetReturning
+        ? await matchingCollection
+              .find({
+                  email,
+                  bookId: {
+                      $ne: null
+                  }
+              })
+              .toArray()
+        : await matchingCollection
+              .find({
+                  email,
+                  bookId: null
+              })
+              .toArray();
 
     const bookDetailFill = await fillBookInfo(inQueueBooks, "bookDetailId");
 
@@ -101,17 +142,79 @@ async function getTransferHistory(publicKey) {
 
     const result = await Promise.all(promises);
 
-    return result.map(tx => {
+    const txItems = result.map(async tx => {
         const assetId = tx.operation === "CREATE" ? tx.id : tx.asset.id;
 
+        try {
+            const returnerEmail = await asset.getEmailFromPublicKey(
+                tx.inputs[0].owners_before[0]
+            );
+            const receiverEmail = await asset.getEmailFromPublicKey(
+                tx.outputs[0].public_keys[0]
+            );
+
+            const transferDate =
+                (tx.metadata && tx.metadata.transfer_date) || null;
+
+            return {
+                id: tx.id,
+                returner: returnerEmail,
+                receiver: receiverEmail,
+                operation: tx.operation,
+                asset_id: assetId,
+                transfer_date: transferDate
+            };
+        } catch (err) {
+            return {
+                id: tx.id,
+                returner: tx.inputs[0].owners_before[0],
+                receiver: tx.outputs[0].public_keys[0],
+                operation: tx.operation,
+                asset_id: assetId
+            };
+        }
+    });
+
+    return await Promise.all(txItems);
+}
+
+async function getAllUsers(type) {
+    const users = await asset.getAllUsers(type);
+
+    const listPromises = users.map(async user => {
+        const assetTxs = await asset.getAsset(user.id);
+        const createTx = assetTxs[0];
+        const publicKey = createTx.metadata.public_key;
+
         return {
-            id: tx.id,
-            returner: tx.inputs[0].owners_before[0],
-            receiver: tx.outputs[0].public_keys[0],
-            operation: tx.operation,
-            asset_id: assetId
+            email: user.data.email,
+            public_key: publicKey
         };
     });
+
+    const data = await Promise.all(listPromises);
+    return data;
+}
+
+async function getUserTotal(type) {
+    const userList = await asset.searchAsset(type);
+    if (!userList.length) {
+        return 0;
+    }
+    return userList.length;
+}
+
+async function getPhoneFromEmail(email) {
+    const userCollection = db.collection("users");
+    const userInDB = await userCollection.findOne({
+        email
+    });
+
+    if (userInDB) {
+        return userInDB.phone;
+    }
+
+    return null;
 }
 
 export default {
@@ -119,5 +222,8 @@ export default {
     updateProfile,
     getCurrentBook,
     getInQueueBook,
-    getTransferHistory
+    getTransferHistory,
+    getAllUsers,
+    getUserTotal,
+    getPhoneFromEmail
 };

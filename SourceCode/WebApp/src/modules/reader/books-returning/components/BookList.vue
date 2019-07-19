@@ -37,7 +37,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2">ĐÃ TRẢ</span>
+                <span class="text-sm font-semibold ml-2">XÁC NHẬN</span>
               </div>
 
               <div
@@ -83,8 +83,6 @@
 <script>
 import BookCard from "@/views/components/BookCard.vue";
 
-let countInterval;
-
 export default {
   components: {
     BookCard
@@ -106,7 +104,7 @@ export default {
   },
   computed: {
     isMatchedNull() {
-      const matched = this.books.filter(e => e.status !== 1);
+      const matched = this.books.filter(e => e.matched);
       if (!matched.length) {
         return true;
       }
@@ -114,8 +112,8 @@ export default {
       return false;
     },
     isMatchingNull() {
-      const matched = this.books.filter(e => e.status === 1);
-      if (!matched.length) {
+      const matching = this.books.filter(e => !e.matched);
+      if (!matching.length) {
         return true;
       }
 
@@ -125,8 +123,8 @@ export default {
       if (!this.needTab()) return this.books;
 
       const showMatchedBooks = this.showMatched
-        ? this.books.filter(e => e.status === 2)
-        : this.books.filter(e => e.status === 1);
+        ? this.books.filter(e => e.matched)
+        : this.books.filter(e => !e.matched);
 
       if (!this.searchText.trim()) return showMatchedBooks;
 
@@ -135,124 +133,62 @@ export default {
       );
     }
   },
-  watch: {
-    popupActive(val) {
-      if (val === false && countInterval) {
-        clearInterval(countInterval);
-      }
-    }
-  },
   methods: {
     triggerCall(user) {
       if (!user) return;
       window.location.href = `tel:${user.phone}`;
     },
-    async beginConfirm(request) {
+    async beginConfirm(item) {
       this.$vs.loading();
+
       this.$http
-        .get(`${this.$http.baseUrl}/requests/${request.requestId}/matched`)
+        .post(`${this.$http.baseUrl}/transfer/create`, {
+          to: {
+            email: item.user
+          },
+          asset_id: item.id
+        })
         .then(response => {
-          const matchingId = response.data.matching_id;
-          this.matchingId = matchingId;
-          this.$http
-            .put(`${this.$http.baseUrl}/requests/transfer`, {
-              type: 1,
-              matchingId
-            })
-            .then(response => {
-              const data = response.data;
+          const tx = response.data;
 
-              const { pin } = data;
-
-              this.randomPIN = pin;
-              this.startCount();
-              this.popupActive = true;
-              this.$vs.loading.close();
-            });
-        });
-    },
-    async validateConfirm() {
-      this.$http
-        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
-        .then(() => {
+          this.$store.dispatch("openTxPopup", tx);
+        })
+        .catch(() => {
           this.$vs.notify({
-            title: "Thành công",
-            text: "Người nhận đã xác nhận mã PIN",
-            color: "primary",
+            title: "Thất bại",
+            text: "Có lỗi xảy ra, vui lòng thử lại",
+            color: "warning",
             position: "top-center"
           });
-
-          this.popupActive = false;
-          this.$store.dispatch("getNumOfBooks");
-
-          setTimeout(
-            function() {
-              this.$router.push("/books/keeping");
-            }.bind(this),
-            500
-          );
         })
-        .catch(err => {
-          // Catch
-          console.log(err);
-
-          const status = err.response.status;
-          if (status !== 400) {
-            this.$vs.notify({
-              title: "Thất bại",
-              text: "Người nhận đã từ chối nhận xách",
-              color: "warning",
-              position: "top-center"
-            });
-
-            this.popupActive = false;
-
-            this.$store.dispatch("getNumOfBooks");
-
-            setTimeout(
-              function() {
-                this.$router.push("/books/keeping");
-              }.bind(this),
-              500
-            );
-          }
-        })
-        .finally(() => {});
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     },
-    startCount() {
-      this.remainTime = 300;
-      clearInterval(countInterval);
+    callReload() {
+      this.$emit("doReload");
+    },
+    needTab() {
+      const needArr = [true, false];
+      const statusArr = this.books.map(e => {
+        return e.matched;
+      });
 
-      countInterval = setInterval(
-        function() {
-          this.remainTime = this.remainTime - 1;
-          this.validateConfirm();
-
-          if (this.remainTime <= 0) {
-            this.$vs.notify({
-              title: "Lỗi",
-              text: "Hết hạn xác nhận mã PIN, vui lòng thao tác lại từ đầu",
-              color: "warning",
-              position: "top-center"
-            });
-
-            clearInterval(countInterval);
-          }
-        }.bind(this),
-        1000
-      );
+      const needTab = needArr.every(i => statusArr.includes(i));
+      return needTab;
     },
     doCancel(item) {
       this.$vs.loading();
 
       this.$http
-        .put(`${this.$http.baseUrl}/requests/cancel`, {
-          request_id: item.requestId
+        .post(`${this.$http.baseUrl}/matching/cancel_request`, {
+          book_detail_id: item.bookDetailId,
+          book_id: item.id
         })
         .then(() => {
           this.$vs.notify({
             title: "Thành công",
-            text: "Hủy bỏ việc trả sách thành công",
+            text: "Đã gửi yêu cầu hủy bỏ việc trả sách thành công",
             color: "primary",
             position: "top-center"
           });
@@ -272,22 +208,7 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
-    },
-    callReload() {
-      this.$emit("doReload");
-    },
-    needTab() {
-      const needArr = [1, 2];
-      const statusArr = this.books.map(e => {
-        return e.status;
-      });
-
-      const needTab = needArr.every(i => statusArr.includes(i));
-      return needTab;
     }
-  },
-  beforeDestroy() {
-    clearInterval(countInterval);
   }
 };
 </script>

@@ -11,8 +11,11 @@ function generateRandomKeyPair() {
 }
 
 async function generateKeyPairEmail(email, publicKey, fullname) {
+    // Lower case
+    email = email.toLowerCase();
+
     const asset = {
-        email,
+        email: email.toLowerCase(),
         type: "reader"
     };
 
@@ -56,6 +59,9 @@ async function checkTokenGoogle(token) {
 }
 
 async function isEmailExisted(email) {
+    // Lower case
+    email = email.toLowerCase();
+
     const arr = await asset.searchEmail(email);
 
     const found = arr.find(e => e.data.email === email);
@@ -64,7 +70,21 @@ async function isEmailExisted(email) {
 }
 
 async function verifyKeyPairEmail(token, publicKey) {
-    const { email, name, picture } = await checkTokenGoogle(token);
+    const data = await checkTokenGoogle(token);
+    const { name, picture } = data;
+    const email = data.email.toLowerCase();
+
+    // Check if it is librarian
+    if (email === "librarian@fptu.tech" && publicKey === env.publicKey) {
+        return {
+            token: createJWT(email, true),
+            status: "verified",
+            email,
+            name,
+            picture
+        };
+    }
+
     const found = await isEmailExisted(email);
 
     if (!found) {

@@ -29,7 +29,7 @@
                 >
                   <h2 class="mb-1">{{ routeTitle }}</h2>
                 </div>
-                <vx-breadcrumb class="ml-4 md:block hidden" v-if="$route.meta.breadcrumb"/>
+                <vx-breadcrumb class="ml-4 md:block hidden" v-if="$route.meta.breadcrumb" />
                 <vs-dropdown class="ml-auto md:block hidden cursor-pointer" vs-trigger-click>
                   <vs-button radius icon="icon-settings" icon-pack="feather"></vs-button>
 
@@ -185,10 +185,7 @@ export default {
       };
     },
     sidebarItems() {
-      return sidebarItems(this.numOfBooks, this.coin);
-    },
-    coin() {
-      return this.$store.state.coin;
+      return sidebarItems(this.numOfBooks);
     }
   },
   methods: {

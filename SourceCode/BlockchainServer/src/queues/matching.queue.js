@@ -14,27 +14,38 @@ function run() {
 }
 
 // Describe what to do in the job
-async function doJob(email, bookDetailId, bookId) {
+async function doJob(email, bookDetailId, bookId, isCancel) {
     try {
         const matchingCollection = db.collection("matchings");
         const requestObj = {
             email,
             bookDetailId,
-            bookId
+            bookId: bookId || null
         };
 
         // Check is request is existed
         const requested = await matchingCollection.findOne(requestObj);
-        if (requested) {
-            throw new Error("Duplicated!");
+
+        if (!isCancel) {
+            if (requested) {
+                throw new Error("Duplicated!");
+            }
+
+            // Add timestamp and matched flag
+            requestObj.matched = false;
+            requestObj.time = Math.floor(Date.now() / 1000);
+            await matchingCollection.insertMany([requestObj]);
+
+            return { email, bookDetailId, bookId };
+        } else {
+            if (!requested) {
+                throw new Error("Cannot find to delete!");
+            }
+
+            await matchingCollection.deleteOne(requestObj);
+
+            return true;
         }
-
-        // Add timestamp and matched flag
-        requestObj.matched = false;
-        requestObj.time = Math.floor(Date.now() / 1000);
-        await matchingCollection.insertMany([requestObj]);
-
-        return { email, bookDetailId, bookId };
     } catch (err) {
         throw err;
     }
@@ -42,8 +53,8 @@ async function doJob(email, bookDetailId, bookId) {
 
 async function jobCallback(job) {
     try {
-        const { email, bookDetailId, bookId } = job.data;
-        const result = await doJob(email, bookDetailId, bookId);
+        const { email, bookDetailId, bookId, isCancel } = job.data;
+        const result = await doJob(email, bookDetailId, bookId, isCancel);
 
         return result;
     } catch (err) {
@@ -51,12 +62,13 @@ async function jobCallback(job) {
     }
 }
 
-async function addJob(email, bookDetailId, bookId) {
+async function addJob(email, bookDetailId, bookId, isCancel = false) {
     try {
         await matchingQueue.add({
             email,
             bookDetailId,
-            bookId
+            bookId,
+            isCancel
         });
 
         return true;

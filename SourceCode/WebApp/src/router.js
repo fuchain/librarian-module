@@ -35,10 +35,6 @@ const router = new Router({
           component: () => import("@/modules/notification/Notification.vue")
         },
         {
-          path: "coin",
-          component: () => import("@/modules/reader/coin/Coin.vue")
-        },
-        {
           path: "review-ux",
           component: () => import("@/modules/reader/review-ux/ReviewUX.vue")
         },
@@ -70,8 +66,9 @@ const router = new Router({
             import("@/modules/reader/books-requesting/BooksRequesting.vue")
         },
         {
-          path: "books/pair",
-          component: () => import("@/modules/reader/books-pair/BooksPair.vue")
+          path: "transfer-history",
+          component: () =>
+            import("@/modules/reader/transfer-history/TransferHistory.vue")
         },
         {
           path: "librarian/statistics",

@@ -1,8 +1,18 @@
 import errorHandler from "@core/handlers/error.handler";
 import userService from "@services/user.service";
+import env from "@core/env";
 
 async function getProfile(req, res) {
     const body = req.body;
+
+    if (body.public_key === env.publicKey) {
+        res.send({
+            email: "librarian@fptu.tech",
+            type: "librarian",
+            fullname: "Thủ Thư",
+            phone: "0123456789"
+        });
+    }
 
     const user = await userService.getProfile(body.public_key);
 
@@ -90,12 +100,14 @@ async function getRequestingBook(req, res) {
 async function getKeepingAmount(req, res) {
     const body = req.body;
 
-    const books = await userService.getCurrentBook(body.public_key);
+    const keeping = await userService.getCurrentBook(body.public_key);
+    const returning = await userService.getInQueueBook(body.public_key, true);
+    const requesting = await userService.getInQueueBook(body.public_key, false);
 
     res.send({
-        keeping: books.length,
-        returning: 0,
-        requesting: 0
+        keeping: keeping.length,
+        returning: returning.length,
+        requesting: requesting.length
     });
 }
 

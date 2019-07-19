@@ -1,10 +1,10 @@
 import auth from "@auth";
 
-export default function(numOfBooks, coin = 0) {
+export default function(numOfBooks) {
   if (auth.isAdmin()) {
     return adminMenu;
   }
-  return userMenu(numOfBooks, coin);
+  return userMenu(numOfBooks);
 }
 
 const adminMenu = [
@@ -79,7 +79,7 @@ const adminMenu = [
   }
 ];
 
-function userMenu(numOfBooks, coin = 0) {
+function userMenu(numOfBooks) {
   const menu = [
     {
       url: "/",
@@ -125,33 +125,20 @@ function userMenu(numOfBooks, coin = 0) {
       icon: "BookOpenIcon"
     },
     {
-      url: "/books/pair",
-      name: "Nhập mã nhận sách",
-      slug: "book-pair",
-      icon: "ShoppingBagIcon"
+      url: "/transfer-history",
+      name: "Lịch sử chuyển sách",
+      slug: "transfer-history",
+      icon: "FileTextIcon"
     },
     {
-      url: "/coin",
-      name: "Ví FUCoin",
-      slug: "coin",
-      icon: "DollarSignIcon",
-      tag: `${coin} FUCoin`,
-      tagColor: "darkorange"
+      url: "/review-ux",
+      name: "Đánh giá",
+      slug: "review-ux",
+      icon: "ThumbsUpIcon",
+      tag: "có thưởng",
+      tagColor: "orangered"
     }
   ];
 
-  if (!coin || coin <= 0) {
-    menu.push(reviewMenu);
-  }
-
   return menu;
 }
-
-const reviewMenu = {
-  url: "/review-ux",
-  name: "Đánh giá",
-  slug: "review-ux",
-  icon: "ThumbsUpIcon",
-  tag: "tích coin",
-  tagColor: "orangered"
-};

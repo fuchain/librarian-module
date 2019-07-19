@@ -1,8 +1,6 @@
 import navbarSearchAndPinList from "@/views/layouts/components/navbarSearchAndPinList";
 import themeConfig, { colors } from "@/../themeConfig.js";
 
-import * as localStorage from "@localstorage";
-
 const state = {
   // Theme's state
   isSidebarActive: true,
@@ -29,11 +27,12 @@ const state = {
   numOfRequestingBooks: 0,
   numOfReturningBooks: 0,
 
-  // Coin
-  coin: localStorage.getItem("fucoin") || 0,
-
   // Notification
-  notifications: []
+  notifications: [],
+
+  // Transaction Popup
+  transactionPopupOpen: false,
+  transactionPopupTx: null
 };
 
 export default state;

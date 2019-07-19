@@ -1,8 +1,10 @@
 export function parseBookItem(data, type = "defaut") {
   return data.map(e => {
     const bookDetailField = e.book_detail || e.bookDetailId;
+    const bookDetailId = e.book_detail ? e.book_detail.id : e.bookDetailId.id;
     return {
-      id: e.asset_id,
+      id: e.asset_id || e.bookId,
+      bookDetailId,
       name: bookDetailField.name,
       description: bookDetailField.description,
       image: bookDetailField.thumbnail || "/images/book-thumbnail.jpg",
@@ -13,9 +15,10 @@ export function parseBookItem(data, type = "defaut") {
           bookDetailField.subject_codes[0]) ||
         "N/A",
       status: "in use",
-      user: e.match_with,
-      requestId: e.request_id,
-      type
+      matched: e.matched,
+      user: e.matchWith || 0,
+      phone: e.matchPhone || 0,
+      type: e.book_detail ? "keeping" : "matching"
     };
   });
 }

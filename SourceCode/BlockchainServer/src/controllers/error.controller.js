@@ -8,11 +8,16 @@ export function globalErrorHandler(err, _, res, next) {
                 message:
                     "Your transaction is declined by the blockchain validators"
             });
+
+            return;
         }
+
         res.status(400).send({
             message: err instanceof Error ? err.toString() : err,
             stack: err.stack && typeof err.stack === "string" && err.stack
         });
+
+        return;
     } else {
         next();
     }

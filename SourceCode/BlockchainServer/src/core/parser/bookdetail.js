@@ -1,9 +1,7 @@
 import { db } from "@models";
 
 export async function fillBookInfo(bookArr, bookFieldInArr = "book_detail") {
-    const bookDetailIds = await bookArr.map(book =>
-        parseInt(book[bookFieldInArr])
-    );
+    const bookDetailIds = bookArr.map(book => parseInt(book[bookFieldInArr]));
 
     const bookDetailsCollection = db.collection("book_details");
     const bookDetailIdArr = await bookDetailsCollection

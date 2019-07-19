@@ -1,5 +1,6 @@
 import conn from "@core/bigchaindb";
 import transaction from "@core/bigchaindb/transaction";
+import env from "core/env";
 
 async function getAsset(id) {
     return await conn.getAsset(id);
@@ -9,8 +10,8 @@ async function getAssetTransactions(assetId) {
     return await conn.listTransactions(assetId);
 }
 
-async function searchAsset(bookId) {
-    return await conn.searchAssets(bookId);
+async function searchAsset(searchText) {
+    return await conn.searchAssets(searchText);
 }
 
 async function searchEmail(email) {
@@ -22,6 +23,10 @@ async function searchPublicKey(pubickey) {
 }
 
 async function getEmailFromPublicKey(publicKey) {
+    if (publicKey === env.publicKey) {
+        return "librarian@fptu.tech";
+    }
+
     const listTx = await conn.searchMetadata(publicKey);
 
     if (!listTx || !listTx.length) throw new Error("Transaction not valid");
@@ -40,6 +45,9 @@ async function getEmailFromPublicKey(publicKey) {
 }
 
 async function getPublicKeyFromEmail(email) {
+    // Lower it first
+    email = email.toLowerCase();
+
     const listTx = await conn.searchAssets(email);
 
     if (!listTx || !listTx.length) throw new Error("Transaction not valid");
@@ -78,6 +86,12 @@ async function getBookFromTransactionId(transactionId) {
     return null;
 }
 
+async function getAllUsers(type) {
+    const users = await conn.searchAssets(type);
+
+    return users;
+}
+
 export default {
     getAsset,
     getAssetTransactions,
@@ -86,5 +100,6 @@ export default {
     searchPublicKey,
     getEmailFromPublicKey,
     getPublicKeyFromEmail,
-    getBookFromTransactionId
+    getBookFromTransactionId,
+    getAllUsers
 };

@@ -42,7 +42,6 @@
         <vs-th></vs-th>
         <vs-th>Tên đầu sách</vs-th>
         <vs-th>Mã môn</vs-th>
-        <vs-th>Cập nhật</vs-th>
         <vs-th>Số lượng sách</vs-th>
         <vs-th></vs-th>
       </template>
@@ -60,7 +59,7 @@
             </vs-td>
 
             <vs-td class="img-container">
-              <img :src="tr.image || '/images/book-thumbnail.jpg'" class="product-img" />
+              <img :src="tr.thumbnail || '/images/book-thumbnail.jpg'" class="product-img" />
             </vs-td>
 
             <vs-td>
@@ -68,15 +67,11 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.code && tr.code[0] || "N/A"}}</p>
+              <p>{{ tr.subject_codes && tr.subject_codes.length && tr.subject_codes[0] || "N/A"}}</p>
             </vs-td>
 
             <vs-td>
-              <p>{{ parseInt(tr.updateDate) * 1000 | moment("from") }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p class="font-medium">{{ tr.bookInstanceCount }} cuốn</p>
+              <p class="font-medium">{{ tr.amount }} cuốn</p>
             </vs-td>
 
             <vs-td>
@@ -84,7 +79,7 @@
                 icon="pageview"
                 type="border"
                 @click="openBookDataList(tr)"
-                v-if="tr.bookInstanceCount > 0"
+                v-if="tr.amount > 0"
               >Xem sách của đầu sách này</vs-button>
             </vs-td>
           </vs-tr>
@@ -155,9 +150,9 @@ export default {
     this.$http
       .get(`${this.$http.baseUrl}/librarian/overviews`)
       .then(response => {
-        const { totalBookDetails } = response.data;
+        const { book_detail_total } = response.data;
 
-        this.totalBookDetails = totalBookDetails;
+        this.totalBookDetails = book_detail_total;
       });
   }
 };

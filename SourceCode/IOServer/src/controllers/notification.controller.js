@@ -5,31 +5,37 @@ import { Notification } from "@models";
 import { sendEmail } from "@core/sendgrid";
 
 const pushNotification = async (req, res) => {
-    const { email, message, type } = req.body;
+    const { email, message, type, noemail, nosave } = req.body;
 
     try {
         const socketId = await getRedisItem(email);
 
-        // Save to database
         const newNotification = new Notification({
             email,
             message,
             type
         });
-        await newNotification.save();
 
-        const emailData = await sendEmail({
-            to: email,
-            text: message,
-            html: message
-        });
+        if (!nosave) {
+            // Save to database
+            await newNotification.save();
+        }
+
+        const emailData = noemail
+            ? "No email sent!"
+            : await sendEmail({
+                  to: email,
+                  text: message,
+                  html: message
+              });
 
         if (!socketId) {
             res.status(200);
             res.send({
                 message:
                     "Message sent, but that user is not connecting to our service",
-                email: emailData
+                email: emailData,
+                save: nosave ? "Not saved to DB" : "Saved"
             });
 
             return;
@@ -42,7 +48,11 @@ const pushNotification = async (req, res) => {
         });
 
         res.status(201);
-        res.send({ message: `Sent to ${socketId}` });
+        res.send({
+            message: `Sent to ${socketId}`,
+            email: emailData,
+            save: nosave ? "Not saved to DB" : "Saved"
+        });
         return;
     } catch (err) {
         res.status(400);
@@ -99,7 +109,7 @@ const touchNotification = async (req, res) => {
     }
 };
 
-const getOnline = async (req, res) => {
+const getOnline = async (_, res) => {
     try {
         res.send(await getOnlineUsers());
     } catch (err) {

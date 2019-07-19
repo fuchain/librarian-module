@@ -1,40 +1,51 @@
 version: "3.1"
 
 services:
-    # bcserver:
-    # build:
-    #     dockerfile: ./dev.Dockerfile
-    # ports:
-    #     - 5000:5000
-    # networks:
-    #     - node
-    # image: librarian-bcserver-dev
-    # container_name: librarian-bcserver-dev
-    # volumes:
-    #     - ./src:/root/src/node/src
-    #     - ./.env:/root/src/node/.env
-    # environment:
-    #     DB_HOST: localhost
-    #     DB_USER: capstone
-    #     DB_PASS: capstone
-    #     DB_NAME: librarianblockchain
-    #     REDIS_HOST: localhost
+    bcserver:
+        build:
+            context: .
+            dockerfile: ./dev.Dockerfile
+        ports:
+            - 5000:5000
+        networks:
+            - node
+        image: librarian-bcserver-dev
+        container_name: librarian-bcserver-dev
+        volumes:
+            - ./src:/root/src/node/src
+            - ./.env:/root/src/node/.env
+        environment:
+            DB_HOST: mongo
+            DB_NAME: librarianblockchain
+            REDIS_HOST: redis
+            BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
+            PUBLIC_KEY: Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9
+            PRIVATE_KEY: CviuZeJhVuvtUc25BUuUDUmU8nARFqpxYKDGQP61s4is
 
     mongo:
         image: mongo
         ports:
             - 27017:27017
+        networks:
+            - node
         restart: always
 
-    # mongo-express:
-    #     image: mongo-express
-    #     restart: always
-    #     ports:
-    #         - 8081:8081
+    mongo-express:
+        image: mongo-express
+        restart: always
+        ports:
+            - 8081:8081
+        networks:
+            - node
 
     redis:
         image: redis
         command: redis-server
         ports:
             - 6379:6379
+        networks:
+            - node
         restart: always
+
+networks:
+    node:

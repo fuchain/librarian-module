@@ -139,7 +139,7 @@ export default {
 
             this.$vs.notify({
               title: "Thất bại",
-              text: "Bạn không thể gian lận khi đào coin, rất tiếc",
+              text: "Bạn đã đánh giá rồi",
               color: "danger",
               position: "top-center"
             });
@@ -151,17 +151,14 @@ export default {
 
           this.$vs.notify({
             title: "Đã gửi",
-            text:
-              "Cảm ơn bạn đã đánh giá ứng dụng, FUCoin đã được chuyển vào tài khoản của bạn",
+            text: "Cảm ơn bạn đã đánh giá ứng dụng",
             color: "primary",
             position: "top-center"
           });
 
-          this.$store.dispatch("addCoin", this.note.trim() ? 7 : 5);
-
           this.$router.push("/");
         }.bind(this),
-        5000
+        1000
       );
     }
   }

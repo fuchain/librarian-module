@@ -1,5 +1,8 @@
 import asset from "@core/bigchaindb/asset";
-import { db } from "@models";
+import {
+    db
+} from "@models";
+import env from "core/env";
 
 async function searchBook(id) {
     return await asset.searchAsset(id);
@@ -17,12 +20,87 @@ async function getAllBookDetail() {
 
 async function searchBookDetail(text) {
     const bookDetailCollection = db.collection("book_details");
+
+    // Find if text index is not existed to create one
+    await bookDetailCollection.createIndex({
+        name: "text"
+    });
+
     const listBookDetails = await bookDetailCollection
-        .find({ $text: { $search: text } })
+        .find({
+            $text: {
+                $search: text
+            }
+        })
         .limit(50)
         .toArray();
 
     return listBookDetails;
 }
 
-export default { searchBook, getAllBookDetail, searchBookDetail };
+async function getBookDetail(id) {
+    const bookDetailCollection = db.collection("book_details");
+
+    if (isNaN(id)) {
+        return null;
+    }
+
+    const idInt = parseInt(id);
+
+    const bookDetail = await bookDetailCollection.findOne({
+        id: idInt
+    });
+
+    return bookDetail;
+}
+
+async function getBookInstanceList(bookDetailId) {
+    const bookList = await asset.searchAsset(bookDetailId);
+
+    return bookList.filter(e => e.data.book_detail);
+}
+
+async function getHistoryOfBookInstance(bookID) {
+    const assetIds = await asset.searchAsset(bookID);
+    if (!assetIds.length) {
+        return null;
+    }
+
+    const assetId = assetIds[0].id;
+    return await asset.getAssetTransactions(assetId);
+}
+
+async function getBookInstanceTotal(type) {
+    const bookList = await asset.searchAsset(type);
+    if (!bookList.length) {
+        return 0;
+    }
+    return bookList.length;
+}
+
+async function getBookTotalAtLib(bookDetailId) {
+    const bookList = await getBookInstanceList(bookDetailId);
+
+    const remainBookList = await bookList.filter(async book => {
+        const transactionList = await asset.getAsset(book.id);
+        if (transactionList.length) {
+            const publicKey = transactionList[0].outputs[0].public_keys[0];
+            if (publicKey === env.publicKey) {
+                return true;
+            }
+        }
+        return false;
+    });
+    return remainBookList.length;
+}
+
+export default {
+    searchBook,
+    getAllBookDetail,
+    searchBookDetail,
+    getBookDetail,
+    getBookInstanceList,
+    getHistoryOfBookInstance,
+    getBookInstanceTotal,
+    getBookTotalAtLib
+};

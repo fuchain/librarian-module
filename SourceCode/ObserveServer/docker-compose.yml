@@ -1,0 +1,13 @@
+version: "3.1"
+
+services:
+    observe_server:
+        build:
+            context: ./
+            dockerfile: dev.Dockerfile
+        container_name: observe_server
+        volumes:
+            - ./:/app
+        ports:
+            - 5003:5003
+        tty: true
