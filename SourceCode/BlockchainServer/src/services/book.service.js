@@ -1,8 +1,7 @@
 import asset from "@core/bigchaindb/asset";
-import {
-    db
-} from "@models";
-import env from "core/env";
+import { db } from "@models";
+import env from "@core/env";
+import algoliaSearch from "algoliasearch";
 
 async function searchBook(id) {
     return await asset.searchAsset(id);
@@ -12,30 +11,22 @@ async function getAllBookDetail() {
     const bookDetailCollection = db.collection("book_details");
     const listBookDetails = await bookDetailCollection
         .find()
-        .limit(50)
+        // .limit(50)
         .toArray();
 
     return listBookDetails;
 }
 
 async function searchBookDetail(text) {
-    const bookDetailCollection = db.collection("book_details");
+    const client = algoliaSearch(
+        "CPSMLNMIK1",
+        "c37812a2aa6540a3c4d7ceb3adcf4721"
+    );
+    const index = client.initIndex("dev_LIBRARIAN");
 
-    // Find if text index is not existed to create one
-    await bookDetailCollection.createIndex({
-        name: "text"
-    });
+    const { hits } = await index.search(text);
 
-    const listBookDetails = await bookDetailCollection
-        .find({
-            $text: {
-                $search: text
-            }
-        })
-        .limit(50)
-        .toArray();
-
-    return listBookDetails;
+    return hits;
 }
 
 async function getBookDetail(id) {
@@ -54,10 +45,57 @@ async function getBookDetail(id) {
     return bookDetail;
 }
 
-async function getBookInstanceList(bookDetailId) {
-    const bookList = await asset.searchAsset(bookDetailId);
+async function getBookInstanceList(bookDetailId, notKeptByLibrarian = false) {
+    const bookDetailIdSearch = await asset.searchAsset(bookDetailId);
 
-    return bookList.filter(e => e.data.book_detail);
+    const bookList = bookDetailIdSearch.filter(e => e.data.book_detail);
+    const bookListWithCurrentKeeperPromises = bookList.map(async e => {
+        const email = await getCurrenOwnerOfABook(e.id);
+        return {
+            asset_id: e.id,
+            current_keeper: email || null
+        };
+    });
+
+    if (notKeptByLibrarian) {
+        const librarianEmail = await asset.getEmailFromPublicKey(env.publicKey);
+        const bookListWithCurrentKeeper = await Promise.all(
+            bookListWithCurrentKeeperPromises
+        );
+
+        return bookListWithCurrentKeeper.filter(
+            e => e.current_keeper !== librarianEmail
+        );
+    }
+
+    return await Promise.all(bookListWithCurrentKeeperPromises);
+}
+
+async function getCurrenOwnerOfABook(assetId) {
+    try {
+        const txs = await asset.getAsset(assetId);
+
+        if (!txs.length) {
+            return null;
+        }
+
+        const publicKey = txs[txs.length - 1].outputs[0].public_keys[0];
+
+        if (!publicKey) {
+            return null;
+        }
+
+        const email = await asset.getEmailFromPublicKey(publicKey);
+
+        if (!email) {
+            return null;
+        }
+
+        return email;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 async function getHistoryOfBookInstance(bookID) {
