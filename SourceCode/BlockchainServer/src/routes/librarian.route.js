@@ -12,5 +12,7 @@ router
 router.route("/book_history").post(controller.getHistoryOfBookInstance);
 router.route("/overviews").get(controller.getOverview);
 router.route("/book_total").post(controller.getBookTotalByBDID);
+router.route("/library_book_total").post(controller.getBookTotalAtLib);
+router.route("/give_book").post(controller.giveBook);
 
 export default router;

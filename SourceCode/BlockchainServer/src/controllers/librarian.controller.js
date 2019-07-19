@@ -1,7 +1,10 @@
 import errorHandler from "@core/handlers/error.handler";
 import bookService from "@services/book.service";
 import userService from "@services/user.service";
-import { db } from "@models";
+import transferService from "@services/transfer.service"
+import {
+    db
+} from "@models";
 
 async function getAllBookDetails(_, res) {
     const listBookDetails = await bookService.getAllBookDetail();
@@ -71,6 +74,30 @@ async function getBookTotalByBDID(req, res) {
     });
 }
 
+// Get book instance total by book detail id at library
+async function getBookTotalAtLib(req, res) {
+    const bookDetailId = req.body.book_detail_id;
+
+    const total = await bookService.getBookTotalAtLib(bookDetailId);
+
+    res.send({
+        total: total
+    });
+}
+
+async function giveBook(req, res) {
+    const bookDetailId = req.body.book_detail_id;
+    const bookList = await bookService.getBookInstanceList(bookDetailId);
+    const book = bookList[0];
+
+    const tx = await transferService.createTransferRequest(
+        book.id,
+        req.body.to.email
+    );
+
+    res.send(tx);
+}
+
 export default errorHandler({
     getAllBookDetails,
     getAllUsers,
@@ -78,5 +105,7 @@ export default errorHandler({
     getBookInstanceList,
     getHistoryOfBookInstance,
     getOverview,
-    getBookTotalByBDID
+    getBookTotalByBDID,
+    getBookTotalAtLib,
+    giveBook
 });
