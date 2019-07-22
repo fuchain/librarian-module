@@ -6,7 +6,7 @@ import morgan from "morgan";
 
 import routes from "@routes";
 import { initMongoDB } from "@models";
-import { initBigchainMongoDB } from "@models/bigchain";
+// import { initBigchainMongoDB } from "@models/bigchain";
 import { checkEnvLoaded } from "@core/env";
 
 import { pingBigchainDB } from "@core/bigchaindb";
@@ -17,6 +17,11 @@ const server = require("http").Server(app);
 import initQueues from "@queues/";
 
 import { globalErrorHandler } from "@controllers/error.controller";
+
+const Sentry = require("@sentry/node");
+Sentry.init({
+    dsn: "https://f7058307a8514bb8b0f3b46b25e33596@sentry.io/1509628"
+});
 
 async function main() {
     try {
@@ -30,7 +35,7 @@ async function main() {
         await initMongoDB();
 
         // Init Bigchain MongoDB
-        await initBigchainMongoDB();
+        // await initBigchainMongoDB();
 
         // Compression gzip
         app.use(compression());
