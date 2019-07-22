@@ -1,9 +1,9 @@
-# Golang Observe Worker
+# Go Observe Worker
 
 Play with Golang runtime
 
 ```
-$ go get -u
+$ go mod download
 $ go run main.go
 ```
 
