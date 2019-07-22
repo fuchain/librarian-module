@@ -70,7 +70,7 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ (parseInt(tr.transfer_date) * 1000 | moment("from")) || "--" }}</p>
+              <p>{{ parseInt(tr.transfer_date) * 1000 | moment("from")}}</p>
             </vs-td>
           </vs-tr>
         </tbody>

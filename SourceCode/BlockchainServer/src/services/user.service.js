@@ -1,8 +1,12 @@
 import outputService from "@services/output.service";
 import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
-import { fillBookInfo } from "@core/parser/bookdetail";
-import { db } from "@models";
+import {
+    fillBookInfo
+} from "@core/parser/bookdetail";
+import {
+    db
+} from "@models";
 import env from "@core/env";
 
 async function getProfile(publicKey) {
@@ -29,13 +33,11 @@ async function getProfile(publicKey) {
         });
 
         if (!userInDB) {
-            userCollection.insertMany([
-                {
-                    email,
-                    fullname: null,
-                    phone: null
-                }
-            ]);
+            userCollection.insertMany([{
+                email,
+                fullname: null,
+                phone: null
+            }]);
         }
 
         const phone = userInDB && userInDB.phone;
@@ -63,17 +65,14 @@ async function updateProfile(email, fullname, phone) {
     }
 
     const userCollection = db.collection("users");
-    await userCollection.updateOne(
-        {
-            email
-        },
-        {
-            $set: {
-                fullname: fullname,
-                phone: phone
-            }
+    await userCollection.updateOne({
+        email
+    }, {
+        $set: {
+            fullname: fullname,
+            phone: phone
         }
-    );
+    });
 
     return {
         fullname,
@@ -82,6 +81,11 @@ async function updateProfile(email, fullname, phone) {
 }
 
 async function getCurrentBook(publicKey) {
+    // Not for librarian
+    if (publicKey === env.publicKey) {
+        return [];
+    }
+
     const transactionIds = await outputService.getUnspent(publicKey);
     const promises = transactionIds.map(e => {
         const transactionId = e.transaction_id;
@@ -110,21 +114,21 @@ async function getInQueueBook(publicKey, isGetReturning = true) {
 
     const matchingCollection = db.collection("matchings");
 
-    const inQueueBooks = isGetReturning
-        ? await matchingCollection
-              .find({
-                  email,
-                  bookId: {
-                      $ne: null
-                  }
-              })
-              .toArray()
-        : await matchingCollection
-              .find({
-                  email,
-                  bookId: null
-              })
-              .toArray();
+    const inQueueBooks = isGetReturning ?
+        await matchingCollection
+        .find({
+            email,
+            bookId: {
+                $ne: null
+            }
+        })
+        .toArray() :
+        await matchingCollection
+        .find({
+            email,
+            bookId: null
+        })
+        .toArray();
 
     const bookDetailFill = await fillBookInfo(inQueueBooks, "bookDetailId");
 
@@ -181,14 +185,29 @@ async function getTransferHistory(publicKey) {
 async function getAllUsers(type) {
     const users = await asset.getAllUsers(type);
 
+    const usersCollection = db.collection('users');
+
     const listPromises = users.map(async user => {
         const assetTxs = await asset.getAsset(user.id);
         const createTx = assetTxs[0];
         const publicKey = createTx.metadata.public_key;
 
+        const localUser = await usersCollection.findOne({
+            email: user.data.email
+        });
+
+        if (!localUser) {
+            return {
+                email: user.data.email,
+                public_key: publicKey
+            };
+        }
+
         return {
             email: user.data.email,
-            public_key: publicKey
+            public_key: publicKey,
+            full_name: localUser.fullname,
+            phone: localUser.phone
         };
     });
 
