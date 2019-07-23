@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -23,17 +24,26 @@ type Matching struct {
 }
 
 func main() {
-	log.Println("Starting pari worker on http://localhost:5100")
+	log.Println("Starting pair worker on http://localhost:5100")
 	http.HandleFunc("/", requestHandler)
 	if err := http.ListenAndServe(":5100", nil); err != nil {
 		panic(err)
 	}
 }
 
-func requestHandler(w http.ResponseWriter, r *http.Request) {
-	pair()
+// Response ...
+type Response struct {
+	Message string `json:"message"`
+}
 
-	w.Write([]byte(""))
+func requestHandler(w http.ResponseWriter, r *http.Request) {
+	data := Response{Message: "Executed"}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(data)
+
+	// Run queue
+	pair()
 }
 
 func pair() {
@@ -92,6 +102,14 @@ func distinctSlice(slice []Matching) []int {
 	return unique
 }
 
+func getMin(a int, b int) int {
+	if a > b {
+		return b
+	}
+
+	return a
+}
+
 func createBookDetailIDSlice(slice []Matching, bookDetailID int) []Matching {
 	var result []Matching
 	for _, v := range slice {
@@ -135,25 +153,17 @@ func checkQueues(queues []([]Matching)) {
 		returnSlice := createRequestSlice(v, true)
 		requestSlice := createRequestSlice(v, false)
 
-		var shorterLength int
-		if len(returnSlice) > len(requestSlice) {
-			shorterLength = len(requestSlice)
-		} else {
-			shorterLength = len(returnSlice)
-		}
+		shorterLength := getMin(len(returnSlice), len(requestSlice))
 
-		if shorterLength == 0 {
-			log.Println("No match!")
-			return
-		}
+		if shorterLength > 0 {
+			for i := 0; i < shorterLength; i++ {
+				matchedReturner := returnSlice[i]
+				matchedRequester := requestSlice[i]
 
-		for i := 0; i < shorterLength; i++ {
-			matchedReturner := returnSlice[i]
-			matchedRequester := requestSlice[i]
-
-			log.Println("Matched!")
-			log.Println("Returner: ", matchedReturner)
-			log.Println("Requester: ", matchedRequester)
+				log.Println("Matched!")
+				log.Println("Returner: ", matchedReturner)
+				log.Println("Requester: ", matchedRequester)
+			}
 		}
 	}
 }
