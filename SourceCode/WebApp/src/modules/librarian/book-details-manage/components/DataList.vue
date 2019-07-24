@@ -40,6 +40,7 @@
       <template slot="thead">
         <vs-th>ID</vs-th>
         <vs-th></vs-th>
+        <vs-th>Phân loại</vs-th>
         <vs-th>Tên đầu sách</vs-th>
         <vs-th>Mã môn</vs-th>
         <vs-th>Số lượng sách</vs-th>
@@ -60,6 +61,10 @@
 
             <vs-td class="img-container">
               <img :src="tr.thumbnail || '/images/book-thumbnail.jpg'" class="product-img" />
+            </vs-td>
+
+            <vs-td>
+              <p>{{ tr.categories || "--" }}</p>
             </vs-td>
 
             <vs-td>
@@ -131,7 +136,7 @@ export default {
           .catch(() => {
             this.$vs.notify({
               title: "Lỗi",
-              text: `Không có đầu sách #ID ${this.searchText}`,
+              text: "Không tìm thấy",
               color: "warning",
               position: "top-center"
             });

@@ -4,7 +4,7 @@ import getLocalStorageItem from "../local-storage/getItem";
 import endpoints from "./endpoints";
 
 const config = {
-  timeout: 0
+  timeout: 10000 // 10 seconds
 };
 
 function defaultHeaders() {
@@ -28,7 +28,7 @@ async function request({
   headers = {},
   custom
 }) {
-  return axios({
+  const axiosInstance = axios({
     headers: { ...defaultHeaders(), ...headers },
     url: to,
     method,
@@ -42,6 +42,8 @@ async function request({
     // },
     ...custom
   });
+
+  return axiosInstance;
 }
 
 function doGetRequest(to, data = {}, params = {}, headers = {}) {
@@ -58,13 +60,16 @@ function doPostRequest(to, data = {}, params = {}, headers = {}) {
   if (!data.public_key && getLocalStorageItem("publicKey")) {
     data.public_key = getLocalStorageItem("publicKey");
   }
-  return request({
+
+  const instance = request({
     to,
     method: "POST",
     data,
     params,
     headers
   });
+
+  return instance;
 }
 
 function doPutRequest(to, data = {}, params = {}, headers = {}) {

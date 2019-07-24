@@ -43,14 +43,6 @@ const adminMenu = [
     tagColor: "darkorange"
   },
   {
-    url: "/librarian/scheduler",
-    name: "Lập lịch",
-    slug: "scheduler",
-    icon: "CalendarIcon",
-    tag: "hệ thống",
-    tagColor: "green"
-  },
-  {
     url: null,
     name: "Theo dõi vận hành",
     icon: "CloudIcon",

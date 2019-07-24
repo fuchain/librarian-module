@@ -53,9 +53,21 @@ async function checkTokenGoogle(token) {
 
     const email = data.email;
     const name = data.name;
-    const picture = data.picture;
+    const pictureUrl = data.picture;
 
-    return { email, name, picture };
+    try {
+        const response = await axios.get(pictureUrl, {
+            responseType: "arraybuffer"
+        });
+        const picture = new Buffer(response.data, "binary").toString("base64");
+
+        return { email, name, picture };
+    } catch (err) {
+        console.log(err);
+
+        const picture = null;
+        return { email, name, picture };
+    }
 }
 
 async function isEmailExisted(email) {

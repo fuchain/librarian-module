@@ -11,7 +11,7 @@
           <div class="flex flex-wrap">
             <div
               class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
-              @click="doBookTransfer"
+              @click="verifyReturn(bookDetail.id)"
             >
               <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
@@ -67,10 +67,9 @@
       </div>
 
       <template slot="thead">
-        <vs-th>ID</vs-th>
-        <vs-th>Tình trạng</vs-th>
-        <vs-th>Trạng thái</vs-th>
-        <vs-th>Cập nhật</vs-th>
+        <vs-th>Mã sách</vs-th>
+        <vs-th>Số lần chuyển</vs-th>
+        <vs-th>Người đang giữ</vs-th>
         <vs-th></vs-th>
       </template>
 
@@ -83,46 +82,36 @@
             @click="openBookDataList(tr)"
           >
             <vs-td>
-              <p class="font-medium">{{ tr.id }}</p>
+              <p>{{ tr.asset_id || "--" }}</p>
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.status || "transfer failed" }}</p>
+              <p>{{ tr.transaction_count || "Chưa có" }}</p>
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.transferStatus }}</p>
+              <p>{{ tr.current_keeper || "--" }}</p>
             </vs-td>
 
             <vs-td>
-              <p>{{ parseInt(tr.updateDate) * 1000 | moment("from") }}</p>
-            </vs-td>
-
-            <vs-td>
-              <vs-button icon="pageview" @click="openHistory(tr)">Xem lịch sử chuyển sách</vs-button>
+              <vs-button icon="pageview" @click="openHistory(tr.asset_id)">Xem lịch sử chuyển sách</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>
       </template>
     </vs-table>
 
-    <!-- <vs-popup :title="'Lịch sử chuyển của sách #' + historyId" :active.sync="historyPopup">
-      <div class="mb-4" style="color: red;" v-if="fraudEmail">
-        <p>Phát hiện thay đổi bất thường, người đang giữ sách trong cơ sở dữ liệu ({{ fraudEmail }}) không khớp với dữ liệu trong Blockchain.</p>
-        <vs-button
-          color="red"
-          class="mt-2 w-full"
-          type="relief"
-          @click="fraudRecover(historyId)"
-        >Khôi phục lại dữ liệu</vs-button>
-        <vs-divider border-style="dashed" color="red">phát hiện gian lận bởi hệ thống blockchain</vs-divider>
-      </div>
+    <vs-popup
+      :title="'Lịch sử chuyển của sách #' + historyId"
+      :active.sync="historyPopup"
+      fullscreen
+    >
       <vs-table :data="historyList" v-if="historyList && historyList.length">
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>
-          <vs-th>Người đang giữ sách</vs-th>
-          <vs-th>Trạng thái</vs-th>
-          <vs-th>Bị từ chối</vs-th>
+          <vs-th>Mã giao dịch</vs-th>
+          <vs-th>Người trả</vs-th>
+          <vs-th>Người nhận</vs-th>
           <vs-th>Thời gian</vs-th>
         </template>
 
@@ -130,76 +119,38 @@
           <vs-tr :key="indextr" v-for="(tr, indextr) in data">
             <vs-td :data="indextr">{{indextr + 1}}</vs-td>
 
-            <vs-td :data="data[indextr].current_keeper">{{data[indextr].current_keeper}}</vs-td>
+            <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
 
-            <vs-td :data="data[indextr].status">{{data[indextr].status || "rejected"}}</vs-td>
+            <vs-td :data="data[indextr].returner">{{data[indextr].returner}}</vs-td>
 
-            <vs-td :data="data[indextr].reject_count">
-              <div @click="openRejectPopup(data[indextr])" style="cursor: pointer;">
-                <vs-chip
-                  :color="data[indextr].reject_count === '0' ? 'primary' : 'danger'"
-                >{{data[indextr].reject_count || "0"}} lần</vs-chip>
-              </div>
-            </vs-td>
+            <vs-td :data="data[indextr].receiver">{{data[indextr].receiver}}</vs-td>
 
             <vs-td
-              :data="data[indextr].transaction_timestamp"
-            >{{ parseInt(data[indextr].transaction_timestamp) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }}</vs-td>
+              :data="data[indextr].transfer_date"
+            >{{ parseInt(data[indextr].transfer_date) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }}</vs-td>
           </vs-tr>
         </template>
       </vs-table>
       <p v-else>Thư viện đang giữ sách này, chưa được chuyển đi đâu cả.</p>
-
-      <vs-popup
-        :title="'Thông tin từ chối nhận sách của ' + rejectPopup.item.current_keeper"
-        :active.sync="rejectPopup.isActive"
-      >
-        <div class="vx-row">
-          <div class="vx-col w-full">
-            <vs-textarea
-              label="Lí do từ chối"
-              :value="rejectPopup.item.reject_reason"
-              disabled="true"
-            />
-          </div>
-        </div>
-        <div class="vx-row mb-6">
-          <div class="vx-col w-full">
-            <vs-input
-              class="w-full"
-              label="Hash ảnh"
-              :value="rejectPopup.item.img_hash"
-              disabled="true"
-            />
-          </div>
-        </div>
-
-        <div class="vx-row mb-6">
-          <div class="vx-col w-full">
-            <img :src="rejectPopup.item.img_link" style="max-width: 566.5px;" />
-          </div>
-        </div>
-      </vs-popup>
     </vs-popup>
 
-    <vs-popup title="Người nhận xác nhận" :active.sync="popupActive">
-      <div style="font-size: 1.5rem; text-align: center;">Mã số PIN xác nhận</div>
-      <div style="font-size: 3rem; text-align: center;">{{ randomPIN }}</div>
-      <div style="text-align: center; margin-bottom: 1rem;">
-        Chỉ tồn tại trong
-        <strong>{{ remainTime }} giây</strong>
+    <vs-prompt
+      title="Gửi sách cho sinh viên"
+      accept-text="Xác nhận"
+      cancel-text="Hủy bỏ"
+      @cancel="email=''"
+      @accept="manuallyReturn(email)"
+      :active.sync="emailPrompt"
+    >
+      <div>
+        <vs-input placeholder="Nhập email sinh viên nhận sách" class="w-full" v-model="email" />
       </div>
-      <div style="text-align: center; margin-bottom: 1rem;">
-        <vs-button @click="doCancel">Hủy bỏ</vs-button>
-      </div>
-    </vs-popup>-->
+    </vs-prompt>
   </div>
 </template>
 
 <script>
 import BookCard from "@/views/components/BookCard.vue";
-
-let countInterval;
 
 export default {
   components: {
@@ -216,17 +167,11 @@ export default {
       fraudEmail: "",
       historyId: 0,
       bookDetail: {},
-      // PIN Flow
-      popupActive: false,
-      randomPIN: 0,
-      remainTime: 0,
-      matchingId: 0,
-      requestId: 0,
-      rejectPopup: {
-        isActive: false,
-        item: {}
-      },
-      totalRemain: 0
+      totalRemain: 0,
+      //
+      emailPrompt: false,
+      email: "",
+      returnBookId: ""
     };
   },
   computed: {
@@ -238,180 +183,47 @@ export default {
     }
   },
   methods: {
-    openHistory(item) {
+    openHistory(assetId) {
       this.$vs.loading();
 
       this.$http
-        .get(`${this.$http.baseUrl}/librarian/books/${item.id}`)
+        .post(`${this.$http.baseUrl}/librarian/book_history`, {
+          book_id: assetId
+        })
         .then(response => {
           const data = response.data;
 
-          this.historyList = data.bcTransactionList;
-          this.metadata = data.metadata.data;
+          this.historyList = data;
           this.historyPopup = true;
-          this.historyId = item.id;
-
-          if (
-            this.historyList &&
-            this.historyList.length &&
-            this.historyList[this.historyList.length - 1].current_keeper !==
-              this.metadata.current_keeper
-          ) {
-            this.fraudEmail = this.metadata.current_keeper;
-          } else {
-            this.fraudEmail = "";
-          }
+          this.historyId = assetId;
         })
         .finally(() => {
           this.$vs.loading.close();
         });
     },
-    startCount() {
-      this.remainTime = 300;
-      clearInterval(countInterval);
-
-      countInterval = setInterval(
-        function() {
-          this.remainTime = this.remainTime - 1;
-          this.validateConfirm();
-
-          if (this.remainTime <= 0) {
-            this.$vs.notify({
-              title: "Lỗi",
-              text: "Hết hạn xác nhận mã PIN, vui lòng thao tác lại từ đầu",
-              color: "warning",
-              position: "top-center"
-            });
-
-            clearInterval(countInterval);
-          }
-        }.bind(this),
-        1000
-      );
+    verifyReturn(id) {
+      this.returnBookId = id;
+      this.emailPrompt = true;
     },
-    async validateConfirm() {
-      this.$http
-        .get(`${this.$http.baseUrl}/matchings/${this.matchingId}/confirm`)
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Người nhận đã xác nhận mã PIN",
-            color: "primary",
-            position: "top-center"
-          });
-
-          this.popupActive = false;
-          this.requestId = 0;
-          clearInterval(countInterval);
-        })
-        .catch(err => {
-          // Catch
-          console.log(err);
-
-          const status = err.response.status;
-          if (status !== 400) {
-            this.$vs.notify({
-              title: "Thất bại",
-              text: "Người nhận đã từ chối nhận xách",
-              color: "warning",
-              position: "top-center"
-            });
-
-            this.popupActive = false;
-            this.requestId = 0;
-            clearInterval(countInterval);
-          }
-        })
-        .finally(() => {});
-    },
-    doBookTransfer() {
-      const id = this.$route.params.id;
-
+    manuallyReturn() {
       this.$vs.loading();
+
       this.$http
-        .post(`${this.$http.baseUrl}/librarian/give_book?book_detail_id=${id}`)
+        .post(`${this.$http.baseUrl}/librarian/give_book`, {
+          to: {
+            email: this.email
+          },
+          book_detail_id: this.returnBookId
+        })
         .then(response => {
-          const matchingId = response.data.matching_id;
-          this.matchingId = matchingId;
-          const requestId = response.data.request_id;
-          this.requestId = requestId;
+          const tx = response.data;
 
-          this.randomPIN = response.data.pin;
-          this.startCount();
-          this.popupActive = true;
-        })
-        .catch(err => {
-          console.log(err);
-
-          this.$vs.notify({
-            title: "Lỗi",
-            text: "Xảy ra lỗi, chưa thể thực hiện chuyển sách",
-            color: "warning",
-            position: "top-center"
-          });
-        })
-        .finally(() => {
-          this.$vs.loading.close();
-        });
-    },
-    doCancel() {
-      this.$vs.loading();
-      clearInterval(countInterval);
-
-      this.$http
-        .put(`${this.$http.baseUrl}/requests/cancel`, {
-          request_id: this.requestId
-        })
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Hủy bỏ việc chuyển sách thành công",
-            color: "primary",
-            position: "top-center"
-          });
-          this.popupActive = false;
-        })
-        .catch(e => {
-          this.$vs.notify({
-            title: "Lỗi",
-            text: "Chưa thể hủy bỏ việc trả sách",
-            color: "warning",
-            position: "top-center"
-          });
-        })
-        .finally(() => {
-          this.$vs.loading.close();
-        });
-    },
-    openRejectPopup(item) {
-      if (!item.reject_reason) return;
-
-      this.rejectPopup.isActive = true;
-      this.rejectPopup.item = item;
-    },
-    fraudRecover(id) {
-      this.$vs.loading();
-
-      this.$http
-        .put(`${this.$http.baseUrl}/librarian/books/${id}/sync_current_keeper`)
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Cập nhật dữ liệu thành công",
-            color: "primary",
-            position: "top-center"
-          });
-
-          this.historyPopup = false;
-
-          setTimeout(function() {
-            window.location.reload(true);
-          }, 500);
+          this.$store.dispatch("openTxPopup", tx);
         })
         .catch(() => {
           this.$vs.notify({
-            title: "Lỗi",
-            text: "Chưa thể cập nhật",
+            title: "Thất bại",
+            text: "Có lỗi xảy ra, vui lòng thử lại",
             color: "warning",
             position: "top-center"
           });
@@ -419,15 +231,6 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
-    }
-  },
-  beforeDestroy() {
-    clearInterval(countInterval);
-    if (this.requestId && this.popupActive) this.doCancel();
-  },
-  created() {
-    if (!this.$route.params.id) {
-      this.$router.push("/librarian/book-details-manage");
     }
   },
   mounted() {
@@ -441,52 +244,55 @@ export default {
         const data = response.data;
 
         this.dataList = [].concat(data);
-
-        // if (this.$route.params.bookid && !isNaN(this.$route.params.bookid)) {
-        //   const instanceId = parseInt(this.$route.params.bookid);
-        //   const instance = this.dataList.find(e => e.id === instanceId);
-
-        //   if (instance) {
-        //     this.openHistory(instance);
-        //   }
-        // }
       })
       .finally(() => {
         this.isMounted = true;
         this.$vs.loading.close();
       });
 
-    // this.$http
-    //   .get(`${this.$http.baseUrl}/bookdetails/${this.$route.params.id}`)
-    //   .then(response => {
-    //     const data = response.data;
+    this.$http
+      .get(
+        `${this.$http.baseUrl}/librarian/book_details/${this.$route.params.id}/books/details`
+      )
+      .then(response => {
+        const data = response.data;
 
-    //     this.bookDetail = {
-    //       id: data.id,
-    //       name: data.name,
-    //       description: data.description,
-    //       image: data.thumbnail || "/images/book-thumbnail.jpg",
-    //       code:
-    //         (data.parseedSubjectCode &&
-    //           data.parseedSubjectCode.length &&
-    //           data.parseedSubjectCode[0]) ||
-    //         "N/A",
-    //       status: "in use"
-    //     };
-    //   })
-    //   .catch(() => {
-    //     this.$router.push("/librarian/book-details-manage");
-    //   });
+        data.sort((a, b) => b.transaction_count - a.transaction_count);
 
-    // this.$http
-    //   .get(
-    //     `${this.$http.baseUrl}/librarian/book_total?book_detail_id=${this.$route.params.id}`
-    //   )
-    //   .then(response => {
-    //     const data = response.data;
+        this.dataList = [].concat(data);
+      });
 
-    //     this.totalRemain = data.total;
-    //   });
+    this.$http
+      .get(`${this.$http.baseUrl}/book/book_detail/${this.$route.params.id}`)
+      .then(response => {
+        const data = response.data;
+
+        this.bookDetail = {
+          id: data.id,
+          name: data.name,
+          description: data.description,
+          image: data.thumbnail || "/images/book-thumbnail.jpg",
+          code:
+            (data.subject_codes &&
+              data.subject_codes.length &&
+              data.subject_codes[0]) ||
+            "N/A",
+          type: "info"
+        };
+      })
+      .catch(() => {
+        this.$router.push("/librarian/book-details-manage");
+      });
+
+    this.$http
+      .post(`${this.$http.baseUrl}/librarian/library_book_total`, {
+        book_detail_id: this.$route.params.id
+      })
+      .then(response => {
+        const data = response.data;
+
+        this.totalRemain = data.total;
+      });
   }
 };
 </script>

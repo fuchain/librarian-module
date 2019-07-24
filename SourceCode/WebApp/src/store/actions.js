@@ -45,6 +45,12 @@ const actions = {
       commit("PROFILE_UPDATED", data);
     } catch (e) {
       // Catch error
+      if (e.response && e.response.status && e.response.status === 401) {
+        // Logout
+        window.vue.$auth.clearAuth();
+        window.vue.$router.push("/login");
+      }
+
       throw e;
     }
   },
