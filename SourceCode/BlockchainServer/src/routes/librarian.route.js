@@ -1,5 +1,6 @@
 import express from "express";
 import controller from "@controllers/librarian.controller";
+import matchingController from "@controllers/matching.controller";
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.route("/overviews").get(controller.getOverview);
 router.route("/book_total").post(controller.getBookTotalByBDID);
 router.route("/library_book_total").post(controller.getBookTotalAtLib);
 router.route("/give_book").post(controller.giveBook);
+router.route("/matchings").get(matchingController.getMatchings);
 
 export default router;

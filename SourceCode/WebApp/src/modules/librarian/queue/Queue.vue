@@ -1,76 +1,83 @@
 <template>
-  <vx-card :title="'Hàng đợi đang có ' + queue.length + ' đầu sách'">
-    <p class="mb-4">
+  <vx-card :title="'Hàng đợi đang có ' + queues.length + ' đầu sách'">
+    <p class="mb-8">
       Đã có
-      <strong>{{ matching || 0 }}</strong> yêu cầu đã được hệ thống ghép, đang chờ người đọc chuyển sách.
+      <strong>{{ matched || 0 }}</strong> yêu cầu đã được hệ thống ghép, đang chờ người đọc chuyển sách.
     </p>
-    <div class="items-grid-view vx-row match-height" v-if="queue.length" appear>
-      <div class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full" v-for="item in queue" :key="item.id">
-        <book-card :item="item.bookDetail">
-          <template slot="action-buttons">
-            <div class="flex flex-wrap">
-              <div
-                class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
-                @click="viewDetail(item)"
-              >
-                <feather-icon icon="InfoIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2">XEM CHI TIẾT ({{ item.totalRequest }})</span>
-              </div>
+    <vs-table ref="table" pagination :max-items="itemsPerPage" :data="queues">
+      <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
+        <div class="flex flex-wrap-reverse items-center">
+          <!-- ACTION - DROPDOWN -->
+          <vs-dropdown vs-trigger-click v-if="false">
+            <div
+              class="p-4 shadow-drop rounded-lg d-theme-dark-bg cursor-pointer flex items-center justify-center text-lg font-medium w-32"
+            >
+              <span class="mr-2">Làm</span>
+              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
             </div>
-          </template>
-        </book-card>
+
+            <vs-dropdown-menu>
+              <vs-dropdown-item>
+                <span>Xóa</span>
+              </vs-dropdown-item>
+            </vs-dropdown-menu>
+          </vs-dropdown>
+        </div>
       </div>
-    </div>
 
-    <vs-popup title="Chi tiết các yêu cầu" :active.sync="detailPopup">
-      <vs-table :data="detailPopupItem.requests" v-if="detailPopup">
-        <template slot="thead">
-          <vs-th>ID</vs-th>
-          <vs-th>Kiểu</vs-th>
-          <vs-th>Người yêu cầu</vs-th>
-          <vs-th>Đã ghép với</vs-th>
-          <vs-th>Cập nhật</vs-th>
-        </template>
+      <template slot="thead">
+        <vs-th></vs-th>
+        <vs-th>Tên đầu sách</vs-th>
+        <vs-th>Email</vs-th>
+        <vs-th>Loại</vs-th>
+        <vs-th>Mượn lúc</vs-th>
+        <vs-th></vs-th>
+      </template>
 
-        <template slot-scope="{data}">
-          <vs-tr :key="indextr" v-for="(tr, indextr) in data">
-            <vs-td :data="data[indextr].id">#{{data[indextr].id}}</vs-td>
-
-            <vs-td :data="data[indextr].type">
-              <vs-chip color="primary">{{data[indextr].type === 1 ? "Mượn" : "Trả"}}</vs-chip>
+      <template slot-scope="{data}">
+        <tbody>
+          <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
+            <vs-td>
+              <p>
+                <img
+                  :src="tr.bookInfo.thumbnail || '/images/book-thumbnail.jpg'"
+                  style="max-width: 100px;"
+                />
+              </p>
             </vs-td>
 
-            <vs-td :data="data[indextr].user.email">{{data[indextr].user.email}}</vs-td>
+            <vs-td>
+              <p>{{ tr.bookInfo.name || "--" }}</p>
+            </vs-td>
 
-            <vs-td
-              :data="data[indextr].pairedUser && data[indextr].pairedUser.email"
-            >{{ data[indextr].pairedUser && data[indextr].pairedUser.email || "--" }}</vs-td>
+            <vs-td>
+              <p>{{ tr.email || "--" }}</p>
+            </vs-td>
 
-            <vs-td
-              :data="data[indextr].updateDate"
-            >{{ parseInt(data[indextr].updateDate) * 1000 | moment("from") }}</vs-td>
+            <vs-td>
+              <p>
+                <vs-chip>{{ tr.bookId ? "Trả" : "Mượn" }}</vs-chip>
+              </p>
+            </vs-td>
+
+            <vs-td>
+              <p>{{ tr.time * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }}</p>
+            </vs-td>
+
+            <vs-td>{{ tr.matched ? "Đã ghép" : "" }}</vs-td>
           </vs-tr>
-        </template>
-      </vs-table>
-    </vs-popup>
+        </tbody>
+      </template>
+    </vs-table>
   </vx-card>
 </template>
 
 <script>
-import BookCard from "@/views/components/BookCard.vue";
-import { parseSingleItem } from "@http/parse";
-
 export default {
-  components: {
-    BookCard
-  },
   data() {
     return {
-      queue: [],
-      detailPopup: false,
-      detailPopupItem: null,
-      matching: 0
+      queues: []
     };
   },
   methods: {
@@ -79,31 +86,29 @@ export default {
       this.detailPopupItem = item;
     }
   },
+  computed: {
+    matched() {
+      if (!this.queues || !this.queues.length) {
+        return 0;
+      }
+
+      const matched = this.queues.filter(e => e.matched);
+      return matched.length;
+    }
+  },
   mounted() {
     this.$vs.loading();
 
     this.$http
-      .get(`${this.$http.baseUrl}/librarian/queue/overview`)
+      .get(`${this.$http.baseUrl}/librarian/matchings`)
       .then(response => {
-        const data = response.data.map(e => {
-          return {
-            bookDetail: parseSingleItem(e.bookDetail),
-            requests: e.borrowRequest.concat(e.returnRequest),
-            totalRequest: e.borrowRequest.length + e.returnRequest.length
-          };
-        });
+        const data = response.data;
 
-        this.queue = data;
+        this.queues = data;
       })
       .finally(() => {
         this.$vs.loading.close();
       });
-
-    this.$http.get(`${this.$http.baseUrl}/requests/overview`).then(response => {
-      const data = response.data;
-
-      this.matching = data.totalMatchingRequest;
-    });
   }
 };
 </script>
