@@ -90,8 +90,7 @@ async function jobCallback(_) {
 
 async function addJob() {
     try {
-        await pairQueue.add();
-        await pairQueue.add(null, { repeat: { cron: "* * * * *" } });
+        pairQueue.add(null, { repeat: { cron: "* * * * *" } });
 
         return true;
     } catch (err) {
