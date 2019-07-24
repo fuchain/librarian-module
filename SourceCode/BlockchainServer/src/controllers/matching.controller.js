@@ -41,7 +41,13 @@ async function cancelRequest(req, res) {
     }
 }
 
+async function getMatchings(_, res) {
+    const matchings = await matchingService.getMatchings();
+    res.send(matchings);
+}
+
 export default errorHandler({
     createRequest,
-    cancelRequest
+    cancelRequest,
+    getMatchings
 });
