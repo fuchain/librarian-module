@@ -73,7 +73,7 @@
             </vs-td>
 
             <vs-td>
-              <p class="font-medium">{{ tr.fullname || "Chưa cập nhật" }}</p>
+              <p class="font-medium">{{ tr.full_name || "Chưa cập nhật" }}</p>
             </vs-td>
 
             <vs-td>
@@ -98,7 +98,7 @@
               <vs-button
                 icon="pageview"
                 @click="openKeepingBook(tr)"
-                v-if="!tr.email.includes('fe.edu.vn')"
+                v-if="!tr.email.includes('librarian')"
               >Xem sách đang giữ</vs-button>
             </vs-td>
           </vs-tr>
@@ -113,32 +113,23 @@
     >
       <vs-table :data="keepingList" v-if="keepingList && keepingList.length">
         <template slot="thead">
-          <vs-th>ID sách</vs-th>
+          <vs-th>Mã sách</vs-th>
           <vs-th>ID đầu sách</vs-th>
           <vs-th></vs-th>
           <vs-th>Tên sách</vs-th>
-          <vs-th>Tình trạng</vs-th>
-          <vs-th>Trạng thái</vs-th>
-          <vs-th>Cập nhật</vs-th>
         </template>
 
         <template slot-scope="{data}">
           <vs-tr :key="indextr" v-for="(tr, indextr) in data">
-            <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
-            <vs-td :data="data[indextr].bookDetail.id">{{data[indextr].bookDetail.id}}</vs-td>
-            <vs-td :data="data[indextr].bookDetail.name">
+            <vs-td :data="data[indextr].asset_id">{{data[indextr].asset_id}}</vs-td>
+            <vs-td :data="data[indextr].book_detail.id">{{data[indextr].book_detail.id}}</vs-td>
+            <vs-td :data="data[indextr].book_detail.thumbnail">
               <img
-                :src="data[indextr].bookDetail.thumbnail || '/images/book-thumbnail.jpg'"
+                :src="data[indextr].book_detail.thumbnail || '/images/book-thumbnail.jpg'"
                 style="max-width: 65px;"
               />
             </vs-td>
-            <vs-td :data="data[indextr].bookDetail.name">{{data[indextr].bookDetail.name}}</vs-td>
-            <vs-td :data="data[indextr].status">{{data[indextr].status}}</vs-td>
-            <vs-td :data="data[indextr].transferStatus">{{data[indextr].transferStatus}}</vs-td>
-
-            <vs-td
-              :data="data[indextr].updateDate"
-            >{{ parseInt(data[indextr].updateDate) * 1000 | moment("dddd, Do MMMM YYYY, h:mm:ss a")}}</vs-td>
+            <vs-td :data="data[indextr].book_detail.name">{{data[indextr].book_detail.name}}</vs-td>
           </vs-tr>
         </template>
       </vs-table>
@@ -180,7 +171,11 @@ export default {
       this.$vs.loading();
 
       this.$http
-        .get(`${this.$http.baseUrl}/librarian/users/${item.id}/books`)
+        .post(`${this.$http.baseUrl}/librarian/users/books`, {
+          user: {
+            public_key: item.public_key
+          }
+        })
         .then(response => {
           const data = response.data;
 
@@ -193,7 +188,7 @@ export default {
         });
     },
     checkUserOnline(email) {
-      return this.onlineUsers.find(e => e === email) ? true : false;
+      return this.onlineUsers.find(e => e === email);
     },
     trackOnline() {
       const trackArr = this.dataList.map(e => {

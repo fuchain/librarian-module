@@ -1,12 +1,8 @@
 import outputService from "@services/output.service";
 import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
-import {
-    fillBookInfo
-} from "@core/parser/bookdetail";
-import {
-    db
-} from "@models";
+import { fillBookInfo } from "@core/parser/bookdetail";
+import { db } from "@models";
 import env from "@core/env";
 
 async function getProfile(publicKey) {
@@ -33,11 +29,13 @@ async function getProfile(publicKey) {
         });
 
         if (!userInDB) {
-            userCollection.insertMany([{
-                email,
-                fullname: null,
-                phone: null
-            }]);
+            userCollection.insertMany([
+                {
+                    email,
+                    fullname: null,
+                    phone: null
+                }
+            ]);
         }
 
         const phone = userInDB && userInDB.phone;
@@ -65,14 +63,17 @@ async function updateProfile(email, fullname, phone) {
     }
 
     const userCollection = db.collection("users");
-    await userCollection.updateOne({
-        email
-    }, {
-        $set: {
-            fullname: fullname,
-            phone: phone
+    await userCollection.updateOne(
+        {
+            email
+        },
+        {
+            $set: {
+                fullname: fullname,
+                phone: phone
+            }
         }
-    });
+    );
 
     return {
         fullname,
@@ -80,7 +81,7 @@ async function updateProfile(email, fullname, phone) {
     };
 }
 
-async function getCurrentBook(publicKey) {
+async function getCurrentBook(publicKey, getAll = false) {
     // Not for librarian
     if (publicKey === env.publicKey) {
         return [];
@@ -99,8 +100,12 @@ async function getCurrentBook(publicKey) {
     const bookDetailFill = await fillBookInfo(result);
 
     const currentKeepingBooks = bookDetailFill.filter(book => book.book_detail);
-    const returningBooks = await getInQueueBook(publicKey);
 
+    if (getAll) {
+        return currentKeepingBooks;
+    }
+
+    const returningBooks = await getInQueueBook(publicKey);
     const currentBooks = currentKeepingBooks.filter(e => {
         const find = returningBooks.find(f => f.bookId === e.asset_id);
         return find ? false : true;
@@ -114,21 +119,21 @@ async function getInQueueBook(publicKey, isGetReturning = true) {
 
     const matchingCollection = db.collection("matchings");
 
-    const inQueueBooks = isGetReturning ?
-        await matchingCollection
-        .find({
-            email,
-            bookId: {
-                $ne: null
-            }
-        })
-        .toArray() :
-        await matchingCollection
-        .find({
-            email,
-            bookId: null
-        })
-        .toArray();
+    const inQueueBooks = isGetReturning
+        ? await matchingCollection
+              .find({
+                  email,
+                  bookId: {
+                      $ne: null
+                  }
+              })
+              .toArray()
+        : await matchingCollection
+              .find({
+                  email,
+                  bookId: null
+              })
+              .toArray();
 
     const bookDetailFill = await fillBookInfo(inQueueBooks, "bookDetailId");
 
@@ -185,7 +190,7 @@ async function getTransferHistory(publicKey) {
 async function getAllUsers(type) {
     const users = await asset.getAllUsers(type);
 
-    const usersCollection = db.collection('users');
+    const usersCollection = db.collection("users");
 
     const listPromises = users.map(async user => {
         const assetTxs = await asset.getAsset(user.id);

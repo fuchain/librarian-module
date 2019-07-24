@@ -196,6 +196,7 @@ export default {
 
             this.$localStorage.removeItem("publicKey");
             this.$localStorage.removeItem("privateKey");
+            this.$auth.setAccessToken();
           }
 
           this.$vs.notify({
