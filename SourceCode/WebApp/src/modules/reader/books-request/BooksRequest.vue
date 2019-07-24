@@ -1,6 +1,6 @@
 <template>
   <div>
-    <vx-card title="Tìm mượn sách">
+    <vx-card title="Tìm mượn sách" noShadow>
       <div class="vx-row mb-6">
         <div class="vx-col sm:w-2/3 w-full">
           <vs-input
@@ -8,6 +8,7 @@
             v-model="searchText"
             placeholder="Tìm JPD101 hoặc Nihongo Deiku 1"
             v-on:keyup.enter="doSearch"
+            autofocus
           />
         </div>
         <div class="vx-col sm:w-1/3 w-full">

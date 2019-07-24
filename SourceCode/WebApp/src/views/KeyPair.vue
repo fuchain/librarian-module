@@ -21,7 +21,7 @@
                   >Hệ thống không phát hiện ra chìa khóa bí mật của bạn trên thiết bị. Bạn đã tạo chìa khóa chưa?</p>
                   <p
                     v-else-if="mode === 'create'"
-                  >Vui lòng chọn khóa an toàn (32 kí tự bí mật), trong đó có bao gồm mã số sinh viên của bạn, sau khi tạo nhớ cất giữ khóa cẩn thận.</p>
+                  >Vui lòng chọn khóa an toàn (32 kí tự bí mật), trong đó có bao gồm mã số sinh viên của bạn, sau khi tạo nhớ lưu giữ khóa cẩn thận.</p>
                   <p
                     v-else
                   >Nhập vào khóa đã tạo của bạn (32 kí tự bí mật). Vui lòng chỉ nhận khóa này trên thiết bị của bạn.</p>
@@ -56,16 +56,14 @@
                     <vs-divider>Hoặc nhập chuỗi khóa</vs-divider>
 
                     <vs-input
-                      icon="icon icon-check"
-                      icon-pack="feather"
+                      icon="vpn_key"
                       label-placeholder="Chìa khóa công khai"
                       v-model="publicKey"
                       class="w-full mt-6 no-icon-border my-5"
                     />
 
                     <vs-input
-                      icon="icon icon-check"
-                      icon-pack="feather"
+                      icon="vpn_key"
                       label-placeholder="Chìa khóa bí mật"
                       v-model="privateKey"
                       class="w-full mt-6 no-icon-border my-5"
@@ -76,6 +74,7 @@
                     class="float-right mb-8"
                     icon="fingerprint"
                     :disabled="bip39.length < 32 && (!publicKey && !privateKey)"
+                    @click="submitKey"
                   >{{ mode === 'create' ? "Tạo khóa bí mật mới" : "Xác nhận khóa bí mật"}}</vs-button>
                 </form>
               </div>

@@ -65,7 +65,7 @@
             @click="openBookDataList(tr)"
           >
             <vs-td>
-              <p>{{ tr.id }}</p>
+              <p>{{ indextr + 1 }}</p>
             </vs-td>
 
             <vs-td>

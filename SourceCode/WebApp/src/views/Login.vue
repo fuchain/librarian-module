@@ -20,9 +20,9 @@
                     class="mt-2 mb-2"
                     active="true"
                     icon="vpn_key"
-                  >Chìa khóa chứng thực hợp lệ</vs-alert>
+                  >Đã cắm chìa khóa chứng thực</vs-alert>
                 </div>
-                <form v-on:submit.prevent="doLogin">
+                <form v-on:submit.prevent="doLogin" v-if="false">
                   <vs-input
                     name="email"
                     icon="icon icon-user"
@@ -53,7 +53,13 @@
                   <vs-button class="float-right mb-6" icon="fingerprint" disabled="true">Đăng nhập</vs-button>
                 </form>
 
-                <vs-divider>HOẶC</vs-divider>
+                <vs-button
+                  class="float-right mb-6"
+                  icon="delete"
+                  @click="deleteConfirm()"
+                >Xóa chìa khóa trên thiết bị</vs-button>
+                <!-- <vs-divider>HOẶC</vs-divider> -->
+                <vs-divider border-style="dashed">HOẶC</vs-divider>
 
                 <div class="social-login flex flex-wrap justify-right">
                   <div class="social-login-buttons flex flex-wrap items-center mt-4">
@@ -131,6 +137,15 @@ export default {
       this.$localStorage.removeItem("privateKey");
 
       this.$router.push("/keypair");
+    },
+    deleteConfirm() {
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: "Xác nhận",
+        text: "Bạn có chắc muốn gỡ chìa khóa trên thiết bị này?",
+        accept: this.removeKey
+      });
     }
   },
   mounted: function() {

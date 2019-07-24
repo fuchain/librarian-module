@@ -10,7 +10,7 @@ import librarianRoutes from "@routes/librarian.route";
 import transferRoutes from "@routes/transfer.route";
 import matchingRoutes from "@routes/matching.route";
 import bookRoutes from "@routes/book.route";
-import fetchRoutes from "@routes/fetch.route"
+import fetchRoutes from "@routes/fetch.route";
 
 const router = express.Router();
 
