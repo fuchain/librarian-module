@@ -1,11 +1,11 @@
-import errorHandler from "@core/handlers/error.handler"
-import fetchService from "@services/fetch.service"
+import errorHandler from "@core/handlers/error.handler";
+import fetchService from "@services/fetch.service";
 
-async function getBookDetailFromAssetId(req, res){
+async function getBookDetailFromAssetId(req, res) {
     const assetId = req.body.asset_id;
 
     const bookDetail = await fetchService.getBookDetail(assetId);
-    if(!bookDetail){
+    if (!bookDetail) {
         res.status(404).send({
             message: "Cannot find any book detail with this asset id"
         });
@@ -13,10 +13,10 @@ async function getBookDetailFromAssetId(req, res){
     res.send(bookDetail);
 }
 
-async function getEmail(req, res){
+async function getEmail(req, res) {
     const publicKey = req.body.public_key;
     const email = await fetchService.getEmail(publicKey);
-    if(!email){
+    if (!email) {
         res.status(400).send({
             message: "Cannot find any email with this public key"
         });
