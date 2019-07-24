@@ -85,7 +85,7 @@
                 type="border"
                 @click="openBookDataList(tr)"
                 v-if="tr.amount > 0"
-              >Xem sách</vs-button>
+              >Xem</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>

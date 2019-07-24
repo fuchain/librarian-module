@@ -1,5 +1,5 @@
 <template>
-  <vx-card title="Hồ sơ">
+  <vx-card title="Hồ sơ" noShadow>
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
         <span>Họ tên</span>
@@ -24,7 +24,7 @@
         <vs-input class="w-full" v-model="phone" />
       </div>
     </div>
-    <div class="vx-row mb-6">
+    <div class="vx-row mb-6" v-if="!$auth.isAdmin()">
       <div class="vx-col sm:w-1/3 w-full">
         <span>Chuyển sách cho tôi</span>
       </div>

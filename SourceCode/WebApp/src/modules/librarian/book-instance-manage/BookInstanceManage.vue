@@ -94,18 +94,14 @@
             </vs-td>
 
             <vs-td>
-              <vs-button icon="pageview" @click="openHistory(tr.asset_id)">Xem lịch sử chuyển sách</vs-button>
+              <vs-button icon="pageview" @click="openHistory(tr.asset_id)">Lịch sử</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>
       </template>
     </vs-table>
 
-    <vs-popup
-      :title="'Lịch sử chuyển của sách #' + historyId"
-      :active.sync="historyPopup"
-      fullscreen
-    >
+    <vs-popup :title="historyId" :active.sync="historyPopup" :fullscreen="historyList.length">
       <vs-table :data="historyList" v-if="historyList && historyList.length">
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>

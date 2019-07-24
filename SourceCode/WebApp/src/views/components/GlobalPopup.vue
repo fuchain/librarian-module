@@ -170,7 +170,7 @@ export default {
 
             // Close
             this.$store.dispatch("closeTxPopup", 5000);
-            this.$router.push("/");
+            if (!this.$auth.isAdmin) this.$router.push("/");
           })
           .catch(() => {
             this.$vs.notify({
