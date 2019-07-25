@@ -136,9 +136,7 @@ func checkQueues(queues []([]Matching)) {
 				matchedReturner := returnSlice[i]
 				matchedRequester := requestSlice[i]
 
-				log.Println("Matched!")
-				log.Println("Returner: ", *matchedReturner.BookID)
-				log.Println("Requester: ", matchedRequester.BookID)
+				HandleMatch(matchedRequester, matchedReturner)
 			}
 		}
 	}
