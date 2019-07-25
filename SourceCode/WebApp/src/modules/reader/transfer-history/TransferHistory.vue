@@ -2,7 +2,14 @@
   <div id="data-list-list-view" class="data-list-container">
     <h2 class="mb-8 ml-4">Lịch sử nhận sách</h2>
 
-    <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
+    <vs-table
+      noDataText="Không có dữ liệu"
+      ref="table"
+      pagination
+      :max-items="itemsPerPage"
+      search
+      :data="dataList"
+    >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
