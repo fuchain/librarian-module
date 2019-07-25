@@ -15,7 +15,7 @@ const actions = {
   async searchBookDetails({ commit }, text) {
     try {
       const { data } = await $http.get(
-        `${$http.baseUrl}/librarian/book_details?name=${text}`
+        `${$http.baseUrl}/librarian/book_details?text=${text}`
       );
       commit("DATA_LIST_UPDATED", data);
     } catch (e) {

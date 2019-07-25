@@ -4,10 +4,16 @@ import userService from "@services/user.service";
 import transferService from "@services/transfer.service";
 import { db } from "@models";
 
-async function getAllBookDetails(_, res) {
-    const listBookDetails = await bookService.getAllBookDetail();
+async function getAllBookDetails(req, res) {
+    const text = req.query.text;
 
-    res.send(listBookDetails);
+    if (text) {
+        const listBookDetails = await bookService.searchBookDetail(text);
+        res.send(listBookDetails);
+    } else {
+        const listBookDetails = await bookService.getAllBookDetail();
+        res.send(listBookDetails);
+    }
 }
 
 async function getAllUsers(_, res) {
@@ -17,19 +23,26 @@ async function getAllUsers(_, res) {
 }
 
 async function getBookByUser(req, res) {
-    const public_key = req.body.public_key;
+    const public_key = req.body.user.public_key;
 
-    const bookdetailList = await userService.getCurrentBook(public_key);
+    const bookdetailList = await userService.getCurrentBook(public_key, true);
 
     res.send(bookdetailList);
 }
 
 async function getBookInstanceList(req, res) {
     const book_detail_id = req.params.book_detail_id;
-    const bookList = await bookService.getBookInstanceList(
-        book_detail_id,
-        true
+    const bookList = await bookService.getBookInstanceList(book_detail_id);
+
+    res.send(bookList);
+}
+
+async function getBookInstanceDetailList(req, res) {
+    const book_detail_id = req.params.book_detail_id;
+    const bookList = await bookService.getBookInstanceDetailList(
+        book_detail_id
     );
+
     res.send(bookList);
 }
 
@@ -89,10 +102,11 @@ async function getBookTotalAtLib(req, res) {
 async function giveBook(req, res) {
     const bookDetailId = req.body.book_detail_id;
     const bookList = await bookService.getBookInstanceList(bookDetailId);
+    // Need improve
     const book = bookList[0];
 
     const tx = await transferService.createTransferRequest(
-        book.id,
+        book.asset_id,
         req.body.to.email
     );
 
@@ -104,6 +118,7 @@ export default errorHandler({
     getAllUsers,
     getBookByUser,
     getBookInstanceList,
+    getBookInstanceDetailList,
     getHistoryOfBookInstance,
     getOverview,
     getBookTotalByBDID,

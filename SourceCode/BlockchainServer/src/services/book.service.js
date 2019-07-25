@@ -1,6 +1,7 @@
 import asset from "@core/bigchaindb/asset";
 import { db } from "@models";
 import env from "@core/env";
+import concurrencyHandler from "@core/handlers/concurrency.handler";
 import algoliaSearch from "algoliasearch";
 
 async function searchBook(id) {
@@ -11,7 +12,8 @@ async function getAllBookDetail() {
     const bookDetailCollection = db.collection("book_details");
     const listBookDetails = await bookDetailCollection
         .find()
-        // .limit(50)
+        .limit(50)
+        .sort({ amount: -1 })
         .toArray();
 
     return listBookDetails;
@@ -45,67 +47,119 @@ async function getBookDetail(id) {
     return bookDetail;
 }
 
-async function getBookInstanceList(bookDetailId, notKeptByLibrarian = false) {
+async function getBookInstanceList(bookDetailId) {
     const bookDetailIdSearch = await asset.searchAsset(bookDetailId);
-
     const bookList = bookDetailIdSearch.filter(e => e.data.book_detail);
-    const bookListWithCurrentKeeperPromises = bookList.map(async e => {
-        const email = await getCurrenOwnerOfABook(e.id);
+
+    const result = bookList.map(e => {
         return {
             asset_id: e.id,
+            transaction_count: "Fetching",
+            current_keeper: "Fetching"
+        };
+    });
+
+    return result;
+}
+
+async function getBookInstanceDetailList(bookDetailId) {
+    const bookDetailIdSearch = await asset.searchAsset(bookDetailId);
+    const bookList = bookDetailIdSearch.filter(e => e.data.book_detail);
+
+    const result = await concurrencyHandler(bookList, 3, async e => {
+        const { count, email } = await getDetailInformationOfABook(e.id);
+        return {
+            asset_id: e.id,
+            transaction_count: count,
             current_keeper: email || null
         };
     });
 
-    if (notKeptByLibrarian) {
-        const librarianEmail = await asset.getEmailFromPublicKey(env.publicKey);
-        const bookListWithCurrentKeeper = await Promise.all(
-            bookListWithCurrentKeeperPromises
-        );
-
-        return bookListWithCurrentKeeper.filter(
-            e => e.current_keeper !== librarianEmail
-        );
-    }
-
-    return await Promise.all(bookListWithCurrentKeeperPromises);
+    return result;
 }
 
-async function getCurrenOwnerOfABook(assetId) {
+async function getDetailInformationOfABook(assetId) {
     try {
         const txs = await asset.getAsset(assetId);
 
         if (!txs.length) {
-            return null;
+            return {
+                count: "Transaction array is null",
+                email: "Transaction array is null"
+            };
         }
 
         const publicKey = txs[txs.length - 1].outputs[0].public_keys[0];
 
         if (!publicKey) {
-            return null;
+            return {
+                count: "Invalid transaction",
+                email: "Invalid transaction"
+            };
         }
 
         const email = await asset.getEmailFromPublicKey(publicKey);
 
         if (!email) {
-            return null;
+            return {
+                count: "Invalid key: " + publicKey,
+                email: "Invalid key: " + publicKey
+            };
         }
 
-        return email;
+        return {
+            count: txs.length - 1,
+            email
+        };
     } catch (err) {
-        console.log(err);
-        return null;
+        return {
+            count: "Network Error",
+            email: "Network Error"
+        };
     }
 }
 
 async function getHistoryOfBookInstance(bookID) {
-    const assetIds = await asset.searchAsset(bookID);
-    if (!assetIds.length) {
-        return null;
+    const allTxs = await asset.getAssetTransactions(bookID);
+    if (!allTxs.length) {
+        return [];
     }
 
-    const assetId = assetIds[0].id;
-    return await asset.getAssetTransactions(assetId);
+    const txs = allTxs.filter(tx => tx.operation !== "CREATE");
+
+    const promises = txs.map(async tx => {
+        const assetId = tx.operation === "CREATE" ? tx.id : tx.asset.id;
+
+        try {
+            const returnerEmail = await asset.getEmailFromPublicKey(
+                tx.inputs[0].owners_before[0]
+            );
+            const receiverEmail = await asset.getEmailFromPublicKey(
+                tx.outputs[0].public_keys[0]
+            );
+
+            const transferDate =
+                (tx.metadata && tx.metadata.transfer_date) || null;
+
+            return {
+                id: tx.id,
+                returner: returnerEmail,
+                receiver: receiverEmail,
+                transfer_date: transferDate
+            };
+        } catch (err) {
+            return {
+                id: tx.id,
+                returner: tx.inputs[0].owners_before[0],
+                receiver: tx.outputs[0].public_keys[0],
+                asset_id: assetId
+            };
+        }
+    });
+
+    const result = await Promise.all(promises); // This is sorted by time
+
+    return result;
 }
 
 async function getBookInstanceTotal(type) {
@@ -138,6 +192,7 @@ export default {
     searchBookDetail,
     getBookDetail,
     getBookInstanceList,
+    getBookInstanceDetailList,
     getHistoryOfBookInstance,
     getBookInstanceTotal,
     getBookTotalAtLib

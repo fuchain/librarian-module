@@ -53,9 +53,21 @@ async function checkTokenGoogle(token) {
 
     const email = data.email;
     const name = data.name;
-    const picture = data.picture;
+    const pictureUrl = data.picture;
 
-    return { email, name, picture };
+    try {
+        const response = await axios.get(pictureUrl, {
+            responseType: "arraybuffer"
+        });
+        const picture = new Buffer(response.data, "binary").toString("base64");
+
+        return { email, name, picture };
+    } catch (err) {
+        console.log(err);
+
+        const picture = null;
+        return { email, name, picture };
+    }
 }
 
 async function isEmailExisted(email) {
@@ -75,7 +87,7 @@ async function verifyKeyPairEmail(token, publicKey) {
     const email = data.email.toLowerCase();
 
     // Check if it is librarian
-    if (email === "librarian@fptu.tech" && publicKey === env.publicKey) {
+    if (email === "librarian@fptu.tech" || publicKey === env.publicKey) {
         return {
             token: createJWT(email, true),
             status: "verified",

@@ -1,5 +1,7 @@
 import matchingQueue from "@queues/matching.queue";
+import bookService from "@services/book.service";
 import asset from "@core/bigchaindb/asset";
+import { db } from "@models";
 
 async function createMatchingRequest(publicKey, bookDetailId, bookId) {
     const email = await asset.getEmailFromPublicKey(publicKey);
@@ -27,4 +29,18 @@ async function cancelMatchingRequest(publicKey, bookDetailId, bookId) {
     return true;
 }
 
-export default { createMatchingRequest, cancelMatchingRequest };
+async function getMatchings() {
+    const matchingCollection = db.collection("matchings");
+
+    const matchings = await matchingCollection.find().toArray();
+
+    const result = matchings.map(async e => {
+        const bookInfo = await bookService.getBookDetail(e.bookDetailId);
+        e.bookInfo = bookInfo;
+        return e;
+    });
+
+    return await Promise.all(result);
+}
+
+export default { createMatchingRequest, cancelMatchingRequest, getMatchings };

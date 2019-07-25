@@ -1,5 +1,9 @@
-import getAccessTokenExpiresAt from "./getAccessTokenExpiresAt";
+import jwtDecode from "jwt-decode";
+import getAccessToken from "./getAccessToken";
 
 export default function() {
-  return getAccessTokenExpiresAt() - new Date().getTime() >= 0;
+  const tokenObj = jwtDecode(getAccessToken());
+  const expiresAt = tokenObj.exp || 0;
+
+  return expiresAt - new Date().getTime() >= 0;
 }

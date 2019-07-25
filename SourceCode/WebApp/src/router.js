@@ -121,10 +121,6 @@ const router = new Router({
             import("@/modules/librarian/notification/SendNotification.vue")
         },
         {
-          path: "librarian/scheduler",
-          component: () => import("@/modules/librarian/scheduler/Scheduler.vue")
-        },
-        {
           path: "librarian/queue",
           component: () => import("@/modules/librarian/queue/Queue.vue")
         }

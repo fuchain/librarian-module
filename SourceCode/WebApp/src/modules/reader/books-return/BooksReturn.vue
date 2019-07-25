@@ -16,7 +16,7 @@
     <tab-content title="Xác nhận thông tin" class="mb-5" :before-change="loading">
       <!-- tab 1 content -->
       <div class="vx-row">
-        <vx-card>
+        <vx-card noShadow>
           <div class="vx-col w-full mt">
             <p>Sách muốn trả</p>
             <p style="font-size: 2rem;">{{ book && book.name || "Không có" }}</p>
@@ -35,10 +35,10 @@
       <!-- tab 2 content -->
       <div class="vx-row">
         <div class="vx-col w-full">
-          <vx-card class="w-full mb-4" style="font-size: 1.2rem; text-align: center;">
+          <vx-card class="w-full mb-4" style="font-size: 1.2rem; text-align: center;" noShadow>
             <vs-radio v-model="transferType" vs-value="auto">Chưa có người nhận</vs-radio>
           </vx-card>
-          <vx-card class="w-full" style="font-size: 1.2rem; text-align: center;">
+          <vx-card class="w-full" style="font-size: 1.2rem; text-align: center;" noShadow>
             <vs-radio v-model="transferType" vs-value="manual">Đã có người nhận</vs-radio>
           </vx-card>
         </div>
@@ -49,10 +49,10 @@
       <!-- tab 3 content -->
       <div class="vx-row">
         <div class="vx-col w-full">
-          <vx-card v-if="transferType === 'manual' && !isLoading">
+          <vx-card v-if="transferType === 'manual' && !isLoading" noShadow>
             <vs-input class="w-full" label="Email người nhận" v-model="email" />
           </vx-card>
-          <vx-card v-else>{{ isLoading ? "Đang xử lí..." : resultText }}</vx-card>
+          <vx-card noShadow cardBorder v-else>{{ isLoading ? "Đang xử lí..." : resultText }}</vx-card>
         </div>
       </div>
     </tab-content>

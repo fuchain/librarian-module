@@ -40,6 +40,7 @@
       <template slot="thead">
         <vs-th>ID</vs-th>
         <vs-th></vs-th>
+        <vs-th>Phân loại</vs-th>
         <vs-th>Tên đầu sách</vs-th>
         <vs-th>Mã môn</vs-th>
         <vs-th>Số lượng sách</vs-th>
@@ -63,6 +64,10 @@
             </vs-td>
 
             <vs-td>
+              <p>{{ tr.categories || "--" }}</p>
+            </vs-td>
+
+            <vs-td>
               <p class="font-medium">{{ tr.name }}</p>
             </vs-td>
 
@@ -80,7 +85,7 @@
                 type="border"
                 @click="openBookDataList(tr)"
                 v-if="tr.amount > 0"
-              >Xem sách</vs-button>
+              >Xem</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>
@@ -131,7 +136,7 @@ export default {
           .catch(() => {
             this.$vs.notify({
               title: "Lỗi",
-              text: `Không có đầu sách #ID ${this.searchText}`,
+              text: "Không tìm thấy",
               color: "warning",
               position: "top-center"
             });
