@@ -2,7 +2,6 @@
   <div>
     <h2 class="mb-8">Báo cáo đánh giá của người dùng</h2>
     <vx-card
-      :title="'Đánh giá UX của ' + reviews.length + ' người dùng'"
       class="flex justify-center mb-8 w-full lg:w-1/2 mb-base bg-success-gradient"
       style="color: white;"
     >
@@ -138,7 +137,6 @@ export default {
       return result;
     }
   },
-  methods: {},
   mounted() {
     this.$vs.loading();
 

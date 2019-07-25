@@ -4,10 +4,14 @@
       <vx-card>
         <div slot="no-body" class="full-page-bg-color">
           <div class="vx-row">
-            <div class="vx-col hidden sm:hidden md:hidden lg:block lg:w-1/2 mx-auto self-center">
+            <div
+              class="vx-col lg:block lg:w-1/2 mx-auto self-center"
+              @click="redirectToLP()"
+              style="cursor: pointer;"
+            >
               <img
                 src="@/assets/images/logo/logopng.png"
-                style="width: 150px;"
+                style="width: 120px; margin-top: 10px; margin-bottom: 10px;"
                 alt="login"
                 class="mx-auto"
               />
@@ -146,6 +150,9 @@ export default {
         text: "Bạn có chắc muốn gỡ chìa khóa trên thiết bị này?",
         accept: this.removeKey
       });
+    },
+    redirectToLP() {
+      window.location.href = "https://blockchain.fptu.tech";
     }
   },
   mounted: function() {
