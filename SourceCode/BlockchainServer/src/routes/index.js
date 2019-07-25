@@ -11,6 +11,7 @@ import transferRoutes from "@routes/transfer.route";
 import matchingRoutes from "@routes/matching.route";
 import bookRoutes from "@routes/book.route";
 import fetchRoutes from "@routes/fetch.route";
+import remoteRoutes from "@routes/remote.route";
 
 const router = express.Router();
 
@@ -35,5 +36,6 @@ router.use("/transfer", transferRoutes);
 router.use("/matching", matchingRoutes);
 router.use("/book", bookRoutes);
 router.use("/fetch", fetchRoutes);
+router.use("/remote", remoteRoutes);
 
 export default router;

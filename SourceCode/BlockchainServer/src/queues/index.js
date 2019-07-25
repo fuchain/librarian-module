@@ -10,11 +10,12 @@ export default async function initQueues() {
         await matchingQueue.run();
         await importDBQueue.run();
         await pairQueue.run();
-        // Pair queue will run every 1 minute
-        await pairQueue.addJob();
         await pairUpdateQueue.run();
         await insertQueue.run();
         await insertTxQueue.run();
+
+        // Pair queue will run every 1 minute
+        await pairQueue.addJob();
     } catch (err) {
         throw err;
     }

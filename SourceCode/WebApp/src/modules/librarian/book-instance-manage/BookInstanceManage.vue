@@ -22,7 +22,7 @@
       </book-card>
     </div>
 
-    <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
+    <vs-table noDataText="Không có dữ liệu" ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
@@ -102,7 +102,7 @@
     </vs-table>
 
     <vs-popup :title="historyId" :active.sync="historyPopup" :fullscreen="historyList.length">
-      <vs-table :data="historyList" v-if="historyList && historyList.length">
+      <vs-table noDataText="Không có dữ liệu" :data="historyList" v-if="historyList && historyList.length">
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>
           <vs-th>Mã giao dịch</vs-th>

@@ -31,5 +31,5 @@ COPY --from=builder /root/src/app/dist /root/src/app/dist
 
 ENTRYPOINT ["node","./dist/server.js"]
 
-# docker build -t librarian-observeserver .
-# docker run -d --name librarian-observeserver librarian-observeserver:latest
+# docker build -t librarian-observer-worker .
+# docker run -d --name librarian-observer-worker librarian-observer-worker:latest

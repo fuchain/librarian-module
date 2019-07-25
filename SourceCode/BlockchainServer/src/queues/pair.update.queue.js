@@ -4,8 +4,10 @@ const pairUpdateQueue = new Queue("pair", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
 import userService from "@services/user.service";
+import bookService from "@services/book.service";
 import { db } from "@models";
 import { request } from "http";
+import axios from "axios";
 
 // Watch and Run job queue
 function run() {
@@ -54,6 +56,29 @@ async function doJob(returner, requester) {
                 }
             }
         );
+
+        // Push notification
+        const bookDetail = await bookService.getBookDetail(
+            returner.bookDetailId
+        );
+
+        axios.post("https://napi.fptu.tech/api/v1/notifications/push", {
+            email: requester.email,
+            type: "returning",
+            message: `Yêu cầu trả sách ${bookDetail.name ||
+                returner.bookDetailId} của bạn đã được ghép với ${
+                returner.email
+            }`
+        });
+
+        axios.post("https://napi.fptu.tech/api/v1/notifications/push", {
+            email: returner.email,
+            type: "requesting",
+            message: `Yêu cầu mượn sách ${bookDetail.name ||
+                returner.bookDetailId} của bạn đã được ghép với ${
+                requester.email
+            }`
+        });
 
         return true;
     } catch (err) {

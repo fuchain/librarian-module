@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <vs-table ref="table" :data="dataList">
+    <vs-table noDataText="Không có dữ liệu" ref="table" :data="dataList">
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
