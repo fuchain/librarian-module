@@ -10,11 +10,6 @@ function run() {
     pairQueue.process(jobCallback);
 }
 
-function makeDistictArray(arr) {
-    const arrFiltered = arr.map(e => e.bookDetailId);
-    return Array.from(new Set(arrFiltered));
-}
-
 // Describe what to do in the job
 async function doJob() {
     try {
@@ -22,6 +17,7 @@ async function doJob() {
 
         // Call Golang Pair Worker
         await axios.get("http://ssh.fptu.tech:5100");
+        console.log("Triggered Go service to the pair job");
 
         return true;
     } catch (err) {
