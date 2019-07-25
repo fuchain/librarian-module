@@ -118,7 +118,7 @@ function userMenu(numOfBooks) {
     },
     {
       url: "/transfer-history",
-      name: "Lịch sử chuyển sách",
+      name: "Lịch sử nhận sách",
       slug: "transfer-history",
       icon: "FileTextIcon"
     },

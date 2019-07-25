@@ -1,4 +1,5 @@
 import outputService from "@services/output.service";
+import fetchService from "@services/fetch.service";
 import asset from "@core/bigchaindb/asset";
 import transaction from "@core/bigchaindb/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
@@ -141,10 +142,13 @@ async function getInQueueBook(publicKey, isGetReturning = true) {
 }
 
 async function getTransferHistory(publicKey) {
-    const txIds = await outputService.getSpent(publicKey);
-    const promises = txIds.map(e => {
+    const txIdsSpent = await outputService.getSpent(publicKey);
+    const txIdsUnspent = await outputService.getUnspent(publicKey);
+    const txIds = txIdsSpent.concat(txIdsUnspent);
+
+    const promises = txIds.map(async e => {
         const txId = e.transaction_id;
-        const tx = transaction.get(txId);
+        const tx = await transaction.get(txId);
 
         return tx;
     });
@@ -165,13 +169,16 @@ async function getTransferHistory(publicKey) {
             const transferDate =
                 (tx.metadata && tx.metadata.transfer_date) || null;
 
+            const bookDetail = await fetchService.getBookDetail(assetId);
+
             return {
                 id: tx.id,
                 returner: returnerEmail,
                 receiver: receiverEmail,
                 operation: tx.operation,
                 asset_id: assetId,
-                transfer_date: transferDate
+                transfer_date: transferDate,
+                book_detail: bookDetail
             };
         } catch (err) {
             return {
