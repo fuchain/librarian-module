@@ -3,6 +3,7 @@ package pair
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -26,7 +27,14 @@ func Pair() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	var mongoHostname string
+	if os.Getenv("MONGODB") != "" {
+		mongoHostname = os.Getenv("MONGODB")
+	} else {
+		mongoHostname = "localhost:27017"
+	}
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+mongoHostname))
 	if err != nil {
 		log.Fatal(err)
 	}
