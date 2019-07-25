@@ -24,14 +24,16 @@ type Matching struct {
 
 // Pair ...
 func Pair() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	log.Println("Starting a pair job...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	var mongoHostname string
 	if os.Getenv("MONGODB") != "" {
 		mongoHostname = os.Getenv("MONGODB")
 	} else {
-		mongoHostname = "localhost:27017"
+		mongoHostname = "127.0.0.1:27017"
 	}
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+mongoHostname))
@@ -56,6 +58,8 @@ func Pair() {
 
 		matchingSlice = append(matchingSlice, result)
 	}
+
+	log.Println("Request not matched in queues is: ", len(matchingSlice))
 
 	uniqueBookIDs := distinctSlice(matchingSlice)
 	queues := createQueueSlice(uniqueBookIDs, matchingSlice)
