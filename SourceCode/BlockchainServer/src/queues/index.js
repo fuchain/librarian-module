@@ -9,7 +9,7 @@ export default async function initQueues() {
     try {
         await matchingQueue.run();
         await importDBQueue.run();
-        // await pairQueue.run();
+        await pairQueue.run();
         await pairUpdateQueue.run();
         await insertQueue.run();
         await insertTxQueue.run();
