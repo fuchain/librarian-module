@@ -3,8 +3,8 @@ import env from "@core/env";
 
 sgMail.setApiKey(env.sendgridKey);
 
-const defaultSender = "librarian@fe.edu.vn",
-    defaultSubject = "Thông báo từ phòng thư viện",
+const defaultSender = "librarian@fptu.tech",
+    defaultSubject = "Thông báo từ phòng Thư viện Trường Đại học FPT",
     defaultText = "Phòng thư viện xin gửi thông báo đến bạn",
     defaultHtml = "<strong>Phòng thư viện xin gửi thông báo đến bạn</strong>";
 
