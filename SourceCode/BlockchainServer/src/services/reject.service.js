@@ -4,11 +4,12 @@ async function getRejectCount(assetId) {
     const transactionList = await asset.searchAsset(assetId);
     const reverseList = transactionList.reverse();
     let rejectCount = 0;
-    reverseList.map(transaction => {
-        if(transaction.data.type === 'reject'){
-            rejectCount++;
+    for (let i = 0; i < reverseList.length; i++) {
+        if (reverseList[i].data.type !== 'reject') {
+            break;
         }
-    });
+        rejectCount++;
+    }
     return rejectCount;
 }
 
