@@ -52,5 +52,5 @@ func HandleMatch(returnerRaw Matching, receiver Matching) {
 		log.Fatal("Mar erro:", err)
 	}
 
-	caller.PostPair("http://localhost:5000/api/v1/remote/pair_update", requestBody)
+	caller.PostPair("http://lapi.fptu.tech/api/v1/remote/pair_update", requestBody)
 }

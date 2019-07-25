@@ -3,8 +3,9 @@ import env from "@core/env";
 const pairQueue = new Queue("pair", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import { db } from "@models";
-import pairUpdateQueue from "@queues/pair.update.queue";
+// import { db } from "@models";
+// import pairUpdateQueue from "@queues/pair.update.queue";
+import axios from "axios";
 
 // Watch and Run job queue
 function run() {
@@ -19,57 +20,59 @@ function makeDistictArray(arr) {
 // Describe what to do in the job
 async function doJob() {
     try {
-        const matchingCollection = db.collection("matchings");
+        // const matchingCollection = db.collection("matchings");
 
-        const notMatchedArr = await matchingCollection
-            .find({
-                matched: false
-            })
-            .toArray();
+        // const notMatchedArr = await matchingCollection
+        //     .find({
+        //         matched: false
+        //     })
+        //     .toArray();
 
-        if (!notMatchedArr.length) {
-            return false;
-        }
+        // if (!notMatchedArr.length) {
+        //     return false;
+        // }
 
-        // Get book detail distinct from the not matched elements
-        const bookDetailsIdsUnique = makeDistictArray(notMatchedArr);
+        // // Get book detail distinct from the not matched elements
+        // const bookDetailsIdsUnique = makeDistictArray(notMatchedArr);
 
-        // Create a queue for each book detail, each queue have two array (for returner and requester)
-        const queuesByBookDetails = bookDetailsIdsUnique.map(e => {
-            const bookDetailQueue = notMatchedArr.filter(el => {
-                return el.bookDetailId === e;
-            });
+        // // Create a queue for each book detail, each queue have two array (for returner and requester)
+        // const queuesByBookDetails = bookDetailsIdsUnique.map(e => {
+        //     const bookDetailQueue = notMatchedArr.filter(el => {
+        //         return el.bookDetailId === e;
+        //     });
 
-            return bookDetailQueue;
-        });
+        //     return bookDetailQueue;
+        // });
 
-        // Query in each book detail queue to get a match couple
-        queuesByBookDetails.forEach(aBookDetailQueue => {
-            const returnArr = aBookDetailQueue.filter(match => !match.bookId);
-            const requestArr = aBookDetailQueue.filter(match => match.bookId);
+        // // Query in each book detail queue to get a match couple
+        // queuesByBookDetails.forEach(aBookDetailQueue => {
+        //     const returnArr = aBookDetailQueue.filter(match => !match.bookId);
+        //     const requestArr = aBookDetailQueue.filter(match => match.bookId);
 
-            returnArr.sort((a, b) => b.time - a.time);
-            requestArr.sort((a, b) => b.time - a.time);
+        //     returnArr.sort((a, b) => b.time - a.time);
+        //     requestArr.sort((a, b) => b.time - a.time);
 
-            const shorterLength =
-                returnArr.length < requestArr.length
-                    ? returnArr.length
-                    : requestArr.length;
+        //     const shorterLength =
+        //         returnArr.length < requestArr.length
+        //             ? returnArr.length
+        //             : requestArr.length;
 
-            if (!shorterLength) {
-                return false;
-            }
+        //     if (!shorterLength) {
+        //         return false;
+        //     }
 
-            const loopByShorterLength = Array.from(Array(shorterLength));
-            loopByShorterLength.forEach((_, index) => {
-                // This is a match!
-                const matchedReturner = returnArr[index];
-                const matchedRequester = requestArr[index];
+        //     const loopByShorterLength = Array.from(Array(shorterLength));
+        //     loopByShorterLength.forEach((_, index) => {
+        //         // This is a match!
+        //         const matchedReturner = returnArr[index];
+        //         const matchedRequester = requestArr[index];
 
-                // Add a job to update db and push
-                pairUpdateQueue.addJob(matchedReturner, matchedRequester);
-            });
-        });
+        //         // Add a job to update db and push
+        //         pairUpdateQueue.addJob(matchedReturner, matchedRequester);
+        //     });
+        // });
+
+        await axios.get("http://ssh.fptu.tech:5100");
 
         return true;
     } catch (err) {
