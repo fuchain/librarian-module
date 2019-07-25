@@ -4,6 +4,11 @@ import pairUpdateQueue from "@queues/pair.update.queue";
 
 const matchingCollection = db.collection("matchings");
 
+function makeDistictArray(arr) {
+  const arrFiltered = arr.map(e => e.bookDetailId);
+  return Array.from(new Set(arrFiltered));
+}
+
 const notMatchedArr = await matchingCollection
   .find({
     matched: false

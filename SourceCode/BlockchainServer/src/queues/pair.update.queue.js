@@ -62,7 +62,7 @@ async function doJob(returner, requester) {
             returner.bookDetailId
         );
 
-        axios.post("https://napi.fptu.tech/api/v1/notifications/push", {
+        await axios.post("https://napi.fptu.tech/api/v1/notifications/push", {
             email: requester.email,
             type: "returning",
             message: `Yêu cầu trả sách ${bookDetail.name ||
@@ -71,7 +71,7 @@ async function doJob(returner, requester) {
             }`
         });
 
-        axios.post("https://napi.fptu.tech/api/v1/notifications/push", {
+        await axios.post("https://napi.fptu.tech/api/v1/notifications/push", {
             email: returner.email,
             type: "requesting",
             message: `Yêu cầu mượn sách ${bookDetail.name ||

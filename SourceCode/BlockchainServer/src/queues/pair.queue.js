@@ -10,11 +10,6 @@ function run() {
     pairQueue.process(jobCallback);
 }
 
-function makeDistictArray(arr) {
-    const arrFiltered = arr.map(e => e.bookDetailId);
-    return Array.from(new Set(arrFiltered));
-}
-
 // Describe what to do in the job
 async function doJob() {
     try {
