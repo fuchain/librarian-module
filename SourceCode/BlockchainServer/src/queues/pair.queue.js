@@ -22,6 +22,7 @@ async function doJob() {
 
         // Call Golang Pair Worker
         await axios.get("http://ssh.fptu.tech:5100");
+        console.log("Triggered Go service to the pair job");
 
         return true;
     } catch (err) {
