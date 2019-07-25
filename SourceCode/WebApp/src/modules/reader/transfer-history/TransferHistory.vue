@@ -1,8 +1,15 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <h2 class="mb-8 ml-4">Lịch sử chuyển sách</h2>
+    <h2 class="mb-8 ml-4">Lịch sử nhận sách</h2>
 
-    <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
+    <vs-table
+      noDataText="Không có dữ liệu"
+      ref="table"
+      pagination
+      :max-items="itemsPerPage"
+      search
+      :data="dataList"
+    >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
@@ -47,8 +54,9 @@
       </div>
 
       <template slot="thead">
+        <vs-th></vs-th>
+        <vs-th>Tên sách</vs-th>
         <vs-th>Người trả</vs-th>
-        <vs-th>Người nhận</vs-th>
         <vs-th>Sách ID</vs-th>
         <vs-th>Thời gian</vs-th>
         <vs-th></vs-th>
@@ -58,11 +66,20 @@
         <tbody>
           <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
             <vs-td>
-              <p>{{ tr.returner }}</p>
+              <p>
+                <img
+                  :src="tr.book_detail && tr.book_detail.thumbnail || '/images/book-thumbnail.jpg'"
+                  style="max-width: 65px;"
+                />
+              </p>
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.receiver }}</p>
+              <p>{{ tr.book_detail && tr.book_detail.name }}</p>
+            </vs-td>
+
+            <vs-td>
+              <p>{{ tr.returner }}</p>
             </vs-td>
 
             <vs-td>
@@ -83,17 +100,28 @@
 export default {
   data() {
     return {
+      isMounted: false,
       itemsPerPage: 10,
       dataList: []
     };
   },
+  computed: {
+    currentPage() {
+      if (this.isMounted) {
+        return this.$refs.table.currentx;
+      }
+      return 0;
+    }
+  },
   mounted() {
+    this.isMounted = true;
+
     this.$vs.loading();
 
     this.$http
       .post(`${this.$http.baseUrl}/user/transfer_history`)
       .then(response => {
-        const data = response.data;
+        const data = response.data.filter(e => e.transfer_date);
 
         this.dataList = [].concat(data.reverse());
       })

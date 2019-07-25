@@ -25,7 +25,14 @@
     </vx-card>
     <vs-divider border-style="dashed" color="dark">báo cáo chi tiết</vs-divider>
     <div id="data-list-list-view" class="data-list-container">
-      <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="reviews">
+      <vs-table
+        noDataText="Không có dữ liệu"
+        ref="table"
+        pagination
+        :max-items="itemsPerPage"
+        search
+        :data="reviews"
+      >
         <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
           <!-- ITEMS PER PAGE -->
           <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
