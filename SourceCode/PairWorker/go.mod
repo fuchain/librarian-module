@@ -1,4 +1,4 @@
-module goworker
+module pairworker
 
 go 1.12
 
