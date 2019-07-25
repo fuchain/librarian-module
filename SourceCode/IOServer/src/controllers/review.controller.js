@@ -1,6 +1,6 @@
 import { Review } from "@models";
 
-const list = async (req, res, next) => {
+const list = async (_, res) => {
     const result = await Review.find();
 
     const reviews = result.map(e => {
