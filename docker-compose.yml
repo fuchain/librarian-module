@@ -44,15 +44,15 @@ services:
 
   webapp:
     build:
-      context: ./WebApp
+      context: ./webapp
       dockerfile: ./dev.Dockerfile
     ports:
       - 3000:3000
     image: librarian-webapp-dev
     volumes:
-      - ./WebApp/src:/root/src/app/src
-      - ./WebApp/public:/root/src/app/public
-      - ./WebApp/.env:/root/src/app/.env
+      - ./webapp/src:/root/src/app/src
+      - ./webapp/public:/root/src/app/public
+      - ./webapp/.env:/root/src/app/.env
     environment:
       VUE_APP_API_BASE_URL: http://localhost:5000
       VUE_APP_API_BETA_URL: http://localhost:5002
@@ -60,18 +60,18 @@ services:
 
   visualizeapp:
     build:
-      context: ./VisualizeApp
+      context: ./visualizeapp
       dockerfile: ./dev.Dockerfile
     ports:
       - 3001:3000
     image: librarian-visualizeapp-dev
     volumes:
-      - ./VisualizeApp/src:/root/src/app/src
-      - ./VisualizeApp/public:/root/src/app/public
+      - ./visualizeapp/src:/root/src/app/src
+      - ./visualizeapp/public:/root/src/app/public
 
   pairworker:
     build:
-      context: ./PairWorker
+      context: ./pairworker
       dockerfile: ./dev.Dockerfile
     ports:
       - 5100:5100
@@ -85,7 +85,7 @@ services:
 
   bcserver:
     build:
-      context: ./BlockchainServer
+      context: ./bcserver
       dockerfile: ./dev.Dockerfile
     ports:
       - 5000:5000
@@ -96,7 +96,7 @@ services:
       - redisbc
     image: librarian-bcserver-dev
     volumes:
-      - ./BlockchainServer/src:/root/src/node/src
+      - ./bcserver/src:/root/src/node/src
     environment:
       DB_HOST: mongodbbc
       DB_NAME: librarianblockchain
@@ -107,7 +107,7 @@ services:
 
   ioserver:
     build:
-      context: ./IOServer
+      context: ./ioserver
       dockerfile: ./dev.Dockerfile
     ports:
       - 5002:5002
@@ -118,7 +118,7 @@ services:
       - redisio
     image: librarian-ioserver-dev
     volumes:
-      - ./IOServer/src:/root/src/node/src
+      - ./ioserver/src:/root/src/node/src
     environment:
       DB_HOST: mongodbio
       DB_NAME: librariannode

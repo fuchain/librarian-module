@@ -1,1 +1,1 @@
-# BigchainDB Visualization
+# Blockchain Visualization

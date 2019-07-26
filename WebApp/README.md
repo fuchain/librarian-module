@@ -1,6 +1,6 @@
-# FPT Librarian Module - Web App part
+# Librarian Module Web App
 
-A webapp for scaffolding FPTU Librarian by Vue.
+A webapp for scaffolding Librarian Module by Vue.
 
 # Installation
 
