@@ -1,6 +1,6 @@
 # BSMW - Book Share Management without warehouse
 
-Librarian Module is the book-share without warehouse based on **Blockchain platform**. This repository is for the whole system.
+Librarian Module is the book-share without warehouse based on **Blockchain database**.
 
 FPT University Summer 2019 - Capstone Project
 
@@ -8,14 +8,15 @@ FPT University Summer 2019 - Capstone Project
 
 - Javascript
 - Golang
-- Node.js, Express.js
-- Vue.js, Webpack, Babel
+- Node.js, Express
+- Vue.js
+- React, Redux
 - Socket.io
 - MongoDB
 - BigchainDB
-- Redis (caching & message broker)
+- Redis
 - Docker, Docker Compose, Docker Swarm
-- Ansible script (deployment)
+- Ansible script
 
 ## Development
 
@@ -27,7 +28,7 @@ $ cd librarian-module
 $ make run
 ```
 
-You can you our BigchainDB testnet at `https://testnet.bigchain.fptu.tech` or deal with your own at `http://localhost:9984/`.
+You can use our BigchainDB testnet at `https://testnet.bigchain.fptu.tech` or deal with your own at `http://localhost:9984/`.
 
 There are also other commands you can execute:
 
@@ -40,7 +41,7 @@ There are also other commands you can execute:
 
 Easy deploy to production with **Docker Swarm**:
 
-Make sure you have built images on Docker Hub and `docker-stack.yml` file, then run:
+Make sure you have built images on your Docker Hub and `docker-stack.yml` file, then run:
 
 ```
 $ docker swarm init
