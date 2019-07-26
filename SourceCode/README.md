@@ -1,8 +1,23 @@
-# Librarian Blockchain-based
+# BSMW - Book Share Management without warehouse
 
-Librarian Module is the book-share without warehouse based on Blockchain platform. This repository is for the whole system.
+Librarian Module is the book-share without warehouse based on **Blockchain platform**. This repository is for the whole system.
 
-## Run and Test
+FPT University Summer 2019 - Capstone Project
+
+## Stacks:
+
+- Javascript
+- Golang
+- Node.js, Express.js
+- Vue.js, Webpack, Babel
+- Socket.io
+- MongoDB
+- BigchainDB
+- Redis (caching & message broker)
+- Docker, Docker Compose, Docker Swarm
+- Ansible script (deployment)
+
+## Development
 
 Running and testing the latest version of Librarian Module cannot be easier. Make sure you have a recent version of [Docker Compose](https://docs.docker.com/compose/install/) installed. When you are ready, fire up a terminal and run:
 
@@ -21,9 +36,9 @@ There are also other commands you can execute:
 - `make build`: Build all services.
 - `make reset`: Clear all services, volumns and networks.
 
-# Deploy production
+## Production
 
-Easy deployment to production with Docker Swarm:
+Easy deploy to production with **Docker Swarm**:
 
 Make sure you have built images on Docker Hub and `docker-stack.yml` file, then run:
 
@@ -31,3 +46,12 @@ Make sure you have built images on Docker Hub and `docker-stack.yml` file, then 
 $ docker swarm init
 $ docker stack deploy -c docker-stack.yml librarian
 ```
+
+## Contributors:
+
+1. Huynh Minh Tu
+2. Pham Hoang Linh
+3. To Quoc Cuong
+4. Doan Vu Phong
+
+Supervisor: Mr. Kieu Trong Khanh
