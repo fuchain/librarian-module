@@ -2,7 +2,7 @@
   <div id="data-list-list-view" class="data-list-container">
     <h2 class="mb-8 ml-4">Quản lí người dùng</h2>
 
-    <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
+    <vs-table noDataText="Không có dữ liệu" ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
@@ -111,7 +111,7 @@
       :title="'Sách đang giữ của ' + keepingName"
       :active.sync="keepingPopup"
     >
-      <vs-table :data="keepingList" v-if="keepingList && keepingList.length">
+      <vs-table noDataText="Không có dữ liệu" :data="keepingList" v-if="keepingList && keepingList.length">
         <template slot="thead">
           <vs-th>Mã sách</vs-th>
           <vs-th>ID đầu sách</vs-th>

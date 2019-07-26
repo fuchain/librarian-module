@@ -2,7 +2,6 @@
   <div>
     <h2 class="mb-8">Báo cáo đánh giá của người dùng</h2>
     <vx-card
-      :title="'Đánh giá UX của ' + reviews.length + ' người dùng'"
       class="flex justify-center mb-8 w-full lg:w-1/2 mb-base bg-success-gradient"
       style="color: white;"
     >
@@ -25,7 +24,14 @@
     </vx-card>
     <vs-divider border-style="dashed" color="dark">báo cáo chi tiết</vs-divider>
     <div id="data-list-list-view" class="data-list-container">
-      <vs-table ref="table" pagination :max-items="itemsPerPage" search :data="reviews">
+      <vs-table
+        noDataText="Không có dữ liệu"
+        ref="table"
+        pagination
+        :max-items="itemsPerPage"
+        search
+        :data="reviews"
+      >
         <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
           <!-- ITEMS PER PAGE -->
           <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
@@ -131,7 +137,6 @@ export default {
       return result;
     }
   },
-  methods: {},
   mounted() {
     this.$vs.loading();
 

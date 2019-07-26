@@ -1,11 +1,17 @@
 <template>
-  <vx-card :title="'Hàng đợi đang có ' + queues.length + ' đầu sách'">
+  <vx-card :title="'Hàng đợi đang có ' + queues.length + ' yêu cầu'">
     <p class="mb-8">
       Đã có
       <strong>{{ matched || 0 }}</strong> yêu cầu đã được hệ thống ghép, đang chờ người đọc chuyển sách.
     </p>
 
-    <vs-table ref="table" pagination :max-items="itemsPerPage" :data="queues">
+    <vs-table
+      noDataText="Không có dữ liệu"
+      ref="table"
+      pagination
+      :max-items="itemsPerPage"
+      :data="queues"
+    >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
