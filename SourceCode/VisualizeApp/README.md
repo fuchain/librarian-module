@@ -1,1 +1,0 @@
-# BigchainDB Visualization
