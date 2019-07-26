@@ -1,49 +1,35 @@
 version: "3"
 services:
-  redis:
+  redisbc:
     image: redis:alpine
     command: redis-server --appendonly yes
     ports:
       - 6379:6379
     volumes:
-      - redis-data:/data
+      - redisbc-data:/data
     networks:
       - node
     deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 3
-        window: 120s
+      placement:
+        constraints: [node.role == manager]
 
-  redisbc:
+  redisio:
     image: redis:alpine
     command: redis-server --appendonly yes
     ports:
       - 6380:6379
     volumes:
-      - redisbc-data:/data
+      - redisio-data:/data
     networks:
       - node
     deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 3
-        window: 120s
+      placement:
+        constraints: [node.role == manager]
 
   mongodbbc:
     image: mongo
     ports:
-      - 27018:27017
+      - 27017:27017
     volumes:
       - mongodbbc-data:/data/db
     networks:
@@ -55,14 +41,11 @@ services:
   mongodbio:
     image: mongo
     ports:
-      - 27019:27017
+      - 27018:27017
     volumes:
       - mongodbio-data:/data/db
     networks:
       - node
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: capstone
-      MONGO_INITDB_ROOT_PASSWORD: capstone
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -76,9 +59,9 @@ services:
       VUE_APP_API_BETA_URL: https://napi.fptu.tech
       VUE_APP_SOCKET_URL: http://napi.fptu.tech
     deploy:
-      replicas: 1
+      replicas: 4
       update_config:
-        parallelism: 1
+        parallelism: 2
         delay: 10s
       restart_policy:
         condition: on-failure
@@ -122,7 +105,7 @@ services:
         max_attempts: 3
         window: 120s
 
-  blockchainserver:
+  bcserver:
     image: fptu/librarian-blockchainserver:latest
     ports:
       - 5000:5000
@@ -130,18 +113,16 @@ services:
       - node
     depends_on:
       - mongodbbc
-      - redis
+      - redisbc
     environment:
       DB_HOST: mongodbbc
-      DB_USER: capstone
-      DB_PASS: capstone
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
       BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
       PUBLIC_KEY: Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9
       PRIVATE_KEY: CviuZeJhVuvtUc25BUuUDUmU8nARFqpxYKDGQP61s4is
     deploy:
-      replicas: 1
+      replicas: 2
       update_config:
         parallelism: 1
         delay: 10s
@@ -159,18 +140,16 @@ services:
       - node
     depends_on:
       - mongodbio
-      - redis
+      - redisio
     environment:
       DB_HOST: mongodbio
-      DB_USER: capstone
-      DB_PASS: capstone
       DB_NAME: librariannode
-      REDIS_HOST: redis
+      REDIS_HOST: redisio
       SENDGRID_API_KEY: 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
     deploy:
-      replicas: 1
+      replicas: 4
       update_config:
-        parallelism: 1
+        parallelism: 2
         delay: 10s
       restart_policy:
         condition: on-failure
@@ -211,7 +190,7 @@ networks:
   node:
 
 volumes:
-  redis-data:
+  redisio-data:
   redisbc-data:
   mongodbbc-data:
   mongodbio-data:

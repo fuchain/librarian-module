@@ -5,7 +5,6 @@ services:
       context: .
       dockerfile: ./dev.Dockerfile
     image: pair-worker
-    container_name: pair-worker
     volumes:
       - .:/root/src/go
     tty: true
