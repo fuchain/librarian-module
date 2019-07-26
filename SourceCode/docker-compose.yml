@@ -97,7 +97,6 @@ services:
     image: librarian-bcserver-dev
     volumes:
       - ./BlockchainServer/src:/root/src/node/src
-      - ./BlockchainServer/.env:/root/src/node/.env
     environment:
       DB_HOST: mongodbbc
       DB_NAME: librarianblockchain
@@ -120,7 +119,6 @@ services:
     image: librarian-ioserver-dev
     volumes:
       - ./IOServer/src:/root/src/node/src
-      - ./IOServer/.env:/root/src/node/.env
     environment:
       DB_HOST: mongodbio
       DB_NAME: librariannode

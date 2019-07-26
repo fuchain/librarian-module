@@ -4,6 +4,9 @@ ECHO := /usr/bin/env echo
 
 IS_DOCKER_COMPOSE_INSTALLED := $(shell command -v docker-compose 2> /dev/null)
 
+build: check-deps ## Build services from source (stop it with ctrl+c)
+	@$(DC) build
+
 run: check-deps ## Run services from source (stop it with ctrl+c)
 	@$(DC) up
 
