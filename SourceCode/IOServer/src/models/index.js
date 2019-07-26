@@ -4,14 +4,7 @@ import env from "@core/env";
 import reviewSchema from "@models/review.schema";
 import notificationSchema from "@models/notification.schema";
 
-const conn = mongoose.createConnection(
-    `mongodb://${env.dbHost}/${env.dbName}`,
-    {
-        auth: { authSource: "admin" },
-        user: env.dbUser,
-        pass: env.dbPass
-    }
-);
+const conn = mongoose.createConnection(`mongodb://${env.dbHost}/${env.dbName}`);
 
 function init() {
     conn.on("error", console.error.bind(console, "MongoDB connection error:"));

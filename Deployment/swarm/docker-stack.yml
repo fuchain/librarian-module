@@ -1,112 +1,158 @@
 version: "3"
 services:
   redis:
-    image: redis
+    image: redis:alpine
     command: redis-server --appendonly yes
-    container_name: librarian-redis-dev
     ports:
       - 6379:6379
     volumes:
       - redis-data:/data
     networks:
       - node
-    restart: always
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   redisbc:
-    image: redis
-    container_name: librarian-redisbc-dev
+    image: redis:alpine
+    command: redis-server --appendonly yes
     ports:
       - 6380:6379
     volumes:
       - redisbc-data:/data
     networks:
       - node
-    restart: always
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   mongodbbc:
     image: mongo
-    container_name: librarian-mongodbbc-dev
     ports:
-        - 27018:27017
+      - 27018:27017
     volumes:
       - mongodbbc-data:/data/db
     networks:
       - node
-    restart: always
-    environment:
-        MONGO_INITDB_ROOT_USERNAME: capstone
-        MONGO_INITDB_ROOT_PASSWORD: capstone
-  
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
   mongodbio:
     image: mongo
-    container_name: librarian-mongodbio-dev
     ports:
-        - 27019:27017
+      - 27019:27017
     volumes:
       - mongodbio-data:/data/db
     networks:
       - node
-    restart: always
     environment:
-        MONGO_INITDB_ROOT_USERNAME: capstone
-        MONGO_INITDB_ROOT_PASSWORD: capstone
+      MONGO_INITDB_ROOT_USERNAME: capstone
+      MONGO_INITDB_ROOT_PASSWORD: capstone
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   webapp:
-    build:
-      context: ./WebApp
-      dockerfile: ./dev.Dockerfile
+    image: fptu/librarian-webapp:latest
     ports:
-      - 3000:3000
-    image: librarian-webapp-dev
-    container_name: librarian-webapp-dev
-    volumes:
-      - ./WebApp/src:/root/src/app/src
-      - ./WebApp/public:/root/src/app/public
-      - ./WebApp/.env:/root/src/app/.env
+      - 3000:80
     environment:
-      VUE_APP_API_BASE_URL: http://localhost:5000
-      VUE_APP_API_BETA_URL: http://localhost:5002
-      VUE_APP_SOCKET_URL: http://localhost:5002
+      VUE_APP_API_BASE_URL: https://lapi.fptu.tech
+      VUE_APP_API_BETA_URL: https://napi.fptu.tech
+      VUE_APP_SOCKET_URL: http://napi.fptu.tech
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   visualizeapp:
-    build:
-      context: ./VisualizeApp
-      dockerfile: ./dev.Dockerfile
+    image: fptu/librarian-visualizeapp:latest
     ports:
-      - 3001:3000
-    image: librarian-visualizeapp-dev
-    container_name: librarian-visualizeapp-dev
-    volumes:
-      - ./VisualizeApp/src:/root/src/app/src
-      - ./VisualizeApp/public:/root/src/app/public
+      - 3001:80
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
-  bcserver:
-    build:
-      context: ./BlockchainServer
-      dockerfile: ./dev.Dockerfile
+  pairworker:
+    image: fptu/librarian-pairworker:latest
+    ports:
+      - 5100:5100
+    networks:
+      - node
+    depends_on:
+      - mongodbbc
+    environment:
+      MONGODB: mongodbbc
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+  blockchainserver:
+    image: fptu/librarian-blockchainserver:latest
     ports:
       - 5000:5000
     networks:
       - node
     depends_on:
       - mongodbbc
-      - redisbc
-    image: librarian-bcserver-dev
-    container_name: librarian-bcserver-dev
-    volumes:
-      - ./BlockchainServer/src:/root/src/node/src
-      - ./BlockchainServer/.env:/root/src/node/.env
+      - redis
     environment:
       DB_HOST: mongodbbc
       DB_USER: capstone
       DB_PASS: capstone
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
+      BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
+      PUBLIC_KEY: Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9
+      PRIVATE_KEY: CviuZeJhVuvtUc25BUuUDUmU8nARFqpxYKDGQP61s4is
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
 
   ioserver:
-    build:
-      context: ./IOServer
-      dockerfile: ./dev.Dockerfile
+    image: fptu/librarian-ioserver:latest
     ports:
       - 5002:5002
     networks:
@@ -114,11 +160,6 @@ services:
     depends_on:
       - mongodbio
       - redis
-    image: librarian-ioserver-dev
-    container_name: librarian-ioserver-dev
-    volumes:
-      - ./IOServer/src:/root/src/node/src
-      - ./IOServer/.env:/root/src/node/.env
     environment:
       DB_HOST: mongodbio
       DB_USER: capstone
@@ -126,6 +167,45 @@ services:
       DB_NAME: librariannode
       REDIS_HOST: redis
       SENDGRID_API_KEY: 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
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - jenkins-data:/var/jenkins_home
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "1000:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
 networks:
   node:
@@ -135,3 +215,4 @@ volumes:
   redisbc-data:
   mongodbbc-data:
   mongodbio-data:
+  jenkins-data:

@@ -13,6 +13,9 @@ start: check-deps ## Run services from source and daemonize it (stop with `make 
 stop: check-deps ## Stop services
 	@$(DC) stop
 
+reset: check-deps ## Stop and REMOVE all containers. WARNING: you will LOSE all data stored in BigchainDB.
+	@$(DC) down
+
 check-deps:
 ifndef IS_DOCKER_COMPOSE_INSTALLED
 	@$(ECHO) "Error: docker-compose is not installed"

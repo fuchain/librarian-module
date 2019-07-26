@@ -3,7 +3,6 @@ services:
   redis:
     image: redis
     command: redis-server --appendonly yes
-    container_name: librarian-redis-dev
     ports:
       - 6379:6379
     volumes:
@@ -15,7 +14,6 @@ services:
   redisbc:
     image: redis
     command: redis-server --appendonly yes
-    container_name: librarian-redisbc-dev
     ports:
       - 6380:6379
     volumes:
@@ -26,7 +24,6 @@ services:
 
   mongodbbc:
     image: mongo
-    container_name: librarian-mongodbbc-dev
     ports:
         - 27018:27017
     volumes:
@@ -34,13 +31,9 @@ services:
     networks:
       - node
     restart: always
-    environment:
-        MONGO_INITDB_ROOT_USERNAME: capstone
-        MONGO_INITDB_ROOT_PASSWORD: capstone
   
   mongodbio:
     image: mongo
-    container_name: librarian-mongodbio-dev
     ports:
         - 27019:27017
     volumes:
@@ -48,9 +41,6 @@ services:
     networks:
       - node
     restart: always
-    environment:
-        MONGO_INITDB_ROOT_USERNAME: capstone
-        MONGO_INITDB_ROOT_PASSWORD: capstone
 
   webapp:
     build:
@@ -59,7 +49,6 @@ services:
     ports:
       - 3000:3000
     image: librarian-webapp-dev
-    container_name: librarian-webapp-dev
     volumes:
       - ./WebApp/src:/root/src/app/src
       - ./WebApp/public:/root/src/app/public
@@ -76,7 +65,6 @@ services:
     ports:
       - 3001:3000
     image: librarian-visualizeapp-dev
-    container_name: librarian-visualizeapp-dev
     volumes:
       - ./VisualizeApp/src:/root/src/app/src
       - ./VisualizeApp/public:/root/src/app/public
@@ -92,7 +80,6 @@ services:
     depends_on:
       - mongodbbc
     image: librarian-pairworker-dev
-    container_name: librarian-pairworker-dev
     environment:
       MONGODB: mongodbbc
 
@@ -108,14 +95,11 @@ services:
       - mongodbbc
       - redisbc
     image: librarian-bcserver-dev
-    container_name: librarian-bcserver-dev
     volumes:
       - ./BlockchainServer/src:/root/src/node/src
       - ./BlockchainServer/.env:/root/src/node/.env
     environment:
       DB_HOST: mongodbbc
-      DB_USER: capstone
-      DB_PASS: capstone
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
       BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
@@ -134,14 +118,11 @@ services:
       - mongodbio
       - redis
     image: librarian-ioserver-dev
-    container_name: librarian-ioserver-dev
     volumes:
       - ./IOServer/src:/root/src/node/src
       - ./IOServer/.env:/root/src/node/.env
     environment:
       DB_HOST: mongodbio
-      DB_USER: capstone
-      DB_PASS: capstone
       DB_NAME: librariannode
       REDIS_HOST: redis
       SENDGRID_API_KEY: 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
