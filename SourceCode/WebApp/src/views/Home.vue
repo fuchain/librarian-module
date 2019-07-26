@@ -174,8 +174,20 @@ export default {
       });
     }
   },
-  methods: {},
-  components: {},
+  mounted() {
+    setTimeout(
+      function() {
+        if (
+          this.$auth.isAuthenticated() &&
+          !this.$auth.isAdmin() &&
+          this.$tours["vuesaxTour"]
+        ) {
+          this.$tours["vuesaxTour"].start();
+        }
+      }.bind(this),
+      500
+    );
+  },
   beforeDestroy() {
     if (this.$tours["vuesaxTour"]) {
       this.$tours["vuesaxTour"].stop();
