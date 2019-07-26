@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Initial environment') {
+        stage('Initial') {
             steps {
                 script {
                     def scmVars = checkout scm
@@ -10,10 +10,10 @@ pipeline {
                 }
             }
         }
-        stage('Build Blockchain') {
+        stage('Main Server') {
             when {
                 expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/BlockchainServer'")
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^bcserver'")
                     return !matches
                 }
             }
@@ -21,10 +21,10 @@ pipeline {
                 build 'blockchainserver-staging'
             }
         }
-        stage('Build I/O') {
+        stage('Secondary Server') {
             when {
                 expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/IOServer'")
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^ioserver'")
                     return !matches
                 }
             }
@@ -32,10 +32,10 @@ pipeline {
                 build 'ioserver-staging'
             }
         }
-        stage('Build WebApp') {
+        stage('Web App') {
             when {
                 expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/WebApp'")
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^webapp'")
                     return !matches
                 }
             }
@@ -43,10 +43,10 @@ pipeline {
                 build 'webapp-staging'
             }
         }
-        stage('Build VisualizeApp') {
+        stage('Visualize App') {
             when {
                 expression {
-                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^SourceCode/VisualizeApp'")
+                    matches = sh(returnStatus: true, script: "git diff --name-only $MY_GIT_PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^visualizeapp'")
                     return !matches
                 }
             }
