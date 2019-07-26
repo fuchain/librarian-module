@@ -9,13 +9,12 @@ We also have a legacy Java system at `./Documents/LegacyJava`
 
 ## Source Code
 
-Source code is at `./SourceCode`
-
-Start all services by run `make start` (with Docker compose installed)
+Source code and development guide is at `./SourceCode`
 
 ## Stacks:
 
-- Javascript ES6
+- Javascript
+- Golang
 - Node.js, Express.js
 - Vue.js, Webpack, Babel
 - Socket.io
@@ -24,7 +23,6 @@ Start all services by run `make start` (with Docker compose installed)
 - Redis (caching & message broker)
 - Docker, Docker Compose, Docker Swarm
 - Ansible script (deployment)
-- Groovy language (Jenkins)
 
 ## Members:
 

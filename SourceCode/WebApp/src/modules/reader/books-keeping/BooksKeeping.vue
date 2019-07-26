@@ -29,10 +29,10 @@ export default {
   },
   methods: {
     async getList() {
-      this.$vs.loading();
+      if (!this.books || !this.books.length) this.$vs.loading();
       await this.$store.dispatch(`${STORE_KEY}/getBooks`);
       this.$store.dispatch("getNumOfBooks");
-      this.$vs.loading.close();
+      if (!this.books || !this.books.length) this.$vs.loading.close();
     }
   }
 };

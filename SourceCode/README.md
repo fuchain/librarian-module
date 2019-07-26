@@ -1,6 +1,6 @@
-# Librarian Module
+# Librarian Blockchain-based
 
-Librarian Module is the book-share without warehouse platform. This repository is for the whole services.
+Librarian Module is the book-share without warehouse based on Blockchain platform. This repository is for the whole system.
 
 ## Run and Test
 
@@ -12,11 +12,22 @@ $ cd librarian-module
 $ make run
 ```
 
-You can you our BigchainDB testnet at `http://localhost:9984/`.
+You can you our BigchainDB testnet at `https://testnet.bigchain.fptu.tech` or deal with your own at `http://localhost:9984/`.
 
 There are also other commands you can execute:
 
-- `make start`: Run Librarian Module from source and daemonize it (stop it with `make stop`).
+- `make start`: Run Librarian Module from source and daemonize it.
 - `make stop`: Stop Librarian Module.
+- `make build`: Build all services.
+- `make reset`: Clear all services, volumns and networks.
 
-To view all commands available, run `make help`.
+# Deploy production
+
+Easy deployment to production with Docker Swarm:
+
+Make sure you have built images on Docker Hub and `docker-stack.yml` file, then run:
+
+```
+$ docker swarm init
+$ docker stack deploy -c docker-stack.yml librarian
+```
