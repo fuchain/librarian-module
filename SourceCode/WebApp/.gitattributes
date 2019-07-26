@@ -1,0 +1,2 @@
+src/assets/* linguist-vendored
+*.css linguist-language=Javascript
