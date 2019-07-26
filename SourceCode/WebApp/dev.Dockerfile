@@ -6,8 +6,8 @@ ENV PATH /root/src/app/node_modules/.bin:$PATH
 
 COPY . .
 
-RUN yarn
+RUN npm install
 
 EXPOSE 3000
 
-ENTRYPOINT ["yarn","serve"]
+ENTRYPOINT ["npm","run","serve"]
