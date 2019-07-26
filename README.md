@@ -1,15 +1,8 @@
 # BSMW - Book Share Management without warehouse
 
+Librarian Module is the book-share without warehouse based on **Blockchain platform**. This repository is for the whole system.
+
 FPT University Summer 2019 - Capstone Project
-
-## Document
-
-Document is at `./Documents`
-We also have a legacy Java system at `./Documents/LegacyJava`
-
-## Source Code
-
-Source code and development guide is at `./SourceCode`
 
 ## Stacks:
 
@@ -24,11 +17,41 @@ Source code and development guide is at `./SourceCode`
 - Docker, Docker Compose, Docker Swarm
 - Ansible script (deployment)
 
-## Members:
+## Development
+
+Running and testing the latest version of Librarian Module cannot be easier. Make sure you have a recent version of [Docker Compose](https://docs.docker.com/compose/install/) installed. When you are ready, fire up a terminal and run:
+
+```text
+$ git clone git@github.com:huynhminhtufu/librarian-module.git
+$ cd librarian-module
+$ make run
+```
+
+You can you our BigchainDB testnet at `https://testnet.bigchain.fptu.tech` or deal with your own at `http://localhost:9984/`.
+
+There are also other commands you can execute:
+
+- `make start`: Run Librarian Module from source and daemonize it.
+- `make stop`: Stop Librarian Module.
+- `make build`: Build all services.
+- `make reset`: Clear all services, volumns and networks.
+
+## Production
+
+Easy deploy to production with **Docker Swarm**:
+
+Make sure you have built images on Docker Hub and `docker-stack.yml` file, then run:
+
+```
+$ docker swarm init
+$ docker stack deploy -c docker-stack.yml librarian
+```
+
+## Contributors:
 
 1. Huynh Minh Tu
 2. Pham Hoang Linh
 3. To Quoc Cuong
 4. Doan Vu Phong
 
-_Supervisor: Mr. Kieu Trong Khanh_
+Supervisor: Mr. Kieu Trong Khanh
