@@ -4,7 +4,7 @@
       id="todo-app"
       class="border border-solid border-grey-light rounded relative overflow-hidden"
     >
-      <div :class="sidebar-spacer + ' bg-white'">
+      <div class="bg-white'">
         <div class="flex items-center app-search-container">
           <vs-input
             size="large"

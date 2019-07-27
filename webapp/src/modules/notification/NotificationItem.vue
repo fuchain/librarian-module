@@ -31,6 +31,9 @@ export default {
     return {};
   },
   methods: {
+    redirect(item) {
+      redirect(item);
+    },
     getTime(time) {
       return moment(time).fromNow();
     }
