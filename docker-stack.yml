@@ -9,6 +9,9 @@ services:
       - redisbc-data:/data
     networks:
       - node
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   redisio:
     image: redis:alpine
@@ -19,6 +22,9 @@ services:
       - redisio-data:/data
     networks:
       - node
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   mongodbbc:
     image: mongo
@@ -28,6 +34,9 @@ services:
       - mongodbbc-data:/data/db
     networks:
       - node
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   mongodbio:
     image: mongo
@@ -37,6 +46,9 @@ services:
       - mongodbio-data:/data/db
     networks:
       - node
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   webapp:
     image: fptu/webapp:latest

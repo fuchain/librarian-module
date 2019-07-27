@@ -6,13 +6,14 @@ export default {
   },
   chats: (state, getters) => {
     const chatArray = contacts.filter(contact => {
-      if (getters.chatDataOfUser(contact.id))
+      if (getters.chatDataOfUser(contact.id)) {
         return (
           contact.name
             .toLowerCase()
             .includes(state.chatSearchQuery.toLowerCase()) &&
           getters.chatDataOfUser(contact.id).msg.length > 0
         );
+      }
     });
     return chatArray.sort((x, y) => {
       let timeX = getters.chatLastMessaged(x.id).time;
@@ -27,9 +28,7 @@ export default {
         .includes(state.chatSearchQuery.toLowerCase());
     }),
   chatLastMessaged: (state, getters) => id => {
-    if (getters.chatDataOfUser(id))
-      return getters.chatDataOfUser(id).msg.slice(-1)[0];
-    else return false;
+    if (getters.chatDataOfUser(id)) { return getters.chatDataOfUser(id).msg.slice(-1)[0]; } else return false;
   },
   chatUnseenMessages: (state, getters) => id => {
     let unseenMsg = 0;

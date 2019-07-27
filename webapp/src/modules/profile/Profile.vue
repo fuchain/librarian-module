@@ -24,6 +24,14 @@
         <vs-input class="w-full" v-model="phone" />
       </div>
     </div>
+    <div class="vx-row mb-6">
+      <div class="vx-col sm:w-1/3 w-full">
+        <span>Chế độ "Dark Mode"</span>
+      </div>
+      <div class="vx-col sm:w-2/3 w-full">
+        <vs-switch v-model="darkmode" />
+      </div>
+    </div>
     <div class="vx-row mb-6" v-if="!$auth.isAdmin()">
       <div class="vx-col sm:w-1/3 w-full">
         <span>Chuyển sách cho tôi</span>
@@ -100,6 +108,17 @@ export default {
         this.$store.commit("UPDATE_PROFILE_PHONE", value);
       }
     }
+  },
+  watch: {
+    darkmode(val) {
+      this.$store.dispatch("updateTheme", val === true ? "dark" : "light");
+      this.$localStorage.setItem("darkmode", val ? "dark" : "light");
+    }
+  },
+  data() {
+    return {
+      darkmode: this.$localStorage.getItem("darkmode") === "dark" ? true : false
+    };
   },
   methods: {
     async submit() {
