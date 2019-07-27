@@ -6,6 +6,8 @@ import getters from "./getters";
 import mutations from "./mutations";
 import actions from "./actions";
 
+import moduleChat from "./chat/moduleChat.js";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -13,5 +15,8 @@ export default new Vuex.Store({
   mutations,
   state,
   actions,
+  modules: {
+    chat: moduleChat
+  },
   strict: process.env.NODE_ENV !== "production"
 });
