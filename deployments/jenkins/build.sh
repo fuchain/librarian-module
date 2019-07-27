@@ -1,4 +1,10 @@
-SERVICE_NAME="webapp"
+if [ -z "$SERVICE_NAME" ]
+then
+      echo "\$SERVICE_NAME is not set, please set!"
+      exit 1
+else
+      echo "Building and Deploying for \$SERVICE_NAME"
+fi
 
 ssh root@builder.fptu.tech <<EOF
     cd /home/librarian-module/$SERVICE_NAME
