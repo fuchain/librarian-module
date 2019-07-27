@@ -134,7 +134,7 @@ export default {
           {
             highlightAction: false,
             index: -1,
-            label: "No results found.",
+            label: "Không có kết quả.",
             labelIcon: "AlertCircleIcon",
             url: null
           }
