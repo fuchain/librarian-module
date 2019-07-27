@@ -9,9 +9,6 @@ services:
       - redisbc-data:/data
     networks:
       - node
-    deploy:
-      placement:
-        constraints: [node.role == manager]
 
   redisio:
     image: redis:alpine
@@ -22,9 +19,6 @@ services:
       - redisio-data:/data
     networks:
       - node
-    deploy:
-      placement:
-        constraints: [node.role == manager]
 
   mongodbbc:
     image: mongo
@@ -34,9 +28,6 @@ services:
       - mongodbbc-data:/data/db
     networks:
       - node
-    deploy:
-      placement:
-        constraints: [node.role == manager]
 
   mongodbio:
     image: mongo
@@ -46,12 +37,9 @@ services:
       - mongodbio-data:/data/db
     networks:
       - node
-    deploy:
-      placement:
-        constraints: [node.role == manager]
 
   webapp:
-    image: fptu/librarian-webapp:latest
+    image: fptu/webapp:latest
     ports:
       - 3000:80
     environment:
@@ -70,7 +58,7 @@ services:
         window: 120s
 
   visualizeapp:
-    image: fptu/librarian-visualizeapp:latest
+    image: fptu/visualizeapp:latest
     ports:
       - 3001:80
     deploy:
@@ -85,7 +73,7 @@ services:
         window: 120s
 
   pairworker:
-    image: fptu/librarian-pairworker:latest
+    image: fptu/pairworker:latest
     ports:
       - 5100:5100
     networks:
@@ -106,7 +94,7 @@ services:
         window: 120s
 
   bcserver:
-    image: fptu/librarian-blockchainserver:latest
+    image: fptu/bcserver:latest
     ports:
       - 5000:5000
     networks:
@@ -118,7 +106,7 @@ services:
       DB_HOST: mongodbbc
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
-      BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
+      BIGCHAIN_HOST: https://bigchain.fptu.tech/api/v1/
       PUBLIC_KEY: Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9
       PRIVATE_KEY: CviuZeJhVuvtUc25BUuUDUmU8nARFqpxYKDGQP61s4is
     deploy:
@@ -133,7 +121,7 @@ services:
         window: 120s
 
   ioserver:
-    image: fptu/librarian-ioserver:latest
+    image: fptu/ioserver:latest
     ports:
       - 5002:5002
     networks:
@@ -150,24 +138,6 @@ services:
       replicas: 4
       update_config:
         parallelism: 2
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 3
-        window: 120s
-
-  jenkins:
-    image: jenkins/jenkins:lts
-    ports:
-      - 8080:8080
-      - 50000:50000
-    volumes:
-      - jenkins-data:/var/jenkins_home
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
@@ -194,4 +164,3 @@ volumes:
   redisbc-data:
   mongodbbc-data:
   mongodbio-data:
-  jenkins-data:
