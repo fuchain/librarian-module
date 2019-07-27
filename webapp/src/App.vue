@@ -113,7 +113,7 @@ export default {
   },
   created() {
     // Socket
-    initSocket();
+    if (this.$auth.isAuthenticated()) initSocket();
   },
   async mounted() {
     this.toggleClassInBody(themeConfig.theme);
