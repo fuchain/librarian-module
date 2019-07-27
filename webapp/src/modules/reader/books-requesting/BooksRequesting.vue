@@ -32,7 +32,7 @@ export default {
       if (!this.books || !this.books.length) this.$vs.loading();
       await this.$store.dispatch(`${STORE_KEY}/getBooks`);
       this.$store.dispatch("getNumOfBooks");
-      if (!this.books || !this.books.length) this.$vs.loading.close();
+      this.$vs.loading.close();
     }
   }
 };

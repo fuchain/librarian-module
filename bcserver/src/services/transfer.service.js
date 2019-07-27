@@ -165,7 +165,7 @@ async function createReceiverConfirmAsset(transferTxSigned, publicKey) {
     const email = await asset.getEmailFromPublicKey(publicKey);
 
     try {
-        await axios.post("https://napi.fptu.tech/api/v1/events/push", {
+        await axios.post(`${env.ioHost}/events/push`, {
             email,
             type: "transaction",
             message: receptTx
@@ -194,7 +194,7 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // Remove matching from queues when done
     await removeMatchingFromQueueWhenDone(transferTxPosted);
 
-    await axios.post("https://napi.fptu.tech/api/v1/events/push", {
+    await axios.post(`${env.ioHost}/events/push`, {
         email,
         type: "success",
         message: "Sách của bạn đã được chuyển thành công"
