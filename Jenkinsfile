@@ -18,7 +18,7 @@ pipeline {
                 }
             }
             steps {
-                build 'blockchainserver-staging'
+                build 'bcserver-staging'
             }
         }
         stage('Secondary Server') {
