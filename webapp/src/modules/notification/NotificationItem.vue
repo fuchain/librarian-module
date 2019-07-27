@@ -3,7 +3,7 @@
     <div class="vx-row" @click="redirect(item)">
       <div class="vx-col w-full sm:w-5/6 flex sm:items-center sm:flex-row flex-col">
         <div class="flex items-center">
-          <h6 class="todo-title" :class="line-through">Thông báo từ thư viện</h6>
+          <h6 class="todo-title">Thông báo từ thư viện</h6>
         </div>
       </div>
 
@@ -13,7 +13,7 @@
     </div>
     <div class="vx-row">
       <div class="vx-col w-full">
-        <p class="mt-2" :class="line-through">{{ item.message }}</p>
+        <p class="mt-2">{{ item.message }}</p>
       </div>
     </div>
   </div>
