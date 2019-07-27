@@ -1,4 +1,9 @@
+const Sentry = require("@sentry/node");
+
 export function globalErrorHandler(err, _, res, next) {
+    Sentry.captureException(err);
+    console.log("Error: ", err instanceof Error ? err.toString() : err);
+
     if (err) {
         if (
             err.message &&

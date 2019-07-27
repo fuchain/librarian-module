@@ -42,18 +42,14 @@ services:
     image: fptu/webapp:latest
     ports:
       - 3000:80
-    environment:
-      VUE_APP_API_BASE_URL: https://lapi.fptu.tech
-      VUE_APP_API_BETA_URL: https://napi.fptu.tech
-      VUE_APP_SOCKET_URL: http://napi.fptu.tech
     deploy:
       replicas: 8
       update_config:
         parallelism: 2
-        delay: 10s
+        delay: 5s
       restart_policy:
         condition: on-failure
-        delay: 10s
+        delay: 5s
         max_attempts: 3
         window: 120s
 
@@ -65,10 +61,10 @@ services:
       replicas: 2
       update_config:
         parallelism: 1
-        delay: 10s
+        delay: 5s
       restart_policy:
         condition: on-failure
-        delay: 10s
+        delay: 5s
         max_attempts: 3
         window: 120s
 
@@ -86,10 +82,10 @@ services:
       replicas: 4
       update_config:
         parallelism: 1
-        delay: 10s
+        delay: 5s
       restart_policy:
         condition: on-failure
-        delay: 10s
+        delay: 5s
         max_attempts: 3
         window: 120s
 
@@ -103,20 +99,22 @@ services:
       - mongodbbc
       - redisbc
     environment:
+      ENVIRONMENT: production
       DB_HOST: mongodbbc
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
       BIGCHAIN_HOST: https://bigchain.fptu.tech/api/v1/
       PUBLIC_KEY: Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9
       PRIVATE_KEY: CviuZeJhVuvtUc25BUuUDUmU8nARFqpxYKDGQP61s4is
+      IO_HOST: https://api.fptu.tech/io/api/v1
     deploy:
       replicas: 4
       update_config:
         parallelism: 1
-        delay: 10s
+        delay: 5s
       restart_policy:
         condition: on-failure
-        delay: 10s
+        delay: 5s
         max_attempts: 3
         window: 120s
 
@@ -130,6 +128,7 @@ services:
       - mongodbio
       - redisio
     environment:
+      ENVIRONMENT: production
       DB_HOST: mongodbio
       DB_NAME: librariannode
       REDIS_HOST: redisio
@@ -138,10 +137,10 @@ services:
       replicas: 8
       update_config:
         parallelism: 2
-        delay: 10s
+        delay: 5s
       restart_policy:
         condition: on-failure
-        delay: 10s
+        delay: 5s
         max_attempts: 3
         window: 120s
 

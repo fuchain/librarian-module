@@ -101,7 +101,7 @@ async function getBookTotalAtLib(req, res) {
 
 async function giveBook(req, res) {
     const bookDetailId = req.body.book_detail_id;
-    const bookList = await bookService.getBookInstanceList(bookDetailId);
+    const bookList = await bookService.getBookAtLib(bookDetailId);
     // Need improve
     const book = bookList[0];
 

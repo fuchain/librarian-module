@@ -8,7 +8,8 @@ export function checkEnvLoaded() {
         !process.env.REDIS_HOST ||
         !process.env.BIGCHAIN_HOST ||
         !process.env.PUBLIC_KEY ||
-        !process.env.PRIVATE_KEY
+        !process.env.PRIVATE_KEY ||
+        !process.env.IO_HOST
     ) {
         console.error(
             "Cannot load local .env file, please ensure that you are using env args (eg: docker-compose)!"
@@ -22,5 +23,6 @@ export default {
     redisHost: process.env.REDIS_HOST,
     bigchainHost: process.env.BIGCHAIN_HOST,
     publicKey: process.env.PUBLIC_KEY,
-    privateKey: process.env.PRIVATE_KEY
+    privateKey: process.env.PRIVATE_KEY,
+    ioHost: process.env.IO_HOST
 };

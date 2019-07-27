@@ -170,7 +170,7 @@ async function getBookInstanceTotal(type) {
     return bookList.length;
 }
 
-async function getBookTotalAtLib(bookDetailId) {
+async function getBookAtLib(bookDetailId) {
     const bookList = await getBookInstanceList(bookDetailId);
 
     const remainBookList = await bookList.filter(async book => {
@@ -183,6 +183,13 @@ async function getBookTotalAtLib(bookDetailId) {
         }
         return false;
     });
+
+    return remainBookList;
+}
+
+async function getBookTotalAtLib(bookDetailId) {
+    const remainBookList = await getBookAtLib(bookDetailId);
+
     return remainBookList.length;
 }
 
@@ -195,5 +202,6 @@ export default {
     getBookInstanceDetailList,
     getHistoryOfBookInstance,
     getBookInstanceTotal,
+    getBookAtLib,
     getBookTotalAtLib
 };
