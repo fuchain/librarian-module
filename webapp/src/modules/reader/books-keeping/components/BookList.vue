@@ -10,6 +10,7 @@
       class="w-full mb-4"
       placeholder="Tìm tên sách"
       v-model="searchText"
+      v-if="books.length"
     />
     <div class="items-grid-view vx-row match-height" v-if="books.length" appear>
       <div

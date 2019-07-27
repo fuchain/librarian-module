@@ -2,7 +2,31 @@
   <div id="data-list-list-view" class="data-list-container">
     <h2 class="mb-8 ml-4">Quản lí người dùng</h2>
 
-    <vs-table noDataText="Không có dữ liệu" ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
+    <div class="knowledge-base-jumbotron">
+      <div class="knowledge-base-jumbotron-content lg:p-32 md:p-24 sm:p-16 py-8 rounded-lg mb-base">
+        <h1 class="mb-1 text-white">Chữ kí số giúp việc chuyển sách an toàn tuyệt đối</h1>
+        <p
+          class="text-white"
+        >Nền tảng cơ sở dữ liệu phi tập trung sẽ cho phép truy xuất, kiểm tra các giao dịch liên quan và quyền sở hữu của các bên tham gia giao dịch</p>
+        <vs-input
+          placeholder="Tìm tên sinh viên, mã số sinh viên hoặc địa chỉ mail"
+          v-model="searchText"
+          icon-pack="feather"
+          icon="icon-search"
+          size="large"
+          class="w-full no-icon-border mt-6"
+        />
+      </div>
+    </div>
+
+    <vs-table
+      noDataText="Không có dữ liệu"
+      ref="table"
+      pagination
+      :max-items="itemsPerPage"
+      search
+      :data="dataList"
+    >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
@@ -111,7 +135,11 @@
       :title="'Sách đang giữ của ' + keepingName"
       :active.sync="keepingPopup"
     >
-      <vs-table noDataText="Không có dữ liệu" :data="keepingList" v-if="keepingList && keepingList.length">
+      <vs-table
+        noDataText="Không có dữ liệu"
+        :data="keepingList"
+        v-if="keepingList && keepingList.length"
+      >
         <template slot="thead">
           <vs-th>Mã sách</vs-th>
           <vs-th>ID đầu sách</vs-th>
@@ -149,7 +177,8 @@ export default {
       keepingName: "",
       keepingList: [],
       onlineUsers: [],
-      onlineUserState: []
+      onlineUserState: [],
+      searchText: ""
     };
   },
   props: {
@@ -315,5 +344,10 @@ export default {
       justify-content: center;
     }
   }
+}
+
+.knowledge-base-jumbotron-content {
+  background-image: url("../../../../assets/images/pages/knowledge-base-cover.jpg");
+  background-size: cover;
 }
 </style>
