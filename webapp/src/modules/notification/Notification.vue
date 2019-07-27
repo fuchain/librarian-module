@@ -1,23 +1,37 @@
 <template>
-  <vx-card title="Tất cả thông báo của bạn">
-    <vs-list v-if="notifications.length">
-      <vs-list-header icon-pack="feather" icon="icon-calendar" title="Hôm nay"></vs-list-header>
-      <span
-        style="cursor: pointer;"
-        v-for="item in notifications"
-        :key="item.time"
-        @click="redirect(item)"
-      >
-        <vs-list-item :subtitle="item.message + ' - ' + getTime(item.time)"></vs-list-item>
-      </span>
-    </vs-list>
-    <div v-else>Bạn chưa có thông báo nào.</div>
+  <vx-card title="Thông báo của bạn">
+    <div
+      id="todo-app"
+      class="border border-solid border-grey-light rounded relative overflow-hidden"
+    >
+      <div :class="sidebar-spacer + ' bg-white'">
+        <div class="flex items-center app-search-container">
+          <vs-input
+            size="large"
+            icon-pack="feather"
+            icon="icon-search"
+            placeholder="Tìm kiếm thông báo..."
+            v-model="searchText"
+            class="vs-input-no-border vs-input-no-shdow-focus no-icon-border w-full"
+          />
+        </div>
+        <transition-group class="todo-list" name="list-enter-up" tag="ul" appear>
+          <li
+            class="cursor-pointer todo_todo-item"
+            v-for="item in notifications"
+            :key="item.time"
+            :style="[{transitionDelay: (index * 0.05) + 's'}]"
+          >
+            <notification-item :item="item"></notification-item>
+          </li>
+        </transition-group>
+      </div>
+    </div>
   </vx-card>
 </template>
 
 <script>
-import redirect from "@core/socket/redirect";
-import moment from "moment";
+import NotificationItem from "./NotificationItem.vue";
 
 export default {
   computed: {
@@ -25,25 +39,17 @@ export default {
       return this.$store.state.notifications;
     }
   },
-  methods: {
-    redirect(item) {
-      redirect(item);
-    },
-    getTime(time) {
-      return moment(time).fromNow();
-    }
+  data() {
+    return {
+      searchText: ""
+    };
+  },
+  components: {
+    NotificationItem
   }
 };
 </script>
 
-<style>
-.vs-list--item .list-titles .vs-list--subtitle {
-  font-size: 1rem !important;
-}
-
-.vs-list--subtitle {
-  border-bottom: 1px dashed blue;
-  padding-bottom: 1rem;
-  cursor: pointer;
-}
+<style lang="scss">
+@import "@/assets/scss/vuesax/apps/todo.scss";
 </style>
