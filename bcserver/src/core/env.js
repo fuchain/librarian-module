@@ -9,7 +9,7 @@ export function checkEnvLoaded() {
         !process.env.BIGCHAIN_HOST ||
         !process.env.PUBLIC_KEY ||
         !process.env.PRIVATE_KEY ||
-        !process.env.IO_HOST ||
+        !process.env.IO_HOST
     ) {
         console.error(
             "Cannot load local .env file, please ensure that you are using env args (eg: docker-compose)!"
