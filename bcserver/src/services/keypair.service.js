@@ -102,8 +102,20 @@ async function verifyKeyPairEmail(token, publicKey) {
     if (!found) {
         const tx = await generateKeyPairEmail(email, publicKey, name);
         return tx
-            ? { token: createJWT(email), status: "created" }
-            : { token: createJWT(email), status: "verified" };
+            ? {
+                  token: createJWT(email),
+                  status: "created",
+                  email,
+                  name,
+                  picture
+              }
+            : {
+                  token: createJWT(email),
+                  status: "verified",
+                  email,
+                  name,
+                  picture
+              };
     } else {
         return {
             token: createJWT(email),
