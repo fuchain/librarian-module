@@ -105,6 +105,7 @@ services:
       BIGCHAIN_HOST: https://bigchain.fptu.tech/api/v1/
       PUBLIC_KEY: Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9
       PRIVATE_KEY: CviuZeJhVuvtUc25BUuUDUmU8nARFqpxYKDGQP61s4is
+      IO_HOST: http://ioserver/api/v1
     deploy:
       replicas: 4
       update_config:
