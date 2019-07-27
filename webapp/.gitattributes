@@ -1,3 +1,4 @@
-public/* linguist-vendored
-src/assets/* linguist-vendored
+public/**/* linguist-vendored
+src/assets/**/* linguist-vendored
 *.css linguist-language=javascript
+*.scss linguist-language=javascript
