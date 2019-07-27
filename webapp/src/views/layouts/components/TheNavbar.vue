@@ -95,11 +95,11 @@
             ></feather-icon>
           </div>
         </div>
-        <!-- <feather-icon
+        <feather-icon
           icon="SearchIcon"
           @click="showFullSearch = true"
           class="cursor-pointer navbar-fuzzy-search ml-4"
-        ></feather-icon>-->
+        ></feather-icon>
 
         <!-- NOTIFICATIONS -->
         <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
