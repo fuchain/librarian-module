@@ -167,6 +167,17 @@ services:
       placement:
         constraints: [node.role == manager]
 
+  queue-visualizer:
+    image: fptu/queue-visualizer:latest
+    ports:
+      - "4567:4567"
+    networks:
+      - node
+    depends_on:
+      - redisbc
+    deploy:
+      replicas: 1
+
 networks:
   node:
 
