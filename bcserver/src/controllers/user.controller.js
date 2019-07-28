@@ -12,6 +12,7 @@ async function getProfile(req, res) {
             fullname: "Thủ Thư",
             phone: "0123456789"
         });
+        return;
     }
 
     const user = await userService.getProfile(body.public_key);
@@ -68,9 +69,10 @@ async function updateProfile(req, res) {
         return;
     }
 
-    return res.status(422).send({
+    res.status(422).send({
         message: "Cannot find profile with your public key"
     });
+    return;
 }
 
 async function getCurrentBook(req, res) {

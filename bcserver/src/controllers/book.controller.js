@@ -14,13 +14,11 @@ async function getBookDetail(req, res) {
 
     const bookDetail = await bookService.getBookDetail(id);
 
-    if (!bookDetail) {
-        res.status(422).send({
-            message: "Cannot find that book detail"
-        });
-    }
-
-    res.send(bookDetail);
+    bookDetail
+        ? res.send(bookDetail)
+        : res.status(422).send({
+              message: "Cannot find that book detail"
+          });
 }
 
 export default errorHandler({
