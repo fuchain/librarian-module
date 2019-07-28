@@ -31,6 +31,14 @@ const router = new Router({
           component: () => import("@/modules/profile/Profile.vue")
         },
         {
+          path: "chat",
+          component: () => import("@/modules/chat/Chat.vue")
+        },
+        {
+          path: "calendar",
+          component: () => import("@/modules/calendar/Calendar.vue")
+        },
+        {
           path: "notifications",
           component: () => import("@/modules/notification/Notification.vue")
         },

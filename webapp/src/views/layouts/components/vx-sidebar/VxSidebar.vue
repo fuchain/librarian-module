@@ -14,7 +14,7 @@
             <div @mouseenter="sidebarMouseEntered" @mouseleave="sidebarMouseLeave">
                 <div class="header-sidebar flex items-end justify-between" slot="header">
                     <div class="logo flex items-center">
-                        <img :src="logo" alt="logo" class="w-10 mr-4" v-if="logo">
+                        <img :src="logo" alt="logo" class="w-10 mr-4" v-if="logo" style="background: white; border-radius: 10px;">
                         <span class="logo-text" v-show="isMouseEnter || !reduce" v-if="title" style="color: #7367F0;">{{ title }}</span>
                     </div>
                     <div>

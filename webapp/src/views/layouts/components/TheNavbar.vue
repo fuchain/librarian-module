@@ -95,11 +95,11 @@
             ></feather-icon>
           </div>
         </div>
-        <!-- <feather-icon
+        <feather-icon
           icon="SearchIcon"
           @click="showFullSearch = true"
           class="cursor-pointer navbar-fuzzy-search ml-4"
-        ></feather-icon>-->
+        ></feather-icon>
 
         <!-- NOTIFICATIONS -->
         <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
@@ -190,7 +190,7 @@
                 </li>
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                  @click="$router.push('/notifications')"
+                  @click="$router.push('/chat')"
                 >
                   <feather-icon icon="MessageSquareIcon" svgClasses="w-4 h-4"></feather-icon>
                   <span class="ml-2">Tin nhắn</span>
