@@ -1,0 +1,36 @@
+{
+  "__blockchain_server_queues": [
+    {
+      "name": "blockchain",
+      "host": "redisbc",
+      "port": 6379,
+      "hostId": "Blockchain Server Queue"
+    }
+  ],
+  "queues": [
+    {
+      "name": "matching",
+      "hostId": "Matching Queue"
+    },
+    {
+      "name": "pair",
+      "hostId": "Pair Queue"
+    },
+    {
+      "name": "pairUpdate",
+      "hostId": "Pair Update Queue"
+    },
+    {
+      "name": "importDB",
+      "hostId": "Import DB Queue"
+    },
+    {
+      "name": "insertBook",
+      "hostId": "Insert Book Queue"
+    },
+    {
+      "name": "insertTx",
+      "hostId": "Insert Transaction"
+    }
+  ]
+}
