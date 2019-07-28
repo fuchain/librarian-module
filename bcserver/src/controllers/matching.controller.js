@@ -10,15 +10,13 @@ async function createRequest(req, res) {
         body.book_id
     );
 
-    if (success) {
-        res.send({
-            message: "Created request!"
-        });
-    } else {
-        res.staus(422).send({
-            message: "Error create request!"
-        });
-    }
+    success
+        ? res.send({
+              message: "Created request!"
+          })
+        : res.staus(422).send({
+              message: "Error create request!"
+          });
 }
 
 async function cancelRequest(req, res) {
@@ -30,15 +28,13 @@ async function cancelRequest(req, res) {
         body.book_id
     );
 
-    if (cancelled) {
-        res.send({
-            message: "Cancelled request!"
-        });
-    } else {
-        res.staus(422).send({
-            message: "Error cancelling request!"
-        });
-    }
+    cancelled
+        ? res.send({
+              message: "Cancelled request!"
+          })
+        : res.staus(422).send({
+              message: "Error cancelling request!"
+          });
 }
 
 async function getMatchings(_, res) {
