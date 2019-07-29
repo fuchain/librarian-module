@@ -16,7 +16,7 @@
                 class="mx-auto"
               />
             </div>
-            <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white bg-dark">
+            <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white">
               <div class="p-8">
                 <div class="vx-card__title mb-8">
                   <div class="mb-4">
@@ -103,7 +103,7 @@
                     class="float-right mb-8"
                     icon="fingerprint"
                     :disabled="(mode === 'verify' && !secret && (!publicKey && !privateKey))"
-                    @click="submitKey"
+                    @click="openConfirm"
                   >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Xác nhận khóa bí mật"}}</vs-button>
                 </form>
               </div>
@@ -165,6 +165,22 @@ export default {
     },
     redirectToLP() {
       window.location.href = "https://blockchain.fptu.tech";
+    },
+    openConfirm() {
+      if (this.mode === "verify") {
+        this.submitKey();
+        return;
+      }
+      this.$vs.dialog({
+        type: "confirm",
+        color: "primary",
+        title: `Xác nhận`,
+        text:
+          "Bạn có chắc là đã cất giữ chuỗi bí mật? Khi bạn làm mất chuỗi này thì tài khoản không thể khôi phục, bạn có thể sẽ mất phí để tạo tài khoản mới.",
+        accept: this.submitKey,
+        acceptText: "Chắc chắn",
+        cancelText: "Chưa chắc"
+      });
     }
   },
   mounted() {

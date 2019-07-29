@@ -79,11 +79,11 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.returner }}</p>
+              <p>{{ tr.returner.includes("librarian") ? 'Thư viện' : tr.returner }}</p>
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.asset_id.substring(tr.asset_id.length - 10, tr.asset_id.length) }}</p>
+              <p>...{{ tr.asset_id.substring(tr.asset_id.length - 10, tr.asset_id.length) }}</p>
             </vs-td>
 
             <vs-td>

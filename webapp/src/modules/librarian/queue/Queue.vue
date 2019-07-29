@@ -1,9 +1,10 @@
 <template>
   <vx-card :title="'Hàng đợi đang có ' + queues.length + ' yêu cầu'">
-    <p class="mb-8">
+    <p class="mb-8" v-if="matched">
       Đã có
       <strong>{{ matched || 0 }}</strong> yêu cầu đã được hệ thống ghép, đang chờ người đọc chuyển sách.
     </p>
+    <p class="mb-8" v-else>Chưa có yêu cầu nào được hệ thống ghép.</p>
 
     <vs-table
       noDataText="Không có dữ liệu"
@@ -37,7 +38,7 @@
         <vs-th>Tên đầu sách</vs-th>
         <vs-th>Email</vs-th>
         <vs-th>Loại</vs-th>
-        <vs-th>Mượn lúc</vs-th>
+        <vs-th>Yêu cầu lúc</vs-th>
         <vs-th></vs-th>
       </template>
 
@@ -68,7 +69,7 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.time * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }}</p>
+              <p>{{ tr.time * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }} ({{ tr.time * 1000 | moment("from") }})</p>
             </vs-td>
 
             <vs-td>{{ tr.matched ? "Đã ghép" : "" }}</vs-td>

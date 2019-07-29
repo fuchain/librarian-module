@@ -85,12 +85,6 @@ Vue.use(VueMoment, {
 
 Vue.config.productionTip = false;
 
-window.vue = new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount("#app");
-
 window.isMobile = function() {
   var check = false;
   (function(a) {
@@ -107,3 +101,9 @@ window.isMobile = function() {
   })(navigator.userAgent || navigator.vendor || window.opera);
   return check;
 };
+
+window.vue = new Vue({
+  router,
+  store,
+  render: h => h(App)
+}).$mount("#app");

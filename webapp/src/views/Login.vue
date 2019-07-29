@@ -16,7 +16,7 @@
                 class="mx-auto"
               />
             </div>
-            <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white bg-dark">
+            <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white">
               <div class="p-8">
                 <div class="vx-card__title mb-8">
                   <h4 class="mb-4" style="color: #7367F0;">Thư viện FPTU University</h4>
@@ -145,7 +145,9 @@ export default {
         color: "danger",
         title: "Xác nhận",
         text: "Bạn có chắc muốn gỡ chìa khóa trên thiết bị này?",
-        accept: this.removeKey
+        accept: this.removeKey,
+        acceptText: "Chắc chắn",
+        cancelText: "Hủy bỏ"
       });
     },
     redirectToLP() {
