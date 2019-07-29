@@ -89,11 +89,14 @@ async function getCurrentBook(publicKey, getAll = false) {
     }
 
     const transactionIds = await outputService.getUnspent(publicKey);
-    const promises = transactionIds.map(e => {
+    const promises = transactionIds.map(async e => {
         const transactionId = e.transaction_id;
-        const listAssets = asset.getBookFromTransactionId(transactionId);
+        const assetDetail = await asset.getBookFromTransactionId(transactionId);
+        assetDetail.transfer_time = await getLastTransactionTime(
+            assetDetail.asset_id
+        );
 
-        return listAssets;
+        return assetDetail;
     });
 
     const result = await Promise.all(promises);
@@ -248,6 +251,15 @@ async function getPhoneFromEmail(email) {
     return null;
 }
 
+async function getLastTransactionTime(assetId) {
+    const txs = await asset.getAssetTransactions(assetId);
+    if (!txs || !txs.length || txs.length === 1) {
+        return 0;
+    }
+
+    return txs[txs.length - 1].metadata.transfer_date;
+}
+
 export default {
     getProfile,
     updateProfile,
@@ -256,5 +268,6 @@ export default {
     getTransferHistory,
     getAllUsers,
     getUserTotal,
-    getPhoneFromEmail
+    getPhoneFromEmail,
+    getLastTransactionTime
 };

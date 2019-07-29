@@ -8,7 +8,7 @@ export function parseBookItem(data, type = "defaut") {
       name: bookDetailField.name,
       description: bookDetailField.description,
       image: bookDetailField.thumbnail || "/images/book-thumbnail.jpg",
-      time: new Date(),
+      time: e.transfer_time ? new Date(e.transfer_time * 1000) : 0,
       code:
         (bookDetailField.subject_codes &&
           bookDetailField.subject_codes.length &&

@@ -40,15 +40,14 @@
         <canvas id="canvas"></canvas>
       </div>
     </div>
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full"></div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <vs-alert active="true" icon="vpn_key">Chìa khóa chứng thực hợp lệ</vs-alert>
-      </div>
-    </div>
     <div class="vx-row">
       <div class="vx-col sm:w-2/3 w-full ml-auto">
-        <vs-button class="mr-3 mb-2" @click="submit" icon="check">Cập nhật thông tin</vs-button>
+        <vs-button
+          class="mr-3 mb-2"
+          @click="submit"
+          icon="check"
+          :disabled="$auth.isAdmin()"
+        >Cập nhật thông tin</vs-button>
       </div>
     </div>
 
@@ -113,6 +112,11 @@ export default {
     darkmode(val) {
       this.$store.dispatch("updateTheme", val === true ? "dark" : "light");
       this.$localStorage.setItem("darkmode", val ? "dark" : "light");
+    },
+    email(val) {
+      QRCode.toCanvas(canvas, `${val}`, { width: 200 }, function(error) {
+        if (error) console.error(error);
+      });
     }
   },
   data() {
@@ -175,14 +179,10 @@ export default {
   },
   mounted() {
     const canvas = document.getElementById("canvas");
-    QRCode.toCanvas(
-      canvas,
-      `https://library.fptu.tech/transfer/?email=${this.email}`,
-      { width: 200 },
-      function(error) {
+    this.email &&
+      QRCode.toCanvas(canvas, `${this.email}`, { width: 200 }, function(error) {
         if (error) console.error(error);
-      }
-    );
+      });
   }
 };
 </script>

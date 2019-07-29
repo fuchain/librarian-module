@@ -1,6 +1,6 @@
 import Queue from "bull";
 import env from "@core/env";
-const pairUpdateQueue = new Queue("pair", `redis://${env.redisHost}`);
+const pairUpdateQueue = new Queue("pairUpdate", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
 import userService from "@services/user.service";

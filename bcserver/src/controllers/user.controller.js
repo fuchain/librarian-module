@@ -12,6 +12,7 @@ async function getProfile(req, res) {
             fullname: "Thủ Thư",
             phone: "0123456789"
         });
+        return;
     }
 
     const user = await userService.getProfile(body.public_key);
@@ -68,9 +69,10 @@ async function updateProfile(req, res) {
         return;
     }
 
-    return res.status(422).send({
+    res.status(422).send({
         message: "Cannot find profile with your public key"
     });
+    return;
 }
 
 async function getCurrentBook(req, res) {
@@ -119,6 +121,14 @@ async function getTransferHistory(req, res) {
     res.send(books);
 }
 
+async function getLastTransactionTime(req, res) {
+    const body = req.body;
+
+    const time = await userService.getLastTransactionTime(body.asset_id);
+
+    res.send({ time });
+}
+
 export default errorHandler({
     getProfile,
     updateProfile,
@@ -126,5 +136,6 @@ export default errorHandler({
     getReturningBook,
     getRequestingBook,
     getKeepingAmount,
-    getTransferHistory
+    getTransferHistory,
+    getLastTransactionTime
 });

@@ -1,12 +1,17 @@
 <template>
-  <vs-popup :title="getTitle" :active.sync="isActive" v-if="tx">
+  <vs-popup
+    :title="getTitle"
+    :active.sync="isActive"
+    v-if="tx"
+    :fullscreen="isMobile() ? true : false"
+  >
     <vs-alert
       active="true"
       class="mb-4"
       v-if="!signedTx"
     >Bạn vừa {{ tx.operation === 'TRANSFER' ? 'tạo ra' : 'nhận được' }} một giao dịch, kí giao dịch để hoàn tất thực hiện</vs-alert>
 
-    <div class="vx-row mb-6">
+    <div class="vx-row mb-6" v-if="tx.id || signedTx && signedTx.id">
       <div class="vx-col sm:w-1/3 w-full">
         <span>Mã giao dịch</span>
       </div>
@@ -135,6 +140,9 @@ export default {
     }
   },
   methods: {
+    isMobile() {
+      return window.isMobile();
+    },
     trimStr(str) {
       if (!str || str.length < 10) {
         return str;

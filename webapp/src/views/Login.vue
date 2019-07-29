@@ -16,16 +16,19 @@
                 class="mx-auto"
               />
             </div>
-            <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white bg-dark">
+            <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white">
               <div class="p-8">
                 <div class="vx-card__title mb-8">
-                  <h4 class="mb-4">Thư viện FPTU University</h4>
-                  <vs-alert
-                    class="mt-2 mb-2"
-                    active="true"
-                    icon="vpn_key"
-                  >Đã cắm chìa khóa chứng thực</vs-alert>
+                  <h4 class="mb-4" style="color: #7367F0;">Thư viện FPTU University</h4>
                 </div>
+
+                <div class="mt-8 mb-4" v-if="!mode" style="text-align: right;">
+                  Powered by
+                  <span
+                    style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px;"
+                  >FUChain</span>
+                </div>
+
                 <form v-on:submit.prevent="doLogin" v-if="false">
                   <vs-input
                     name="email"
@@ -48,22 +51,9 @@
 
                   <div class="flex flex-wrap justify-between my-5">
                     <vs-checkbox v-model="remember" class="mb-3">Lưu mật khẩu</vs-checkbox>
-                    <span
-                      to="/pages/forgot-password"
-                      style="color: red; cursor: pointer;"
-                      @click="removeKey"
-                    >Xóa chìa khóa trên thiết bị</span>
                   </div>
                   <vs-button class="float-right mb-6" icon="fingerprint" disabled="true">Đăng nhập</vs-button>
                 </form>
-
-                <vs-button
-                  class="float-right mb-6"
-                  icon="delete"
-                  @click="deleteConfirm()"
-                >Xóa chìa khóa trên thiết bị</vs-button>
-                <!-- <vs-divider>HOẶC</vs-divider> -->
-                <vs-divider border-style="dashed">HOẶC</vs-divider>
 
                 <div class="social-login flex flex-wrap justify-right">
                   <div class="social-login-buttons flex flex-wrap items-center mt-4">
@@ -89,7 +79,7 @@
                           d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
                         />
                       </svg>
-                      Đăng nhập bằng email @fpt.edu.vn
+                      Đăng nhập bằng email
                     </div>
                   </div>
                 </div>
@@ -98,6 +88,13 @@
           </div>
         </div>
       </vx-card>
+      <vs-button
+        type="relief"
+        color="danger"
+        class="float-right mt-4 mr-4"
+        icon="delete"
+        @click="deleteConfirm()"
+      >Đăng xuất ví sách</vs-button>
     </div>
   </div>
 </template>
@@ -148,7 +145,9 @@ export default {
         color: "danger",
         title: "Xác nhận",
         text: "Bạn có chắc muốn gỡ chìa khóa trên thiết bị này?",
-        accept: this.removeKey
+        accept: this.removeKey,
+        acceptText: "Chắc chắn",
+        cancelText: "Hủy bỏ"
       });
     },
     redirectToLP() {

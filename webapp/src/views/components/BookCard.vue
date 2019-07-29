@@ -15,8 +15,11 @@
             class="bg-primary flex text-white py-1 px-2 rounded"
             v-if="item.type !== 'matching' && item.type !== 'info'"
           >
-            <span class="text-sm mr-2" v>Đang giữ sách</span>
-            <feather-icon icon="BookIcon" svgClasses="h-4 w-4" />
+            <span class="text-sm mr-2" v>
+              Mượn
+              <strong>{{ item.time | moment("from") }}</strong>
+            </span>
+            <feather-icon icon="ClockIcon" svgClasses="h-4 w-4" />
           </div>
           <div class="flex text-white py-1 px-2 rounded" v-else></div>
           <h6 class="font-bold">{{ item.code }}</h6>

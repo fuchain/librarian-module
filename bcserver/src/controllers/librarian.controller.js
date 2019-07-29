@@ -49,13 +49,12 @@ async function getBookInstanceDetailList(req, res) {
 async function getHistoryOfBookInstance(req, res) {
     const bookId = req.body.book_id;
     const transactionList = await bookService.getHistoryOfBookInstance(bookId);
-    if (!transactionList) {
-        return res.status(400).send({
-            message: "Cannot find any asset with book id = " + bookId
-        });
-    }
 
-    res.send(transactionList);
+    transactionList
+        ? res.send(transactionList)
+        : res.status(400).send({
+              message: "Cannot find any asset with book id = " + bookId
+          });
 }
 
 async function getOverview(_, res) {
@@ -75,13 +74,11 @@ async function getOverview(_, res) {
 
 // Get book instance total of book detail at librarian
 async function getBookTotalByBDID(req, res) {
-    let total = 0;
     const bookDetailId = req.body.book_detail_id;
 
     const bookList = await bookService.getBookInstanceList(bookDetailId);
-    if (bookList.length) {
-        total = bookList.length;
-    }
+
+    const total = bookList.length || 0;
 
     res.send({
         total
