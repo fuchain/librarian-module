@@ -9,6 +9,7 @@
             placeholder="Tìm JPD101 hoặc Nihongo Deiku 1"
             v-on:keyup.enter="doSearch"
             autofocus
+            id="book-search"
           />
         </div>
         <div class="vx-col sm:w-1/3 w-full">
