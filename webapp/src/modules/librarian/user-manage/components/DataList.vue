@@ -123,7 +123,7 @@
                 icon="pageview"
                 @click="openKeepingBook(tr)"
                 v-if="!tr.email.includes('librarian')"
-              >Xem sách đang giữ</vs-button>
+              >Xem</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>
@@ -145,6 +145,7 @@
           <vs-th>ID đầu sách</vs-th>
           <vs-th></vs-th>
           <vs-th>Tên sách</vs-th>
+          <vs-th>Ngày nhận</vs-th>
         </template>
 
         <template slot-scope="{data}">
@@ -158,6 +159,9 @@
               />
             </vs-td>
             <vs-td :data="data[indextr].book_detail.name">{{data[indextr].book_detail.name}}</vs-td>
+            <vs-td
+              :data="data[indextr].transfer_date"
+            >{{ parseInt(data[indextr].transfer_time) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }} ({{ parseInt(data[indextr].transfer_time) * 1000 | moment("from") }})</vs-td>
           </vs-tr>
         </template>
       </vs-table>
