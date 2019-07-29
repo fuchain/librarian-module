@@ -126,7 +126,7 @@ async function getLastTransactionTime(req, res) {
 
     const time = await userService.getLastTransactionTime(body.asset_id);
 
-    res({ time });
+    res.send({ time });
 }
 
 export default errorHandler({
