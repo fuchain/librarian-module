@@ -103,6 +103,12 @@
                     style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px;"
                   >FUChain</span>
                 </div>
+                <div class="mb-4 float-right" v-else>
+                  Powered by
+                  <span
+                    style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px;"
+                  >FUChain</span>
+                </div>
               </div>
             </div>
           </div>
