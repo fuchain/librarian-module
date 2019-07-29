@@ -36,6 +36,6 @@ Cypress.Commands.add("login", () => {
   );
   window.localStorage.setItem(
     "fptlibrarian_access_token",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1aG1zZTYyNTMxQGZwdC5lZHUudm4iLCJyb2xlcyI6InJlYWRlciIsImlhdCI6MTU2NDQxMDMwMSwiZXhwIjoxNTY0NDk2NzAxfQ.BFcDQEuPQLuQ7i0AS4dIjE6jYzps2-619BMqoOkBkHc"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1aG1zZTYyNTMxQGZwdC5lZHUudm4iLCJyb2xlcyI6InJlYWRlciIsImlhdCI6MTU2NDQxMDMwMSwiZXhwIjoxNTY0NTk2NzAxfQ.6I0lyhnMJGw2hvrpAP6D4C8Ze6-i93N1wYUPIM578XI"
   );
 });
