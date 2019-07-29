@@ -10,5 +10,6 @@ router.route("/returning").post(controller.getReturningBook);
 router.route("/requesting").post(controller.getRequestingBook);
 router.route("/keeping_amount").post(controller.getKeepingAmount);
 router.route("/transfer_history").post(controller.getTransferHistory);
+router.route("/lasttx_time").post(controller.getLastTransactionTime);
 
 export default router;

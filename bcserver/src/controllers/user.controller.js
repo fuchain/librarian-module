@@ -121,6 +121,14 @@ async function getTransferHistory(req, res) {
     res.send(books);
 }
 
+async function getLastTransactionTime(req, res) {
+    const body = req.body;
+
+    const time = await userService.getLastTransactionTime(body.asset_id);
+
+    res({ time });
+}
+
 export default errorHandler({
     getProfile,
     updateProfile,
@@ -128,5 +136,6 @@ export default errorHandler({
     getReturningBook,
     getRequestingBook,
     getKeepingAmount,
-    getTransferHistory
+    getTransferHistory,
+    getLastTransactionTime
 });
