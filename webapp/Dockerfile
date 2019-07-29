@@ -1,5 +1,15 @@
 FROM node:10.16.0 as builder
 
+RUN apt-get update && \
+    apt-get install -y \
+    libgtk2.0-0 \
+    libnotify-dev \
+    libgconf-2-4 \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    xvfb
+
 RUN mkdir -p /root/src/app
 WORKDIR /root/src/app
 ENV PATH /root/src/app/node_modules/.bin:$PATH
@@ -9,6 +19,7 @@ RUN npm install
 
 COPY . .
 RUN npm run build
+RUN npm run test
 
 FROM nginx:alpine
 
