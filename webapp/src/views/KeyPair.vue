@@ -28,6 +28,12 @@
                       v-if="mode"
                     ></feather-icon>
                     <span style="font-size: 2rem; color: #7367F0;">Ví sách FU</span>
+                    <div class="mt-2 mb-4" style="text-align: right;">
+                      Powered by
+                      <span
+                        style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px;"
+                      >FUChain</span>
+                    </div>
                   </div>
                   <p
                     v-if="!mode"
@@ -41,7 +47,8 @@
                 </div>
                 <div v-if="!mode">
                   <vs-button
-                    color="red"
+                    color="primary"
+                    type="border"
                     class="w-full mb-4"
                     icon="create"
                     @click="mode = 'create'"
@@ -97,18 +104,6 @@
                     @click="submitKey"
                   >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Xác nhận khóa bí mật"}}</vs-button>
                 </form>
-                <div class="mt-8 mb-4 float-right" v-if="!mode">
-                  Powered by
-                  <span
-                    style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px;"
-                  >FUChain</span>
-                </div>
-                <div class="mb-4 float-right" v-else>
-                  Powered by
-                  <span
-                    style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px;"
-                  >FUChain</span>
-                </div>
               </div>
             </div>
           </div>
