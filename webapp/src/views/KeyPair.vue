@@ -19,7 +19,16 @@
             <div class="vx-col sm:w-full md:w-full lg:w-1/2 mx-auto self-center bg-white bg-dark">
               <div class="p-8">
                 <div class="vx-card__title mb-8">
-                  <h4 class="mb-4">Ví sách FPTU University</h4>
+                  <div class="mb-4">
+                    <feather-icon
+                      class="back-btn rounded-lg mr-4"
+                      style="color: #7367F0;"
+                      icon="ArrowLeftIcon"
+                      @click="reset()"
+                      v-if="mode"
+                    ></feather-icon>
+                    <span style="font-size: 2rem; color: #7367F0;">Ví sách FU</span>
+                  </div>
                   <p
                     v-if="!mode"
                   >Hệ thống không phát hiện ra chìa khóa bí mật của bạn trên thiết bị. Bạn đã tạo chìa khóa chưa?</p>
@@ -76,7 +85,7 @@
                   <vs-button
                     color="primary"
                     type="border"
-                    icon="extension"
+                    icon="work"
                     class="mb-4"
                     @click="changeStyle()"
                     v-if="mode === 'verify'"
@@ -88,6 +97,12 @@
                     @click="submitKey"
                   >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Xác nhận khóa bí mật"}}</vs-button>
                 </form>
+                <div class="mt-8 mb-4 float-right" v-if="!mode">
+                  Powered by
+                  <span
+                    style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px;"
+                  >FUChain</span>
+                </div>
               </div>
             </div>
           </div>
@@ -139,6 +154,12 @@ export default {
         this.style = "auto";
       }
     },
+    reset() {
+      this.publicKey = "";
+      this.privateKey = "";
+      this.mode = null;
+      this.style = "auto";
+    },
     redirectToLP() {
       window.location.href = "https://blockchain.fptu.tech";
     }
@@ -174,5 +195,10 @@ export default {
 
 .title-loading {
   color: white;
+}
+
+.back-btn {
+  cursor: pointer;
+  padding: 0.5rem 0.1rem;
 }
 </style>
