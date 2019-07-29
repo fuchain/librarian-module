@@ -30,7 +30,7 @@
     },
     {
       "name": "insertTx",
-      "hostId": "Insert Transaction"
+      "hostId": "Insert Transaction Queue"
     }
   ]
 }

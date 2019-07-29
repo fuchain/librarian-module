@@ -25,10 +25,10 @@
                   >Hệ thống không phát hiện ra chìa khóa bí mật của bạn trên thiết bị. Bạn đã tạo chìa khóa chưa?</p>
                   <p
                     v-else-if="mode === 'create'"
-                  >Vui lòng chọn khóa an toàn (32 kí tự bí mật), trong đó có bao gồm mã số sinh viên của bạn, sau khi tạo nhớ lưu giữ khóa cẩn thận.</p>
+                  >Vui lòng cất giữ cụm từ bí mật sau một cách cẩn thận (ghi ra giấy, cất nơi an toàn), không để cho bất kì ai khác biết cụm từ này.</p>
                   <p
                     v-else
-                  >Nhập vào khóa đã tạo của bạn (32 kí tự bí mật). Vui lòng chỉ nhận khóa này trên thiết bị của bạn.</p>
+                  >Nhập vào cụm từ bí mật của bạn để kích hoạt ví sách. Vui lòng chỉ nhập trên thiết bị mà bạn tin tưởng.</p>
                 </div>
                 <div v-if="!mode">
                   <vs-button
@@ -45,41 +45,48 @@
                   >Đã tạo rồi</vs-button>
                 </div>
                 <form v-on:submit.prevent="submitKey" v-if="mode">
-                  <vs-input
-                    type="password"
-                    name="password"
-                    icon="icon icon-lock"
-                    icon-pack="feather"
-                    label-placeholder="Chuỗi chìa khóa bí mật"
-                    v-model="bip39"
-                    maxlength="32"
-                    class="w-full mt-6 no-icon-border my-5"
-                  />
+                  <vs-alert v-if="mode !== 'verify'" active="true" class="mb-8">{{ seed }}</vs-alert>
 
                   <div v-if="mode === 'verify'">
-                    <vs-divider>Hoặc nhập chuỗi khóa</vs-divider>
+                    <div v-if="style === 'auto'">
+                      <vs-input
+                        icon="vpn_key"
+                        label-placeholder="Cụm từ bí mật lúc tạo ví"
+                        v-model="secret"
+                        class="w-full mt-6 no-icon-border my-5"
+                      />
+                    </div>
+                    <div v-else>
+                      <vs-input
+                        icon="vpn_key"
+                        label-placeholder="Chìa khóa công khai"
+                        v-model="publicKey"
+                        class="w-full mt-6 no-icon-border my-5"
+                      />
 
-                    <vs-input
-                      icon="vpn_key"
-                      label-placeholder="Chìa khóa công khai"
-                      v-model="publicKey"
-                      class="w-full mt-6 no-icon-border my-5"
-                    />
-
-                    <vs-input
-                      icon="vpn_key"
-                      label-placeholder="Chìa khóa bí mật"
-                      v-model="privateKey"
-                      class="w-full mt-6 no-icon-border my-5"
-                    />
+                      <vs-input
+                        icon="vpn_key"
+                        label-placeholder="Chìa khóa bí mật"
+                        v-model="privateKey"
+                        class="w-full mt-6 no-icon-border my-5"
+                      />
+                    </div>
                   </div>
 
                   <vs-button
+                    color="primary"
+                    type="border"
+                    icon="extension"
+                    class="mb-4"
+                    @click="changeStyle()"
+                    v-if="mode === 'verify'"
+                  ></vs-button>
+                  <vs-button
                     class="float-right mb-8"
                     icon="fingerprint"
-                    :disabled="bip39.length < 32 && (!publicKey && !privateKey)"
+                    :disabled="(mode === 'verify' && !secret && (!publicKey && !privateKey))"
                     @click="submitKey"
-                  >{{ mode === 'create' ? "Tạo khóa bí mật mới" : "Xác nhận khóa bí mật"}}</vs-button>
+                  >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Xác nhận khóa bí mật"}}</vs-button>
                 </form>
               </div>
             </div>
@@ -92,35 +99,45 @@
 
 <script>
 import generateKeyPair from "@core/crypto/generateKeyPair";
+import generateSeed from "@core/crypto/generateSeed";
 
 export default {
   data() {
     return {
-      bip39: "",
       publicKey: "",
       privateKey: "",
-      mode: null
+      mode: null,
+      seed: generateSeed(),
+      style: "auto",
+      secret: ""
     };
   },
   methods: {
     async submitKey() {
-      if (!this.bip39) {
+      if (this.mode === "verify") {
         if (this.publicKey && this.privateKey) {
           this.$localStorage.setItem("publicKey", this.publicKey);
           this.$localStorage.setItem("privateKey", this.privateKey);
-
+          this.$router.push("/");
+        } else {
+          const keypair = await generateKeyPair(this.secret);
+          this.$localStorage.setItem("publicKey", keypair.publicKey);
+          this.$localStorage.setItem("privateKey", keypair.privateKey);
           this.$router.push("/");
         }
-
-        return;
+      } else {
+        const keypair = await generateKeyPair(this.seed);
+        this.$localStorage.setItem("publicKey", keypair.publicKey);
+        this.$localStorage.setItem("privateKey", keypair.privateKey);
+        this.$router.push("/");
       }
-
-      const keypair = await generateKeyPair(this.bip39);
-
-      this.$localStorage.setItem("publicKey", keypair.publicKey);
-      this.$localStorage.setItem("privateKey", keypair.privateKey);
-
-      this.$router.push("/");
+    },
+    changeStyle() {
+      if (this.style === "auto") {
+        this.style = "manual";
+      } else {
+        this.style = "auto";
+      }
     },
     redirectToLP() {
       window.location.href = "https://blockchain.fptu.tech";
