@@ -37,13 +37,15 @@
                   </div>
                   <p
                     v-if="!mode"
-                  >Hệ thống không phát hiện ra chìa khóa bí mật của bạn trên thiết bị. Bạn đã tạo chìa khóa chưa?</p>
-                  <p
-                    v-else-if="mode === 'create'"
-                  >Vui lòng cất giữ cụm từ bí mật sau một cách cẩn thận (ghi ra giấy, cất nơi an toàn), không để cho bất kì ai khác biết cụm từ này.</p>
-                  <p
-                    v-else
-                  >Nhập vào cụm từ bí mật của bạn để kích hoạt ví sách. Vui lòng chỉ nhập trên thiết bị mà bạn tin tưởng.</p>
+                  >Ứng dụng không tìm thấy chìa khóa ví sách của bạn trên thiết bị. Bạn có phải là người dùng mới?</p>
+                  <p v-else-if="mode === 'create'">
+                    Vui lòng cất giữ cụm từ bí mật sau một cách cẩn thận bằng cách
+                    <strong>ghi ra giấy, cất nơi an toàn</strong>, không để cho bất kì ai khác biết cụm từ này.
+                  </p>
+                  <p v-else>
+                    Nhập vào cụm từ bí mật của bạn để khôi phục ví sách. Chỉ nhập trên
+                    <strong>thiết bị mà bạn tin tưởng.</strong>
+                  </p>
                 </div>
                 <div v-if="!mode">
                   <vs-button
@@ -52,13 +54,13 @@
                     class="w-full mb-4"
                     icon="create"
                     @click="mode = 'create'"
-                  >Bây giờ tạo</vs-button>
+                  >Tạo ví sách cho tôi</vs-button>
                   <vs-button
                     color="primary"
                     class="w-full"
                     icon="vpn_key"
                     @click="mode = 'verify'"
-                  >Đã tạo rồi</vs-button>
+                  >Tôi đã có ví sách rồi</vs-button>
                 </div>
                 <form v-on:submit.prevent="submitKey" v-if="mode">
                   <vs-alert v-if="mode !== 'verify'" active="true" class="mb-8">{{ seed }}</vs-alert>
