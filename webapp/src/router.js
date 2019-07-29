@@ -27,6 +27,10 @@ const router = new Router({
           component: () => import("@/views/Home.vue")
         },
         {
+          path: "/qrscan",
+          component: () => import("@/modules/qrscan/QRScan.vue")
+        },
+        {
           path: "profile",
           component: () => import("@/modules/profile/Profile.vue")
         },

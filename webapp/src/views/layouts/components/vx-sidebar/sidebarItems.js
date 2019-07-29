@@ -123,11 +123,19 @@ function userMenu(numOfBooks) {
       icon: "FileTextIcon"
     },
     {
+      url: "/qrscan",
+      name: "Quét mã QR",
+      slug: "qrscan",
+      icon: "CodeIcon",
+      tag: "beta",
+      tagColor: "primary"
+    },
+    {
       url: "/review-ux",
       name: "Đánh giá",
       slug: "review-ux",
       icon: "ThumbsUpIcon",
-      tag: "có thưởng",
+      tag: "FUCoin",
       tagColor: "orangered"
     }
   ];
