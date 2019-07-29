@@ -22,3 +22,5 @@ yarn-error.log*
 *.sw?
 
 .scannerwork
+
+cypress/videos
