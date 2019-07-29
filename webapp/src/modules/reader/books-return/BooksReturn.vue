@@ -182,6 +182,8 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+
+      this.$router.push("/");
     },
     handleQRCode(code) {
       this.email = code;
