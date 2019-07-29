@@ -113,6 +113,11 @@ export default {
     darkmode(val) {
       this.$store.dispatch("updateTheme", val === true ? "dark" : "light");
       this.$localStorage.setItem("darkmode", val ? "dark" : "light");
+    },
+    email(val) {
+      QRCode.toCanvas(canvas, `${val}`, { width: 200 }, function(error) {
+        if (error) console.error(error);
+      });
     }
   },
   data() {
@@ -175,14 +180,10 @@ export default {
   },
   mounted() {
     const canvas = document.getElementById("canvas");
-    QRCode.toCanvas(
-      canvas,
-      `https://library.fptu.tech/transfer/?email=${this.email}`,
-      { width: 200 },
-      function(error) {
+    this.email &&
+      QRCode.toCanvas(canvas, `${this.email}`, { width: 200 }, function(error) {
         if (error) console.error(error);
-      }
-    );
+      });
   }
 };
 </script>

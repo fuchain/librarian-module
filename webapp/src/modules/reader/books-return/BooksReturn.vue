@@ -49,8 +49,9 @@
       <!-- tab 3 content -->
       <div class="vx-row">
         <div class="vx-col w-full">
-          <vx-card v-if="transferType === 'manual' && !isLoading" noShadow>
-            <vs-input class="w-full" label="Email người nhận" v-model="email" />
+          <vx-card title="Quét mã QR" v-if="transferType === 'manual' && !isLoading" noShadow>
+            <QRScan v-if="!qrError" @printCode="handleQRCode" @onFail="handleQRFail" />
+            <vs-input v-else class="w-full" label="Email người nhận" v-model="email" />
           </vx-card>
           <vx-card noShadow cardBorder v-else>{{ isLoading ? "Đang xử lí..." : resultText }}</vx-card>
         </div>
@@ -86,6 +87,7 @@
 
 <script>
 import { FormWizard, TabContent } from "vue-form-wizard";
+import QRScan from "@/views/components/QRScan.vue";
 import "vue-form-wizard/dist/vue-form-wizard.min.css";
 
 export default {
@@ -95,7 +97,8 @@ export default {
       remainTime: 0,
       isLoading: false,
       resultText: "Đang tải",
-      email: ""
+      email: "",
+      qrError: false
     };
   },
   methods: {
@@ -175,11 +178,21 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+    },
+    handleQRCode(code) {
+      this.email = code;
+      this.manuallyReturn();
+    },
+    handleQRFail(val) {
+      if (val) {
+        this.qrError = true;
+      }
     }
   },
   components: {
     FormWizard,
-    TabContent
+    TabContent,
+    QRScan
   },
   beforeMount() {
     if (!this.book) {
