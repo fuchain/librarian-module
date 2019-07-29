@@ -49,7 +49,11 @@
       <!-- tab 3 content -->
       <div class="vx-row">
         <div class="vx-col w-full">
-          <vx-card title="Quét mã QR" v-if="transferType === 'manual' && !isLoading" noShadow>
+          <vx-card
+            :title="!qrError ? 'Quét mã QR' : ''"
+            v-if="transferType === 'manual' && !isLoading"
+            noShadow
+          >
             <QRScan v-if="!qrError" @printCode="handleQRCode" @onFail="handleQRFail" />
             <vs-input v-else class="w-full" label="Email người nhận" v-model="email" />
           </vx-card>

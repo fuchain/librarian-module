@@ -1,88 +1,92 @@
 <template>
   <vs-popup :title="getTitle" :active.sync="isActive" v-if="tx">
-    <vs-alert
-      active="true"
-      class="mb-4"
-      v-if="!signedTx"
-    >Bạn vừa {{ tx.operation === 'TRANSFER' ? 'tạo ra' : 'nhận được' }} một giao dịch, kí giao dịch để hoàn tất thực hiện</vs-alert>
+    <VuePerfectScrollbar>
+      <vs-alert
+        active="true"
+        class="mb-4"
+        v-if="!signedTx"
+      >Bạn vừa {{ tx.operation === 'TRANSFER' ? 'tạo ra' : 'nhận được' }} một giao dịch, kí giao dịch để hoàn tất thực hiện</vs-alert>
 
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Mã giao dịch</span>
+      <div class="vx-row mb-6">
+        <div class="vx-col sm:w-1/3 w-full">
+          <span>Mã giao dịch</span>
+        </div>
+        <div class="vx-col sm:w-2/3 w-full trim-text">{{ tx.id || signedTx && signedTx.id || "--" }}</div>
       </div>
-      <div class="vx-col sm:w-2/3 w-full trim-text">{{ tx.id || signedTx && signedTx.id || "--" }}</div>
-    </div>
 
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Sách được chuyển</span>
+      <div class="vx-row mb-6">
+        <div class="vx-col sm:w-1/3 w-full">
+          <span>Sách được chuyển</span>
+        </div>
+        <div class="vx-col sm:w-2/3 w-full">{{ book && book.name || "--"}}</div>
       </div>
-      <div class="vx-col sm:w-2/3 w-full">{{ book && book.name || "--"}}</div>
-    </div>
 
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Mã sách</span>
+      <div class="vx-row mb-6">
+        <div class="vx-col sm:w-1/3 w-full">
+          <span>Mã sách</span>
+        </div>
+        <div class="vx-col sm:w-2/3 w-full">
+          <strong>{{ getAssetId || "--"}}</strong> (10 kí tự cuối)
+        </div>
       </div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <strong>{{ getAssetId || "--"}}</strong> (10 kí tự cuối)
-      </div>
-    </div>
 
-    <div class="vx-row mb-6" v-if="book && book.thumbnail">
-      <div class="vx-col sm:w-1/3 w-full"></div>
-      <div class="vx-col sm:w-2/3 w-full">
-        <img :src="book && book.thumbnail" style="max-width: 100px;" />
+      <div class="vx-row mb-6" v-if="book && book.thumbnail">
+        <div class="vx-col sm:w-1/3 w-full"></div>
+        <div class="vx-col sm:w-2/3 w-full">
+          <img :src="book && book.thumbnail" style="max-width: 100px;" />
+        </div>
       </div>
-    </div>
 
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Người chuyển sách</span>
+      <div class="vx-row mb-6">
+        <div class="vx-col sm:w-1/3 w-full">
+          <span>Người chuyển sách</span>
+        </div>
+        <div class="vx-col sm:w-2/3 w-full">{{ returner || "--"}}</div>
       </div>
-      <div class="vx-col sm:w-2/3 w-full">{{ returner || "--"}}</div>
-    </div>
 
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Người nhận sách</span>
+      <div class="vx-row mb-6">
+        <div class="vx-col sm:w-1/3 w-full">
+          <span>Người nhận sách</span>
+        </div>
+        <div class="vx-col sm:w-2/3 w-full">{{ receiver || "--"}}</div>
       </div>
-      <div class="vx-col sm:w-2/3 w-full">{{ receiver || "--"}}</div>
-    </div>
 
-    <div class="vx-row mb-6">
-      <div class="vx-col sm:w-1/3 w-full">
-        <span>Chữ kí xác nhận</span>
+      <div class="vx-row mb-6">
+        <div class="vx-col sm:w-1/3 w-full">
+          <span>Chữ kí xác nhận</span>
+        </div>
+        <div
+          class="vx-col sm:w-2/3 w-full trim-text"
+        >{{ signedTx && signedTx.inputs[0].fulfillment || "(chưa có chữ kí)" }}</div>
       </div>
-      <div
-        class="vx-col sm:w-2/3 w-full trim-text"
-      >{{ signedTx && signedTx.inputs[0].fulfillment || "(chưa có chữ kí)" }}</div>
-    </div>
 
-    <div class="vx-row" v-if="!signedTx">
-      <div class="vx-col sm:w-2/3 w-full ml-auto">
-        <vs-button
-          class="mb-2 w-full"
-          icon="fingerprint"
-          @click="openConfirm"
-        >{{ tx.operation === 'TRANSFER' ? 'Kí chuyển sách' : 'Kí nhận sách' }}</vs-button>
+      <div class="vx-row" v-if="!signedTx">
+        <div class="vx-col sm:w-2/3 w-full ml-auto">
+          <vs-button
+            class="mb-2 w-full"
+            icon="fingerprint"
+            @click="openConfirm"
+          >{{ tx.operation === 'TRANSFER' ? 'Kí chuyển sách' : 'Kí nhận sách' }}</vs-button>
+        </div>
       </div>
-    </div>
 
-    <vs-popup title="Xác nhận" :active.sync="confirmPopup" class="confirm-tx-popup">
-      Bạn có chắc chắn muốn kí vào giao dịch này? Chữ kí là không thể chối cãi.
-      <vs-divider border-style="dashed" />
-      <div class="float-right">
-        <vs-button icon="check" @click="acceptAndSign">Kí xác nhận</vs-button>
-      </div>
-    </vs-popup>
+      <vs-popup title="Xác nhận" :active.sync="confirmPopup" class="confirm-tx-popup">
+        Bạn có chắc chắn muốn kí vào giao dịch này? Chữ kí là không thể chối cãi.
+        <vs-divider border-style="dashed" />
+        <div class="float-right">
+          <vs-button icon="check" @click="acceptAndSign">Kí xác nhận</vs-button>
+        </div>
+      </vs-popup>
+    </VuePerfectScrollbar>
   </vs-popup>
 </template>
 
 <script>
 import signTx from "@core/crypto/signTx";
+import VuePerfectScrollbar from "vue-perfect-scrollbar";
 
 export default {
+  components: { VuePerfectScrollbar },
   data() {
     return {
       confirmPopup: false,
