@@ -92,7 +92,9 @@ async function getCurrentBook(publicKey, getAll = false) {
     const promises = transactionIds.map(async e => {
         const transactionId = e.transaction_id;
         const assetDetail = await asset.getBookFromTransactionId(transactionId);
-        assetDetail.transferTime = await getLastTransactionTime(asset.asset_id);
+        assetDetail.transfer_time = await getLastTransactionTime(
+            assetDetail.asset_id
+        );
 
         return assetDetail;
     });
