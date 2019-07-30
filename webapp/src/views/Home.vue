@@ -180,9 +180,11 @@ export default {
         if (
           this.$auth.isAuthenticated() &&
           !this.$auth.isAdmin() &&
-          this.$tours["vuesaxTour"]
+          this.$tours["vuesaxTour"] &&
+          !this.$localStorage.getItem("tour")
         ) {
           this.$tours["vuesaxTour"].start();
+          this.$localStorage.setItem("tour", true);
         }
       }.bind(this),
       500
