@@ -29,19 +29,31 @@ async function getEmailFromPublicKey(publicKey) {
 
     const listTx = await conn.searchMetadata(publicKey);
 
-    if (!listTx || !listTx.length) throw new Error("Transaction not valid");
+    if (!listTx || !listTx.length) throw new Error("Invalid public key");
 
     const txId = listTx[0].id;
     const tx = await transaction.get(txId);
 
-    if (transaction.isLibrarianTx(tx)) {
-        const asset = tx.asset.data;
-        const email = asset.email;
-
-        return email;
-    } else {
-        throw new Error("Transaction not sign by librarian");
+    if (!transaction.isLibrarianTx(tx)) {
+        throw new Error("Keypair not sign by librarian");
     }
+
+    const assetId = tx.operation === "CREATE" ? tx.id : tx.asset.id;
+    const txs = await conn.getAsset(assetId);
+
+    if (!txs || !txs.length) {
+        throw new Error("Invalid publicKey");
+    }
+
+    const lastTxIndex = txs.length - 1;
+    const validTx = txs[lastTxIndex];
+    if (publicKey !== validTx.metadata.public_key) {
+        throw new Error("Public key is not valid");
+    }
+
+    const email = txs[0].asset.data.email;
+
+    return email;
 }
 
 async function getPublicKeyFromEmail(email) {
@@ -52,8 +64,14 @@ async function getPublicKeyFromEmail(email) {
 
     if (!listTx || !listTx.length) throw new Error("Transaction not valid");
 
-    const txId = listTx[0].id;
-    const tx = await transaction.get(txId);
+    if (listTx[0].data.email !== email) throw new Error("Email not found");
+
+    const assetId = listTx[0].id;
+    const txs = await conn.getAsset(assetId);
+
+    if (!txs || !txs.length) throw new Error("Email not valid");
+
+    const tx = txs[txs.length - 1];
 
     if (transaction.isLibrarianTx(tx)) {
         return tx.metadata.public_key;
