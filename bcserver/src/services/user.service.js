@@ -17,40 +17,32 @@ async function getProfile(publicKey) {
         };
     }
 
-    const listAssets = await asset.searchPublicKey(publicKey);
-    if (listAssets.length) {
-        const found = await asset.getAsset(listAssets[0].id);
+    const email = await asset.getEmailFromPublicKey(publicKey);
 
-        const email = found[0].asset.data.email;
-        const type = found[0].asset.data.type;
+    const userCollection = db.collection("users");
+    const userInDB = await userCollection.findOne({
+        email
+    });
 
-        const userCollection = db.collection("users");
-        const userInDB = await userCollection.findOne({
-            email
-        });
-
-        if (!userInDB) {
-            userCollection.insertMany([
-                {
-                    email,
-                    fullname: null,
-                    phone: null
-                }
-            ]);
-        }
-
-        const phone = userInDB && userInDB.phone;
-        const fullname = userInDB && userInDB.fullname;
-
-        return {
-            email,
-            type,
-            fullname,
-            phone
-        };
+    if (!userInDB) {
+        userCollection.insertMany([
+            {
+                email,
+                fullname: null,
+                phone: null
+            }
+        ]);
     }
 
-    return null;
+    const phone = userInDB && userInDB.phone;
+    const fullname = userInDB && userInDB.fullname;
+
+    return {
+        email,
+        type: "reader",
+        fullname,
+        phone
+    };
 }
 
 async function updateProfile(email, fullname, phone) {
