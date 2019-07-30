@@ -1,5 +1,6 @@
 import transaction from "@core/bigchaindb/transaction";
 import keypairService from "@services/keypair.service";
+import conn from "@core/bigchaindb";
 import asset from "@core/bigchaindb/asset";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
@@ -241,6 +242,30 @@ async function removeMatchingFromQueueWhenDone(transferTxPosted) {
     return true;
 }
 
+async function recoverAccount(email, newPublicKey) {
+    const listTx = await conn.searchAssets(email);
+    if (!listTx || !listTx.length) throw new Error("Transaction not valid");
+    if (listTx[0].data.email !== email) throw new Error("Email not found");
+    const assetId = listTx[0].id;
+
+    const lastTxs = await asset.getAssetTransactions(assetId);
+    const previousTx = lastTxs.length ? lastTxs[lastTxs.length - 1] : null;
+
+    const metadata = {
+        public_key: newPublicKey
+    };
+
+    const transferTx = transaction.transfer(
+        previousTx,
+        env.publicKey,
+        metadata
+    );
+    const signedTx = transaction.sign(transferTx, env.privateKey);
+    const txDone = await transaction.post(signedTx);
+
+    return txDone;
+}
+
 export default {
     signTx,
     createTestBook,
@@ -252,5 +277,6 @@ export default {
     createBookForBookDetailId,
     createTransferRequest,
     createReceiverConfirmAsset,
-    postToDoneTransfer
+    postToDoneTransfer,
+    recoverAccount
 };
