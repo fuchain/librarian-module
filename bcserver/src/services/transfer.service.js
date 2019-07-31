@@ -182,6 +182,15 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // this is when returner and receiver signed 2 transactons, we will submit it to BigchainDB
     // need to review: need a retry job here? what happen if 1 of 2 request send failed!!?
 
+    // constraint
+    if (
+        confirmAssetSigned.asset &&
+        (confirmAssetSigned.asset.type !== "recept" ||
+            confirmAssetSigned.asset.type !== "reject")
+    ) {
+        throw new Error("Recept transaction is not valid");
+    }
+
     const transferTxPosted = await postTx(
         confirmAssetSigned.asset.data.confirm_for_tx
     ); // the confirm asset contains the transfer transaction
@@ -195,11 +204,19 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // Remove matching from queues when done
     await removeMatchingFromQueueWhenDone(transferTxPosted);
 
-    await axios.post(`${env.ioHost}/events/push`, {
-        email,
-        type: "success",
-        message: "Sách của bạn đã được chuyển thành công"
-    });
+    if (confirmAssetSigned.asset.type !== "recept") {
+        await axios.post(`${env.ioHost}/events/push`, {
+            email,
+            type: "success",
+            message: "Sách của bạn đã được chuyển thành công"
+        });
+    } else if (confirmAssetSigned.asset.type !== "reject") {
+        await axios.post(`${env.ioHost}/events/push`, {
+            email,
+            type: "fail",
+            message: "Sách của bạn đã bị từ chối nhận"
+        });
+    }
 
     return {
         transferTxPosted,
