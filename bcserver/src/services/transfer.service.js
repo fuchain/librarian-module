@@ -182,21 +182,19 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // this is when returner and receiver signed 2 transactons, we will submit it to BigchainDB
     // need to review: need a retry job here? what happen if 1 of 2 request send failed!!?
 
-    // constraint
-    if (
-        confirmAssetSigned.asset &&
-        (confirmAssetSigned.asset.type !== "recept" ||
-            confirmAssetSigned.asset.type !== "reject")
-    ) {
-        throw new Error("Recept transaction is not valid");
+    const type = confirmAssetSigned.asset.data.type;
+    if (!type) {
+        throw new Error("Recept not valid");
     }
 
-    const transferTxPosted = await postTx(
-        confirmAssetSigned.asset.data.confirm_for_tx
-    ); // the confirm asset contains the transfer transaction
+    const transferTxPosted =
+        type === "reject"
+            ? confirmAssetSigned.asset.data.confirm_for_tx
+            : await postTx(confirmAssetSigned.asset.data.confirm_for_tx); // the confirm asset contains the transfer transaction, if type is reject, then not post the transaction
+
     const confirmAssetPosted = await postTx(confirmAssetSigned);
 
-    // Notify for returnerr that things have been done!
+    // Notify for returner that things have been done!
     const email = await asset.getEmailFromPublicKey(
         transferTxPosted.inputs[0].owners_before[0]
     );
@@ -204,13 +202,13 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // Remove matching from queues when done
     await removeMatchingFromQueueWhenDone(transferTxPosted);
 
-    if (confirmAssetSigned.asset.type === "recept") {
+    if (type === "recept") {
         await axios.post(`${env.ioHost}/events/push`, {
             email,
             type: "success",
             message: "Sách của bạn đã được chuyển thành công"
         });
-    } else if (confirmAssetSigned.asset.type === "reject") {
+    } else if (type === "reject") {
         await axios.post(`${env.ioHost}/events/push`, {
             email,
             type: "fail",

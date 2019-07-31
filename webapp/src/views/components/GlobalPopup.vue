@@ -72,13 +72,33 @@
           @click="openConfirm"
         >{{ tx.operation === 'TRANSFER' ? 'Kí chuyển sách' : 'Kí nhận sách' }}</vs-button>
       </div>
+      <div class="vx-col sm:w-2/3 w-full ml-auto" v-if="tx.operation !== 'TRANSFER'">
+        <vs-button
+          color="danger"
+          class="mb-2 w-full"
+          icon="close"
+          @click="openRejectConfirm"
+        >Không nhận sách (sách đã hư hại)</vs-button>
+      </div>
     </div>
 
-    <vs-popup title="Xác nhận" :active.sync="confirmPopup" class="confirm-tx-popup">
-      Bạn có chắc chắn muốn kí vào giao dịch này? Chữ kí là không thể chối cãi.
+    <vs-popup title="Biên lai kí nhận sách" :active.sync="confirmPopup" class="confirm-tx-popup">
+      Bạn có đồng ý kí và xác nhận biên lai này, một khi đã kí thì không thể phủ nhận hoặc thay đổi.
       <vs-divider border-style="dashed" />
       <div class="float-right">
         <vs-button icon="check" @click="acceptAndSign">Kí xác nhận</vs-button>
+      </div>
+    </vs-popup>
+
+    <vs-popup
+      title="Biên lai không nhận sách"
+      :active.sync="confirmRejectPopup"
+      class="confirm-tx-popup"
+    >
+      Bạn có đồng ý kí và xác nhận biên lai này, một khi đã kí thì không thể phủ nhận hoặc thay đổi.
+      <vs-divider border-style="dashed" />
+      <div class="float-right">
+        <vs-button icon="check" @click="acceptAndSign(true)">Kí xác nhận sách đã hư hại</vs-button>
       </div>
     </vs-popup>
   </vs-popup>
@@ -91,6 +111,7 @@ export default {
   data() {
     return {
       confirmPopup: false,
+      confirmRejectPopup: false,
       signedTx: null,
       book: null,
       returner: "",
@@ -153,10 +174,24 @@ export default {
     openConfirm() {
       this.confirmPopup = true;
     },
-    acceptAndSign() {
-      const signedTx = signTx(this.tx);
+    openRejectConfirm() {
+      this.confirmRejectPopup = true;
+    },
+    acceptAndSign(reject = false) {
+      const txToSign = Object.assign({}, this.tx);
 
-      if (this.tx.operation === "TRANSFER") {
+      if (reject) {
+        // Type reject
+        txToSign.asset.data.type = "reject";
+      }
+
+      const signedTx = signTx(txToSign);
+
+      console.log(signedTx);
+
+      return;
+
+      if (txToSign.operation === "TRANSFER") {
         this.$vs.loading();
         this.$http
           .post(`${this.$http.baseUrl}/transfer/sign`, {
@@ -175,6 +210,7 @@ export default {
 
             this.signedTx = signedTx;
             this.confirmPopup = false;
+            this.confirmRejectPopup = false;
 
             // Close
             this.$store.dispatch("closeTxPopup", 5000);
@@ -195,6 +231,7 @@ export default {
           });
       } else {
         this.$vs.loading();
+
         this.$http
           .post(`${this.$http.baseUrl}/transfer/done`, {
             tx: signedTx
@@ -211,6 +248,7 @@ export default {
 
             this.signedTx = signedTx;
             this.confirmPopup = false;
+            this.confirmRejectPopup = false;
 
             // Close
             this.$store.dispatch("closeTxPopup", 5000);
