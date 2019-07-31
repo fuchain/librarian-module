@@ -196,8 +196,8 @@ async function getAllUsers(type) {
 
     const listPromises = users.map(async user => {
         const assetTxs = await asset.getAsset(user.id);
-        const createTx = assetTxs[0];
-        const publicKey = createTx.metadata.public_key;
+        const latestTx = assetTxs[assetTxs.length - 1];
+        const publicKey = latestTx.metadata.public_key;
 
         const localUser = await usersCollection.findOne({
             email: user.data.email
