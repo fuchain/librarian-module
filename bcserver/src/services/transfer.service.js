@@ -204,13 +204,13 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // Remove matching from queues when done
     await removeMatchingFromQueueWhenDone(transferTxPosted);
 
-    if (confirmAssetSigned.asset.type !== "recept") {
+    if (confirmAssetSigned.asset.type === "recept") {
         await axios.post(`${env.ioHost}/events/push`, {
             email,
             type: "success",
             message: "Sách của bạn đã được chuyển thành công"
         });
-    } else if (confirmAssetSigned.asset.type !== "reject") {
+    } else if (confirmAssetSigned.asset.type === "reject") {
         await axios.post(`${env.ioHost}/events/push`, {
             email,
             type: "fail",
