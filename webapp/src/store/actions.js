@@ -44,6 +44,8 @@ const actions = {
       const { data } = await $http.post(`${$http.baseUrl}/user/profile`);
       commit("PROFILE_UPDATED", data);
     } catch (e) {
+      console.log(e);
+
       // Catch error
       if (e.response && e.response.status && e.response.status === 401) {
         // Logout

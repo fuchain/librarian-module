@@ -1,9 +1,14 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <h2
-      class="mb-8 ml-4"
-      v-if="bookDetail.id"
-    >Quản lí đầu sách #{{ $route.params.id || "--" }} ({{ dataList.length }} cuốn)</h2>
+    <h2 class="mb-8 ml-4" v-if="bookDetail.id">
+      <feather-icon
+        class="back-btn rounded-lg mr-4"
+        style="color: #7367F0;"
+        icon="ArrowLeftIcon"
+        @click="$router.go(-1)"
+      ></feather-icon>
+      Quản lí đầu sách #{{ $route.params.id || "--" }} ({{ dataList.length }} cuốn)
+    </h2>
 
     <div class="flex items-center justify-center">
       <book-card :item="bookDetail" v-if="bookDetail.id" style="max-width: 250px;">
@@ -22,7 +27,14 @@
       </book-card>
     </div>
 
-    <vs-table noDataText="Không có dữ liệu" ref="table" pagination :max-items="itemsPerPage" search :data="dataList">
+    <vs-table
+      noDataText="Không có dữ liệu"
+      ref="table"
+      pagination
+      :max-items="itemsPerPage"
+      search
+      :data="dataList"
+    >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
@@ -94,7 +106,11 @@
             </vs-td>
 
             <vs-td>
-              <vs-button icon="pageview" @click="openHistory(tr.asset_id)">Lịch sử</vs-button>
+              <vs-button
+                icon="pageview"
+                @click="openHistory(tr.asset_id)"
+                v-if="tr.transaction_count && tr.transaction_count !== 'Fetching'"
+              >Lịch sử</vs-button>
             </vs-td>
           </vs-tr>
         </tbody>
@@ -102,7 +118,11 @@
     </vs-table>
 
     <vs-popup :title="historyId" :active.sync="historyPopup" :fullscreen="historyList.length">
-      <vs-table noDataText="Không có dữ liệu" :data="historyList" v-if="historyList && historyList.length">
+      <vs-table
+        noDataText="Không có dữ liệu"
+        :data="historyList"
+        v-if="historyList && historyList.length"
+      >
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>
           <vs-th>Mã giao dịch</vs-th>
@@ -163,7 +183,6 @@ export default {
       fraudEmail: "",
       historyId: 0,
       bookDetail: {},
-      totalRemain: 0,
       //
       emailPrompt: false,
       email: "",
@@ -176,6 +195,12 @@ export default {
         return this.$refs.table.currentx;
       }
       return 0;
+    },
+    totalRemain() {
+      const data = this.dataList.filter(
+        e => e.current_keeper === "librarian@fptu.tech"
+      );
+      return data.length;
     }
   },
   methods: {
@@ -230,7 +255,9 @@ export default {
     }
   },
   mounted() {
-    this.$vs.loading();
+    this.$vs.loading({
+      type: "sound"
+    });
 
     this.$http
       .get(
@@ -240,22 +267,24 @@ export default {
         const data = response.data;
 
         this.dataList = [].concat(data);
+
+        this.$http
+          .get(
+            `${this.$http.baseUrl}/librarian/book_details/${this.$route.params.id}/books/details`
+          )
+          .then(response => {
+            const data = response.data;
+
+            data.sort((a, b) => b.transaction_count - a.transaction_count);
+
+            this.dataList = [].concat(data);
+          })
+          .finally(() => {
+            this.$vs.loading.close();
+          });
       })
       .finally(() => {
         this.isMounted = true;
-        this.$vs.loading.close();
-      });
-
-    this.$http
-      .get(
-        `${this.$http.baseUrl}/librarian/book_details/${this.$route.params.id}/books/details`
-      )
-      .then(response => {
-        const data = response.data;
-
-        data.sort((a, b) => b.transaction_count - a.transaction_count);
-
-        this.dataList = [].concat(data);
       });
 
     this.$http
@@ -278,16 +307,6 @@ export default {
       })
       .catch(() => {
         this.$router.push("/librarian/book-details-manage");
-      });
-
-    this.$http
-      .post(`${this.$http.baseUrl}/librarian/library_book_total`, {
-        book_detail_id: this.$route.params.id
-      })
-      .then(response => {
-        const data = response.data;
-
-        this.totalRemain = data.total;
       });
   }
 };

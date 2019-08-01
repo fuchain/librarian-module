@@ -114,7 +114,7 @@ export default {
       .then(response => {
         const data = response.data;
         data.sort((a, b) => {
-          return b.time - a.time;
+          return a.time - b.time;
         });
 
         this.queues = data;
