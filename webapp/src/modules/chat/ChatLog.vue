@@ -78,10 +78,14 @@ export default {
     },
     userImg() {
       if (this.contactIndex !== -1) return this.contacts[this.contactIndex].img;
+
+      return null;
     },
     senderImg() {
       return isSentByActiveUser => {
-        if (isSentByActiveUser) { return "https://scontent.fsgn5-1.fna.fbcdn.net/v/t1.0-9/27067550_1428489907260025_2312900682853459233_n.jpg?_nc_cat=101&_nc_oc=AQmOAkrRIuIzgBzpIlmO50cSi4vwMWMsRt8jxXURwgypfW3AWsrf5bhXNkpcW9Vj6Ao&_nc_ht=scontent.fsgn5-1.fna&oh=c0e288d5e068edcb69b15b50ecb9300c&oe=5DEE07E0"; } else return this.contacts[this.contactIndex].img;
+        if (isSentByActiveUser) {
+          return "https://scontent.fsgn5-1.fna.fbcdn.net/v/t1.0-9/27067550_1428489907260025_2312900682853459233_n.jpg?_nc_cat=101&_nc_oc=AQmOAkrRIuIzgBzpIlmO50cSi4vwMWMsRt8jxXURwgypfW3AWsrf5bhXNkpcW9Vj6Ao&_nc_ht=scontent.fsgn5-1.fna&oh=c0e288d5e068edcb69b15b50ecb9300c&oe=5DEE07E0";
+        } else return this.contacts[this.contactIndex].img;
       };
     },
     hasSentPreviousMsg() {

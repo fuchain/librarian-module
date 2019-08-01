@@ -174,7 +174,7 @@ export default {
       this.$vs.dialog({
         type: "confirm",
         color: "primary",
-        title: `Xác nhận`,
+        title: "Xác nhận",
         text:
           "Bạn có chắc là đã cất giữ chuỗi bí mật? Khi bạn làm mất chuỗi này thì tài khoản không thể khôi phục, bạn có thể sẽ mất phí để tạo tài khoản mới.",
         accept: this.submitKey,

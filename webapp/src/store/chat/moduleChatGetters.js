@@ -2,7 +2,7 @@ import contacts from "@/modules/chat/contacts";
 
 export default {
   chatDataOfUser: state => id => {
-    return state.chats[Object.keys(state.chats).find(key => key == id)];
+    return state.chats[Object.keys(state.chats).find(key => key === id)];
   },
   chats: (state, getters) => {
     const chatArray = contacts.filter(contact => {
@@ -28,7 +28,9 @@ export default {
         .includes(state.chatSearchQuery.toLowerCase());
     }),
   chatLastMessaged: (state, getters) => id => {
-    if (getters.chatDataOfUser(id)) { return getters.chatDataOfUser(id).msg.slice(-1)[0]; } else return false;
+    if (getters.chatDataOfUser(id)) {
+      return getters.chatDataOfUser(id).msg.slice(-1)[0];
+    } else return false;
   },
   chatUnseenMessages: (state, getters) => id => {
     let unseenMsg = 0;
