@@ -1,4 +1,4 @@
-const driver = require("bigchaindb-driver");
+import driver from "fuchain-js";
 const bip39 = require("bip39");
 
 export default async function(str) {
