@@ -1,5 +1,5 @@
+import driver from "fuchain-js";
 import conn from "@core/bigchaindb";
-const driver = require("@core/bigchaindb-driver");
 
 import env from "@core/env";
 
