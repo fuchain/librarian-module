@@ -189,12 +189,21 @@ async function getTransferHistory(publicKey) {
     return await Promise.all(txItems);
 }
 
-async function getAllUsers(type) {
+async function getAllUsers(type = "reader") {
     const users = await asset.getAllUsers(type);
 
     const usersCollection = db.collection("users");
 
     const listPromises = users.map(async user => {
+        if (user.data.email.includes("librarian")) {
+            return {
+                email: user.data.email,
+                public_key: null,
+                full_name: null,
+                phone: null
+            };
+        }
+
         const assetTxs = await asset.getAsset(user.id);
         const latestTx = assetTxs[assetTxs.length - 1];
         const publicKey = latestTx.metadata.public_key;
