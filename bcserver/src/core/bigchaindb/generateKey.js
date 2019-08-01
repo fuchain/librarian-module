@@ -1,4 +1,4 @@
-const driver = require("@core/bigchaindb-driver");
+import driver from "fuchain-js";
 
 export default function() {
     const newKeyPair = new driver.Ed25519Keypair();
