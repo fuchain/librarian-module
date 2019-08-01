@@ -86,7 +86,7 @@
       Bạn có đồng ý kí và xác nhận biên lai này, một khi đã kí thì không thể phủ nhận hoặc thay đổi.
       <vs-divider border-style="dashed" />
       <div class="float-right">
-        <vs-button icon="check" @click="acceptAndSign">Kí xác nhận</vs-button>
+        <vs-button icon="check" @click="acceptAndSign(false)">Kí xác nhận</vs-button>
       </div>
     </vs-popup>
 
@@ -186,10 +186,6 @@ export default {
       }
 
       const signedTx = signTx(txToSign);
-
-      console.log(signedTx);
-
-      return;
 
       if (txToSign.operation === "TRANSFER") {
         this.$vs.loading();
