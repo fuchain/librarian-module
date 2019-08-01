@@ -1,4 +1,4 @@
-import asset from "@core/bigchaindb/asset";
+import asset from "@core/fuchain/asset";
 import { db } from "@models";
 import env from "@core/env";
 import concurrencyHandler from "@core/handlers/concurrency.handler";
@@ -173,16 +173,18 @@ async function getBookInstanceTotal(type) {
 async function getBookAtLib(bookDetailId) {
     const bookList = await getBookInstanceList(bookDetailId);
 
-    const remainBookList = await bookList.filter(async book => {
+    const remainBookListPromises = await bookList.map(async book => {
         const transactionList = await asset.getAsset(book.id);
+
         if (transactionList.length) {
             const publicKey = transactionList[0].outputs[0].public_keys[0];
             if (publicKey === env.publicKey) {
-                return true;
+                return book;
             }
         }
-        return false;
     });
+
+    const remainBookList = await Promise.all(remainBookListPromises);
 
     return remainBookList;
 }

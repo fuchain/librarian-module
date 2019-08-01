@@ -110,6 +110,17 @@ async function giveBook(req, res) {
     res.send(tx);
 }
 
+async function recoverAccount(req, res) {
+    const email = req.body.user.email;
+    const newPublicKey = req.body.user.new_public_key;
+
+    await transferService.recoverAccount(email, newPublicKey);
+
+    res.send({
+        message: "Done"
+    });
+}
+
 export default errorHandler({
     getAllBookDetails,
     getAllUsers,
@@ -120,5 +131,6 @@ export default errorHandler({
     getOverview,
     getBookTotalByBDID,
     getBookTotalAtLib,
-    giveBook
+    giveBook,
+    recoverAccount
 });

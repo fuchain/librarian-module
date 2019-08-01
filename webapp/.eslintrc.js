@@ -20,7 +20,8 @@ module.exports = {
         asyncArrow: "always"
       }
     ],
-    "vue/no-use-v-if-with-v-for": "off"
+    "vue/no-use-v-if-with-v-for": "off",
+    camelcase: ["error", { properties: "never" }]
   },
   parserOptions: {
     parser: "babel-eslint"

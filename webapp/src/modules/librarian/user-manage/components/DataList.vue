@@ -146,6 +146,7 @@
           <vs-th></vs-th>
           <vs-th>Tên sách</vs-th>
           <vs-th>Ngày nhận</vs-th>
+          <vs-th></vs-th>
         </template>
 
         <template slot-scope="{data}">
@@ -162,10 +163,46 @@
             <vs-td
               :data="data[indextr].transfer_date"
             >{{ parseInt(data[indextr].transfer_time) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }} ({{ parseInt(data[indextr].transfer_time) * 1000 | moment("from") }})</vs-td>
+            <vs-td>
+              <vs-button icon="pageview" @click="openHistory(data[indextr].asset_id)">Lịch sử</vs-button>
+            </vs-td>
           </vs-tr>
         </template>
       </vs-table>
       <p v-else>Sinh viên này đang không giữ cuốn sách nào cả</p>
+
+      <vs-popup :title="historyId" :active.sync="historyPopup" :fullscreen="historyList.length">
+        <vs-table
+          noDataText="Không có dữ liệu"
+          :data="historyList"
+          v-if="historyList && historyList.length"
+        >
+          <template slot="thead">
+            <vs-th>Thứ tự</vs-th>
+            <vs-th>Mã giao dịch</vs-th>
+            <vs-th>Người trả</vs-th>
+            <vs-th>Người nhận</vs-th>
+            <vs-th>Thời gian</vs-th>
+          </template>
+
+          <template slot-scope="{data}">
+            <vs-tr :key="indextr" v-for="(tr, indextr) in data">
+              <vs-td :data="indextr">{{indextr + 1}}</vs-td>
+
+              <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
+
+              <vs-td :data="data[indextr].returner">{{data[indextr].returner}}</vs-td>
+
+              <vs-td :data="data[indextr].receiver">{{data[indextr].receiver}}</vs-td>
+
+              <vs-td
+                :data="data[indextr].transfer_date"
+              >{{ parseInt(data[indextr].transfer_date) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }}</vs-td>
+            </vs-tr>
+          </template>
+        </vs-table>
+        <p v-else>Thư viện đang giữ sách này, chưa được chuyển đi đâu cả.</p>
+      </vs-popup>
     </vs-popup>
   </div>
 </template>
@@ -182,7 +219,11 @@ export default {
       keepingList: [],
       onlineUsers: [],
       onlineUserState: [],
-      searchText: ""
+      searchText: "",
+      // This is for history
+      historyId: 0,
+      historyPopup: false,
+      historyList: []
     };
   },
   props: {
@@ -229,6 +270,24 @@ export default {
       });
 
       this.onlineUserState = trackArr;
+    },
+    openHistory(assetId) {
+      this.$vs.loading();
+
+      this.$http
+        .post(`${this.$http.baseUrl}/librarian/book_history`, {
+          book_id: assetId
+        })
+        .then(response => {
+          const data = response.data;
+
+          this.historyList = data;
+          this.historyPopup = true;
+          this.historyId = assetId;
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   },
   mounted() {

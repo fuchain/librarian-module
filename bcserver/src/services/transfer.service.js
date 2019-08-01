@@ -1,6 +1,7 @@
-import transaction from "@core/bigchaindb/transaction";
+import transaction from "@core/fuchain/transaction";
 import keypairService from "@services/keypair.service";
-import asset from "@core/bigchaindb/asset";
+import conn from "@core/fuchain";
+import asset from "@core/fuchain/asset";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
 import axios from "axios";
@@ -181,12 +182,19 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // this is when returner and receiver signed 2 transactons, we will submit it to BigchainDB
     // need to review: need a retry job here? what happen if 1 of 2 request send failed!!?
 
-    const transferTxPosted = await postTx(
-        confirmAssetSigned.asset.data.confirm_for_tx
-    ); // the confirm asset contains the transfer transaction
+    const type = confirmAssetSigned.asset.data.type;
+    if (!type) {
+        throw new Error("Recept not valid");
+    }
+
+    const transferTxPosted =
+        type === "reject"
+            ? confirmAssetSigned.asset.data.confirm_for_tx
+            : await postTx(confirmAssetSigned.asset.data.confirm_for_tx); // the confirm asset contains the transfer transaction, if type is reject, then not post the transaction
+
     const confirmAssetPosted = await postTx(confirmAssetSigned);
 
-    // Notify for returnerr that things have been done!
+    // Notify for returner that things have been done!
     const email = await asset.getEmailFromPublicKey(
         transferTxPosted.inputs[0].owners_before[0]
     );
@@ -194,11 +202,19 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // Remove matching from queues when done
     await removeMatchingFromQueueWhenDone(transferTxPosted);
 
-    await axios.post(`${env.ioHost}/events/push`, {
-        email,
-        type: "success",
-        message: "Sách của bạn đã được chuyển thành công"
-    });
+    if (type === "recept") {
+        await axios.post(`${env.ioHost}/events/push`, {
+            email,
+            type: "success",
+            message: "Sách của bạn đã được chuyển thành công"
+        });
+    } else if (type === "reject") {
+        await axios.post(`${env.ioHost}/events/push`, {
+            email,
+            type: "fail",
+            message: "Sách của bạn đã bị từ chối nhận"
+        });
+    }
 
     return {
         transferTxPosted,
@@ -241,6 +257,30 @@ async function removeMatchingFromQueueWhenDone(transferTxPosted) {
     return true;
 }
 
+async function recoverAccount(email, newPublicKey) {
+    const listTx = await conn.searchAssets(email);
+    if (!listTx || !listTx.length) throw new Error("Transaction not valid");
+    if (listTx[0].data.email !== email) throw new Error("Email not found");
+    const assetId = listTx[0].id;
+
+    const lastTxs = await asset.getAssetTransactions(assetId);
+    const previousTx = lastTxs.length ? lastTxs[lastTxs.length - 1] : null;
+
+    const metadata = {
+        public_key: newPublicKey
+    };
+
+    const transferTx = transaction.transfer(
+        previousTx,
+        env.publicKey,
+        metadata
+    );
+    const signedTx = transaction.sign(transferTx, env.privateKey);
+    const txDone = await transaction.post(signedTx);
+
+    return txDone;
+}
+
 export default {
     signTx,
     createTestBook,
@@ -252,5 +292,6 @@ export default {
     createBookForBookDetailId,
     createTransferRequest,
     createReceiverConfirmAsset,
-    postToDoneTransfer
+    postToDoneTransfer,
+    recoverAccount
 };

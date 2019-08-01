@@ -14,7 +14,7 @@ import initRedisModule from "@core/redis";
 const app = express();
 const server = require("http").Server(app);
 
-async function main() {
+async function main(app, server) {
     try {
         checkEnvLoaded();
 
@@ -53,4 +53,4 @@ async function main() {
     }
 }
 
-main();
+main(app, server);

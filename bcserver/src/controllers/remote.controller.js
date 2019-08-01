@@ -1,5 +1,5 @@
 import errorHandler from "@core/handlers/error.handler";
-import pairUpdateQueue from "@queues/pair.update.queue";
+import pairUpdateQueue from "@workers/pair.update.worker";
 
 function addPairUpdate(req, res) {
     const { returner, receiver } = req.body;

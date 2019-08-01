@@ -4,7 +4,7 @@ const insertQueue = new Queue("insertBook", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
 import { db } from "@models";
-import insertTxQueue from "@queues/insert.tx.queue";
+import insertTxQueue from "@workers/insert.tx.worker";
 
 // Watch and Run job queue
 function run() {

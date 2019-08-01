@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     contactIndex() {
-      return contacts.findIndex(contact => contact.id == this.userId);
+      return contacts.findIndex(contact => contact.id === this.userId);
     },
     userImg() {
       if (this.contactIndex === -1) {
@@ -83,11 +83,11 @@ export default {
       return isActiveUser => {
         const userStatus = this.getUserStatus(isActiveUser);
 
-        if (userStatus == "online") {
+        if (userStatus === "online") {
           return "success";
-        } else if (userStatus == "do not disturb") {
+        } else if (userStatus === "do not disturb") {
           return "danger";
-        } else if (userStatus == "away") {
+        } else if (userStatus === "away") {
           return "warning";
         } else {
           return "grey";

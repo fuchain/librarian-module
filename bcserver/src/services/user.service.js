@@ -1,7 +1,7 @@
 import outputService from "@services/output.service";
 import fetchService from "@services/fetch.service";
-import asset from "@core/bigchaindb/asset";
-import transaction from "@core/bigchaindb/transaction";
+import asset from "@core/fuchain/asset";
+import transaction from "@core/fuchain/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@models";
 import env from "@core/env";
@@ -17,40 +17,32 @@ async function getProfile(publicKey) {
         };
     }
 
-    const listAssets = await asset.searchPublicKey(publicKey);
-    if (listAssets.length) {
-        const found = await asset.getAsset(listAssets[0].id);
+    const email = await asset.getEmailFromPublicKey(publicKey);
 
-        const email = found[0].asset.data.email;
-        const type = found[0].asset.data.type;
+    const userCollection = db.collection("users");
+    const userInDB = await userCollection.findOne({
+        email
+    });
 
-        const userCollection = db.collection("users");
-        const userInDB = await userCollection.findOne({
-            email
-        });
-
-        if (!userInDB) {
-            userCollection.insertMany([
-                {
-                    email,
-                    fullname: null,
-                    phone: null
-                }
-            ]);
-        }
-
-        const phone = userInDB && userInDB.phone;
-        const fullname = userInDB && userInDB.fullname;
-
-        return {
-            email,
-            type,
-            fullname,
-            phone
-        };
+    if (!userInDB) {
+        userCollection.insertMany([
+            {
+                email,
+                fullname: null,
+                phone: null
+            }
+        ]);
     }
 
-    return null;
+    const phone = userInDB && userInDB.phone;
+    const fullname = userInDB && userInDB.fullname;
+
+    return {
+        email,
+        type: "reader",
+        fullname,
+        phone
+    };
 }
 
 async function updateProfile(email, fullname, phone) {
@@ -204,8 +196,8 @@ async function getAllUsers(type) {
 
     const listPromises = users.map(async user => {
         const assetTxs = await asset.getAsset(user.id);
-        const createTx = assetTxs[0];
-        const publicKey = createTx.metadata.public_key;
+        const latestTx = assetTxs[assetTxs.length - 1];
+        const publicKey = latestTx.metadata.public_key;
 
         const localUser = await usersCollection.findOne({
             email: user.data.email

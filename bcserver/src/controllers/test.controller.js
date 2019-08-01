@@ -2,9 +2,9 @@ import errorHandler from "@core/handlers/error.handler";
 import transferService from "@services/transfer.service";
 import outputService from "@services/output.service";
 import bookService from "@services/book.service";
-import importDBQueue from "@queues/importdb.queue";
+import importDBQueue from "@workers/importdb.worker";
 
-import insertQueue from "@queues/insert.queue";
+import insertQueue from "@workers/insert.worker";
 
 async function test(_, res) {
     await insertQueue.addJob();

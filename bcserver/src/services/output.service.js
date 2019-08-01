@@ -1,4 +1,4 @@
-import conn from "@core/bigchaindb";
+import conn from "@core/fuchain";
 
 async function getSpent(publicKey) {
     return await conn.listOutputs(publicKey, true);

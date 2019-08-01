@@ -11,7 +11,7 @@
       ref="table"
       pagination
       :max-items="itemsPerPage"
-      :data="queues"
+      :data="queueFilter"
     >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
@@ -101,6 +101,9 @@ export default {
 
       const matched = this.queues.filter(e => e.matched);
       return matched.length;
+    },
+    queueFilter() {
+      return this.queues.filter(e => !e.matched);
     }
   },
   mounted() {
@@ -110,6 +113,9 @@ export default {
       .get(`${this.$http.baseUrl}/librarian/matchings`)
       .then(response => {
         const data = response.data;
+        data.sort((a, b) => {
+          return b.time - a.time;
+        });
 
         this.queues = data;
       })

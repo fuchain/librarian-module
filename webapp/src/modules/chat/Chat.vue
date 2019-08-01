@@ -191,11 +191,11 @@ export default {
       return isActiveUser => {
         const userStatus = this.getUserStatus(isActiveUser);
 
-        if (userStatus == "online") {
+        if (userStatus === "online") {
           return "success";
-        } else if (userStatus == "do not disturb") {
+        } else if (userStatus === "do not disturb") {
           return "danger";
-        } else if (userStatus == "away") {
+        } else if (userStatus === "away") {
           return "warning";
         } else {
           return "grey";
@@ -217,7 +217,7 @@ export default {
       }
     },
     isActiveChatUser() {
-      return userId => userId == this.activeChatUser;
+      return userId => userId === this.activeChatUser;
     }
   },
   methods: {

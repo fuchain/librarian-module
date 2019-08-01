@@ -1,9 +1,9 @@
 import errorHandler from "@core/handlers/error.handler";
 import keypairService from "@services/keypair.service";
 
-const randomKeypair = async (_, res) => {
+async function randomKeypair(_, res) {
     res.send(keypairService.generateRandomKeyPair());
-};
+}
 
 async function verifyKeyPairEmail(req, res) {
     const body = req.body;

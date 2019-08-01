@@ -1,4 +1,4 @@
-const driver = require("@core/bigchaindb-driver");
+import driver from "fuchain-js";
 import env from "@core/env";
 
 const conn = new driver.Connection(env.bigchainHost);
