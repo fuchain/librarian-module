@@ -17,7 +17,7 @@ import {
     morganMiddleware
 } from "@middlewares/logging.middleware";
 
-import initQueues from "@queues";
+import initWorkers from "@workers";
 
 async function main() {
     try {
@@ -59,7 +59,8 @@ async function main() {
             });
         });
 
-        await initQueues();
+        // Start workers
+        await initWorkers();
 
         server.listen(5000, function() {
             console.log("App is listening on port 5000!");
