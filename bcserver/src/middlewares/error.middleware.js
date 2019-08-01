@@ -1,7 +1,7 @@
-const Sentry = require("@sentry/node");
+import * as sentry from "@sentry/node";
 
-export function globalErrorHandler(err, _, res, next) {
-    Sentry.captureException(err);
+export default function errorMiddleware(err, _, res, next) {
+    sentry.captureException(err);
     console.log("Error: ", err instanceof Error ? err.toString() : err);
 
     if (err) {

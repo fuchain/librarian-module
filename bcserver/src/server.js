@@ -1,12 +1,8 @@
 import express from "express";
 import compression from "compression";
 import bodyParser from "body-parser";
-import cors from "cors";
-import morgan from "morgan";
-
 import routes from "@routes";
 import { initMongoDB } from "@models";
-// import { initBigchainMongoDB } from "@models/bigchain";
 import { checkEnvLoaded } from "@core/env";
 
 import { pingBigchainDB } from "@core/fuchain";
@@ -14,14 +10,14 @@ import { pingBigchainDB } from "@core/fuchain";
 const app = express();
 const server = require("http").Server(app);
 
-import initQueues from "@queues/";
+import corsMiddleware from "@middlewares/cors.middleware";
+import errorMiddleware from "@middlewares/error.middleware";
+import {
+    sentryMiddleware,
+    morganMiddleware
+} from "@middlewares/logging.middleware";
 
-import { globalErrorHandler } from "@controllers/error.controller";
-
-const Sentry = require("@sentry/node");
-Sentry.init({
-    dsn: "https://f7058307a8514bb8b0f3b46b25e33596@sentry.io/1509628"
-});
+import initQueues from "@queues";
 
 async function main() {
     try {
@@ -34,8 +30,8 @@ async function main() {
         // Init MongoDB
         await initMongoDB();
 
-        // Init Bigchain MongoDB
-        // await initBigchainMongoDB();
+        // Init Sentry logging middleware
+        sentryMiddleware();
 
         // Compression gzip
         app.use(compression());
@@ -44,21 +40,17 @@ async function main() {
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json());
 
-        // CORS
-        const corsOptions = {
-            origin: "*",
-            optionsSuccessStatus: 200
-        };
-        app.use(cors(corsOptions));
+        // CORS Middleware
+        app.use(corsMiddleware);
 
         // Middlewares
-        app.use(morgan("tiny"));
+        app.use(morganMiddleware);
 
         // Init routes
         app.use("/api/v1", routes);
 
-        // Global error handler
-        app.use(globalErrorHandler);
+        // Error middleware: Handle all error in server
+        app.use(errorMiddleware);
 
         // Default page
         app.use("/", function(_, res) {
