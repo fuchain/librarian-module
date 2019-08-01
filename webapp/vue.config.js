@@ -22,5 +22,6 @@ module.exports = {
         "@auth": require("path").resolve(__dirname, "src/core/auth")
       }
     }
-  }
+  },
+  productionSourceMap: false
 };
