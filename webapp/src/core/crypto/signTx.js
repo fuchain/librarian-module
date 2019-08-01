@@ -1,5 +1,5 @@
 import * as localStorage from "@localstorage";
-const driver = require("bigchaindb-driver");
+import driver from "fuchain-js";
 
 export default function(tx) {
   const txSigned = driver.Transaction.signTransaction(
