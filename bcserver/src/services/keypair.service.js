@@ -1,6 +1,6 @@
-import generateKey from "@core/bigchaindb/generateKey";
-import transaction from "@core/bigchaindb/transaction";
-import asset from "@core/bigchaindb/asset";
+import generateKey from "@core/fuchain/generateKey";
+import transaction from "@core/fuchain/transaction";
+import asset from "@core/fuchain/asset";
 import env from "@core/env";
 import axios from "axios";
 import { createJWT } from "@core/jwt";

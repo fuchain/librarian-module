@@ -1,4 +1,4 @@
-import asset from "@core/bigchaindb/asset";
+import asset from "@core/fuchain/asset";
 
 async function getRejectCount(assetId) {
     const transactionList = await asset.searchAsset(assetId);

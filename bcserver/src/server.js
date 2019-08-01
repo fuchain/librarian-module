@@ -9,7 +9,7 @@ import { initMongoDB } from "@models";
 // import { initBigchainMongoDB } from "@models/bigchain";
 import { checkEnvLoaded } from "@core/env";
 
-import { pingBigchainDB } from "@core/bigchaindb";
+import { pingBigchainDB } from "@core/fuchain";
 
 const app = express();
 const server = require("http").Server(app);

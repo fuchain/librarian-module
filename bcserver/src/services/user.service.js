@@ -1,7 +1,7 @@
 import outputService from "@services/output.service";
 import fetchService from "@services/fetch.service";
-import asset from "@core/bigchaindb/asset";
-import transaction from "@core/bigchaindb/transaction";
+import asset from "@core/fuchain/asset";
+import transaction from "@core/fuchain/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@models";
 import env from "@core/env";
