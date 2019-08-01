@@ -1,4 +1,4 @@
-import matchingQueue from "@queues/matching.queue";
+import matchingQueue from "@workers/matching.worker";
 import bookService from "@services/book.service";
 import asset from "@core/fuchain/asset";
 import { db } from "@models";

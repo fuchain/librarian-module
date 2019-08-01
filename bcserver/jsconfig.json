@@ -9,7 +9,7 @@
             "@models/*": ["./src/models/*"],
             "@middlewares/*": ["./src/middlewares/*"],
             "@core/*": [".src/core/*"],
-            "@queues/*": [".src/queues/*"]
+            "@workers/*": [".src/workers/*"]
         }
     }
 }
