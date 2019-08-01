@@ -4,12 +4,9 @@ import bodyParser from "body-parser";
 import routes from "@routes";
 import { initMongoDB } from "@models";
 import { checkEnvLoaded } from "@core/env";
-
 import { pingBigchainDB } from "@core/fuchain";
 
-const app = express();
-const server = require("http").Server(app);
-
+// Middlewares
 import corsMiddleware from "@middlewares/cors.middleware";
 import errorMiddleware from "@middlewares/error.middleware";
 import {
@@ -17,15 +14,19 @@ import {
     morganMiddleware
 } from "@middlewares/logging.middleware";
 
+// Worker
 import initWorkers from "@workers";
 
-async function main() {
-    try {
-        // Init BigchainDB
-        pingBigchainDB();
+const app = express();
+const server = require("http").Server(app);
 
+async function main(app, server) {
+    try {
         // Check is env is not null
         checkEnvLoaded();
+
+        // Init BigchainDB
+        pingBigchainDB();
 
         // Init MongoDB
         await initMongoDB();
@@ -71,4 +72,4 @@ async function main() {
     }
 }
 
-main();
+main(app, server);

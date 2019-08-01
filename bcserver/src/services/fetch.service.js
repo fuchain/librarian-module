@@ -38,6 +38,7 @@ async function getEmail(publicKey) {
 
     return email;
 }
+
 export default {
     getBookDetail,
     getEmail

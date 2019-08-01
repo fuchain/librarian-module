@@ -10,7 +10,8 @@ const dbName = `${env.dbName}`;
 // Create a new MongoClient
 const client = new MongoClient(url, { promiseLibrary: Promise });
 
-export let db;
+// A variable to store the database connection
+export let db = null;
 
 export async function initMongoDB() {
     // Use connect method to connect to the Server
@@ -25,6 +26,7 @@ export async function initMongoDB() {
 
             resolve();
 
+            // Not close the connect
             // client.close();
         });
     });
