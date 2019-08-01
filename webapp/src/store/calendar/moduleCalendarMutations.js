@@ -19,7 +19,7 @@ export default {
     state.calendarEvents.push(newEvent);
   },
   EDIT_CALENDAR_EVENT(state, event) {
-    const eventIndex = state.calendarEvents.findIndex((e) => e.id == event.id);
+    const eventIndex = state.calendarEvents.findIndex(e => e.id === event.id);
     state.calendarEvents[eventIndex].title = event.title;
     state.calendarEvents[eventIndex].start = event.start;
     state.calendarEvents[eventIndex].end = event.end;
@@ -28,7 +28,7 @@ export default {
     state.calendarEvents[eventIndex].label = event.label;
   },
   REMOVE_CALENDAR_EVENT(state, eventId) {
-    const eventIndex = state.calendarEvents.findIndex((e) => e.id == eventId);
+    const eventIndex = state.calendarEvents.findIndex(e => e.id === eventId);
     state.calendarEvents.splice(eventIndex, 1);
   }
 };

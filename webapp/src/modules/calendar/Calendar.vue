@@ -47,7 +47,7 @@
       >
         <div class="calendar__label-container flex">
           <vs-chip
-            v-if="labelLocal != 'none'"
+            v-if="labelLocal !== 'none'"
             class="text-white"
             :class="'bg-' + labelColor(labelLocal)"
           >{{ labelLocal }}</vs-chip>
@@ -105,7 +105,7 @@
       >
         <div class="calendar__label-container flex">
           <vs-chip
-            v-if="labelLocal != 'none'"
+            v-if="labelLocal !== 'none'"
             class="text-white"
             :class="'bg-' + labelColor(labelLocal)"
           >{{ labelLocal }}</vs-chip>
@@ -181,9 +181,9 @@ export default {
     },
     validForm() {
       return (
-        this.title != "" &&
-        this.start != "" &&
-        this.end != "" &&
+        this.title !== "" &&
+        this.start !== "" &&
+        this.end !== "" &&
         Date.parse(this.end) - Date.parse(this.start) >= 0
       );
     },
@@ -198,10 +198,10 @@ export default {
     },
     labelColor() {
       return label => {
-        if (label == "business") return "success";
-        else if (label == "work") return "warning";
-        if (label == "personal") return "danger";
-        if (label == "none") return "primary";
+        if (label === "business") return "success";
+        else if (label === "work") return "warning";
+        if (label === "personal") return "danger";
+        if (label === "none") return "primary";
       };
     }
   },

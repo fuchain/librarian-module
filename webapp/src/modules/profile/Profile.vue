@@ -114,6 +114,8 @@ export default {
       this.$localStorage.setItem("darkmode", val ? "dark" : "light");
     },
     email(val) {
+      const canvas = document.getElementById("canvas");
+
       QRCode.toCanvas(canvas, `${val}`, { width: 200 }, function(error) {
         if (error) console.error(error);
       });
@@ -121,7 +123,7 @@ export default {
   },
   data() {
     return {
-      darkmode: this.$localStorage.getItem("darkmode") === "dark" ? true : false
+      darkmode: this.$localStorage.getItem("darkmode") === "dark"
     };
   },
   methods: {
