@@ -1,6 +1,6 @@
 import matchingQueue from "@queues/matching.queue";
 import bookService from "@services/book.service";
-import asset from "@core/bigchaindb/asset";
+import asset from "@core/fuchain/asset";
 import { db } from "@models";
 
 async function createMatchingRequest(publicKey, bookDetailId, bookId) {

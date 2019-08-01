@@ -1,5 +1,5 @@
-import conn from "@core/bigchaindb";
-import transaction from "@core/bigchaindb/transaction";
+import conn from "@core/fuchain";
+import transaction from "@core/fuchain/transaction";
 import env from "core/env";
 
 async function getAsset(id) {

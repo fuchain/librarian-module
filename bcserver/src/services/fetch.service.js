@@ -1,4 +1,4 @@
-import asset from "@core/bigchaindb/asset";
+import asset from "@core/fuchain/asset";
 import { db } from "@models";
 import env from "@core/env";
 

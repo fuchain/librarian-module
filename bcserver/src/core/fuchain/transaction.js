@@ -1,5 +1,5 @@
 import driver from "fuchain-js";
-import conn from "@core/bigchaindb";
+import conn from "@core/fuchain";
 
 import env from "@core/env";
 
