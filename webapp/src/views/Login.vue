@@ -101,6 +101,7 @@
 
 <script>
 import initSocket from "@core/socket";
+import keypair from "@core/crypto/keypair";
 
 export default {
   data() {
@@ -167,7 +168,7 @@ export default {
       this.$http
         .post(`${this.$http.baseUrl}/auth/keypair/email`, {
           token: accessToken,
-          public_key: this.$localStorage.getItem("publicKey")
+          public_key: keypair.get("publicKey")
         })
         .then(async response => {
           // Set data;
