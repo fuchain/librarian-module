@@ -173,16 +173,20 @@ async function getBookInstanceTotal(type) {
 async function getBookAtLib(bookDetailId) {
     const bookList = await getBookInstanceList(bookDetailId);
 
-    const remainBookListPromises = await bookList.map(async book => {
-        const transactionList = await asset.getAsset(book.id);
+    const remainBookListPromises = await concurrencyHandler(
+        bookList,
+        5,
+        async book => {
+            const transactionList = await asset.getAsset(book.id);
 
-        if (transactionList.length) {
-            const publicKey = transactionList[0].outputs[0].public_keys[0];
-            if (publicKey === env.publicKey) {
-                return book;
+            if (transactionList.length) {
+                const publicKey = transactionList[0].outputs[0].public_keys[0];
+                if (publicKey === env.publicKey) {
+                    return book;
+                }
             }
         }
-    });
+    );
 
     const remainBookList = await Promise.all(remainBookListPromises);
 
