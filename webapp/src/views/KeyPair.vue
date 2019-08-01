@@ -67,12 +67,7 @@
 
                   <div v-if="mode === 'verify'">
                     <div v-if="style === 'auto'">
-                      <vs-input
-                        icon="vpn_key"
-                        label-placeholder="Cụm từ bí mật lúc tạo ví"
-                        v-model="secret"
-                        class="w-full mt-6 no-icon-border my-5"
-                      />
+                      <vs-textarea label="Cụm từ bí mật lúc tạo ví" v-model="secret" />
                     </div>
                     <div v-else>
                       <vs-input
@@ -118,6 +113,7 @@
 <script>
 import generateKeyPair from "@core/crypto/generateKeyPair";
 import generateSeed from "@core/crypto/generateSeed";
+import keypair from "@core/crypto/keypair";
 
 export default {
   data() {
@@ -134,19 +130,19 @@ export default {
     async submitKey() {
       if (this.mode === "verify") {
         if (this.publicKey && this.privateKey) {
-          this.$localStorage.setItem("publicKey", this.publicKey);
-          this.$localStorage.setItem("privateKey", this.privateKey);
+          keypair.set("publicKey", this.publicKey);
+          keypair.set("privateKey", this.privateKey);
           this.$router.push("/");
         } else {
-          const keypair = await generateKeyPair(this.secret);
-          this.$localStorage.setItem("publicKey", keypair.publicKey);
-          this.$localStorage.setItem("privateKey", keypair.privateKey);
+          const keypairGenerate = await generateKeyPair(this.secret);
+          keypair.set("publicKey", keypairGenerate.publicKey);
+          keypair.set("privateKey", keypairGenerate.privateKey);
           this.$router.push("/");
         }
       } else {
-        const keypair = await generateKeyPair(this.seed);
-        this.$localStorage.setItem("publicKey", keypair.publicKey);
-        this.$localStorage.setItem("privateKey", keypair.privateKey);
+        const keypairGenerate = await generateKeyPair(this.seed);
+        keypair.set("publicKey", keypairGenerate.publicKey);
+        keypair.set("privateKey", keypairGenerate.privateKey);
         this.$router.push("/");
       }
     },
@@ -184,10 +180,10 @@ export default {
     }
   },
   mounted() {
-    const pub = this.$localStorage.getItem("publicKey");
-    const pri = this.$localStorage.getItem("privateKey");
+    const publicKey = this.$localStorage.getItem("publicKey");
+    const privateKey = this.$localStorage.getItem("privateKey");
 
-    if (pub && pri) {
+    if (publicKey && privateKey) {
       this.$router.push("/login");
     }
   }

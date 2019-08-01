@@ -1,7 +1,7 @@
 import axios from "axios";
 import auth from "@auth";
-import getLocalStorageItem from "../local-storage/getItem";
 import endpoints from "./endpoints";
+import keypair from "@core/crypto/keypair";
 
 const config = {
   timeout: 10000 // 10 seconds
@@ -57,8 +57,8 @@ function doGetRequest(to, data = {}, params = {}, headers = {}) {
 }
 
 function doPostRequest(to, data = {}, params = {}, headers = {}) {
-  if (!data.public_key && getLocalStorageItem("publicKey")) {
-    data.public_key = getLocalStorageItem("publicKey");
+  if (!data.public_key && keypair.get("publicKey")) {
+    data.public_key = keypair.get("publicKey");
   }
 
   const instance = request({
