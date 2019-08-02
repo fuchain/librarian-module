@@ -11,7 +11,7 @@ export default {
   SEND_CHAT_MESSAGE(state, payload) {
     if (payload.chatData) {
       state.chats[
-        Object.keys(state.chats).find(key => key === payload.id)
+        Object.keys(state.chats).find(key => key === payload.id.toString())
       ].msg.push(payload.msg);
     } else {
       const chatId = payload.id;
@@ -23,7 +23,7 @@ export default {
   },
   TOGGLE_IS_PINNED(state, payload) {
     state.chats[
-      Object.keys(state.chats).find(key => key === payload.id)
+      Object.keys(state.chats).find(key => key === payload.id.toString())
     ].isPinned = payload.value;
   },
   MARK_SEEN_ALL_MESSAGES(state, payload) {

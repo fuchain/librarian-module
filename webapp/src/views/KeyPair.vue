@@ -35,15 +35,13 @@
                       >FUChain</span>
                     </div>
                   </div>
-                  <p
-                    v-if="!mode"
-                  >Ứng dụng không tìm thấy chìa khóa ví sách của bạn trên thiết bị. Bạn có phải là người dùng mới?</p>
+                  <p v-if="!mode">Bạn có phải người dùng mới?</p>
                   <p v-else-if="mode === 'create'">
                     Vui lòng cất giữ cụm từ bí mật sau một cách cẩn thận bằng cách
                     <strong>ghi ra giấy, cất nơi an toàn</strong>, không để cho bất kì ai khác biết cụm từ này.
                   </p>
                   <p v-else>
-                    Nhập vào cụm từ bí mật của bạn để khôi phục ví sách. Chỉ nhập trên
+                    Nhập vào cụm 12 từ bí mật của bạn lúc tạo phí để đăng nhập ví sách. Chỉ nhập trên
                     <strong>thiết bị mà bạn tin tưởng.</strong>
                   </p>
                 </div>
@@ -54,13 +52,14 @@
                     class="w-full mb-4"
                     icon="create"
                     @click="mode = 'create'"
-                  >Tạo ví sách cho tôi</vs-button>
+                  >Tạo ví sách</vs-button>
                   <vs-button
                     color="primary"
+                    type="relief"
                     class="w-full"
                     icon="vpn_key"
                     @click="mode = 'verify'"
-                  >Tôi đã có ví sách rồi</vs-button>
+                  >Đã có ví sách</vs-button>
                 </div>
                 <form v-on:submit.prevent="submitKey" v-if="mode">
                   <vs-alert v-if="mode !== 'verify'" active="true" class="mb-8">{{ seed }}</vs-alert>
@@ -99,7 +98,7 @@
                     icon="fingerprint"
                     :disabled="(mode === 'verify' && !secret && (!publicKey && !privateKey))"
                     @click="openConfirm"
-                  >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Xác nhận khóa bí mật"}}</vs-button>
+                  >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Đăng nhập ví sách"}}</vs-button>
                 </form>
               </div>
             </div>

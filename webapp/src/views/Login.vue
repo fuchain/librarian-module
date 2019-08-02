@@ -92,7 +92,7 @@
         type="relief"
         color="danger"
         class="float-right mt-4 mr-4"
-        icon="delete"
+        icon="clear"
         @click="deleteConfirm()"
       >Đăng xuất ví sách</vs-button>
     </div>
@@ -118,7 +118,7 @@ export default {
     loginWithGoogle: function() {
       const clientId =
         "505153044223-3a6ohprurmp1ih0rr7tbupl8bjqa9qvv.apps.googleusercontent.com";
-      const hostname = window.location.href;
+      const hostname = window.location.href.replace(window.location.hash, "");
       const scope = "profile email openid";
 
       window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=${scope}&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri=${hostname}&response_type=token&client_id=${clientId}`;
@@ -145,7 +145,7 @@ export default {
         type: "confirm",
         color: "danger",
         title: "Xác nhận",
-        text: "Bạn có chắc muốn gỡ chìa khóa trên thiết bị này?",
+        text: "Bạn có chắc muốn gỡ ví sách trên thiết bị này?",
         accept: this.removeKey,
         acceptText: "Chắc chắn",
         cancelText: "Hủy bỏ"
@@ -216,9 +216,10 @@ export default {
               fixed: true
             });
 
-            this.$localStorage.removeItem("publicKey");
-            this.$localStorage.removeItem("privateKey");
+            // this.$localStorage.removeItem("publicKey");
+            // this.$localStorage.removeItem("privateKey");
             this.$auth.setAccessToken();
+            this.$router.push("/");
           }
 
           this.$vs.notify({

@@ -63,10 +63,11 @@
             <div class="flex flex-wrap">
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+                @click="comingSoon"
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2" @click="comingSoon">YÊU CẦU MƯỢN SÁCH</span>
+                <span class="text-sm font-semibold ml-2">YÊU CẦU MƯỢN SÁCH</span>
               </div>
             </div>
           </template>

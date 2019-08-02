@@ -184,7 +184,6 @@ export default {
           !this.$localStorage.getItem("tour")
         ) {
           this.$tours["vuesaxTour"].start();
-          this.$localStorage.setItem("tour", true);
         }
       }.bind(this),
       500
