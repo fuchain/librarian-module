@@ -14,7 +14,7 @@ export default function jwtMiddlewareAuthentication(req, res, next) {
     }
 }
 
-function getToken(req) {
+function getToken(req, _) {
     // From header or query string
     if (
         req.headers.authorization &&

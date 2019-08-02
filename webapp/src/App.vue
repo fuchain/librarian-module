@@ -47,17 +47,35 @@ export default {
         {
           target: "#menu-group-1",
           content:
-            "Xem các sách của bạn ở đây, gồm sách đang giữ, sách đang yêu cầu trả và sách đang yêu cầu nhận"
+            "Xem các sách trong ví của bạn ở đây, gồm sách đang giữ, sách đang yêu cầu trả và sách đang yêu cầu nhận"
+        },
+        {
+          target: "#menu-item-200",
+          content: "Vào đây để tìm sách và yêu cầu mượn sách"
         },
         {
           target: "#menu-item-200",
           content:
-            "Vào đây để mượn sách mới, ví dụ khi bạn vào kì mới, học môn <strong>MAE101</strong> và cần mượn sách toán, nhập mã môn vào đây và bấm yêu cầu nhận sách"
+            "Khi bạn vào kì học mới, học môn <strong>MAE101</strong> và cần mượn sách toán, nhập mã môn hoặc tên sách vào đây và bấm yêu cầu nhận sách"
+        },
+        {
+          target: "#menu-group-1",
+          content:
+            "Khi bạn kết thúc kì học, bạn có thể vào mục sách đang giữ, và chọn trả sách toán MAE101 cho sinh viên khóa sau mượn"
         },
         {
           target: "#menu-item-300",
+          content: "Vào đây để xem lịch sử nhận sách của bạn"
+        },
+        {
+          target: "#menu-item-400",
           content:
-            "Vào đây khi bạn có mã nhận sách từ thư viện hoặc từ người chuyển sách cho bạn"
+            "Bạn cũng có thể dùng tính năng quét mã QR để chuyển sách nhanh hơn (nếu dùng di động)"
+        },
+        {
+          target: "#menu-item-500",
+          content:
+            "Đừng quên giúp chúng mình đánh giá trải nghiệm ứng dụng tại đây nhé"
         }
       ]
     };

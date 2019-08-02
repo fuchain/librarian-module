@@ -2,7 +2,10 @@ import contacts from "@/modules/chat/contacts";
 
 export default {
   chatDataOfUser: state => id => {
-    return state.chats[Object.keys(state.chats).find(key => key === id)];
+    // eslint-disable-next-line standard/computed-property-even-spacing
+    return state.chats[
+      Object.keys(state.chats).find(key => key === id.toString())
+    ];
   },
   chats: (state, getters) => {
     const chatArray = contacts.filter(contact => {
