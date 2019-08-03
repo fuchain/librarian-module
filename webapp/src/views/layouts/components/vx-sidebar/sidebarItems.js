@@ -117,6 +117,12 @@ function userMenu(numOfBooks) {
       icon: "BookOpenIcon"
     },
     {
+      url: "/coupon",
+      name: "Nhập mã nhận sách",
+      slug: "coupon",
+      icon: "GiftIcon"
+    },
+    {
       url: "/transfer-history",
       name: "Lịch sử nhận sách",
       slug: "transfer-history",

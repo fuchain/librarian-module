@@ -286,7 +286,7 @@ async function recoverAccount(email, newPublicKey) {
 async function giveTestbook(publicKey, coupon = "null") {
     const transferHistory = await userService.getTransferHistory(publicKey);
 
-    if (coupon !== "fuchain2019") {
+    if (coupon !== "FUCHAIN2019") {
         if (transferHistory && transferHistory.length > 2) {
             throw new Error("This user is not suitable for test!");
         }
