@@ -1,20 +1,24 @@
 import { verifyJWT } from "@core/jwt";
 
-export default function jwtMiddlewareAuthentication(req, res, next) {
-    const token = getToken(req);
-
+export default async function authenticationMiddleware(req, res, next) {
     try {
+        const publicKey = req.body.public_key;
+        const token = getToken(req);
+
         const payload = verifyJWT(token);
-        const { email } = payload;
+        const { email, roles } = payload;
+
         req.email = email;
+        req.roles = roles || "reader";
+        req.publicKey = publicKey;
         next();
     } catch (err) {
         res.status(401);
-        res.send({ message: "Unauthorized" });
+        res.send({ message: "Token invalid" });
     }
 }
 
-function getToken(req, _) {
+function getToken(req) {
     // From header or query string
     if (
         req.headers.authorization &&

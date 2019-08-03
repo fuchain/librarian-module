@@ -6,9 +6,9 @@ import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@models";
 import env from "@core/env";
 
-async function getProfile(publicKey) {
+async function getProfile(email) {
     // If librarian
-    if (publicKey === env.publicKey) {
+    if (email === "librarian@fptu.tech") {
         return {
             email: "librarian@fptu.tech",
             type: "librarian",
@@ -16,8 +16,6 @@ async function getProfile(publicKey) {
             phone: "0123456789"
         };
     }
-
-    const email = await asset.getEmailFromPublicKey(publicKey);
 
     const userCollection = db.collection("users");
     const userInDB = await userCollection.findOne({
@@ -110,9 +108,7 @@ async function getCurrentBook(publicKey, getAll = false) {
     return currentBooks;
 }
 
-async function getInQueueBook(publicKey, isGetReturning = true) {
-    const email = await asset.getEmailFromPublicKey(publicKey);
-
+async function getInQueueBook(email, isGetReturning = true) {
     const matchingCollection = db.collection("matchings");
 
     const inQueueBooks = isGetReturning

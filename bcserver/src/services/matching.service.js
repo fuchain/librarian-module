@@ -3,11 +3,9 @@ import bookService from "@services/book.service";
 import asset from "@core/fuchain/asset";
 import { db } from "@models";
 
-async function createMatchingRequest(publicKey, bookDetailId, bookId) {
-    const email = await asset.getEmailFromPublicKey(publicKey);
-
+async function createMatchingRequest(email, bookDetailId, bookId) {
     // Constraint
-    if (!email || !bookDetailId) {
+    if (!bookDetailId) {
         throw new Error("Invalid request");
     }
 
@@ -16,11 +14,9 @@ async function createMatchingRequest(publicKey, bookDetailId, bookId) {
     return true;
 }
 
-async function cancelMatchingRequest(publicKey, bookDetailId, bookId) {
-    const email = await asset.getEmailFromPublicKey(publicKey);
-
+async function cancelMatchingRequest(email, bookDetailId, bookId) {
     // Constraint
-    if (!email || !bookDetailId) {
+    if (!bookDetailId) {
         throw new Error("Invalid request");
     }
 

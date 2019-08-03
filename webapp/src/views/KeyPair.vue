@@ -96,7 +96,7 @@
                   <vs-button
                     class="float-right mb-8"
                     icon="fingerprint"
-                    :disabled="(mode === 'verify' && !secret && (!publicKey && !privateKey))"
+                    :disabled="(mode === 'verify' && !secret && (!publicKey || !privateKey))"
                     @click="openConfirm"
                   >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Đăng nhập ví sách"}}</vs-button>
                 </form>

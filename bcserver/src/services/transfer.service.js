@@ -291,7 +291,7 @@ async function giveTestbook(publicKey, coupon = "null") {
             throw new Error("This user is not suitable for test!");
         }
     } else {
-        if (transferHistory && transferHistory.length > 10) {
+        if (transferHistory && transferHistory.length > 100) {
             throw new Error("This user is not suitable for test!");
         }
     }
