@@ -60,7 +60,11 @@
             </vs-td>
 
             <vs-td class="img-container">
-              <img :src="tr.thumbnail || '/images/book-thumbnail.jpg'" class="product-img" />
+              <img
+                :src="tr.thumbnail || '/images/book-thumbnail.jpg'"
+                class="product-img"
+                @click="$store.dispatch('openDetailsPopup', tr.book_detail)"
+              />
             </vs-td>
 
             <vs-td>
