@@ -9,6 +9,7 @@
           class="text-white"
         >Nền tảng cơ sở dữ liệu phi tập trung sẽ cho phép truy xuất, kiểm tra các giao dịch liên quan và quyền sở hữu của các bên tham gia giao dịch</p>
         <vs-input
+          v-if="false"
           placeholder="Tìm tên sinh viên, mã số sinh viên hoặc địa chỉ mail"
           v-model="searchText"
           icon-pack="feather"
@@ -71,7 +72,7 @@
       </div>
 
       <template slot="thead">
-        <vs-th>ID</vs-th>
+        <vs-th>#</vs-th>
         <vs-th>Email</vs-th>
         <vs-th>Họ tên</vs-th>
         <vs-th>Số điện thoại</vs-th>
@@ -132,9 +133,20 @@
 
     <vs-popup
       :fullscreen="keepingList && keepingList.length ? true : false"
-      :title="'Sách đang giữ của ' + keepingName"
+      :title="'Ví sách của ' + keepingName"
       :active.sync="keepingPopup"
     >
+      <div class="mb-4">
+        <div class="vx-row mb-2">
+          <div
+            class="ml-4"
+            style="background-color:#fff; color: #7367F0; border: 1px; border-color: #7367F0; padding: 10px; padding-left: 10px; border-radius: 5px;"
+          >Địa chỉ ví: {{ keepingPublicKey || "Không có" }}</div>
+        </div>
+        <div class="ml-4">
+          <vs-button>Đổi địa chỉ ví</vs-button>
+        </div>
+      </div>
       <vs-table
         noDataText="Không có dữ liệu"
         :data="keepingList"
@@ -169,7 +181,7 @@
           </vs-tr>
         </template>
       </vs-table>
-      <p v-else>Sinh viên này đang không giữ cuốn sách nào cả</p>
+      <!-- <p v-else>Sinh viên này đang không giữ cuốn sách nào cả</p> -->
 
       <vs-popup :title="historyId" :active.sync="historyPopup" :fullscreen="historyList.length">
         <vs-table
@@ -216,6 +228,7 @@ export default {
       isMounted: false,
       keepingPopup: false,
       keepingName: "",
+      keepingPublicKey: "",
       keepingList: [],
       onlineUsers: [],
       onlineUserState: [],
@@ -256,6 +269,7 @@ export default {
           this.keepingList = data;
           this.keepingPopup = true;
           this.keepingName = item.email;
+          this.keepingPublicKey = item.public_key;
         })
         .finally(() => {
           this.$vs.loading.close();

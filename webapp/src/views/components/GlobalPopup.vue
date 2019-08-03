@@ -224,6 +224,7 @@ export default {
           })
           .finally(() => {
             this.$vs.loading.close();
+            this.$store.dispatch("getNumOfBooks");
           });
       } else {
         this.$vs.loading();
