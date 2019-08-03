@@ -39,6 +39,8 @@ function init() {
     });
 
   socket.on("notification", function({ message, type, id }) {
+    window.vue.$store.dispatch("getNumOfBooks");
+
     window.vue.$vs.notify({
       fixed: true,
       title: "Thông báo mới",
