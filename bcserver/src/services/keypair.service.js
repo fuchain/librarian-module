@@ -87,14 +87,18 @@ async function verifyKeyPairEmail(token, publicKey) {
     const email = data.email.toLowerCase();
 
     // Check if it is librarian
-    if (email === "librarian@fptu.tech" && publicKey === env.publicKey) {
-        return {
-            token: createJWT(email, true),
-            status: "verified",
-            email,
-            name,
-            picture
-        };
+    if (publicKey === env.publicKey) {
+        if (email === "librarian@fptu.tech") {
+            return {
+                token: createJWT(email, true),
+                status: "verified",
+                email,
+                name,
+                picture
+            };
+        } else {
+            throw new Error("Wrong authentication for librarian");
+        }
     }
 
     const found = await isEmailExisted(email);
