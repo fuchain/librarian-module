@@ -66,16 +66,21 @@ export default {
             "Khi bạn kết thúc kì học, bạn có thể vào mục sách đang giữ, và chọn trả sách toán MAE101 cho sinh viên khóa sau mượn"
         },
         {
-          target: "#menu-item-300",
+          target: "#menu-item-400",
           content: "Vào đây để xem lịch sử nhận sách của bạn"
         },
         {
-          target: "#menu-item-400",
+          target: "#menu-item-500",
           content:
             "Bạn cũng có thể dùng tính năng quét mã QR để chuyển sách nhanh hơn (nếu dùng di động)"
         },
         {
-          target: "#menu-item-500",
+          target: "#menu-item-300",
+          content:
+            "Bạn có thể vào mục này và nhập coupon 'FUCHAIN' để nhận thử vài quyển sách"
+        },
+        {
+          target: "#menu-item-600",
           content:
             "Đừng quên giúp chúng mình đánh giá trải nghiệm ứng dụng tại đây nhé"
         }

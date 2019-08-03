@@ -67,7 +67,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2">CHO TÔI SÁCH NGẪU NHIÊN</span>
+                <span class="text-sm font-semibold ml-2">YÊU CẦU NHẬN SÁCH</span>
               </div>
             </div>
           </template>
@@ -194,29 +194,12 @@ export default {
         });
     },
     comingSoon() {
-      this.$vs.loading();
-
-      this.$http
-        .post(`${this.$http.baseUrl}/transfer/test`)
-        .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Đã tạo yêu cầu",
-            color: "primary",
-            position: "top-center"
-          });
-        })
-        .catch(() => {
-          this.$vs.notify({
-            title: "Thất bại",
-            text: "Yêu cầu không hợp lệ",
-            color: "warning",
-            position: "top-center"
-          });
-        })
-        .finally(() => {
-          this.$vs.loading.close();
-        });
+      this.$vs.notify({
+        title: "Đã hết",
+        text: "Sách này hiện đang ngưng cung cấp",
+        color: "warning",
+        position: "top-center"
+      });
     }
   }
 };
