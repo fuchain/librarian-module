@@ -314,7 +314,8 @@ async function giveTestbook(publicKey) {
     const bookList = await bookService.getBookAtLib(randomId);
     const book = bookList[0];
 
-    const tx = await createTransferRequest(book.asset_id, req.body.to.email);
+    const email = await asset.getEmailFromPublicKey(publicKey);
+    const tx = await createTransferRequest(book.asset_id, email);
     const signedTx = await signTx(tx, env.privateKey);
 
     await createReceiverConfirmAsset(signedTx, publicKey);
