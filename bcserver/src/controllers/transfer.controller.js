@@ -46,18 +46,12 @@ async function receiverSigned(req, res) {
 async function giveTest(req, res) {
     const body = req.body;
 
-    const done = await transferService.giveTestbook(body.public_key);
+    const confirmAssetTx = await transferService.giveTestbook(
+        body.public_key,
+        body.coupon || "null"
+    );
 
-    if (!done) {
-        res.status(422).send({
-            message: "Failed!"
-        });
-        return;
-    }
-
-    res.send({
-        message: "Success!"
-    });
+    res.send({ tx: confirmAssetTx });
 }
 
 export default errorHandler({

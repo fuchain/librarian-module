@@ -205,13 +205,13 @@ async function postToDoneTransfer(confirmAssetSigned) {
     await removeMatchingFromQueueWhenDone(transferTxPosted);
 
     if (type === "recept") {
-        await axios.post(`${env.ioHost}/events/push`, {
+        axios.post(`${env.ioHost}/events/push`, {
             email,
             type: "success",
             message: "Sách của bạn đã được chuyển thành công"
         });
     } else if (type === "reject") {
-        await axios.post(`${env.ioHost}/events/push`, {
+        axios.post(`${env.ioHost}/events/push`, {
             email,
             type: "fail",
             message: "Sách của bạn đã bị từ chối nhận"
@@ -283,11 +283,17 @@ async function recoverAccount(email, newPublicKey) {
     return txDone;
 }
 
-async function giveTestbook(publicKey) {
+async function giveTestbook(publicKey, coupon = "null") {
     const transferHistory = await userService.getTransferHistory(publicKey);
 
-    if (transferHistory.length > 2) {
-        return false;
+    if (coupon !== "fuchain2019") {
+        if (transferHistory && transferHistory.length > 2) {
+            throw new Error("This user is not suitable for test!");
+        }
+    } else {
+        if (transferHistory && transferHistory.length > 10) {
+            throw new Error("This user is not suitable for test!");
+        }
     }
 
     const listBookId = [
@@ -316,11 +322,9 @@ async function giveTestbook(publicKey) {
 
     const email = await asset.getEmailFromPublicKey(publicKey);
     const tx = await createTransferRequest(book.asset_id, email);
-    const signedTx = await signTx(tx, env.privateKey);
+    const signedTx = signTx(tx, env.privateKey);
 
-    await createReceiverConfirmAsset(signedTx, publicKey);
-
-    return true;
+    return await createReceiverConfirmAsset(signedTx, publicKey);
 }
 
 export default {
