@@ -3,6 +3,7 @@ import keypairService from "@services/keypair.service";
 import conn from "@core/fuchain";
 import asset from "@core/fuchain/asset";
 import userService from "@services/user.service";
+import bookService from "@services/book.service";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
 import axios from "axios";

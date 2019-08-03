@@ -194,12 +194,29 @@ export default {
         });
     },
     comingSoon() {
-      this.$vs.notify({
-        title: "Tính năng này chưa hỗ trợ",
-        text: "Chức năng gợi ý sách sẽ sớm ra mắt thôi, đợi nghen",
-        color: "warning",
-        position: "top-center"
-      });
+      this.$vs.loading();
+
+      this.$http
+        .post(`${this.$http.baseUrl}/transfer/test`)
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Đã tạo yêu cầu",
+            color: "primary",
+            position: "top-center"
+          });
+        })
+        .catch(() => {
+          this.$vs.notify({
+            title: "Thất bại",
+            text: "Yêu cầu không hợp lệ",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     }
   }
 };
