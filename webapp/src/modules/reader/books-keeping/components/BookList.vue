@@ -71,9 +71,9 @@ export default {
     listBooks() {
       if (!this.searchText.trim()) return this.books;
 
-      return this.books.filter(e => {
-        e.name.toLowerCase().includes(this.searchText.trim().toLowerCase());
-      });
+      return this.books.filter(e =>
+        e.name.toLowerCase().includes(this.searchText.trim().toLowerCase())
+      );
     }
   },
   methods: {

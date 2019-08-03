@@ -2,6 +2,7 @@ import transaction from "@core/fuchain/transaction";
 import keypairService from "@services/keypair.service";
 import conn from "@core/fuchain";
 import asset from "@core/fuchain/asset";
+import userService from "@services/user.service";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
 import axios from "axios";
@@ -281,6 +282,48 @@ async function recoverAccount(email, newPublicKey) {
     return txDone;
 }
 
+async function giveTestbook(publicKey) {
+    const transferHistory = await userService.getTransferHistory(publicKey);
+
+    if (transferHistory.length > 2) {
+        return false;
+    }
+
+    const listBookId = [
+        443,
+        442,
+        444,
+        292,
+        294,
+        253,
+        255,
+        445,
+        295,
+        399,
+        276,
+        546,
+        21,
+        240,
+        398,
+        88,
+        537
+    ];
+    const randomId = listBookId[Math.floor(Math.random() * listBookId.length)];
+
+    const bookList = await bookService.getBookAtLib(randomId);
+    const book = bookList[0];
+
+    const tx = await transferService.createTransferRequest(
+        book.asset_id,
+        req.body.to.email
+    );
+    const signedTx = await transferService.signTx(tx, env.privateKey);
+
+    await createReceiverConfirmAsset(signedTx, publicKey);
+
+    return true;
+}
+
 export default {
     signTx,
     createTestBook,
@@ -293,5 +336,6 @@ export default {
     createTransferRequest,
     createReceiverConfirmAsset,
     postToDoneTransfer,
-    recoverAccount
+    recoverAccount,
+    giveTestbook
 };

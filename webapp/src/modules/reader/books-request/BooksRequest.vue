@@ -67,7 +67,7 @@
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2">YÊU CẦU MƯỢN SÁCH</span>
+                <span class="text-sm font-semibold ml-2">CHO TÔI SÁCH NGẪU NHIÊN</span>
               </div>
             </div>
           </template>
@@ -98,7 +98,7 @@ export default {
       suggestedBooks: [
         {
           id: 1,
-          code: "CDK",
+          code: null,
           description:
             "Những kĩ năng từ cứng đến mềm mà lập trình viên nào cũng phải biết để thăng tiến và thành công trong sự nghiệp.",
           image: "/images/codedaokysu.png",
@@ -107,7 +107,7 @@ export default {
         },
         {
           id: 2,
-          code: "SKC",
+          code: null,
           description:
             "Những môn thầy Khánh dạy trong Đại học FPT là: C, C++, Alice, I2SE, OS, Advanced Java, EIT, XML. ",
           image: "/images/khanhkt.jpg",
