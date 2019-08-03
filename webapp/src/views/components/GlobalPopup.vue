@@ -208,15 +208,29 @@ export default {
             this.$store.dispatch("closeTxPopup", 5000);
             if (!this.$auth.isAdmin) this.$router.push("/");
           })
-          .catch(() => {
-            this.$vs.notify({
-              title: "Thất bại",
-              text: "Có lỗi xảy ra",
-              color: "warning",
-              position: "top-center",
-              fixed: true,
-              icon: "error"
-            });
+          .catch(err => {
+            const message = err.response.data.message;
+
+            if (message === "Error: Cannot send to receiver") {
+              this.$vs.notify({
+                title: "Thất bại",
+                text:
+                  "Không thể gửi giao dịch tới người nhận, người nhận đang không trực tuyến",
+                color: "warning",
+                position: "top-center",
+                fixed: true,
+                icon: "error"
+              });
+            } else {
+              this.$vs.notify({
+                title: "Thất bại",
+                text: "Lỗi bất ngờ xảy ra",
+                color: "warning",
+                position: "top-center",
+                fixed: true,
+                icon: "error"
+              });
+            }
           })
           .finally(() => {
             this.$vs.loading.close();

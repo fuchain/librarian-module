@@ -57,6 +57,10 @@ async function getEmailFromPublicKey(publicKey) {
 }
 
 async function getPublicKeyFromEmail(email) {
+    if (email === "librarian@fptu.tech") {
+        return env.publicKey;
+    }
+
     // Lower it first
     email = email.toLowerCase();
 
