@@ -224,6 +224,7 @@ export default {
           })
           .finally(() => {
             this.$vs.loading.close();
+            this.$store.dispatch("getNumOfBooks");
           });
       } else {
         this.$vs.loading();
@@ -261,6 +262,7 @@ export default {
             });
           })
           .finally(() => {
+            this.$store.dispatch("getNumOfBooks");
             this.$vs.loading.close();
           });
       }

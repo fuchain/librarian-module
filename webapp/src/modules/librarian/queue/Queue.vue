@@ -6,12 +6,22 @@
     </p>
     <p class="mb-8" v-else>Chưa có yêu cầu nào được hệ thống ghép.</p>
 
+    <div class="mb-4">
+      <vs-switch v-model="filter">
+        <span slot="on">Chỉ hiện những yêu cầu chưa được ghép</span>
+        <span slot="off">Hiện tất cả yêu cầu trong hàng đợi</span>
+      </vs-switch>
+    </div>
+
     <vs-table
       noDataText="Không có dữ liệu"
       ref="table"
       pagination
       :max-items="itemsPerPage"
       :data="queueFilter"
+      search
+      :hoverFlat="true"
+      notSpacer
     >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
@@ -84,7 +94,8 @@
 export default {
   data() {
     return {
-      queues: []
+      queues: [],
+      filter: true
     };
   },
   methods: {
@@ -103,7 +114,9 @@ export default {
       return matched.length;
     },
     queueFilter() {
-      return this.queues.filter(e => !e.matched);
+      if (this.filter) return this.queues.filter(e => !e.matched);
+
+      return this.queues;
     }
   },
   mounted() {
