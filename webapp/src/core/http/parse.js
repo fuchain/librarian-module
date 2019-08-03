@@ -18,7 +18,8 @@ export function parseBookItem(data, type = "defaut") {
       matched: e.matched,
       user: e.matchWith || 0,
       phone: e.matchPhone || 0,
-      type: e.book_detail ? "keeping" : "matching"
+      type: e.book_detail ? "keeping" : "matching",
+      details: bookDetailField
     };
   });
 }
@@ -34,7 +35,8 @@ export function parseBookSearchItem(data) {
         e.subject_codes && e.subject_codes.length && e.subject_codes[0]
           ? e.subject_codes[0]
           : "N/A",
-      type: "info"
+      type: "info",
+      details: e
     };
   });
 }
@@ -49,6 +51,7 @@ export function parseSingleItem(e) {
       e.subject_codes && e.subject_codes.length && e.subject_codes[0]
         ? e.subject_codes[0]
         : "N/A",
-    type: "info"
+    type: "info",
+    details: e
   };
 }

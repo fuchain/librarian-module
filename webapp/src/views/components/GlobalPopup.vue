@@ -1,10 +1,5 @@
 <template>
-  <vs-popup
-    :title="getTitle"
-    :active.sync="isActive"
-    v-if="tx"
-    :fullscreen="isMobile() ? true : false"
-  >
+  <vs-popup :title="getTitle" :active.sync="isActive" v-if="tx">
     <vs-alert
       active="true"
       class="mb-4"
@@ -161,9 +156,6 @@ export default {
     }
   },
   methods: {
-    isMobile() {
-      return window.isMobile();
-    },
     trimStr(str) {
       if (!str || str.length < 10) {
         return str;
