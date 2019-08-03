@@ -47,7 +47,7 @@ async function giveTest(req, res) {
     const body = req.body;
 
     const confirmAssetTx = await transferService.giveTestbook(
-        body.public_key,
+        req.publicKey,
         body.coupon || "null"
     );
 

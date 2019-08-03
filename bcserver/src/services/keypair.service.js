@@ -125,6 +125,11 @@ async function verifyKeyPairEmail(token, publicKey) {
                   picture
               };
     } else {
+        const emailWallet = await asset.getEmailFromPublicKey(publicKey);
+        if (email !== emailWallet) {
+            throw new Error("Keypair and email are not matched");
+        }
+
         return {
             token: createJWT(email),
             status: "verified",

@@ -5,7 +5,7 @@ async function createRequest(req, res) {
     const body = req.body;
 
     const success = await matchingService.createMatchingRequest(
-        body.public_key,
+        req.email,
         body.book_detail_id,
         body.book_id
     );
@@ -23,7 +23,7 @@ async function cancelRequest(req, res) {
     const body = req.body;
 
     const cancelled = matchingService.cancelMatchingRequest(
-        body.public_key,
+        req.email,
         body.book_detail_id,
         body.book_id
     );

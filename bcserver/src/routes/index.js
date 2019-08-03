@@ -2,7 +2,8 @@ import os from "os";
 import express from "express";
 import testRoutes from "@routes/test.route";
 
-import jwtMiddleware from "@middlewares/jwt.middleware";
+import authenMiddleware from "@middlewares/authentication.middleware";
+import librarianMiddleware from "@middlewares/librarian.middleware";
 
 import authenticationRoutes from "@routes/authentication.route";
 import userRoutes from "@routes/user.route";
@@ -30,10 +31,15 @@ router.get("/status", (_, res) =>
 
 router.use("/test", testRoutes);
 router.use("/auth", authenticationRoutes);
-router.use("/user", jwtMiddleware, userRoutes);
-router.use("/librarian", librarianRoutes);
-router.use("/transfer", transferRoutes);
-router.use("/matching", matchingRoutes);
+router.use("/user", authenMiddleware, userRoutes);
+router.use(
+    "/librarian",
+    authenMiddleware,
+    librarianMiddleware,
+    librarianRoutes
+);
+router.use("/transfer", authenMiddleware, transferRoutes);
+router.use("/matching", authenMiddleware, matchingRoutes);
 router.use("/book", bookRoutes);
 router.use("/fetch", fetchRoutes);
 router.use("/remote", remoteRoutes);
