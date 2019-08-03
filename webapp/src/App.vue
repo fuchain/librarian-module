@@ -5,6 +5,7 @@
     <vx-tour :steps="steps" />
 
     <global-popup></global-popup>
+    <book-detail-popup></book-detail-popup>
   </div>
 </template>
 
@@ -17,6 +18,7 @@ import Error500 from "./views/Error500";
 import initSocket from "@core/socket";
 
 import GlobalPopup from "@/views/components/GlobalPopup.vue";
+import BookDetailPopup from "@/views/components/BookDetailPopup.vue";
 
 const VxTour = () => import("@/views/components/VxTour.vue");
 
@@ -88,7 +90,8 @@ export default {
   components: {
     Error500,
     VxTour,
-    GlobalPopup
+    GlobalPopup,
+    BookDetailPopup
   },
   methods: {
     toggleClassInBody(className) {

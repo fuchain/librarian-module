@@ -127,6 +127,16 @@ const actions = {
     setTimeout(function() {
       commit("CLOSE_TRANSACTION_POPUP");
     }, time);
+  },
+
+  // Open Detail Popup
+  async openDetailsPopup({ commit }, details) {
+    commit("OPEN_DETAILS_POPUP", details);
+  },
+  async closeDetailsPopup({ commit }, time = 0) {
+    setTimeout(function() {
+      commit("CLOSE_DETAILS_POPUP");
+    }, time);
   }
 };
 

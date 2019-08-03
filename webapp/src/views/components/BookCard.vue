@@ -2,7 +2,11 @@
   <vx-card class="grid-view-item mb-base overflow-hidden" noShadow cardBorder>
     <template slot="no-body">
       <!-- ITEM IMAGE -->
-      <div class="item-img-container h-48 flex items-center justify-center mb-4 mt-4">
+      <div
+        class="item-img-container h-48 flex items-center justify-center mb-4 mt-4"
+        @click="$store.dispatch('openDetailsPopup', item.details)"
+        style="cursor: pointer"
+      >
         <img :src="item.image" :alt="item.name" class="grid-view-img px-4" />
       </div>
       <div class="item-details px-4">
@@ -43,7 +47,11 @@
         >primary</vs-progress>
 
         <!-- TITLE & DESCRIPTION -->
-        <div class="my-4">
+        <div
+          class="my-4"
+          @click="$store.dispatch('openDetailsPopup', item.details)"
+          style="cursor: pointer"
+        >
           <h6 class="truncate font-semibold mb-1">{{ item.name }}</h6>
           <p class="item-description truncate text-sm">{{ item.description }}</p>
         </div>

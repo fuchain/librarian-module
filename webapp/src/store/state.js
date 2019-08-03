@@ -32,7 +32,11 @@ const state = {
 
   // Transaction Popup
   transactionPopupOpen: false,
-  transactionPopupTx: null
+  transactionPopupTx: null,
+
+  // Book Detail Popup
+  detailsPopupOpen: false,
+  detailsPopupData: null
 };
 
 export default state;

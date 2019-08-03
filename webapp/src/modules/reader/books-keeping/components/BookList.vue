@@ -32,6 +32,7 @@
 
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+                @click="$store.dispatch('openDetailsPopup', item.details)"
               >
                 <feather-icon icon="BookOpenIcon" svgClasses="h-4 w-4" />
 
