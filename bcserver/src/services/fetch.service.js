@@ -22,6 +22,7 @@ async function getBookDetail(assetId) {
     if (!bookDetail) {
         return null;
     }
+
     return bookDetail;
 }
 
