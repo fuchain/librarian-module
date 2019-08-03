@@ -121,6 +121,7 @@ export default {
       privateKey: "",
       mode: null,
       seed: generateSeed(),
+      wallet: "",
       style: "auto",
       secret: ""
     };
@@ -178,13 +179,16 @@ export default {
       });
     }
   },
-  mounted() {
+  async mounted() {
     const publicKey = this.$localStorage.getItem("publicKey");
     const privateKey = this.$localStorage.getItem("privateKey");
 
     if (publicKey && privateKey) {
       this.$router.push("/login");
     }
+
+    const generated = await generateKeyPair(this.seed);
+    this.wallet = generated.publicKey;
   }
 };
 </script>

@@ -43,11 +43,10 @@ export default {
     },
     notifyError(msg) {
       this.$vs.notify({
-        title: "Lỗi khi dùng camera",
+        title: "Lỗi khi quét QR Code",
         text: msg,
         color: "danger",
-        position: "top-center",
-        fixed: true
+        position: "top-center"
       });
     }
   }

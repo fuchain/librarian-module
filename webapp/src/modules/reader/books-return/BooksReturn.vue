@@ -157,6 +157,13 @@ export default {
       return true;
     },
     manuallyReturn() {
+      if (
+        this.email &&
+        this.email.trim().toLowerCase() === this.$store.state.email
+      ) {
+        return;
+      }
+
       this.$vs.loading();
 
       this.$http
@@ -170,20 +177,32 @@ export default {
           const tx = response.data;
 
           this.$store.dispatch("openTxPopup", tx);
+          this.$router.push("/");
         })
-        .catch(() => {
-          this.$vs.notify({
-            title: "Thất bại",
-            text: "Có lỗi xảy ra, vui lòng thử lại",
-            color: "warning",
-            position: "top-center"
-          });
+        .catch(err => {
+          const message = err.response.data.message;
+
+          if (message === "Error: Email not found") {
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Người nhận không tồn tại",
+              color: "warning",
+              position: "top-center",
+              fixed: true,
+              icon: "error"
+            });
+          } else {
+            this.$vs.notify({
+              title: "Thất bại",
+              text: "Có lỗi xảy ra, vui lòng thử lại",
+              color: "warning",
+              position: "top-center"
+            });
+          }
         })
         .finally(() => {
           this.$vs.loading.close();
         });
-
-      this.$router.push("/");
     },
     handleQRCode(code) {
       this.email = code;
