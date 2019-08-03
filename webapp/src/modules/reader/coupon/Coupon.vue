@@ -45,10 +45,18 @@ export default {
             position: "top-center"
           });
         })
-        .catch(() => {
+        .catch(err => {
+          const error =
+            err.response.data.message ===
+            "Error: This user is not suitable for test!"
+              ? false
+              : true;
+
           this.$vs.notify({
             title: "Thất bại",
-            text: "Coupon không hợp lệ hoặc bạn đã sử dụng quá nhiều",
+            text: error
+              ? "Lỗi bất ngờ xảy ra, vui lòng thử lại"
+              : "Coupon không hợp lệ hoặc bạn đã sử dụng quá nhiều",
             color: "warning",
             position: "top-center"
           });
