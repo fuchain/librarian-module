@@ -262,6 +262,7 @@ export default {
             });
           })
           .finally(() => {
+            this.$store.dispatch("getNumOfBooks");
             this.$vs.loading.close();
           });
       }
