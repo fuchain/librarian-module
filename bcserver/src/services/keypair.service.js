@@ -5,6 +5,7 @@ import env from "@core/env";
 import axios from "axios";
 import { createJWT } from "@core/jwt";
 import { db } from "@models";
+import uploadService from "@services/upload.service";
 
 function generateRandomKeyPair() {
     return generateKey();
@@ -56,6 +57,9 @@ async function checkTokenGoogle(token) {
     const pictureUrl = data.picture;
 
     try {
+        // Save to cloud
+        await uploadService.saveUserAvatar(pictureUrl, email);
+
         const response = await axios.get(pictureUrl, {
             responseType: "arraybuffer"
         });
