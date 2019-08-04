@@ -41,7 +41,7 @@
                     <strong>ghi ra giấy, cất nơi an toàn</strong>, không để cho bất kì ai khác biết cụm từ này.
                   </p>
                   <p v-else>
-                    Nhập vào cụm 12 từ bí mật của bạn lúc tạo phí để đăng nhập ví sách. Chỉ nhập trên
+                    Nhập vào cụm 12 từ bí mật của bạn lúc tạo ví để đăng nhập ví sách. Chỉ nhập trên
                     <strong>thiết bị mà bạn tin tưởng.</strong>
                   </p>
                 </div>
@@ -98,7 +98,7 @@
                     icon="fingerprint"
                     :disabled="(mode === 'verify' && !secret && (!publicKey || !privateKey))"
                     @click="openConfirm"
-                  >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Đăng nhập ví sách"}}</vs-button>
+                  >{{ mode === 'create' ? "Đã cất giữ an toàn cụm từ này" : "Xác thực ví sách"}}</vs-button>
                 </form>
               </div>
             </div>

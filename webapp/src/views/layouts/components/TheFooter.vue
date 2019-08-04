@@ -5,9 +5,11 @@
       <span class="md:flex hidden items-center">
         <span>
           Powered by
-          <span
+          <a
+            href="https://blockchain.fptu.tech"
+            target="_blank"
             style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px; cursor: pointer;"
-          >FUChain</span>
+          >FUChain</a>
         </span>
       </span>
     </footer>
