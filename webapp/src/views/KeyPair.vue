@@ -108,6 +108,23 @@
         </div>
       </vx-card>
     </div>
+
+    <vs-popup
+      style="color:rgb(255,255,255)"
+      background-color="rgba(255,255,255,.6)"
+      background-color-popup="#7367F0"
+      title="Khoan... Ứng dụng này làm gì? 🤔"
+      :active.sync="introducePopup"
+    >
+      <p>
+        Hiện tại thư viện trường thường
+        <strong>bị quá tải</strong> mỗi đầu kì do sinh viên phải đến xếp hàng mượn/trả sách, app này sẽ giúp sinh viên cầm sách kì trước có thể trả trực tiếp cho sinh viên kì sau mà
+        <strong>không cần đi tới thư viện</strong>. 😆
+      </p>
+      <p
+        class="mt-4"
+      >Ứng dụng công nghệ Blockchain, mỗi sinh viên sẽ được tạo một ví sách. Khi thực hiện nhận trả sách sẽ thông qua ví sách để xác thực. Ví sách đảm bảo an toàn tuyệt đối khi mà chỉ có chủ ví mới có quyền thực hiện giao dịch chuyển nhận sách. 😎</p>
+    </vs-popup>
   </div>
 </template>
 
@@ -125,7 +142,8 @@ export default {
       seed: generateSeed(),
       wallet: "",
       style: "auto",
-      secret: ""
+      secret: "",
+      introducePopup: true
     };
   },
   methods: {
@@ -196,6 +214,10 @@ export default {
 </script>
 
 <style lang="scss">
+h3 {
+  color: white;
+}
+
 #page-login {
   .social-login {
     .bg-facebook {
