@@ -42,6 +42,17 @@ import isMobile from "./isMobile";
 // Vue tour
 import VueTour from "vue-tour";
 import "vue-tour/dist/vue-tour.css";
+
+// Sentry
+import * as Sentry from "@sentry/browser";
+import * as Integrations from "@sentry/integrations";
+
+!window.webpackHotUpdate &&
+  Sentry.init({
+    dsn: "https://900117affb2c4742a2864410b864462f@sentry.io/1521086",
+    integrations: [new Integrations.Vue({ Vue, attachProps: true })]
+  });
+
 Vue.use(VueTour);
 
 Vue.component("vue-friendly-iframe", VueFriendlyIframe);

@@ -171,20 +171,6 @@ export default {
       position: "top-center"
     });
 
-    // Log API
-    const metadata = {
-      err: err.toString(),
-      info: info.toString()
-    };
-
-    if (!window.webpackHotUpdate) {
-      this.$http.post(`${this.$http.nodeUrl}/logs`, {
-        type: "error",
-        source: "webapp",
-        metadata: JSON.stringify(metadata)
-      });
-    }
-
     this.$router.push("/error");
     if (this.$vs.loading) this.$vs.loading.close();
   }
