@@ -2,7 +2,6 @@ import express from "express";
 import compression from "compression";
 import bodyParser from "body-parser";
 import cors from "cors";
-import morgan from "morgan";
 
 import routes from "@routes";
 import models from "@models";
@@ -10,6 +9,11 @@ import { checkEnvLoaded } from "@core/env";
 
 import initSocketModule from "./socket/socket";
 import initRedisModule from "@core/redis";
+
+import {
+    sentryMiddleware,
+    morganMiddleware
+} from "@middlewares/logging.middleware";
 
 const app = express();
 const server = require("http").Server(app);
@@ -20,6 +24,9 @@ async function main(app, server) {
 
         // Init DB
         models();
+
+        // Init Sentry logging middleware
+        sentryMiddleware();
 
         // Compression gzip
         app.use(compression());
@@ -36,7 +43,7 @@ async function main(app, server) {
         app.use(cors(corsOptions));
 
         // Middlewares
-        app.use(morgan("tiny"));
+        app.use(morganMiddleware);
 
         // Init roues
         app.use("/api/v1", routes);
