@@ -3,7 +3,7 @@ import morgan from "morgan";
 
 export function sentryMiddleware() {
     sentry.init({
-        dsn: "https://f7058307a8514bb8b0f3b46b25e33596@sentry.io/1509628"
+        dsn: "https://dda82049bb8a4f8fbdb8b627440ef7fc@sentry.io/1521088"
     });
 }
 
