@@ -110,7 +110,8 @@
     </div>
 
     <vs-popup
-      style="color:rgb(255,255,255)"
+      class="introducePopup"
+      style="color:rgb(255,255,255);"
       background-color="rgba(255,255,255,.6)"
       background-color-popup="#7367F0"
       title="Khoan... Ứng dụng này làm gì? 🤔"
@@ -214,8 +215,10 @@ export default {
 </script>
 
 <style lang="scss">
-h3 {
-  color: white;
+.introducePopup {
+  h3 {
+    color: #fff;
+  }
 }
 
 #page-login {
