@@ -12,6 +12,8 @@
     "test": "start-server-and-test start http://localhost:3000 cy:run"
   },
   "dependencies": {
+    "@sentry/browser": "^5.5.0",
+    "@sentry/integrations": "^5.5.0",
     "apexcharts": "^3.6.5",
     "axios": "^0.18.0",
     "bip39": "^3.0.2",
