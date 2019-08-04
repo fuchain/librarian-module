@@ -93,7 +93,7 @@ export default {
         {
           id: 1,
           categoryId: 2,
-          question: "Thư viện phân tán là gì?",
+          question: "Thư viện phi tập trung là gì?",
           ans:
             "Lorem ipsum dolor sit amet, sed paulo libris ex, at usu zril minimum, intellegat interesset at cum. Eum porro tempor facilis ei, latine ornatus noluisse sit ad. Nam in inermis inimicus. Vel alia inciderint ad, duo denique explicari deterruisset ex."
         },

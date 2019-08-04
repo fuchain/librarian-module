@@ -30,9 +30,11 @@
                     <span style="font-size: 2rem; color: #7367F0;">Ví sách FU</span>
                     <div class="mt-2 mb-4" style="text-align: right;">
                       Powered by
-                      <span
+                      <a
+                        href="https://blockchain.fptu.tech"
+                        target="_blank"
                         style="background: #7367F0; color: white; padding: 0.5rem; border-radius: 5px;"
-                      >FUChain</span>
+                      >FUChain</a>
                     </div>
                   </div>
                   <p v-if="!mode">Bạn có phải người dùng mới?</p>
@@ -169,13 +171,13 @@ export default {
       }
       this.$vs.dialog({
         type: "confirm",
-        color: "primary",
-        title: "Xác nhận",
+        color: "danger",
+        title: "Ví của bạn, bạn là người giữ!",
         text:
-          "Bạn có chắc là đã cất giữ chuỗi bí mật? Khi bạn làm mất chuỗi này thì tài khoản không thể khôi phục, bạn có thể sẽ mất phí để tạo tài khoản mới.",
+          "Bạn có chắc là đã cất giữ chuỗi bí mật? Khi bạn làm mất chuỗi này thì ví sách không thể khôi phục, bạn có thể sẽ mất phí để tạo ví sách mới.",
         accept: this.submitKey,
-        acceptText: "Chắc chắn",
-        cancelText: "Chưa chắc"
+        acceptText: "Tôi biết rồi",
+        cancelText: "Để xem đã"
       });
     }
   },
