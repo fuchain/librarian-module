@@ -85,7 +85,7 @@
 
                   <div
                     class="mt-8"
-                    v-if="!walletEmail"
+                    v-if="!walletEmail && loaded"
                     style="background-color: #7367F0; color: white; padding: 10px; border-radius: 5px;"
                   >
                     <div class="mb-2">Địa chỉ ví</div>
@@ -120,11 +120,16 @@ export default {
       password: null,
       remember: false,
       walletEmail: null,
+      loaded: false,
       publicKey: keypair.get("publicKey")
     };
   },
   computed: {
     loginText() {
+      if (!this.loaded) {
+        return "Đăng nhập bằng email của bạn";
+      }
+
       if (this.walletEmail) {
         return "Đăng nhập " + this.walletEmail;
       }
@@ -253,16 +258,25 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
-    }
-
-    this.$http
-      .post(`${this.$http.baseUrl}/fetch/public_key`)
-      .then(res => {
-        this.walletEmail = res.data.email;
-      })
-      .catch(() => {
-        this.walletEmail = null;
+    } else {
+      this.$vs.loading({
+        background: "darkorange",
+        color: "white",
+        text: "Đang xác thực ví sách"
       });
+      this.$http
+        .post(`${this.$http.baseUrl}/fetch/public_key`)
+        .then(res => {
+          this.walletEmail = res.data.email;
+        })
+        .catch(() => {
+          this.walletEmail = null;
+        })
+        .finally(() => {
+          this.loaded = true;
+          this.$vs.loading.close();
+        });
+    }
   }
 };
 </script>
