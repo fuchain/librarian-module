@@ -4,6 +4,7 @@ const matchingQueue = new Queue("matching", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
 import { db } from "@models";
+import axios from "axios";
 
 // Watch and Run job queue
 function run() {
