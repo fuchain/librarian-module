@@ -1,6 +1,5 @@
-import { io, getOnlineUsers } from "../socket/socket";
+import { getOnlineUsers, emitToUser } from "../socket/socket";
 
-import { getRedisItem } from "@core/redis";
 import { Notification } from "@models";
 import { sendEmail } from "@core/sendgrid";
 
@@ -8,8 +7,6 @@ const pushNotification = async (req, res) => {
     const { email, message, type, noemail, nosave } = req.body;
 
     try {
-        const socketId = await getRedisItem(email);
-
         const newNotification = new Notification({
             email,
             message,
@@ -29,7 +26,13 @@ const pushNotification = async (req, res) => {
                   html: message
               });
 
-        if (!socketId) {
+        const online = await emitToUser(email, "notification", {
+            message,
+            type,
+            id: newNotification._id
+        });
+
+        if (!online) {
             res.status(200);
             res.send({
                 message:
@@ -41,15 +44,10 @@ const pushNotification = async (req, res) => {
             return;
         }
 
-        io.to(socketId).emit("notification", {
-            message,
-            type,
-            id: newNotification._id
-        });
-
         res.status(201);
         res.send({
-            message: `Sent to ${socketId}`,
+            message: `Sent to ${online.length} client(s) -> ${online}`,
+            sessions: online.length,
             email: emailData,
             save: nosave ? "Not saved to DB" : "Saved"
         });
@@ -111,7 +109,8 @@ const touchNotification = async (req, res) => {
 
 const getOnline = async (_, res) => {
     try {
-        res.send(await getOnlineUsers());
+        const onlineSession = await getOnlineUsers();
+        res.send(onlineSession);
     } catch (err) {
         res.status(400);
         res.send({

@@ -1,72 +1,74 @@
 import { verifyJWT } from "@core/jwt";
-import { getRedisItem, setRedisItem, deleteRedisItem } from "@core/redis";
+import { getRedisItem, setRedisItem } from "@core/redis";
 import redisAdapter from "socket.io-redis";
 
 export let io;
 
-async function addUser(email) {
-    try {
-        const users = await getRedisItem("users");
-
-        const arr = JSON.parse(users) || [];
-        if (!arr.find(e => e === email)) {
-            arr.push(email);
-            const arrStr = JSON.stringify(arr);
-            await setRedisItem("users", arrStr);
-
-            notifyOnlineChange(arr);
-        }
-    } catch (err) {
-        throw err;
-    }
-}
-
-async function removeUser(email) {
-    try {
-        const users = await getRedisItem("users");
-
-        if (users) {
-            const arr = JSON.parse(users) || [];
-
-            const filteredArr = arr.filter(e => e !== email);
-
-            const arrStr = JSON.stringify(filteredArr);
-            await setRedisItem("users", arrStr);
-
-            notifyOnlineChange(filteredArr);
-        }
-    } catch (err) {
-        throw err;
-    }
-}
-
-async function notifyOnlineChange(users) {
-    const librarian = await getRedisItem("librarian@fe.edu.vn");
-
-    if (librarian) {
-        io.to(librarian).emit("online", {
-            users: users || []
-        });
-    }
-}
-
 export async function getOnlineUsers() {
-    try {
-        const users = await getRedisItem("users");
-        if (users) {
-            const usersArr = JSON.parse(users);
+    const onlineArray = Object.keys(io.sockets.connected) || [];
+    return { array: onlineArray, session: onlineArray.length };
+}
 
-            return usersArr.filter(e => e);
-        } else {
-            return [];
-        }
-    } catch (err) {
-        throw err;
+function extractPool(listSockets) {
+    if (typeof listSockets !== "string") {
+        return [];
     }
+    listSockets = JSON.parse(listSockets);
+
+    if (Array.isArray(listSockets)) {
+        return listSockets;
+    }
+
+    return [];
+}
+
+function zipPool(listSockets) {
+    return JSON.stringify(listSockets);
+}
+
+async function userNewConnect(email, socketId) {
+    try {
+        const listSockets = await getRedisItem(email);
+        const arr = extractPool(listSockets);
+        arr.push(socketId);
+        await setRedisItem(email, zipPool(arr));
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function userDisconnect(email, socketId) {
+    const listSockets = await getRedisItem(email);
+    const arr = extractPool(listSockets);
+    const index = arr.indexOf(socketId);
+    index > -1 && arr.splice(index, 1);
+    await setRedisItem(email, zipPool(arr));
+}
+
+export async function emitToUser(email, type, metadata) {
+    const listSockets = await getRedisItem(email);
+    const arr = extractPool(listSockets);
+
+    if (!arr || !arr.length) {
+        return false;
+    }
+
+    const { array } = await getOnlineUsers();
+
+    const filtered = arr.filter(socketId => {
+        return array.indexOf(socketId) > -1 ? true : false;
+    });
+
+    filtered.forEach(socketId => {
+        io.to(socketId).emit(type, metadata);
+    });
+
+    return filtered.length ? filtered : false;
 }
 
 function initSocketModule(server) {
     io = require("socket.io")(server);
+
     io.adapter(
         redisAdapter({ host: process.env.REDIS_HOST || "redis", port: 6379 })
     );
@@ -79,26 +81,7 @@ function initSocketModule(server) {
                 socket.payload = payload;
                 const email = payload.email;
 
-                const loggedInSocketID = await getRedisItem(email);
-
-                io.to(socket.id).emit("info", {
-                    previousConnect: loggedInSocketID || "null"
-                });
-
-                if (loggedInSocketID) {
-                    io.to(loggedInSocketID).emit("logout", {
-                        message: "Another user logged in",
-                        type: "logout",
-                        id: null
-                    });
-
-                    await deleteRedisItem(email);
-                    io.sockets.connected[loggedInSocketID].disconnect();
-                    await removeUser(email);
-                }
-
-                await setRedisItem(email, socket.id);
-                await addUser(email);
+                await userNewConnect(email, socket.id);
 
                 next();
             } catch (err) {
@@ -114,8 +97,7 @@ function initSocketModule(server) {
             const email = socket.payload.email;
 
             try {
-                await deleteRedisItem(email);
-                await removeUser(email);
+                await userDisconnect(email, socket.id);
             } catch (err) {
                 console.log(err);
             }
