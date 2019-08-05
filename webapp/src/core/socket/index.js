@@ -62,6 +62,18 @@ function init() {
         icon: "icon-check"
       });
     }
+
+    if (type === "fail") {
+      window.vue.$vs.notify({
+        fixed: true,
+        title: "Thất bại",
+        text: message,
+        color: "danger",
+        position: "top-center",
+        iconPack: "feather",
+        icon: "icon-error"
+      });
+    }
   });
 }
 

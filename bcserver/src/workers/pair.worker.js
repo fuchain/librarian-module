@@ -16,8 +16,8 @@ async function doJob() {
         // Node.js queue logic at: /Document/LegacyWorker/pair.js
 
         // Call Golang Pair Worker
-        await axios.get("http://ssh.fptu.tech:5100");
-        console.log("Triggered Go service to the pair job");
+        const { data } = await axios.get("http://ssh.fptu.tech:5100");
+        console.log("Pairworker: ", data);
 
         return true;
     } catch (err) {
