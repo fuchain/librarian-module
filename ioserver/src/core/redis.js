@@ -22,7 +22,7 @@ function initRedisModule() {
     });
 }
 
-export function setRedisItem(key, value) {
+export async function setRedisItem(key, value) {
     return new Promise(function(resolve, reject) {
         client.set(getKey(key), value, function(err) {
             if (err) {

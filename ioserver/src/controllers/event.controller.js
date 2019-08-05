@@ -1,14 +1,15 @@
-import { io } from "../socket/socket";
-
-import { getRedisItem } from "@core/redis";
+import { emitToUser } from "../socket/socket";
 
 const pushEvent = async (req, res) => {
     const { email, message, type } = req.body;
 
     try {
-        const socketId = await getRedisItem(email);
+        const online = await emitToUser(email, "event", {
+            message,
+            type
+        });
 
-        if (!socketId) {
+        if (!online) {
             res.status(400);
             res.send({
                 message: "User is not connecting to our service"
@@ -17,14 +18,10 @@ const pushEvent = async (req, res) => {
             return;
         }
 
-        io.to(socketId).emit("event", {
-            message,
-            type
-        });
-
         res.status(201);
         res.send({
-            message: `Sent to ${socketId}`
+            message: `Sent to ${online.length} client(s) -> ${online}`,
+            sessions: online.length
         });
         return;
     } catch (err) {

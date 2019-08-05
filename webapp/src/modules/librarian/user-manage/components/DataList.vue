@@ -76,7 +76,6 @@
         <vs-th>Email</vs-th>
         <vs-th>Họ tên</vs-th>
         <vs-th>Số điện thoại</vs-th>
-        <vs-th>Trực tuyến</vs-th>
         <vs-th>Vô hiệu hóa</vs-th>
         <vs-th></vs-th>
       </template>
@@ -103,14 +102,6 @@
 
             <vs-td>
               <p>{{ tr.phone || "Chưa cập nhật" }}</p>
-            </vs-td>
-
-            <vs-td>
-              <p>
-                <vs-chip
-                  :color="onlineUserState[indextr] ? 'primary' : 'danger'"
-                >{{ onlineUserState[indextr] ? "online" : "offline" }}</vs-chip>
-              </p>
             </vs-td>
 
             <vs-td>
@@ -230,8 +221,6 @@ export default {
       keepingName: "",
       keepingPublicKey: "",
       keepingList: [],
-      onlineUsers: [],
-      onlineUserState: [],
       searchText: "",
       // This is for history
       historyId: 0,
@@ -275,16 +264,6 @@ export default {
           this.$vs.loading.close();
         });
     },
-    checkUserOnline(email) {
-      return this.onlineUsers.find(e => e === email);
-    },
-    trackOnline() {
-      const trackArr = this.dataList.map(e => {
-        return this.checkUserOnline(e.email);
-      });
-
-      this.onlineUserState = trackArr;
-    },
     openHistory(assetId) {
       this.$vs.loading();
 
@@ -306,26 +285,6 @@ export default {
   },
   mounted() {
     this.isMounted = true;
-
-    this.$http
-      .get(`${this.$http.nodeUrl}/notifications/online`)
-      .then(response => {
-        const data = response.data;
-
-        this.onlineUsers = data;
-        this.trackOnline();
-      });
-    if (socket) {
-      socket.on(
-        "online",
-        function({ users }) {
-          this.onlineUsers = [].concat(users) || [].concat([]);
-          this.trackOnline();
-        }.bind(this)
-      );
-    } else {
-      console.log("Socket not init!");
-    }
   }
 };
 </script>
