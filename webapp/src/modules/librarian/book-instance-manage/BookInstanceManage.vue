@@ -98,11 +98,11 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.transaction_count || "Chưa có" }}</p>
+              <p>{{ tr.transaction_count === "Fetching" ? "--" : tr.transaction_count || "Chưa có" }}</p>
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.current_keeper || "--" }}</p>
+              <p>{{ tr.current_keeper === "Fetching" ? "--" : tr.current_keeper || "--" }}</p>
             </vs-td>
 
             <vs-td>
@@ -255,9 +255,7 @@ export default {
     }
   },
   mounted() {
-    this.$vs.loading({
-      type: "sound"
-    });
+    this.$Progress.start();
 
     this.$http
       .get(
@@ -280,7 +278,7 @@ export default {
             this.dataList = [].concat(data);
           })
           .finally(() => {
-            this.$vs.loading.close();
+            this.$Progress.finish();
           });
       })
       .finally(() => {

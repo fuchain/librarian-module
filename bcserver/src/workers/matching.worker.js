@@ -8,9 +8,6 @@ import { db } from "@models";
 // Watch and Run job queue
 function run() {
     matchingQueue.process(jobCallback);
-    matchingQueue.on("completed", function(job, result) {
-        console.log(`Job ${job.id} done for requester: ${result.email}`);
-    });
 }
 
 // Describe what to do in the job
@@ -28,6 +25,11 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
 
         if (!isCancel) {
             if (requested) {
+                axios.post(`${env.ioHost}/events/push`, {
+                    email,
+                    type: "fail",
+                    message: "Bạn đã có yêu cầu mượn sách đó rồi"
+                });
                 throw new Error("Duplicated!");
             }
 
@@ -36,6 +38,12 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
             requestObj.time = Math.floor(Date.now() / 1000);
             await matchingCollection.insertMany([requestObj]);
 
+            axios.post(`${env.ioHost}/events/push`, {
+                email,
+                type: "success",
+                message: "Gửi yêu cầu mượn sách thành công"
+            });
+
             return { email, bookDetailId, bookId };
         } else {
             if (!requested) {
@@ -43,6 +51,12 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
             }
 
             await matchingCollection.deleteOne(requestObj);
+
+            axios.post(`${env.ioHost}/events/push`, {
+                email,
+                type: "success",
+                message: "Hủy yêu cầu mượn sách thành công"
+            });
 
             return true;
         }

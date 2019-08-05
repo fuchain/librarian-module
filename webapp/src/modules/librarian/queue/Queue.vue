@@ -1,5 +1,5 @@
 <template>
-  <vx-card :title="'Hàng đợi đang có ' + queues.length + ' yêu cầu'">
+  <vx-card :title="'Hàng đợi đang có ' + (queues.length - matched) + ' yêu cầu'">
     <p class="mb-8" v-if="matched">
       Đã có
       <strong>{{ matched || 0 }}</strong> yêu cầu đã được hệ thống ghép, đang chờ người đọc chuyển sách.
@@ -74,7 +74,7 @@
 
             <vs-td>
               <p>
-                <vs-chip>{{ tr.bookId ? "Trả" : "Mượn" }}</vs-chip>
+                <vs-chip :color="tr.bookId ? 'primary' : 'success'">{{ tr.bookId ? "Trả" : "Mượn" }}</vs-chip>
               </p>
             </vs-td>
 
