@@ -4,8 +4,13 @@ import { getRedisItem, setRedisItem } from "@core/redis";
 import { io } from "../server";
 
 export async function getOnlineUsers() {
-    const onlineArray = Object.keys(io.sockets.connected) || [];
-    return { array: onlineArray, session: onlineArray.length };
+    return new Promise((resolve, reject) => {
+        io.of("/").adapter.clients((err, clients) => {
+            if (err) reject(err);
+
+            resolve({ array: clients || [], session: clients.length || 0 });
+        });
+    });
 }
 
 function extractPool(listSockets) {
