@@ -37,6 +37,7 @@
     "vue-moment": "^4.0.0",
     "vue-perfect-scrollbar": "^0.1.0",
     "vue-prism-component": "^1.1.0",
+    "vue-progressbar": "^0.7.5",
     "vue-qrcode-reader": "^2.0.2",
     "vue-router": "^3.0.3",
     "vue-select": "^2.6.3",

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <router-view v-if="!error"></router-view>
+    <vue-progress-bar></vue-progress-bar>
     <error-500 v-if="error" :error="error"></error-500>
     <vx-tour :steps="steps" />
 

@@ -3,7 +3,7 @@
     <div class="vx-row" @click="redirect(item)">
       <div class="vx-col w-full sm:w-5/6 flex sm:items-center sm:flex-row flex-col">
         <div class="flex items-center">
-          <h6 class="todo-title text-white">Thông báo từ thư viện</h6>
+          <h6 class="todo-title text-white">Thông báo từ hệ thống</h6>
         </div>
       </div>
 
