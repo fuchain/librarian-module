@@ -15,8 +15,16 @@ import {
     morganMiddleware
 } from "@middlewares/logging.middleware";
 
+import redisAdapter from "socket.io-redis";
 const app = express();
-const server = require("http").Server(app);
+export const server = require("http").Server(app);
+
+export const io = require("socket.io")(server);
+
+io.adapter(
+    redisAdapter({ host: process.env.REDIS_HOST || "redis", port: 6379 })
+);
+io.origins("*:*");
 
 async function main(app, server) {
     try {

@@ -1,8 +1,7 @@
 import { verifyJWT } from "@core/jwt";
 import { getRedisItem, setRedisItem } from "@core/redis";
-import redisAdapter from "socket.io-redis";
 
-export let io;
+import { io } from "../server";
 
 export async function getOnlineUsers() {
     const onlineArray = Object.keys(io.sockets.connected) || [];
@@ -67,13 +66,6 @@ export async function emitToUser(email, type, metadata) {
 }
 
 function initSocketModule(server) {
-    io = require("socket.io")(server);
-
-    io.adapter(
-        redisAdapter({ host: process.env.REDIS_HOST || "redis", port: 6379 })
-    );
-    io.origins("*:*");
-
     io.use(async function(socket, next) {
         if (socket.handshake.query && socket.handshake.query.token) {
             try {
