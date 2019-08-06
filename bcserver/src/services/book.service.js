@@ -31,6 +31,15 @@ async function searchBookDetail(text) {
     return hits;
 }
 
+async function getBookDetailIdOfAssetId(assetId) {
+    const assetList = await asset.getAsset(assetId);
+    const publicKey = assetList[assetList.length - 1].outputs[0].public_keys[0];
+    const email = await asset.getEmailFromPublicKey(publicKey);
+    const bookDetailId = parseInt(assetList[0].asset.data.book_detail);
+    const bookDetail = await getBookDetail(bookDetailId);
+    return { bookDetail, email };
+}
+
 async function getBookDetail(id) {
     const bookDetailCollection = db.collection("book_details");
 
@@ -213,5 +222,6 @@ export default {
     getHistoryOfBookInstance,
     getBookInstanceTotal,
     getBookAtLib,
-    getBookTotalAtLib
+    getBookTotalAtLib,
+    getBookDetailIdOfAssetId
 };
