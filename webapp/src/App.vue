@@ -62,6 +62,11 @@ export default {
             "Khi bạn vào kì học mới, học môn <strong>MAE101</strong> và cần mượn sách toán, nhập mã môn hoặc tên sách vào đây và bấm yêu cầu nhận sách"
         },
         {
+          target: "#menu-item-200",
+          content:
+            "Hệ thống sẽ tìm người trả sách cho bạn, hai bạn sẽ hẹn gặp nhau để trả/nhận sách mà không cần phải lên thư viện xếp hàng"
+        },
+        {
           target: "#menu-group-1",
           content:
             "Khi bạn kết thúc kì học, bạn có thể vào mục sách đang giữ, và chọn trả sách toán MAE101 cho sinh viên khóa sau mượn"
