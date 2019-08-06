@@ -8,7 +8,7 @@
           class="text-white"
         >Nếu chưa quen về việc sử dụng app thư viện, các bạn có thể xem hướng dẫn tại đây</p>
         <vs-input
-          placeholder="Tìm kiếm"
+          placeholder="Tìm kiếm hướng dẫn"
           v-model="faqSearchQuery"
           icon-pack="feather"
           icon="icon-search"
