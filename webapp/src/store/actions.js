@@ -131,7 +131,6 @@ const actions = {
 
   // Open Detail Popup
   async openDetailsPopup({ commit }, details, assetId) {
-    console.log(assetId);
     commit("OPEN_DETAILS_POPUP", details, assetId);
   },
   async setAssetData({ commit }, data) {

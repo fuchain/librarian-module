@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="vx-row mb-6" v-if="book && book.thumbnail">
+    <div class="vx-row mb-6" v-if="book">
       <div class="vx-col sm:w-1/3 w-full"></div>
       <div class="vx-col sm:w-2/3 w-full">
         <img
@@ -76,7 +76,7 @@
           class="mb-2 w-full"
           icon="close"
           @click="openRejectConfirm"
-          disabled
+          v-if="false"
         >Không nhận sách (sách đã hư hại)</vs-button>
       </div>
     </div>
