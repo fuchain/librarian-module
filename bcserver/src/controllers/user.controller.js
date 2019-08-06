@@ -1,5 +1,6 @@
 import errorHandler from "@core/handlers/error.handler";
 import userService from "@services/user.service";
+import bookService from "@services/book.service";
 
 async function getProfile(req, res) {
     const user = await userService.getProfile(req.email);
@@ -71,6 +72,15 @@ async function getLastTransactionTime(req, res) {
     res.send({ time });
 }
 
+async function getBookInformationOfAssetId(req, res) {
+    const data = await bookService.getBookDetailIdOfAssetId(req.body.asset_id);
+
+    res.send({
+        book_detail: data.bookDetail,
+        email: data.email
+    });
+}
+
 export default errorHandler({
     getProfile,
     updateProfile,
@@ -79,5 +89,6 @@ export default errorHandler({
     getRequestingBook,
     getKeepingAmount,
     getTransferHistory,
-    getLastTransactionTime
+    getLastTransactionTime,
+    getBookInformationOfAssetId
 });

@@ -1,5 +1,27 @@
 <template>
   <vs-popup title="Thông tin sách" :active.sync="isActive" v-if="details && details.name">
+    <div class="vx-row mb-6" v-if="assetData.assetId">
+      <div class="vx-col sm:w-1/3 w-full">
+        <span>Mã sách</span>
+      </div>
+      <div
+        class="vx-col sm:w-2/3 w-full"
+        style="font-weight: bold;"
+      >{{ assetData.assetId.slice(0, 32) }}</div>
+      <div class="vx-col sm:w-1/3 w-full">
+        <span></span>
+      </div>
+      <div
+        class="vx-col sm:w-2/3 w-full"
+        style="font-weight: bold;"
+      >{{ assetData.assetId.slice(32, assetData.assetId.length) }}</div>
+    </div>
+    <div class="vx-row mb-6" v-if="assetData.email">
+      <div class="vx-col sm:w-1/3 w-full">
+        <span>Người đang giữ</span>
+      </div>
+      <div class="vx-col sm:w-2/3 w-full" style="font-weight: bold;">{{ assetData.email }}</div>
+    </div>
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
         <span>Tên sách</span>
@@ -62,13 +84,16 @@
 </template>
 
 <script>
-import BookCard from "@/views/components/BookCard.vue";
-
 export default {
   computed: {
     details: {
       get() {
         return this.$store.state.detailsPopupData;
+      }
+    },
+    assetData: {
+      get() {
+        return this.$store.state.detailsPopupAssetData || null;
       }
     },
     isActive: {

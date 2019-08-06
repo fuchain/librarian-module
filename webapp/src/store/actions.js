@@ -130,8 +130,12 @@ const actions = {
   },
 
   // Open Detail Popup
-  async openDetailsPopup({ commit }, details) {
-    commit("OPEN_DETAILS_POPUP", details);
+  async openDetailsPopup({ commit }, details, assetId) {
+    console.log(assetId);
+    commit("OPEN_DETAILS_POPUP", details, assetId);
+  },
+  async setAssetData({ commit }, data) {
+    commit("SET_ASSET_DATA", data);
   },
   async closeDetailsPopup({ commit }, time = 0) {
     setTimeout(function() {

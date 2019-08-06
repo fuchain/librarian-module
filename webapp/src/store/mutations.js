@@ -127,6 +127,9 @@ const mutations = {
     state.detailsPopupOpen = true;
     state.detailsPopupData = detail;
   },
+  SET_ASSET_DATA(state, data) {
+    state.detailsPopupAssetData = data;
+  },
   CLOSE_DETAILS_POPUP(state) {
     state.detailsPopupOpen = false;
     state.detailsPopupData = null;
