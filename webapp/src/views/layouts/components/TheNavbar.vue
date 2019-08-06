@@ -348,13 +348,10 @@ export default {
         text: "Đang đăng xuất"
       });
 
-      this.$localStorage.removeItem("publicKey");
-      this.$localStorage.removeItem("privateKey");
-
       setTimeout(
         function() {
           this.$auth.clearAuth();
-          this.$router.push("/keypair");
+          this.$router.push("/login");
 
           this.$vs.loading.close();
         }.bind(this),
