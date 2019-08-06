@@ -53,7 +53,7 @@
                     type="border"
                     class="w-full mb-4"
                     icon="create"
-                    @click="mode = 'create'"
+                    @click="createWallet"
                   >Tạo ví sách</vs-button>
                   <vs-button
                     color="primary"
@@ -64,12 +64,14 @@
                   >Đã có ví sách</vs-button>
                 </div>
                 <form v-on:submit.prevent="submitKey" v-if="mode">
-                  <vs-alert v-if="mode !== 'verify'" active="true" class="mb-8">{{ seed }}</vs-alert>
+                  <vs-alert v-if="mode !== 'verify'" active="true" class="mb-2">{{ seed }}</vs-alert>
+                  <canvas v-if="mode !== 'verify'" class="float-right mb-2" id="canvas"></canvas>
 
                   <div v-if="mode === 'verify'">
                     <div v-if="style === 'auto'">
                       <vs-textarea label="Cụm từ bí mật lúc tạo ví" v-model="secret" />
                     </div>
+
                     <div v-else>
                       <vs-input
                         icon="vpn_key"
@@ -77,7 +79,6 @@
                         v-model="publicKey"
                         class="w-full mt-6 no-icon-border my-5"
                       />
-
                       <vs-input
                         icon="vpn_key"
                         label-placeholder="Chìa khóa bí mật"
@@ -85,6 +86,7 @@
                         class="w-full mt-6 no-icon-border my-5"
                       />
                     </div>
+                    <QRScan class="mb-4" v-if="!error" @printCode="notify" @onFail="handleFail" />
                   </div>
 
                   <vs-button
@@ -133,8 +135,13 @@
 import generateKeyPair from "@core/crypto/generateKeyPair";
 import generateSeed from "@core/crypto/generateSeed";
 import keypair from "@core/crypto/keypair";
+import QRScan from "@/views/components/QRScan.vue";
+import QRCode from "qrcode";
 
 export default {
+  components: {
+    QRScan
+  },
   data() {
     return {
       publicKey: "",
@@ -144,7 +151,8 @@ export default {
       wallet: "",
       style: "auto",
       secret: "",
-      introducePopup: true
+      introducePopup: true,
+      error: false
     };
   },
   methods: {
@@ -198,6 +206,28 @@ export default {
         acceptText: "Tôi biết rồi",
         cancelText: "Để xem đã"
       });
+    },
+    async notify(secretKey) {
+      const keypairGenerate = await generateKeyPair(secretKey);
+      keypair.set("publicKey", keypairGenerate.publicKey);
+      keypair.set("privateKey", keypairGenerate.privateKey);
+      this.$router.push("/");
+    },
+    handleFail(val) {
+      if (val) {
+        this.error = true;
+      }
+    },
+    createWallet() {
+      this.mode = "create";
+      setTimeout(() => {
+        const canvas = document.getElementById("canvas");
+        QRCode.toCanvas(canvas, `${this.seed}`, { width: 250 }, function(
+          error
+        ) {
+          if (error) console.error(error);
+        });
+      }, 100);
     }
   },
   async mounted() {
