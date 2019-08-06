@@ -99,7 +99,8 @@ async function getCurrentBook(publicKey, getAll = false) {
         return currentKeepingBooks;
     }
 
-    const returningBooks = await getInQueueBook(publicKey);
+    const email = await asset.getEmailFromPublicKey(publicKey);
+    const returningBooks = await getInQueueBook(email);
     const currentBooks = currentKeepingBooks.filter(e => {
         const find = returningBooks.find(f => f.bookId === e.asset_id);
         return find ? false : true;

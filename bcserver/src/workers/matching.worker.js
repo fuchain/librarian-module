@@ -42,7 +42,9 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
             axios.post(`${env.ioHost}/events/push`, {
                 email,
                 type: "success",
-                message: "Gửi yêu cầu mượn sách thành công"
+                message: `Gửi yêu cầu ${
+                    requestObj.bookId ? "trả" : "mượn"
+                } sách thành công`
             });
 
             return { email, bookDetailId, bookId };
