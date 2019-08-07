@@ -16,6 +16,33 @@ async function getRejectCount(assetId) {
     return rejectCount;
 }
 
+async function getRejectTransactionOfABook(assetId) {
+    const rejectAssets = await asset.searchAsset("reject");
+    const rejectList = rejectAssets.filter(
+        e => e.data.confirm_for_tx.asset.id === assetId
+    );
+
+    const promises = rejectList.map(async e => {
+        const returner = await asset.getEmailFromPublicKey(
+            e.data.confirm_for_tx.inputs[0].owners_before[0]
+        );
+        const receiver = await asset.getEmailFromPublicKey(
+            e.data.confirm_for_tx.outputs[0].public_keys[0]
+        );
+
+        return {
+            id: e.id,
+            returner,
+            receiver,
+            transfer_date: e.data.confirm_date,
+            type: "reject"
+        };
+    });
+
+    return await Promise.all(promises);
+}
+
 export default {
-    getRejectCount
+    getRejectCount,
+    getRejectTransactionOfABook
 };

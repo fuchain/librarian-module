@@ -68,6 +68,7 @@
           class="mb-2 w-full"
           icon="fingerprint"
           @click="openConfirm"
+          :disabled="tx.operation === 'CREATE' && !receivable"
         >{{ tx.operation === 'TRANSFER' ? 'Kí chuyển sách' : 'Kí nhận sách' }}</vs-button>
       </div>
       <div class="vx-col sm:w-2/3 w-full ml-auto" v-if="tx.operation !== 'TRANSFER'">
@@ -76,7 +77,7 @@
           class="mb-2 w-full"
           icon="close"
           @click="openRejectConfirm"
-          v-if="!rejectable"
+          v-if="rejectable"
         >Không nhận sách (sách đã hư hại)</vs-button>
       </div>
     </div>
@@ -115,7 +116,8 @@ export default {
       book: null,
       returner: "",
       receiver: "",
-      rejectable: false
+      rejectable: false,
+      receivable: false
     };
   },
   watch: {
@@ -147,7 +149,7 @@ export default {
       if (this.tx.operation === "TRANSFER") {
         return "Kí xác nhận chuyển sách";
       } else {
-        return "Kí xác nhận đã nhận sách";
+        return "Kí xác nhận";
       }
     },
     getAssetId() {
@@ -326,6 +328,25 @@ export default {
           })
           .then(res => {
             this.book = res.data;
+
+            this.$http
+              .post(`${this.$http.baseUrl}/user/requesting`)
+              .then(response => {
+                const data = response.data;
+
+                const found = data.find(e => e.bookDetailId.id === res.data.id);
+                this.receivable = found ? false : true;
+
+                if (!!found) {
+                  this.$vs.notify({
+                    title: "Bạn đang yêu cầu quyển sách này",
+                    text: `Bạn vui lòng vào mục 'Sách yêu cầu' và hủy yêu cầu mượn sách ${res.data.name} rồi thử lại`,
+                    color: "danger",
+                    position: "top-center",
+                    fixed: true
+                  });
+                }
+              });
           });
 
         this.$http

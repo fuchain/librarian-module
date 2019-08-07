@@ -149,6 +149,7 @@
           <vs-th></vs-th>
           <vs-th>Tên sách</vs-th>
           <vs-th>Ngày nhận</vs-th>
+          <vs-th>Bị từ chối</vs-th>
           <vs-th></vs-th>
         </template>
 
@@ -166,6 +167,7 @@
             <vs-td
               :data="data[indextr].transfer_date"
             >{{ parseInt(data[indextr].transfer_time) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }} ({{ parseInt(data[indextr].transfer_time) * 1000 | moment("from") }})</vs-td>
+            <vs-td>{{data[indextr].reject_count || "--"}}</vs-td>
             <vs-td>
               <vs-button icon="pageview" @click="openHistory(data[indextr].asset_id)">Lịch sử</vs-button>
             </vs-td>
@@ -183,6 +185,7 @@
           <template slot="thead">
             <vs-th>Thứ tự</vs-th>
             <vs-th>Mã giao dịch</vs-th>
+            <vs-th>Loại</vs-th>
             <vs-th>Người trả</vs-th>
             <vs-th>Người nhận</vs-th>
             <vs-th>Thời gian</vs-th>
@@ -193,6 +196,8 @@
               <vs-td :data="indextr">{{indextr + 1}}</vs-td>
 
               <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
+
+              <vs-td><vs-chip :color="data[indextr].type === 'reject' ? 'danger' : 'primary'">{{data[indextr].type === "reject" ? "Từ chối" : "Xác nhận"}}</vs-chip></vs-td>
 
               <vs-td :data="data[indextr].returner">{{data[indextr].returner}}</vs-td>
 

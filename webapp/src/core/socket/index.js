@@ -42,6 +42,12 @@ function init() {
       time: new Date().getTime(),
       category: "primary"
     });
+
+    setTimeout(function() {
+      if (window.reloadList) {
+        window.reloadList();
+      }
+    }, 100);
   });
 
   socket.on("event", function({ message, type }) {
@@ -53,7 +59,6 @@ function init() {
       window.vue.$store.dispatch("getNumOfBooks");
 
       window.vue.$vs.notify({
-        fixed: true,
         title: "Thành công",
         text: message,
         color: "primary",
@@ -65,7 +70,6 @@ function init() {
 
     if (type === "fail") {
       window.vue.$vs.notify({
-        fixed: true,
         title: "Thất bại",
         text: message,
         color: "danger",
@@ -74,6 +78,12 @@ function init() {
         icon: "icon-error"
       });
     }
+
+    setTimeout(function() {
+      if (window.reloadList) {
+        window.reloadList();
+      }
+    }, 100);
   });
 }
 

@@ -1,4 +1,4 @@
-export function parseBookItem(data, type = "defaut") {
+export function parseBookItem(data) {
   return data.map(e => {
     const bookDetailField = e.book_detail || e.bookDetailId;
     const bookDetailId = e.book_detail ? e.book_detail.id : e.bookDetailId.id;
@@ -19,7 +19,8 @@ export function parseBookItem(data, type = "defaut") {
       user: e.matchWith || 0,
       phone: e.matchPhone || 0,
       type: e.book_detail ? "keeping" : "matching",
-      details: bookDetailField
+      details: bookDetailField,
+      rejectCount: e.reject_count || 0
     };
   });
 }

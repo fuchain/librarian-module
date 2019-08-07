@@ -2,7 +2,14 @@
   <div id="ecommerce-wishlist-demo">
     <h2 class="mb-6">
       Sách đang giữ
-      <vs-button color="primary" type="relief" size="small" class="ml-4" @click="callReload">Làm mới</vs-button>
+      <vs-button
+        color="primary"
+        type="relief"
+        size="small"
+        class="ml-4"
+        @click="callReload"
+        hidden
+      >Làm mới</vs-button>
     </h2>
     <vs-input
       size="large"
@@ -27,7 +34,9 @@
               >
                 <feather-icon icon="XIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2">TRẢ SÁCH</span>
+                <span
+                  class="text-sm font-semibold ml-2"
+                >{{ item.rejectCount > 4 ? "SÁCH ĐÃ HƯ" : "TRẢ SÁCH" }}</span>
               </div>
 
               <div
@@ -78,6 +87,16 @@ export default {
   },
   methods: {
     doReturnBook(book) {
+      if (book.rejectCount && book.rejectCount > 4) {
+        this.$vs.notify({
+          title: "Sách bị từ chối quá nhiều lần",
+          text: "Bạn vui lòng đem sách tới thư viện",
+          color: "danger",
+          position: "top-center"
+        });
+        return;
+      }
+
       this.$router.push({
         name: "book-return",
         params: { book }

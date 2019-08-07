@@ -4,6 +4,7 @@ import conn from "@core/fuchain";
 import asset from "@core/fuchain/asset";
 import userService from "@services/user.service";
 import bookService from "@services/book.service";
+import rejectService from "@services/reject.service";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
 import axios from "axios";
@@ -216,6 +217,21 @@ async function postToDoneTransfer(confirmAssetSigned) {
             type: "fail",
             message: "Sách của bạn đã bị từ chối nhận"
         });
+    }
+
+    if (type === "reject") {
+        // Check if reject > 5 alert
+        const rejectCount = await rejectService.getRejectCount(
+            confirmAssetSigned.asset.data.confirm_for_tx.asset.id
+        );
+
+        if (rejectCount > 5) {
+            axios.post(`${env.ioHost}/notifications/push`, {
+                email: "librarian@fptu.tech",
+                type: "alert",
+                message: `Sách của dùng ${email} đã bị từ chối quá 5 lần, vui lòng kiểm tra và thu hồi`
+            });
+        }
     }
 
     return {
