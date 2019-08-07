@@ -1,9 +1,9 @@
 import asset from "@core/fuchain/asset";
-import { db } from "@models";
+import { db } from "@core/db";
 import env from "@core/env";
 import concurrencyHandler from "@core/handlers/concurrency.handler";
 import algoliaSearch from "algoliasearch";
-import rejectService from "@services/reject.service";
+import rejectLogic from "@logics/reject.logic";
 
 async function searchBook(id) {
     return await asset.searchAsset(id);
@@ -169,9 +169,7 @@ async function getHistoryOfBookInstance(bookID) {
 
     const result = await Promise.all(promises); // This is sorted by time
 
-    const rejectHistory = await rejectService.getRejectTransactionOfABook(
-        bookID
-    ); // Rejects
+    const rejectHistory = await rejectLogic.getRejectTransactionOfABook(bookID); // Rejects
 
     return result.concat(rejectHistory);
 }

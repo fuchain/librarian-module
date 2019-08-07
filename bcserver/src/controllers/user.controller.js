@@ -1,9 +1,9 @@
 import errorHandler from "@core/handlers/error.handler";
-import userService from "@services/user.service";
-import bookService from "@services/book.service";
+import userLogic from "@logics/user.logic";
+import bookLogic from "@logics/book.logic";
 
 async function getProfile(req, res) {
-    const user = await userService.getProfile(req.email);
+    const user = await userLogic.getProfile(req.email);
 
     const profile = {
         email: user.email,
@@ -19,7 +19,7 @@ async function getProfile(req, res) {
 async function updateProfile(req, res) {
     const body = req.body;
 
-    const updatedUser = await userService.updateProfile(
+    const updatedUser = await userLogic.updateProfile(
         req.email,
         body.fullname,
         body.phone
@@ -30,27 +30,27 @@ async function updateProfile(req, res) {
 }
 
 async function getCurrentBook(req, res) {
-    const books = await userService.getCurrentBook(req.publicKey);
+    const books = await userLogic.getCurrentBook(req.publicKey);
 
     res.send(books);
 }
 
 async function getReturningBook(req, res) {
-    const books = await userService.getInQueueBook(req.email, true);
+    const books = await userLogic.getInQueueBook(req.email, true);
 
     res.send(books);
 }
 
 async function getRequestingBook(req, res) {
-    const books = await userService.getInQueueBook(req.email, false);
+    const books = await userLogic.getInQueueBook(req.email, false);
 
     res.send(books);
 }
 
 async function getKeepingAmount(req, res) {
-    const keeping = await userService.getCurrentBook(req.publicKey);
-    const returning = await userService.getInQueueBook(req.email, true);
-    const requesting = await userService.getInQueueBook(req.email, false);
+    const keeping = await userLogic.getCurrentBook(req.publicKey);
+    const returning = await userLogic.getInQueueBook(req.email, true);
+    const requesting = await userLogic.getInQueueBook(req.email, false);
 
     res.send({
         keeping: keeping.length,
@@ -60,20 +60,20 @@ async function getKeepingAmount(req, res) {
 }
 
 async function getTransferHistory(req, res) {
-    const books = await userService.getTransferHistory(req.publicKey);
+    const books = await userLogic.getTransferHistory(req.publicKey);
 
     res.send(books);
 }
 
 async function getLastTransactionTime(req, res) {
     const body = req.body;
-    const time = await userService.getLastTransactionTime(body.asset_id);
+    const time = await userLogic.getLastTransactionTime(body.asset_id);
 
     res.send({ time });
 }
 
 async function getBookInformationOfAssetId(req, res) {
-    const data = await bookService.getBookDetailIdOfAssetId(req.body.asset_id);
+    const data = await bookLogic.getBookDetailIdOfAssetId(req.body.asset_id);
 
     res.send({
         book_detail: data.bookDetail,

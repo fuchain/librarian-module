@@ -3,7 +3,7 @@ import env from "@core/env";
 const insertQueue = new Queue("insertBook", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import { db } from "@models";
+import { db } from "@core/db";
 import insertTxQueue from "@workers/insert.tx.worker";
 
 // Watch and Run job queue

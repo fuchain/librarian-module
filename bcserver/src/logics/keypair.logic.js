@@ -4,8 +4,8 @@ import asset from "@core/fuchain/asset";
 import env from "@core/env";
 import axios from "axios";
 import { createJWT } from "@core/jwt";
-import { db } from "@models";
-import uploadService from "@services/upload.service";
+import { db } from "@core/db";
+import uploadLogic from "@logics/upload.logic";
 
 function generateRandomKeyPair() {
     return generateKey();
@@ -58,7 +58,7 @@ async function checkTokenGoogle(token) {
 
     try {
         // Save to cloud
-        await uploadService.saveUserAvatar(pictureUrl, email);
+        await uploadLogic.saveUserAvatar(pictureUrl, email);
 
         const response = await axios.get(pictureUrl, {
             responseType: "arraybuffer"

@@ -1,7 +1,7 @@
 import matchingQueue from "@workers/matching.worker";
-import bookService from "@services/book.service";
+import bookLogic from "@logics/book.logic";
 import asset from "@core/fuchain/asset";
-import { db } from "@models";
+import { db } from "@core/db";
 
 async function createMatchingRequest(email, bookDetailId, bookId) {
     // Constraint
@@ -31,7 +31,7 @@ async function getMatchings() {
     const matchings = await matchingCollection.find().toArray();
 
     const result = matchings.map(async e => {
-        const bookInfo = await bookService.getBookDetail(e.bookDetailId);
+        const bookInfo = await bookLogic.getBookDetail(e.bookDetailId);
         e.bookInfo = bookInfo;
         return e;
     });

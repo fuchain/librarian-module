@@ -1,10 +1,10 @@
 import errorHandler from "@core/handlers/error.handler";
-import bookService from "@services/book.service";
+import bookLogic from "@logics/book.logic";
 
 async function searchBookDetails(req, res) {
     const search = req.query.text;
 
-    const listBookDetails = await bookService.searchBookDetail(search);
+    const listBookDetails = await bookLogic.searchBookDetail(search);
 
     res.send(listBookDetails);
 }
@@ -12,7 +12,7 @@ async function searchBookDetails(req, res) {
 async function getBookDetail(req, res) {
     const id = req.params.id;
 
-    const bookDetail = await bookService.getBookDetail(id);
+    const bookDetail = await bookLogic.getBookDetail(id);
 
     bookDetail
         ? res.send(bookDetail)

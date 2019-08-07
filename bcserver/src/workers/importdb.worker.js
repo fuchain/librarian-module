@@ -3,7 +3,7 @@ import env from "@core/env";
 const importQueue = new Queue("importDB", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import { db } from "@models";
+import { db } from "@core/db";
 import axios from "axios";
 
 // Watch and Run job queue

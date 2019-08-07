@@ -3,10 +3,10 @@ import env from "@core/env";
 const matchingQueue = new Queue("matching", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import { db } from "@models";
+import { db } from "@core/db";
 import axios from "axios";
 import asset from "@core/fuchain/asset";
-import userService from "@services/user.service";
+import userLogic from "@logics/user.logic";
 
 // Watch and Run job queue
 function run() {
@@ -27,7 +27,7 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
         const requested = await matchingCollection.findOne(requestObj);
 
         const publicKey = await asset.getPublicKeyFromEmail(email);
-        const currentKeepingBooks = await userService.getCurrentBook(
+        const currentKeepingBooks = await userLogic.getCurrentBook(
             publicKey,
             true
         );
