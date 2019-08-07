@@ -53,7 +53,7 @@
       </div>
     </div>
 
-    <vs-divider border-style="dashed" color="dark">Kiểm thử tính năng</vs-divider>
+    <!-- <vs-divider border-style="dashed" color="dark">Kiểm thử tính năng</vs-divider>
 
     <div class="vx-row">
       <div class="vx-col sm:w-2/3 w-full ml-auto">
@@ -74,7 +74,7 @@
           icon="build"
         >Kiểm thử giao dịch nhận</vs-button>
       </div>
-    </div>
+    </div>-->
   </vx-card>
 </template>
 
