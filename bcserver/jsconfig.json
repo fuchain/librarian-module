@@ -5,7 +5,7 @@
             "*": ["./src/*"],
             "@routes": ["./src/routes/*"],
             "@controllers/*": ["./src/controllers/*"],
-            "@services/*": ["./src/services/*"],
+            "@logics/*": ["./src/logics/*"],
             "@models/*": ["./src/models/*"],
             "@middlewares/*": ["./src/middlewares/*"],
             "@core/*": [".src/core/*"],

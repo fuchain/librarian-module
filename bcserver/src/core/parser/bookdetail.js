@@ -1,5 +1,5 @@
 import { db } from "@models";
-import rejectService from "@services/reject.service";
+import rejectLogic from "@logics/reject.logic";
 
 export async function fillBookInfo(bookArr, bookFieldInArr = "book_detail") {
     const bookDetailIds = bookArr.map(book => parseInt(book[bookFieldInArr]));
@@ -27,7 +27,7 @@ export async function fillBookInfo(bookArr, bookFieldInArr = "book_detail") {
         );
 
         book["reject_count"] = book.asset_id
-            ? await rejectService.getRejectCount(book.asset_id)
+            ? await rejectLogic.getRejectCount(book.asset_id)
             : 0;
 
         return book;

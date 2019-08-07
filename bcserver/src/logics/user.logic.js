@@ -1,5 +1,5 @@
-import outputService from "@services/output.service";
-import fetchService from "@services/fetch.service";
+import outputLogic from "@logics/output.logic";
+import fetchLogic from "@logics/fetch.logic";
 import asset from "@core/fuchain/asset";
 import transaction from "@core/fuchain/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
@@ -78,7 +78,7 @@ async function getCurrentBook(publicKey, getAll = false) {
         return [];
     }
 
-    const transactionIds = await outputService.getUnspent(publicKey);
+    const transactionIds = await outputLogic.getUnspent(publicKey);
     const promises = transactionIds.map(async e => {
         const transactionId = e.transaction_id;
         const assetDetail = await asset.getBookFromTransactionId(transactionId);
@@ -135,8 +135,8 @@ async function getInQueueBook(email, isGetReturning = true) {
 }
 
 async function getTransferHistory(publicKey) {
-    const txIdsSpent = await outputService.getSpent(publicKey);
-    const txIdsUnspent = await outputService.getUnspent(publicKey);
+    const txIdsSpent = await outputLogic.getSpent(publicKey);
+    const txIdsUnspent = await outputLogic.getUnspent(publicKey);
     const txIds = txIdsSpent.concat(txIdsUnspent);
 
     const promises = txIds.map(async e => {
@@ -162,7 +162,7 @@ async function getTransferHistory(publicKey) {
             const transferDate =
                 (tx.metadata && tx.metadata.transfer_date) || null;
 
-            const bookDetail = await fetchService.getBookDetail(assetId);
+            const bookDetail = await fetchLogic.getBookDetail(assetId);
 
             return {
                 id: tx.id,

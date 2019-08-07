@@ -1,23 +1,23 @@
 import errorHandler from "@core/handlers/error.handler";
-import bookService from "@services/book.service";
-import userService from "@services/user.service";
-import transferService from "@services/transfer.service";
+import bookLogic from "@logics/book.logic";
+import userLogic from "@logics/user.logic";
+import transferLogic from "@logics/transfer.logic";
 import { db } from "@models";
 
 async function getAllBookDetails(req, res) {
     const text = req.query.text;
 
     if (text) {
-        const listBookDetails = await bookService.searchBookDetail(text);
+        const listBookDetails = await bookLogic.searchBookDetail(text);
         res.send(listBookDetails);
     } else {
-        const listBookDetails = await bookService.getAllBookDetail();
+        const listBookDetails = await bookLogic.getAllBookDetail();
         res.send(listBookDetails);
     }
 }
 
 async function getAllUsers(_, res) {
-    const users = await userService.getAllUsers("reader");
+    const users = await userLogic.getAllUsers("reader");
 
     res.send(users);
 }
@@ -25,30 +25,28 @@ async function getAllUsers(_, res) {
 async function getBookByUser(req, res) {
     const public_key = req.body.user.public_key;
 
-    const bookdetailList = await userService.getCurrentBook(public_key, true);
+    const bookdetailList = await userLogic.getCurrentBook(public_key, true);
 
     res.send(bookdetailList);
 }
 
 async function getBookInstanceList(req, res) {
     const book_detail_id = req.params.book_detail_id;
-    const bookList = await bookService.getBookInstanceList(book_detail_id);
+    const bookList = await bookLogic.getBookInstanceList(book_detail_id);
 
     res.send(bookList);
 }
 
 async function getBookInstanceDetailList(req, res) {
     const book_detail_id = req.params.book_detail_id;
-    const bookList = await bookService.getBookInstanceDetailList(
-        book_detail_id
-    );
+    const bookList = await bookLogic.getBookInstanceDetailList(book_detail_id);
 
     res.send(bookList);
 }
 
 async function getHistoryOfBookInstance(req, res) {
     const bookId = req.body.book_id;
-    const transactionList = await bookService.getHistoryOfBookInstance(bookId);
+    const transactionList = await bookLogic.getHistoryOfBookInstance(bookId);
 
     transactionList
         ? res.send(transactionList)
@@ -61,9 +59,9 @@ async function getOverview(_, res) {
     const bookDetailsCollection = db.collection("book_details");
     const bookDetailTotal = await bookDetailsCollection.find().count();
 
-    const bookInstanceTotal = await bookService.getBookInstanceTotal("book");
+    const bookInstanceTotal = await bookLogic.getBookInstanceTotal("book");
 
-    const userTotal = await userService.getUserTotal("reader");
+    const userTotal = await userLogic.getUserTotal("reader");
 
     res.send({
         book_detail_total: bookDetailTotal,
@@ -76,7 +74,7 @@ async function getOverview(_, res) {
 async function getBookTotalByBDID(req, res) {
     const bookDetailId = req.body.book_detail_id;
 
-    const bookList = await bookService.getBookInstanceList(bookDetailId);
+    const bookList = await bookLogic.getBookInstanceList(bookDetailId);
 
     const total = bookList.length || 0;
 
@@ -89,7 +87,7 @@ async function getBookTotalByBDID(req, res) {
 async function getBookTotalAtLib(req, res) {
     const bookDetailId = req.body.book_detail_id;
 
-    const total = await bookService.getBookTotalAtLib(bookDetailId);
+    const total = await bookLogic.getBookTotalAtLib(bookDetailId);
 
     res.send({
         total: total
@@ -98,10 +96,10 @@ async function getBookTotalAtLib(req, res) {
 
 async function giveBook(req, res) {
     const bookDetailId = req.body.book_detail_id;
-    const bookList = await bookService.getBookAtLib(bookDetailId);
+    const bookList = await bookLogic.getBookAtLib(bookDetailId);
     const book = bookList[0];
 
-    const tx = await transferService.createTransferRequest(
+    const tx = await transferLogic.createTransferRequest(
         book.asset_id,
         req.body.to.email
     );
@@ -113,7 +111,7 @@ async function recoverAccount(req, res) {
     const email = req.body.user.email;
     const newPublicKey = req.body.user.new_public_key;
 
-    await transferService.recoverAccount(email, newPublicKey);
+    await transferLogic.recoverAccount(email, newPublicKey);
 
     res.send({
         message: "Done"

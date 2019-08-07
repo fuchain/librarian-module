@@ -1,10 +1,10 @@
 import transaction from "@core/fuchain/transaction";
-import keypairService from "@services/keypair.service";
+import keypairLogic from "@logics/keypair.logic";
 import conn from "@core/fuchain";
 import asset from "@core/fuchain/asset";
-import userService from "@services/user.service";
-import bookService from "@services/book.service";
-import rejectService from "@services/reject.service";
+import userLogic from "@logics/user.logic";
+import bookLogic from "@logics/book.logic";
+import rejectLogic from "@logics/reject.logic";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
 import axios from "axios";
@@ -89,7 +89,7 @@ async function transferAndPostTestBook(fraud = false) {
 
 // Just for test
 async function createTestAsset() {
-    const { publicKey, privateKey } = keypairService.generateRandomKeyPair();
+    const { publicKey, privateKey } = keypairLogic.generateRandomKeyPair();
 
     const testAsset = {
         type: "test"
@@ -221,7 +221,7 @@ async function postToDoneTransfer(confirmAssetSigned) {
 
     if (type === "reject") {
         // Check if reject > 5 alert
-        const rejectCount = await rejectService.getRejectCount(
+        const rejectCount = await rejectLogic.getRejectCount(
             confirmAssetSigned.asset.data.confirm_for_tx.asset.id
         );
 
@@ -300,7 +300,7 @@ async function recoverAccount(email, newPublicKey) {
 }
 
 async function giveTestbook(publicKey, coupon = "null") {
-    const transferHistory = await userService.getTransferHistory(publicKey);
+    const transferHistory = await userLogic.getTransferHistory(publicKey);
 
     if (coupon !== "FUCHAIN2019") {
         if (transferHistory && transferHistory.length > 2) {
@@ -333,7 +333,7 @@ async function giveTestbook(publicKey, coupon = "null") {
     ];
     const randomId = listBookId[Math.floor(Math.random() * listBookId.length)];
 
-    const bookList = await bookService.getBookAtLib(randomId);
+    const bookList = await bookLogic.getBookAtLib(randomId);
     const book = bookList[0];
 
     const email = await asset.getEmailFromPublicKey(publicKey);

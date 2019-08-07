@@ -1,8 +1,8 @@
 import errorHandler from "@core/handlers/error.handler";
-import keypairService from "@services/keypair.service";
+import keypairLogic from "@logics/keypair.logic";
 
 async function randomKeypair(_, res) {
-    res.send(keypairService.generateRandomKeyPair());
+    res.send(keypairLogic.generateRandomKeyPair());
 }
 
 async function verifyKeyPairEmail(req, res) {
@@ -13,7 +13,7 @@ async function verifyKeyPairEmail(req, res) {
         status,
         name,
         picture
-    } = await keypairService.verifyKeyPairEmail(body.token, body.public_key);
+    } = await keypairLogic.verifyKeyPairEmail(body.token, body.public_key);
     res.status(201).send({ token, status, name, picture });
 }
 

@@ -3,8 +3,8 @@ import env from "@core/env";
 const pairUpdateQueue = new Queue("pairUpdate", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import userService from "@services/user.service";
-import bookService from "@services/book.service";
+import userLogic from "@logics/user.logic";
+import bookLogic from "@logics/book.logic";
 import { db } from "@models";
 import { request } from "http";
 import axios from "axios";
@@ -21,8 +21,8 @@ async function doJob(returner, requester) {
 
         const matchingCollection = db.collection("matchings");
 
-        returner.phone = await userService.getPhoneFromEmail(returner.email);
-        requester.phone = await userService.getPhoneFromEmail(request.email);
+        returner.phone = await userLogic.getPhoneFromEmail(returner.email);
+        requester.phone = await userLogic.getPhoneFromEmail(request.email);
 
         await matchingCollection.updateOne(
             {
@@ -58,9 +58,7 @@ async function doJob(returner, requester) {
         );
 
         // Push notification
-        const bookDetail = await bookService.getBookDetail(
-            returner.bookDetailId
-        );
+        const bookDetail = await bookLogic.getBookDetail(returner.bookDetailId);
 
         axios.post(`${env.ioHost}/notifications/push`, {
             email: requester.email,

@@ -1,10 +1,10 @@
 import errorHandler from "@core/handlers/error.handler";
-import matchingService from "@services/matching.service";
+import matchingLogic from "@logics/matching.logic";
 
 async function createRequest(req, res) {
     const body = req.body;
 
-    const success = await matchingService.createMatchingRequest(
+    const success = await matchingLogic.createMatchingRequest(
         req.email,
         body.book_detail_id,
         body.book_id
@@ -22,7 +22,7 @@ async function createRequest(req, res) {
 async function cancelRequest(req, res) {
     const body = req.body;
 
-    const cancelled = matchingService.cancelMatchingRequest(
+    const cancelled = matchingLogic.cancelMatchingRequest(
         req.email,
         body.book_detail_id,
         body.book_id
@@ -38,7 +38,7 @@ async function cancelRequest(req, res) {
 }
 
 async function getMatchings(_, res) {
-    const matchings = await matchingService.getMatchings();
+    const matchings = await matchingLogic.getMatchings();
     res.send(matchings);
 }
 
