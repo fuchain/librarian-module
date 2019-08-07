@@ -48,6 +48,7 @@ import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
 
 import VueProgressBar from "vue-progressbar";
+import "./registerServiceWorker";
 
 Vue.use(VueProgressBar, {
   color: "#7367F0",
