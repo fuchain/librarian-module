@@ -206,10 +206,12 @@ export default {
   },
   methods: {
     sidebarMouseEntered() {
+      return;
       if (this.reduce) this.$store.commit("UPDATE_SIDEBAR_ITEMS_MIN", false);
       this.isMouseEnter = true;
     },
     sidebarMouseLeave() {
+      return;
       if (this.reduce) {
         this.$store.commit("UPDATE_SIDEBAR_ITEMS_MIN", true);
       }
