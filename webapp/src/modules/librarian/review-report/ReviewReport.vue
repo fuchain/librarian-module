@@ -31,6 +31,7 @@
         :max-items="itemsPerPage"
         search
         :data="reviews"
+        hoverFlat
       >
         <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
           <!-- ITEMS PER PAGE -->
@@ -62,7 +63,6 @@
           <vs-th>Tổng quan</vs-th>
           <vs-th>Chi tiết</vs-th>
           <vs-th>Ghi chú</vs-th>
-          <vs-th>Thiết bị</vs-th>
           <vs-th>Cập nhật</vs-th>
         </template>
 
@@ -82,11 +82,7 @@
               </vs-td>
 
               <vs-td>
-                <p>{{ tr.note }}</p>
-              </vs-td>
-
-              <vs-td>
-                <p>{{ tr.userAgent }}</p>
+                <p>{{ tr.note || "Không có nhấn xét" }}</p>
               </vs-td>
 
               <vs-td>

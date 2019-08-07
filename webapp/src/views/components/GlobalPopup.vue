@@ -76,7 +76,7 @@
           class="mb-2 w-full"
           icon="close"
           @click="openRejectConfirm"
-          v-if="false"
+          v-if="!rejectable"
         >Không nhận sách (sách đã hư hại)</vs-button>
       </div>
     </div>
@@ -114,7 +114,8 @@ export default {
       signedTx: null,
       book: null,
       returner: "",
-      receiver: ""
+      receiver: "",
+      rejectable: false
     };
   },
   watch: {
@@ -287,6 +288,14 @@ export default {
           })
           .then(res => {
             this.book = res.data;
+
+            this.$http
+              .post(`${this.$http.baseUrl}/user/requesting`)
+              .then(response => {
+                const data = response.data;
+                const found = data.find(e => e.bookDetailId.id === res.data.id);
+                this.rejectable = found ? true : false;
+              });
           });
 
         this.$http
