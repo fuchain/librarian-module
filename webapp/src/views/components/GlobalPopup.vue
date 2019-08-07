@@ -68,7 +68,6 @@
           class="mb-2 w-full"
           icon="fingerprint"
           @click="openConfirm"
-          :disabled="tx.operation === 'CREATE' && !receivable"
         >{{ tx.operation === 'TRANSFER' ? 'Kí chuyển sách' : 'Kí nhận sách' }}</vs-button>
       </div>
       <div class="vx-col sm:w-2/3 w-full ml-auto" v-if="tx.operation !== 'TRANSFER'">
@@ -116,8 +115,7 @@ export default {
       book: null,
       returner: "",
       receiver: "",
-      rejectable: false,
-      receivable: false
+      rejectable: false
     };
   },
   watch: {
@@ -328,25 +326,6 @@ export default {
           })
           .then(res => {
             this.book = res.data;
-
-            this.$http
-              .post(`${this.$http.baseUrl}/user/requesting`)
-              .then(response => {
-                const data = response.data;
-
-                const found = data.find(e => e.bookDetailId.id === res.data.id);
-                this.receivable = found ? false : true;
-
-                if (!!found) {
-                  this.$vs.notify({
-                    title: "Bạn đang yêu cầu quyển sách này",
-                    text: `Bạn vui lòng vào mục 'Sách yêu cầu' và hủy yêu cầu mượn sách ${res.data.name} rồi thử lại`,
-                    color: "danger",
-                    position: "top-center",
-                    fixed: true
-                  });
-                }
-              });
           });
 
         this.$http

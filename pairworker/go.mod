@@ -3,7 +3,7 @@ module pairworker
 go 1.12
 
 require (
-	github.com/getsentry/sentry-go v0.2.1 // indirect
+	github.com/getsentry/sentry-go v0.2.1
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.3.0 // indirect
