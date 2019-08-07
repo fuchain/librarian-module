@@ -21,6 +21,8 @@ import initSocket from "@core/socket";
 import GlobalPopup from "@/views/components/GlobalPopup.vue";
 import BookDetailPopup from "@/views/components/BookDetailPopup.vue";
 
+import handleHoverOnMobile from "./hoverMobile.js";
+
 const VxTour = () => import("@/views/components/VxTour.vue");
 
 export default {
@@ -176,6 +178,10 @@ export default {
       }.bind(this),
       1000
     );
+
+    setTimeout(function() {
+      handleHoverOnMobile();
+    }, 100);
   },
   errorCaptured(err, vm, info) {
     // Print log error
