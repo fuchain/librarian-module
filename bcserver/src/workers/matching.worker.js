@@ -5,6 +5,8 @@ const matchingQueue = new Queue("matching", `redis://${env.redisHost}`);
 // Dependency to run this queue
 import { db } from "@models";
 import axios from "axios";
+import asset from "@core/fuchain/asset";
+import userService from "@services/user.service";
 
 // Watch and Run job queue
 function run() {
@@ -24,7 +26,35 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
         // Check is request is existed
         const requested = await matchingCollection.findOne(requestObj);
 
+        const publicKey = await asset.getPublicKeyFromEmail(email);
+        const currentKeepingBooks = await userService.getCurrentBook(
+            publicKey,
+            true
+        );
+
         if (!isCancel) {
+            if (!bookId && currentKeepingBooks.length > 5) {
+                axios.post(`${env.ioHost}/events/push`, {
+                    email,
+                    type: "fail",
+                    message:
+                        "Bạn đang giữ quá 5 sách rồi, không thể yêu cầu mượn thêm"
+                });
+                throw new Error("Not valid request!");
+            }
+
+            if (
+                !bookId &&
+                currentKeepingBooks.find(e => e.book_detail.id === bookDetailId)
+            ) {
+                axios.post(`${env.ioHost}/events/push`, {
+                    email,
+                    type: "fail",
+                    message: "Bạn đang giữ sách đó rồi"
+                });
+                throw new Error("Not valid request!");
+            }
+
             if (requested) {
                 axios.post(`${env.ioHost}/events/push`, {
                     email,

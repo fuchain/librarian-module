@@ -3,6 +3,7 @@ import { db } from "@models";
 import env from "@core/env";
 import concurrencyHandler from "@core/handlers/concurrency.handler";
 import algoliaSearch from "algoliasearch";
+import rejectService from "@services/reject.service";
 
 async function searchBook(id) {
     return await asset.searchAsset(id);
@@ -168,7 +169,11 @@ async function getHistoryOfBookInstance(bookID) {
 
     const result = await Promise.all(promises); // This is sorted by time
 
-    return result;
+    const rejectHistory = await rejectService.getRejectTransactionOfABook(
+        bookID
+    ); // Rejects
+
+    return result.concat(rejectHistory);
 }
 
 async function getBookInstanceTotal(type) {
