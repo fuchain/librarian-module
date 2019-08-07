@@ -1,3 +1,6 @@
+import removeHover from "remove-hover";
+removeHover();
+
 function hasTouch() {
   return (
     "ontouchstart" in document.documentElement ||
