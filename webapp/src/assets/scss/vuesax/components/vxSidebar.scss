@@ -23,20 +23,20 @@
     .vs-sidebar--items {
       padding: 0;
     }
-    // &.vs-sidebar-reduce {
-    //   max-width: $reduced-sidebar-width;
+    &.vs-sidebar-reduce {
+      max-width: $reduced-sidebar-width;
 
-    //   &:hover:not(.vs-sidebar-reduceNotRebound):not(.vs-sidebar-reduceNotHoverExpand) {
-    //     .vs-sidebar--items {
-    //     }
-    //     .vs-sidebar-group .group-header i {
-    //       display: block;
-    //     }
-    //   }
-    //   .vs-sidebar-group .group-header i {
-    //     display: none;
-    //   }
-    // }
+      &:hover:not(.vs-sidebar-reduceNotRebound):not(.vs-sidebar-reduceNotHoverExpand) {
+        .vs-sidebar--items {
+        }
+        .vs-sidebar-group .group-header i {
+          display: block;
+        }
+      }
+      .vs-sidebar-group .group-header i {
+        display: none;
+      }
+    }
   }
 
   .header-sidebar {

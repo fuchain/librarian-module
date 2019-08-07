@@ -211,7 +211,6 @@
 </template>
 
 <script>
-import { socket } from "@core/socket";
 export default {
   data() {
     return {
