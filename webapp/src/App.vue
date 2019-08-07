@@ -162,6 +162,20 @@ export default {
 
       this.$vs.loading.close();
     }
+
+    setTimeout(
+      function() {
+        if (!window.navigator.onLine)
+        this.$vs.notify({
+          title: "Không có mạng",
+          text: "Ứng dụng cần có mạng để sử dụng các tính năng",
+          color: "danger",
+          position: "top-center",
+          fixed: true,
+        });
+      }.bind(this),
+      1000
+    );
   },
   errorCaptured(err, vm, info) {
     // Print log error
