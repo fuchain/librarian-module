@@ -21,8 +21,6 @@ import initSocket from "@core/socket";
 import GlobalPopup from "@/views/components/GlobalPopup.vue";
 import BookDetailPopup from "@/views/components/BookDetailPopup.vue";
 
-import handleHoverOnMobile from "./hoverMobile.js";
-
 const VxTour = () => import("@/views/components/VxTour.vue");
 
 export default {
@@ -168,20 +166,16 @@ export default {
     setTimeout(
       function() {
         if (!window.navigator.onLine)
-        this.$vs.notify({
-          title: "Không có mạng",
-          text: "Ứng dụng cần có mạng để sử dụng các tính năng",
-          color: "danger",
-          position: "top-center",
-          fixed: true,
-        });
+          this.$vs.notify({
+            title: "Không có mạng",
+            text: "Ứng dụng cần có mạng để sử dụng các tính năng",
+            color: "danger",
+            position: "top-center",
+            fixed: true
+          });
       }.bind(this),
       1000
     );
-
-    setTimeout(function() {
-      handleHoverOnMobile();
-    }, 100);
   },
   errorCaptured(err, vm, info) {
     // Print log error

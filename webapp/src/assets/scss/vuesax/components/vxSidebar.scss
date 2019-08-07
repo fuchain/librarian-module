@@ -26,13 +26,13 @@
     &.vs-sidebar-reduce {
       max-width: $reduced-sidebar-width;
 
-      &:hover:not(.vs-sidebar-reduceNotRebound):not(.vs-sidebar-reduceNotHoverExpand) {
-        .vs-sidebar--items {
-        }
-        .vs-sidebar-group .group-header i {
-          display: block;
-        }
-      }
+      // &:hover:not(.vs-sidebar-reduceNotRebound):not(.vs-sidebar-reduceNotHoverExpand) {
+      //   .vs-sidebar--items {
+      //   }
+      //   .vs-sidebar-group .group-header i {
+      //     display: block;
+      //   }
+      // }
       .vs-sidebar-group .group-header i {
         display: none;
       }
@@ -122,14 +122,14 @@
   .vs-sidebar--item {
     transition: none;
     overflow: visible !important;
-    &:hover {
-      a {
-        color: inherit;
-        > * {
-          transform: translateX(5px);
-        }
-      }
-    }
+    // &:hover {
+    //   a {
+    //     color: inherit;
+    //     > * {
+    //       transform: translateX(5px);
+    //     }
+    //   }
+    // }
 
     &.vs-sidebar-item-active {
       border-right: none !important;
