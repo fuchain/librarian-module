@@ -120,7 +120,7 @@ function userMenu(numOfBooks) {
       url: "/coupon",
       name: "Nhập mã nhận sách",
       slug: "coupon",
-      icon: "GiftIcon"
+      icon: "BoxIcon"
     },
     {
       url: "/transfer-history",
@@ -130,10 +130,10 @@ function userMenu(numOfBooks) {
     },
     {
       url: "/qrscan",
-      name: "Quét mã QR",
+      name: "Tra cứu sách",
       slug: "qrscan",
-      icon: "CodeIcon",
-      tag: "beta",
+      icon: "CameraIcon",
+      tag: "QR",
       tagColor: "primary"
     },
     {
