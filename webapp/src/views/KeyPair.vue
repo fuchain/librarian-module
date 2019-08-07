@@ -86,7 +86,15 @@
                         class="w-full mt-6 no-icon-border my-5"
                       />
                     </div>
-                    <QRScan class="mb-4" v-if="!error" @printCode="notify" @onFail="handleFail" />
+                    <vx-card
+                      title="Quét QRCode cuả ví"
+                      class="mb-4"
+                      noShadow
+                      cardBorder
+                      v-if="!error"
+                    >
+                      <QRScan class="mb-4" @printCode="notify" @onFail="handleFail" />
+                    </vx-card>
                   </div>
 
                   <vs-button
