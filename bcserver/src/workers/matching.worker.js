@@ -3,7 +3,7 @@ import env from "@core/env";
 const matchingQueue = new Queue("matching", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import { db } from "@models";
+import { db } from "@core/db";
 import axios from "axios";
 import asset from "@core/fuchain/asset";
 import userLogic from "@logics/user.logic";

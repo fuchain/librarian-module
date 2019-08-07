@@ -1,5 +1,5 @@
 import asset from "@core/fuchain/asset";
-import { db } from "@models";
+import { db } from "@core/db";
 import env from "@core/env";
 
 async function getBookDetail(assetId) {

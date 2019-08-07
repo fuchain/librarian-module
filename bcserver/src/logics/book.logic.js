@@ -1,5 +1,5 @@
 import asset from "@core/fuchain/asset";
-import { db } from "@models";
+import { db } from "@core/db";
 import env from "@core/env";
 import concurrencyHandler from "@core/handlers/concurrency.handler";
 import algoliaSearch from "algoliasearch";

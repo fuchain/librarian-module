@@ -4,7 +4,7 @@ import asset from "@core/fuchain/asset";
 import env from "@core/env";
 import axios from "axios";
 import { createJWT } from "@core/jwt";
-import { db } from "@models";
+import { db } from "@core/db";
 import uploadLogic from "@logics/upload.logic";
 
 function generateRandomKeyPair() {

@@ -8,7 +8,7 @@ import rejectLogic from "@logics/reject.logic";
 import env from "@core/env";
 import uuidv4 from "uuid/v4";
 import axios from "axios";
-import { db } from "@models";
+import { db } from "@core/db";
 
 function signTx(tx, privateKey) {
     return transaction.sign(tx, privateKey);

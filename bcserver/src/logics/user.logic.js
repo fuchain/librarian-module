@@ -3,7 +3,7 @@ import fetchLogic from "@logics/fetch.logic";
 import asset from "@core/fuchain/asset";
 import transaction from "@core/fuchain/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
-import { db } from "@models";
+import { db } from "@core/db";
 import env from "@core/env";
 
 async function getProfile(email) {

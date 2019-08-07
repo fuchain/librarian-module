@@ -1,4 +1,4 @@
-import { db } from "@models";
+import { db } from "@core/db";
 import rejectLogic from "@logics/reject.logic";
 
 export async function fillBookInfo(bookArr, bookFieldInArr = "book_detail") {

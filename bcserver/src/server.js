@@ -2,7 +2,7 @@ import express from "express";
 import compression from "compression";
 import bodyParser from "body-parser";
 import routes from "@routes";
-import { initMongoDB } from "@models";
+import { initMongoDB } from "@core/db";
 import { checkEnvLoaded } from "@core/env";
 import { pingBigchainDB } from "@core/fuchain";
 

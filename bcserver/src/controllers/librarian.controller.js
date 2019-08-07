@@ -2,7 +2,7 @@ import errorHandler from "@core/handlers/error.handler";
 import bookLogic from "@logics/book.logic";
 import userLogic from "@logics/user.logic";
 import transferLogic from "@logics/transfer.logic";
-import { db } from "@models";
+import { db } from "@core/db";
 
 async function getAllBookDetails(req, res) {
     const text = req.query.text;

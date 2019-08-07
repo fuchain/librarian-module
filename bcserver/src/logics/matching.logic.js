@@ -1,7 +1,7 @@
 import matchingQueue from "@workers/matching.worker";
 import bookLogic from "@logics/book.logic";
 import asset from "@core/fuchain/asset";
-import { db } from "@models";
+import { db } from "@core/db";
 
 async function createMatchingRequest(email, bookDetailId, bookId) {
     // Constraint

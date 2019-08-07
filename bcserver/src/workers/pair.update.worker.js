@@ -5,7 +5,7 @@ const pairUpdateQueue = new Queue("pairUpdate", `redis://${env.redisHost}`);
 // Dependency to run this queue
 import userLogic from "@logics/user.logic";
 import bookLogic from "@logics/book.logic";
-import { db } from "@models";
+import { db } from "@core/db";
 import { request } from "http";
 import axios from "axios";
 
