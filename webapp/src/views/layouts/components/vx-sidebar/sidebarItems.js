@@ -50,7 +50,7 @@ const adminMenu = [
       {
         url: "/librarian/monitoring/infrastructure",
         name: "Hạ tầng Swarm",
-        tag: "3",
+        tag: "4",
         tagColor: "#254356"
       },
       {

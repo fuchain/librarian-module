@@ -1,5 +1,5 @@
 <template>
-  <data-list :dataList="bookdetails" v-if="loaded" @doReload="getList" @doSearch="doSearch"/>
+  <data-list :dataList="bookdetails" v-if="loaded" @doReload="getList" @doSearch="doSearch" />
 </template>
 
 <script>
@@ -35,7 +35,7 @@ export default {
       } catch (err) {
         this.$vs.notify({
           title: "Lỗi",
-          text: `Lỗi xảy ra khi tải dữ liệu, mã lỗi: ${err.response.status}`,
+          text: "Lỗi xảy ra khi tải dữ liệu",
           color: "danger",
           position: "top-center"
         });
