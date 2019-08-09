@@ -27,9 +27,9 @@
           đang giúp
           <strong>{{ totalUsers }}</strong> người đọc trao đổi
           <strong>
-            <span style="font-size: 1.5rem;">{{ totalBookInstances }}</span>
+            <span style="font-size: 1.5rem;">{{ totalBookDetails }}</span>
           </strong> quyển sách của
-          <strong>{{ totalBookDetails }}</strong> đầu sách trong thư viện, xem chi tiết hơn ở phần hiệu suất.
+          <strong>{{ totalBookInstances }}</strong> đầu sách trong thư viện, xem chi tiết hơn ở phần hiệu suất.
         </p>
       </vx-card>
     </div>
@@ -55,6 +55,7 @@ export default {
   },
   methods: {
     getOverview() {
+      this.$Progress.start();
       this.$http
         .get(`${this.$http.baseUrl}/librarian/overviews`)
         .then(response => {
@@ -67,6 +68,9 @@ export default {
           this.totalBookInstances = book_detail_total;
           this.totalBookDetails = book_instance_total;
           this.totalUsers = user_total;
+        })
+        .finally(() => {
+          this.$Progress.finish();
         });
     }
   }
