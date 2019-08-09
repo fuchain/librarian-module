@@ -113,6 +113,7 @@ const mutations = {
   RESET_NOTIFICATION(state) {
     state.notifications = [];
   },
+
   OPEN_TRANSACTION_POPUP(state, tx) {
     state.transactionPopupOpen = true;
     state.transactionPopupTx = tx;
@@ -120,6 +121,18 @@ const mutations = {
   CLOSE_TRANSACTION_POPUP(state) {
     state.transactionPopupOpen = false;
     state.transactionPopupTx = null;
+  },
+
+  OPEN_DETAILS_POPUP(state, detail) {
+    state.detailsPopupOpen = true;
+    state.detailsPopupData = detail;
+  },
+  SET_ASSET_DATA(state, data) {
+    state.detailsPopupAssetData = data;
+  },
+  CLOSE_DETAILS_POPUP(state) {
+    state.detailsPopupOpen = false;
+    state.detailsPopupData = null;
   }
 };
 

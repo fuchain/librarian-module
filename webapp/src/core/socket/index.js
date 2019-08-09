@@ -12,33 +12,9 @@ function init() {
     transports: ["websocket"]
   });
 
-  !window.webpackHotUpdate &&
-    socket.on("logout", function() {
-      window.vue.$vs.notify({
-        fixed: true,
-        title: "Có người khác đăng nhập tài khoản",
-        text: "Bạn sẽ bị đăng xuất",
-        color: "danger",
-        position: "top-center",
-        iconPack: "feather",
-        icon: "icon-x"
-      });
-
-      window.vue.$vs.loading({
-        color: "white",
-        background: "darkorange",
-        text: "Đang đăng xuất"
-      });
-
-      setTimeout(function() {
-        window.vue.$auth.clearAuth();
-        window.vue.$router.push("/login");
-
-        window.vue.$vs.loading.close();
-      }, 500);
-    });
-
   socket.on("notification", function({ message, type, id }) {
+    window.vue.$store.dispatch("getNumOfBooks");
+
     window.vue.$vs.notify({
       fixed: true,
       title: "Thông báo mới",
@@ -66,6 +42,12 @@ function init() {
       time: new Date().getTime(),
       category: "primary"
     });
+
+    setTimeout(function() {
+      if (window.reloadList) {
+        window.reloadList();
+      }
+    }, 100);
   });
 
   socket.on("event", function({ message, type }) {
@@ -77,7 +59,6 @@ function init() {
       window.vue.$store.dispatch("getNumOfBooks");
 
       window.vue.$vs.notify({
-        fixed: true,
         title: "Thành công",
         text: message,
         color: "primary",
@@ -86,6 +67,23 @@ function init() {
         icon: "icon-check"
       });
     }
+
+    if (type === "fail") {
+      window.vue.$vs.notify({
+        title: "Thất bại",
+        text: message,
+        color: "danger",
+        position: "top-center",
+        iconPack: "feather",
+        icon: "icon-error"
+      });
+    }
+
+    setTimeout(function() {
+      if (window.reloadList) {
+        window.reloadList();
+      }
+    }, 100);
   });
 }
 

@@ -1,4 +1,4 @@
-export function parseBookItem(data, type = "defaut") {
+export function parseBookItem(data) {
   return data.map(e => {
     const bookDetailField = e.book_detail || e.bookDetailId;
     const bookDetailId = e.book_detail ? e.book_detail.id : e.bookDetailId.id;
@@ -18,7 +18,9 @@ export function parseBookItem(data, type = "defaut") {
       matched: e.matched,
       user: e.matchWith || 0,
       phone: e.matchPhone || 0,
-      type: e.book_detail ? "keeping" : "matching"
+      type: e.book_detail ? "keeping" : "matching",
+      details: bookDetailField,
+      rejectCount: e.reject_count || 0
     };
   });
 }
@@ -34,7 +36,8 @@ export function parseBookSearchItem(data) {
         e.subject_codes && e.subject_codes.length && e.subject_codes[0]
           ? e.subject_codes[0]
           : "N/A",
-      type: "info"
+      type: "info",
+      details: e
     };
   });
 }
@@ -49,6 +52,7 @@ export function parseSingleItem(e) {
       e.subject_codes && e.subject_codes.length && e.subject_codes[0]
         ? e.subject_codes[0]
         : "N/A",
-    type: "info"
+    type: "info",
+    details: e
   };
 }

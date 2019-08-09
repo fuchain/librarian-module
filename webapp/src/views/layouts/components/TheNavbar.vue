@@ -198,7 +198,7 @@
                 <vs-divider class="m-1"></vs-divider>
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                  @click="doLogout"
+                  @click="confirmLogout"
                 >
                   <feather-icon icon="LogOutIcon" svgClasses="w-4 h-4"></feather-icon>
                   <span class="ml-2">Đăng xuất</span>
@@ -330,7 +330,18 @@ export default {
     outside: function() {
       this.showBookmarkPagesDropdown = false;
     },
-    doLogout: function() {
+    confirmLogout() {
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: "Xác nhận",
+        text: "Bạn có chắc là muốn thoát khỏi tài khoản?",
+        accept: this.doLogout,
+        acceptText: "Chắc chắn",
+        cancelText: "Hủy bỏ"
+      });
+    },
+    doLogout() {
       this.$vs.loading({
         color: "white",
         background: "darkorange",

@@ -63,10 +63,11 @@
             <div class="flex flex-wrap">
               <div
                 class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
+                @click="comingSoon"
               >
                 <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
-                <span class="text-sm font-semibold ml-2" @click="comingSoon">YÊU CẦU MƯỢN SÁCH</span>
+                <span class="text-sm font-semibold ml-2">YÊU CẦU NHẬN SÁCH</span>
               </div>
             </div>
           </template>
@@ -97,7 +98,7 @@ export default {
       suggestedBooks: [
         {
           id: 1,
-          code: "CDK",
+          code: null,
           description:
             "Những kĩ năng từ cứng đến mềm mà lập trình viên nào cũng phải biết để thăng tiến và thành công trong sự nghiệp.",
           image: "/images/codedaokysu.png",
@@ -106,7 +107,7 @@ export default {
         },
         {
           id: 2,
-          code: "SKC",
+          code: null,
           description:
             "Những môn thầy Khánh dạy trong Đại học FPT là: C, C++, Alice, I2SE, OS, Advanced Java, EIT, XML. ",
           image: "/images/khanhkt.jpg",
@@ -194,8 +195,8 @@ export default {
     },
     comingSoon() {
       this.$vs.notify({
-        title: "Tính năng này chưa hỗ trợ",
-        text: "Chức năng gợi ý sách sẽ sớm ra mắt thôi, đợi nghen",
+        title: "Đã hết",
+        text: "Sách này hiện đang ngưng cung cấp",
         color: "warning",
         position: "top-center"
       });

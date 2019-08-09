@@ -29,6 +29,7 @@
     v-show="!reduce"
     @click="toggleReduce(true)"
     id="btnSidebarToggler"
+    v-if="false"
   ></feather-icon>
   <feather-icon
     icon="CircleIcon"
@@ -206,10 +207,14 @@ export default {
   },
   methods: {
     sidebarMouseEntered() {
+      // Not used anymore, because it causes bugs on mobile
+      return;
       if (this.reduce) this.$store.commit("UPDATE_SIDEBAR_ITEMS_MIN", false);
       this.isMouseEnter = true;
     },
     sidebarMouseLeave() {
+      // Not used anymore, because it causes bugs on mobile
+      return;
       if (this.reduce) {
         this.$store.commit("UPDATE_SIDEBAR_ITEMS_MIN", true);
       }

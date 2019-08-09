@@ -3,9 +3,9 @@ import env from "@core/env";
 const pairUpdateQueue = new Queue("pairUpdate", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import userService from "@services/user.service";
-import bookService from "@services/book.service";
-import { db } from "@models";
+import userLogic from "@logics/user.logic";
+import bookLogic from "@logics/book.logic";
+import { db } from "@core/db";
 import { request } from "http";
 import axios from "axios";
 
@@ -21,8 +21,8 @@ async function doJob(returner, requester) {
 
         const matchingCollection = db.collection("matchings");
 
-        returner.phone = await userService.getPhoneFromEmail(returner.email);
-        requester.phone = await userService.getPhoneFromEmail(request.email);
+        returner.phone = await userLogic.getPhoneFromEmail(returner.email);
+        requester.phone = await userLogic.getPhoneFromEmail(request.email);
 
         await matchingCollection.updateOne(
             {
@@ -58,11 +58,9 @@ async function doJob(returner, requester) {
         );
 
         // Push notification
-        const bookDetail = await bookService.getBookDetail(
-            returner.bookDetailId
-        );
+        const bookDetail = await bookLogic.getBookDetail(returner.bookDetailId);
 
-        await axios.post(`${env.ioHost}/notifications/push`, {
+        axios.post(`${env.ioHost}/notifications/push`, {
             email: requester.email,
             type: "returning",
             message: `Yêu cầu trả sách ${bookDetail.name ||
@@ -71,7 +69,7 @@ async function doJob(returner, requester) {
             }`
         });
 
-        await axios.post(`${env.ioHost}/notifications/push`, {
+        axios.post(`${env.ioHost}/notifications/push`, {
             email: returner.email,
             type: "requesting",
             message: `Yêu cầu mượn sách ${bookDetail.name ||

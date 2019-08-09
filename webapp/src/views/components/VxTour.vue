@@ -1,5 +1,5 @@
 <template>
-  <v-tour name="vuesaxTour" :steps="steps">
+  <v-tour name="vuesaxTour" :steps="steps" :options="tourOptions" :callbacks="callbacks">
     <template slot-scope="tour">
       <transition name="fade">
         <v-step
@@ -18,7 +18,7 @@
             <vs-button
               size="small"
               class="mr-3"
-              @click="tour.stop"
+              @click="endTour()"
               icon-pack="feather"
               icon="icon-x"
               icon-after
@@ -52,7 +52,7 @@
 
             <vs-button
               size="small"
-              @click="tour.stop"
+              @click="endTour()"
               icon-pack="feather"
               icon="icon-check-circle"
               icon-after
@@ -77,6 +77,14 @@ export default {
       type: Array
     }
   },
+  data() {
+    return {
+      tourOptions: {
+        useKeyboardNavigation: true
+      },
+      callbacks: {}
+    };
+  },
   methods: {
     handleAction(bool) {
       if (bool) {
@@ -91,6 +99,10 @@ export default {
       } else {
         this.$tours["vuesaxTour"].nextStep();
       }
+    },
+    endTour() {
+      this.$tours["vuesaxTour"].stop();
+      this.$localStorage.setItem("tour", true);
     }
   }
 };

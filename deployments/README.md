@@ -7,6 +7,6 @@ Roadmap:
 - Deployment for Workers
 - Deployment for Redis
 - Deployment for MongoDB
-- Ansible deployment for BigchainDB
+- Deployment for BigchainDB
 
 Updating.

@@ -55,7 +55,7 @@ services:
     ports:
       - 3000:80
     deploy:
-      replicas: 8
+      replicas: 4
       update_config:
         parallelism: 2
         delay: 5s
@@ -146,7 +146,7 @@ services:
       REDIS_HOST: redisio
       SENDGRID_API_KEY: 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
     deploy:
-      replicas: 8
+      replicas: 4
       update_config:
         parallelism: 2
         delay: 5s

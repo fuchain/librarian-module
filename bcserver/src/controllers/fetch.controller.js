@@ -1,10 +1,10 @@
 import errorHandler from "@core/handlers/error.handler";
-import fetchService from "@services/fetch.service";
+import fetchLogic from "@logics/fetch.logic";
 
 async function getBookDetailFromAssetId(req, res) {
     const assetId = req.body.asset_id;
 
-    const bookDetail = await fetchService.getBookDetail(assetId);
+    const bookDetail = await fetchLogic.getBookDetail(assetId);
 
     bookDetail
         ? res.send(bookDetail)
@@ -15,7 +15,7 @@ async function getBookDetailFromAssetId(req, res) {
 
 async function getEmail(req, res) {
     const publicKey = req.body.public_key;
-    const email = await fetchService.getEmail(publicKey);
+    const email = await fetchLogic.getEmail(publicKey);
 
     email
         ? res.send({

@@ -3,7 +3,7 @@ import env from "@core/env";
 const insertTxQueue = new Queue("insertTx", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import transferService from "@services/transfer.service";
+import transferLogic from "@logics/transfer.logic";
 
 // Watch and Run job queue
 function run() {
@@ -13,7 +13,7 @@ function run() {
 // Describe what to do in the job
 async function doJob(id) {
     try {
-        const tx = await transferService.createBookForBookDetailId(id);
+        const tx = await transferLogic.createBookForBookDetailId(id);
         console.log(`Added a book for book_detail ${id}, tx_id: ${tx.id}`);
 
         return tx;

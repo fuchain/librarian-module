@@ -9,6 +9,7 @@
           class="text-white"
         >Nền tảng cơ sở dữ liệu phi tập trung sẽ cho phép truy xuất, kiểm tra các giao dịch liên quan và quyền sở hữu của các bên tham gia giao dịch</p>
         <vs-input
+          v-if="false"
           placeholder="Tìm tên sinh viên, mã số sinh viên hoặc địa chỉ mail"
           v-model="searchText"
           icon-pack="feather"
@@ -19,6 +20,8 @@
       </div>
     </div>
 
+    <h4 v-if="!loaded" style="text-align: center;">Đang tải dữ liệu, sắp hoàn thành</h4>
+
     <vs-table
       noDataText="Không có dữ liệu"
       ref="table"
@@ -26,6 +29,7 @@
       :max-items="itemsPerPage"
       search
       :data="dataList"
+      v-else
     >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
@@ -71,11 +75,10 @@
       </div>
 
       <template slot="thead">
-        <vs-th>ID</vs-th>
+        <vs-th>#</vs-th>
         <vs-th>Email</vs-th>
         <vs-th>Họ tên</vs-th>
         <vs-th>Số điện thoại</vs-th>
-        <vs-th>Trực tuyến</vs-th>
         <vs-th>Vô hiệu hóa</vs-th>
         <vs-th></vs-th>
       </template>
@@ -106,14 +109,6 @@
 
             <vs-td>
               <p>
-                <vs-chip
-                  :color="onlineUserState[indextr] ? 'primary' : 'danger'"
-                >{{ onlineUserState[indextr] ? "online" : "offline" }}</vs-chip>
-              </p>
-            </vs-td>
-
-            <vs-td>
-              <p>
                 <vs-switch value="tr.disabled" />
               </p>
             </vs-td>
@@ -132,9 +127,20 @@
 
     <vs-popup
       :fullscreen="keepingList && keepingList.length ? true : false"
-      :title="'Sách đang giữ của ' + keepingName"
+      :title="'Ví sách của ' + keepingName"
       :active.sync="keepingPopup"
     >
+      <div class="mb-4">
+        <div class="vx-row mb-2">
+          <div
+            class="ml-4"
+            style="background-color:#fff; color: #7367F0; border: 1px; border-color: #7367F0; padding: 10px; padding-left: 10px; border-radius: 5px;"
+          >Địa chỉ ví: {{ keepingPublicKey || "Không có" }}</div>
+        </div>
+        <div class="ml-4">
+          <vs-button>Đổi địa chỉ ví</vs-button>
+        </div>
+      </div>
       <vs-table
         noDataText="Không có dữ liệu"
         :data="keepingList"
@@ -146,6 +152,7 @@
           <vs-th></vs-th>
           <vs-th>Tên sách</vs-th>
           <vs-th>Ngày nhận</vs-th>
+          <vs-th>Bị từ chối</vs-th>
           <vs-th></vs-th>
         </template>
 
@@ -163,13 +170,14 @@
             <vs-td
               :data="data[indextr].transfer_date"
             >{{ parseInt(data[indextr].transfer_time) * 1000 | moment("dddd, Do MMMM YYYY, HH:MM") }} ({{ parseInt(data[indextr].transfer_time) * 1000 | moment("from") }})</vs-td>
+            <vs-td>{{data[indextr].reject_count || "--"}}</vs-td>
             <vs-td>
               <vs-button icon="pageview" @click="openHistory(data[indextr].asset_id)">Lịch sử</vs-button>
             </vs-td>
           </vs-tr>
         </template>
       </vs-table>
-      <p v-else>Sinh viên này đang không giữ cuốn sách nào cả</p>
+      <!-- <p v-else>Sinh viên này đang không giữ cuốn sách nào cả</p> -->
 
       <vs-popup :title="historyId" :active.sync="historyPopup" :fullscreen="historyList.length">
         <vs-table
@@ -180,6 +188,7 @@
           <template slot="thead">
             <vs-th>Thứ tự</vs-th>
             <vs-th>Mã giao dịch</vs-th>
+            <vs-th>Loại</vs-th>
             <vs-th>Người trả</vs-th>
             <vs-th>Người nhận</vs-th>
             <vs-th>Thời gian</vs-th>
@@ -190,6 +199,12 @@
               <vs-td :data="indextr">{{indextr + 1}}</vs-td>
 
               <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
+
+              <vs-td>
+                <vs-chip
+                  :color="data[indextr].type === 'reject' ? 'danger' : 'primary'"
+                >{{data[indextr].type === "reject" ? "Từ chối" : "Xác nhận"}}</vs-chip>
+              </vs-td>
 
               <vs-td :data="data[indextr].returner">{{data[indextr].returner}}</vs-td>
 
@@ -208,7 +223,6 @@
 </template>
 
 <script>
-import { socket } from "@core/socket";
 export default {
   data() {
     return {
@@ -216,9 +230,8 @@ export default {
       isMounted: false,
       keepingPopup: false,
       keepingName: "",
+      keepingPublicKey: "",
       keepingList: [],
-      onlineUsers: [],
-      onlineUserState: [],
       searchText: "",
       // This is for history
       historyId: 0,
@@ -230,11 +243,15 @@ export default {
     dataList: {
       default: [].concat([]),
       type: Array
+    },
+    loaded: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
     currentPage() {
-      if (this.isMounted) {
+      if (this.isMounted && this.$refs.table && this.$refs.table) {
         return this.$refs.table.currentx;
       }
       return 0;
@@ -256,20 +273,11 @@ export default {
           this.keepingList = data;
           this.keepingPopup = true;
           this.keepingName = item.email;
+          this.keepingPublicKey = item.public_key;
         })
         .finally(() => {
           this.$vs.loading.close();
         });
-    },
-    checkUserOnline(email) {
-      return this.onlineUsers.find(e => e === email);
-    },
-    trackOnline() {
-      const trackArr = this.dataList.map(e => {
-        return this.checkUserOnline(e.email);
-      });
-
-      this.onlineUserState = trackArr;
     },
     openHistory(assetId) {
       this.$vs.loading();
@@ -292,26 +300,6 @@ export default {
   },
   mounted() {
     this.isMounted = true;
-
-    this.$http
-      .get(`${this.$http.nodeUrl}/notifications/online`)
-      .then(response => {
-        const data = response.data;
-
-        this.onlineUsers = data;
-        this.trackOnline();
-      });
-    if (socket) {
-      socket.on(
-        "online",
-        function({ users }) {
-          this.onlineUsers = [].concat(users) || [].concat([]);
-          this.trackOnline();
-        }.bind(this)
-      );
-    } else {
-      console.log("Socket not init!");
-    }
   }
 };
 </script>

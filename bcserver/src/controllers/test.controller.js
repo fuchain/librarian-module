@@ -1,7 +1,7 @@
 import errorHandler from "@core/handlers/error.handler";
-import transferService from "@services/transfer.service";
-import outputService from "@services/output.service";
-import bookService from "@services/book.service";
+import transferLogic from "@logics/transfer.logic";
+import outputLogic from "@logics/output.logic";
+import bookLogic from "@logics/book.logic";
 import importDBQueue from "@workers/importdb.worker";
 
 import insertQueue from "@workers/insert.worker";
@@ -15,27 +15,25 @@ async function test(_, res) {
 }
 
 async function createTestAsset(_, res) {
-    const testAsset = await transferService.createTestAsset();
+    const testAsset = await transferLogic.createTestAsset();
 
     res.send(testAsset);
 }
 
 async function createTestBook(_, res) {
-    const testBook = await transferService.createAndPostTestBook();
+    const testBook = await transferLogic.createAndPostTestBook();
 
     res.send(testBook);
 }
 
 async function transferTestBook(_, res) {
-    const testBookTransfer = await transferService.transferAndPostTestBook();
+    const testBookTransfer = await transferLogic.transferAndPostTestBook();
 
     res.send(testBookTransfer);
 }
 
 async function transferTestBookFraud(_, res) {
-    const testBookTransfer = await transferService.transferAndPostTestBook(
-        true
-    );
+    const testBookTransfer = await transferLogic.transferAndPostTestBook(true);
 
     res.send(testBookTransfer);
 }
@@ -43,45 +41,45 @@ async function transferTestBookFraud(_, res) {
 async function create(req, res) {
     const body = req.body;
 
-    res.send(await transferService.createTestBook(body.public_key));
+    res.send(await transferLogic.createTestBook(body.public_key));
 }
 
 async function transfer(req, res) {
     const body = req.body;
 
     res.send(
-        await transferService.transferTestBook(body.asset_id, body.public_key)
+        await transferLogic.transferTestBook(body.asset_id, body.public_key)
     );
 }
 
 async function sign(req, res) {
     const body = req.body;
 
-    res.send(transferService.signTx(body.tx, body.private_key));
+    res.send(transferLogic.signTx(body.tx, body.private_key));
 }
 
 async function post(req, res) {
     const body = req.body;
 
-    res.send(await transferService.postTx(body));
+    res.send(await transferLogic.postTx(body));
 }
 
 async function getSpent(req, res) {
     const body = req.body;
 
-    res.send(await outputService.getSpent(body.public_key));
+    res.send(await outputLogic.getSpent(body.public_key));
 }
 
 async function getUnspent(req, res) {
     const body = req.body;
 
-    res.send(await outputService.getUnspent(body.public_key));
+    res.send(await outputLogic.getUnspent(body.public_key));
 }
 
 async function searchBook(req, res) {
     const body = req.body;
 
-    res.send(await bookService.searchBook(body.book_id));
+    res.send(await bookLogic.searchBook(body.book_id));
 }
 
 async function dbTest(_, res) {

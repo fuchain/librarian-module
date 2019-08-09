@@ -1,10 +1,17 @@
 <template>
-  <vx-card :title="'Hàng đợi đang có ' + queues.length + ' yêu cầu'">
+  <vx-card :title="'Hàng đợi đang có ' + (queues.length - matched) + ' yêu cầu'">
     <p class="mb-8" v-if="matched">
       Đã có
       <strong>{{ matched || 0 }}</strong> yêu cầu đã được hệ thống ghép, đang chờ người đọc chuyển sách.
     </p>
     <p class="mb-8" v-else>Chưa có yêu cầu nào được hệ thống ghép.</p>
+
+    <div class="mb-4">
+      <vs-switch v-model="filter">
+        <span slot="on">Chỉ hiện những yêu cầu chưa được ghép</span>
+        <span slot="off">Hiện tất cả yêu cầu trong hàng đợi</span>
+      </vs-switch>
+    </div>
 
     <vs-table
       noDataText="Không có dữ liệu"
@@ -12,6 +19,9 @@
       pagination
       :max-items="itemsPerPage"
       :data="queueFilter"
+      search
+      :hoverFlat="true"
+      notSpacer
     >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
@@ -64,7 +74,7 @@
 
             <vs-td>
               <p>
-                <vs-chip>{{ tr.bookId ? "Trả" : "Mượn" }}</vs-chip>
+                <vs-chip :color="tr.bookId ? 'primary' : 'success'">{{ tr.bookId ? "Trả" : "Mượn" }}</vs-chip>
               </p>
             </vs-td>
 
@@ -84,7 +94,8 @@
 export default {
   data() {
     return {
-      queues: []
+      queues: [],
+      filter: true
     };
   },
   methods: {
@@ -103,7 +114,9 @@ export default {
       return matched.length;
     },
     queueFilter() {
-      return this.queues.filter(e => !e.matched);
+      if (this.filter) return this.queues.filter(e => !e.matched);
+
+      return this.queues;
     }
   },
   mounted() {
@@ -114,7 +127,7 @@ export default {
       .then(response => {
         const data = response.data;
         data.sort((a, b) => {
-          return b.time - a.time;
+          return a.time - b.time;
         });
 
         this.queues = data;

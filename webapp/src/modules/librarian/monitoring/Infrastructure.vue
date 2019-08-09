@@ -1,5 +1,5 @@
 <template>
-  <vx-card title="Hạ tầng Swarm" style="max-width: 850px;">
+  <vx-card title="Hạ tầng Swarm">
     <vue-friendly-iframe
       src="https://swarm.fptu.tech"
       @load="onLoad"

@@ -22,5 +22,9 @@ module.exports = {
         "@auth": require("path").resolve(__dirname, "src/core/auth")
       }
     }
-  }
+  },
+  devServer: {
+    disableHostCheck: true
+  },
+  productionSourceMap: false
 };

@@ -2,7 +2,6 @@ import express from "express";
 import compression from "compression";
 import bodyParser from "body-parser";
 import cors from "cors";
-import morgan from "morgan";
 
 import routes from "@routes";
 import models from "@models";
@@ -11,8 +10,21 @@ import { checkEnvLoaded } from "@core/env";
 import initSocketModule from "./socket/socket";
 import initRedisModule from "@core/redis";
 
+import {
+    sentryMiddleware,
+    morganMiddleware
+} from "@middlewares/logging.middleware";
+
+import redisAdapter from "socket.io-redis";
 const app = express();
-const server = require("http").Server(app);
+export const server = require("http").Server(app);
+
+export const io = require("socket.io")(server);
+
+io.adapter(
+    redisAdapter({ host: process.env.REDIS_HOST || "redis", port: 6379 })
+);
+io.origins("*:*");
 
 async function main(app, server) {
     try {
@@ -20,6 +32,9 @@ async function main(app, server) {
 
         // Init DB
         models();
+
+        // Init Sentry logging middleware
+        sentryMiddleware();
 
         // Compression gzip
         app.use(compression());
@@ -36,7 +51,7 @@ async function main(app, server) {
         app.use(cors(corsOptions));
 
         // Middlewares
-        app.use(morgan("tiny"));
+        app.use(morganMiddleware);
 
         // Init roues
         app.use("/api/v1", routes);

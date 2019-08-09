@@ -79,8 +79,18 @@
                           d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
                         />
                       </svg>
-                      Đăng nhập bằng email
+                      {{ loginText }}
                     </div>
+                  </div>
+
+                  <div
+                    class="mt-8"
+                    v-if="!walletEmail && loaded"
+                    style="background-color: #7367F0; color: white; padding: 10px; border-radius: 5px;"
+                  >
+                    <div class="mb-2">Địa chỉ ví</div>
+                    <div>{{ publicKey.slice(0, 22) }}</div>
+                    <div>{{ publicKey.slice(22, publicKey.length) }}</div>
                   </div>
                 </div>
               </div>
@@ -92,7 +102,7 @@
         type="relief"
         color="danger"
         class="float-right mt-4 mr-4"
-        icon="delete"
+        icon="clear"
         @click="deleteConfirm()"
       >Đăng xuất ví sách</vs-button>
     </div>
@@ -101,14 +111,31 @@
 
 <script>
 import initSocket from "@core/socket";
+import keypair from "@core/crypto/keypair";
 
 export default {
   data() {
     return {
       email: null,
       password: null,
-      remember: false
+      remember: false,
+      walletEmail: null,
+      loaded: false,
+      publicKey: keypair.get("publicKey")
     };
+  },
+  computed: {
+    loginText() {
+      if (!this.loaded) {
+        return "Đăng nhập bằng email của bạn";
+      }
+
+      if (this.walletEmail) {
+        return "Đăng nhập " + this.walletEmail;
+      }
+
+      return "Hoàn tất tạo ví, đăng nhập email cuả bạn";
+    }
   },
   methods: {
     doLogin() {
@@ -117,7 +144,7 @@ export default {
     loginWithGoogle: function() {
       const clientId =
         "505153044223-3a6ohprurmp1ih0rr7tbupl8bjqa9qvv.apps.googleusercontent.com";
-      const hostname = window.location.href;
+      const hostname = window.location.href.replace(window.location.hash, "");
       const scope = "profile email openid";
 
       window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=${scope}&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri=${hostname}&response_type=token&client_id=${clientId}`;
@@ -144,7 +171,7 @@ export default {
         type: "confirm",
         color: "danger",
         title: "Xác nhận",
-        text: "Bạn có chắc muốn gỡ chìa khóa trên thiết bị này?",
+        text: "Bạn có chắc muốn gỡ ví sách trên thiết bị này?",
         accept: this.removeKey,
         acceptText: "Chắc chắn",
         cancelText: "Hủy bỏ"
@@ -154,7 +181,7 @@ export default {
       window.location.href = "https://blockchain.fptu.tech";
     }
   },
-  mounted: function() {
+  mounted() {
     const accessToken = this.parseToken(window.location.hash);
 
     if (accessToken) {
@@ -167,7 +194,7 @@ export default {
       this.$http
         .post(`${this.$http.baseUrl}/auth/keypair/email`, {
           token: accessToken,
-          public_key: this.$localStorage.getItem("publicKey")
+          public_key: keypair.get("publicKey")
         })
         .then(async response => {
           // Set data;
@@ -215,9 +242,10 @@ export default {
               fixed: true
             });
 
-            this.$localStorage.removeItem("publicKey");
-            this.$localStorage.removeItem("privateKey");
+            // this.$localStorage.removeItem("publicKey");
+            // this.$localStorage.removeItem("privateKey");
             this.$auth.setAccessToken();
+            this.$router.push("/");
           }
 
           this.$vs.notify({
@@ -228,6 +256,24 @@ export default {
           });
         })
         .finally(() => {
+          this.$vs.loading.close();
+        });
+    } else {
+      this.$vs.loading({
+        background: "darkorange",
+        color: "white",
+        text: "Đang xác thực ví sách"
+      });
+      this.$http
+        .post(`${this.$http.baseUrl}/fetch/public_key`)
+        .then(res => {
+          this.walletEmail = res.data.email;
+        })
+        .catch(() => {
+          this.walletEmail = null;
+        })
+        .finally(() => {
+          this.loaded = true;
           this.$vs.loading.close();
         });
     }

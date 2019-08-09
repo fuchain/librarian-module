@@ -50,7 +50,7 @@ const adminMenu = [
       {
         url: "/librarian/monitoring/infrastructure",
         name: "Hạ tầng Swarm",
-        tag: "3",
+        tag: "4",
         tagColor: "#254356"
       },
       {
@@ -117,6 +117,12 @@ function userMenu(numOfBooks) {
       icon: "BookOpenIcon"
     },
     {
+      url: "/coupon",
+      name: "Nhập mã nhận sách",
+      slug: "coupon",
+      icon: "BoxIcon"
+    },
+    {
       url: "/transfer-history",
       name: "Lịch sử nhận sách",
       slug: "transfer-history",
@@ -124,10 +130,10 @@ function userMenu(numOfBooks) {
     },
     {
       url: "/qrscan",
-      name: "Quét mã QR",
+      name: "Tra cứu sách",
       slug: "qrscan",
-      icon: "CodeIcon",
-      tag: "beta",
+      icon: "CameraIcon",
+      tag: "QR",
       tagColor: "primary"
     },
     {

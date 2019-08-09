@@ -1,4 +1,5 @@
-import { db } from "@models";
+import { db } from "@core/db";
+import rejectLogic from "@logics/reject.logic";
 
 export async function fillBookInfo(bookArr, bookFieldInArr = "book_detail") {
     const bookDetailIds = bookArr.map(book => parseInt(book[bookFieldInArr]));
@@ -20,11 +21,17 @@ export async function fillBookInfo(bookArr, bookFieldInArr = "book_detail") {
         )
         .toArray();
 
-    return bookArr.map(book => {
+    const promises = bookArr.map(async book => {
         book[bookFieldInArr] = bookDetailIdArr.find(
             e => e.id === parseInt(book[bookFieldInArr])
         );
 
+        book["reject_count"] = book.asset_id
+            ? await rejectLogic.getRejectCount(book.asset_id)
+            : 0;
+
         return book;
     });
+
+    return await Promise.all(promises);
 }

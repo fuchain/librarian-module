@@ -164,3 +164,9 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.vx-card {
+  max-width: 600px;
+}
+</style>

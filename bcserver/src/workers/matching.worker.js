@@ -3,14 +3,14 @@ import env from "@core/env";
 const matchingQueue = new Queue("matching", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
-import { db } from "@models";
+import { db } from "@core/db";
+import axios from "axios";
+import asset from "@core/fuchain/asset";
+import userLogic from "@logics/user.logic";
 
 // Watch and Run job queue
 function run() {
     matchingQueue.process(jobCallback);
-    matchingQueue.on("completed", function(job, result) {
-        console.log(`Job ${job.id} done for requester: ${result.email}`);
-    });
 }
 
 // Describe what to do in the job
@@ -26,8 +26,41 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
         // Check is request is existed
         const requested = await matchingCollection.findOne(requestObj);
 
+        const publicKey = await asset.getPublicKeyFromEmail(email);
+        const currentKeepingBooks = await userLogic.getCurrentBook(
+            publicKey,
+            true
+        );
+
         if (!isCancel) {
+            if (!bookId && currentKeepingBooks.length > 5) {
+                axios.post(`${env.ioHost}/events/push`, {
+                    email,
+                    type: "fail",
+                    message:
+                        "Bạn đang giữ quá 5 sách rồi, không thể yêu cầu mượn thêm"
+                });
+                throw new Error("Not valid request!");
+            }
+
+            if (
+                !bookId &&
+                currentKeepingBooks.find(e => e.book_detail.id === bookDetailId)
+            ) {
+                axios.post(`${env.ioHost}/events/push`, {
+                    email,
+                    type: "fail",
+                    message: "Bạn đang giữ sách đó rồi"
+                });
+                throw new Error("Not valid request!");
+            }
+
             if (requested) {
+                axios.post(`${env.ioHost}/events/push`, {
+                    email,
+                    type: "fail",
+                    message: "Bạn đã có yêu cầu mượn sách đó rồi"
+                });
                 throw new Error("Duplicated!");
             }
 
@@ -36,6 +69,14 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
             requestObj.time = Math.floor(Date.now() / 1000);
             await matchingCollection.insertMany([requestObj]);
 
+            axios.post(`${env.ioHost}/events/push`, {
+                email,
+                type: "success",
+                message: `Gửi yêu cầu ${
+                    requestObj.bookId ? "trả" : "mượn"
+                } sách thành công`
+            });
+
             return { email, bookDetailId, bookId };
         } else {
             if (!requested) {
@@ -43,6 +84,12 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
             }
 
             await matchingCollection.deleteOne(requestObj);
+
+            axios.post(`${env.ioHost}/events/push`, {
+                email,
+                type: "success",
+                message: "Hủy yêu cầu mượn sách thành công"
+            });
 
             return true;
         }

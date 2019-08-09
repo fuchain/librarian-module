@@ -1,6 +1,6 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
-    <h2 class="mb-8 ml-4">Quản lí {{ totalBookDetails || 0 }} đầu sách</h2>
+    <h2 class="mb-8 ml-4">Quản lí {{ totalBookDetails || "..." }} đầu sách</h2>
 
     <div class="vx-row">
       <div class="vx-col sm:w-2/3 w-2/3">
@@ -60,7 +60,11 @@
             </vs-td>
 
             <vs-td class="img-container">
-              <img :src="tr.thumbnail || '/images/book-thumbnail.jpg'" class="product-img" />
+              <img
+                :src="tr.thumbnail || '/images/book-thumbnail.jpg'"
+                class="product-img"
+                @click="$store.dispatch('openDetailsPopup', tr.book_detail)"
+              />
             </vs-td>
 
             <vs-td>
@@ -152,12 +156,16 @@ export default {
   mounted() {
     this.isMounted = true;
 
+    this.$Progress.start();
     this.$http
       .get(`${this.$http.baseUrl}/librarian/overviews`)
       .then(response => {
         const { book_detail_total } = response.data;
 
         this.totalBookDetails = book_detail_total;
+      })
+      .finally(() => {
+        this.$Progress.finish();
       });
   }
 };

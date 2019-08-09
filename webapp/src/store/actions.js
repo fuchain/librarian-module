@@ -44,6 +44,8 @@ const actions = {
       const { data } = await $http.post(`${$http.baseUrl}/user/profile`);
       commit("PROFILE_UPDATED", data);
     } catch (e) {
+      console.log(e);
+
       // Catch error
       if (e.response && e.response.status && e.response.status === 401) {
         // Logout
@@ -124,6 +126,19 @@ const actions = {
   async closeTxPopup({ commit }, time = 0) {
     setTimeout(function() {
       commit("CLOSE_TRANSACTION_POPUP");
+    }, time);
+  },
+
+  // Open Detail Popup
+  async openDetailsPopup({ commit }, details, assetId) {
+    commit("OPEN_DETAILS_POPUP", details, assetId);
+  },
+  async setAssetData({ commit }, data) {
+    commit("SET_ASSET_DATA", data);
+  },
+  async closeDetailsPopup({ commit }, time = 0) {
+    setTimeout(function() {
+      commit("CLOSE_DETAILS_POPUP");
     }, time);
   }
 };

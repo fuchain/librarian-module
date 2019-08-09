@@ -13,7 +13,9 @@
         <span>Email</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" type="email" :value="email" disabled />
+        <div
+          style="background-color:#7367F0; color: #fff; padding: 10px; padding-left: 10px; border-radius: 5px;"
+        >{{email}}</div>
       </div>
     </div>
     <div class="vx-row mb-6">
@@ -32,7 +34,7 @@
         <vs-switch v-model="darkmode" />
       </div>
     </div>
-    <div class="vx-row mb-6" v-if="!$auth.isAdmin()">
+    <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
         <span>Chuyển sách cho tôi</span>
       </div>
@@ -46,7 +48,7 @@
           class="mr-3 mb-2"
           @click="submit"
           icon="check"
-          :disabled="$auth.isAdmin()"
+          v-if="!$auth.isAdmin()"
         >Cập nhật thông tin</vs-button>
       </div>
     </div>
@@ -191,6 +193,6 @@ export default {
 
 <style lang="scss" scoped>
 .vx-card {
-  max-width: 800px;
+  max-width: 600px;
 }
 </style>

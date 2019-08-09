@@ -1,10 +1,5 @@
 <template>
-  <vs-popup
-    :title="getTitle"
-    :active.sync="isActive"
-    v-if="tx"
-    :fullscreen="isMobile() ? true : false"
-  >
+  <vs-popup :title="getTitle" :active.sync="isActive" v-if="tx">
     <vs-alert
       active="true"
       class="mb-4"
@@ -34,10 +29,13 @@
       </div>
     </div>
 
-    <div class="vx-row mb-6" v-if="book && book.thumbnail">
+    <div class="vx-row mb-6" v-if="book">
       <div class="vx-col sm:w-1/3 w-full"></div>
       <div class="vx-col sm:w-2/3 w-full">
-        <img :src="book && book.thumbnail" style="max-width: 100px;" />
+        <img
+          :src="book && book.thumbnail || '/images/book-thumbnail.jpg'"
+          style="max-width: 100px;"
+        />
       </div>
     </div>
 
@@ -78,6 +76,7 @@
           class="mb-2 w-full"
           icon="close"
           @click="openRejectConfirm"
+          v-if="rejectable"
         >Không nhận sách (sách đã hư hại)</vs-button>
       </div>
     </div>
@@ -115,7 +114,8 @@ export default {
       signedTx: null,
       book: null,
       returner: "",
-      receiver: ""
+      receiver: "",
+      rejectable: false
     };
   },
   watch: {
@@ -147,7 +147,7 @@ export default {
       if (this.tx.operation === "TRANSFER") {
         return "Kí xác nhận chuyển sách";
       } else {
-        return "Kí xác nhận đã nhận sách";
+        return "Kí xác nhận";
       }
     },
     getAssetId() {
@@ -161,9 +161,6 @@ export default {
     }
   },
   methods: {
-    isMobile() {
-      return window.isMobile();
-    },
     trimStr(str) {
       if (!str || str.length < 10) {
         return str;
@@ -212,18 +209,33 @@ export default {
             this.$store.dispatch("closeTxPopup", 5000);
             if (!this.$auth.isAdmin) this.$router.push("/");
           })
-          .catch(() => {
-            this.$vs.notify({
-              title: "Thất bại",
-              text: "Có lỗi xảy ra",
-              color: "warning",
-              position: "top-center",
-              fixed: true,
-              icon: "error"
-            });
+          .catch(err => {
+            const message = err.response.data.message;
+
+            if (message === "Error: Cannot send to receiver") {
+              this.$vs.notify({
+                title: "Thất bại",
+                text:
+                  "Không thể gửi giao dịch tới người nhận, người nhận đang không trực tuyến",
+                color: "warning",
+                position: "top-center",
+                fixed: true,
+                icon: "error"
+              });
+            } else {
+              this.$vs.notify({
+                title: "Thất bại",
+                text: "Lỗi bất ngờ xảy ra",
+                color: "warning",
+                position: "top-center",
+                fixed: true,
+                icon: "error"
+              });
+            }
           })
           .finally(() => {
             this.$vs.loading.close();
+            this.$store.dispatch("getNumOfBooks");
           });
       } else {
         this.$vs.loading();
@@ -261,6 +273,7 @@ export default {
             });
           })
           .finally(() => {
+            this.$store.dispatch("getNumOfBooks");
             this.$vs.loading.close();
           });
       }
@@ -275,6 +288,14 @@ export default {
           })
           .then(res => {
             this.book = res.data;
+
+            this.$http
+              .post(`${this.$http.baseUrl}/user/requesting`)
+              .then(response => {
+                const data = response.data;
+                const found = data.find(e => e.bookDetailId.id === res.data.id);
+                this.rejectable = found ? true : false;
+              });
           });
 
         this.$http

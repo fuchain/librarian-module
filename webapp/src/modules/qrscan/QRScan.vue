@@ -18,8 +18,17 @@ export default {
     };
   },
   methods: {
-    notify(val) {
-      console.log(val);
+    notify(assetId) {
+      this.$http
+        .post(`${this.$http.baseUrl}/user/getbook`, { asset_id: assetId })
+        .then(response => {
+          const { book_detail, email } = response.data;
+          this.$store.dispatch("openDetailsPopup", book_detail);
+          this.$store.dispatch("setAssetData", {
+            assetId: assetId,
+            email
+          });
+        });
     },
     handleFail(val) {
       if (val) {

@@ -42,6 +42,33 @@ import isMobile from "./isMobile";
 // Vue tour
 import VueTour from "vue-tour";
 import "vue-tour/dist/vue-tour.css";
+
+// Sentry
+import * as Sentry from "@sentry/browser";
+import * as Integrations from "@sentry/integrations";
+
+import VueProgressBar from "vue-progressbar";
+import "./registerServiceWorker";
+
+Vue.use(VueProgressBar, {
+  color: "#7367F0",
+  failedColor: "#EA5455",
+  height: "10px",
+  thickness: "8px",
+  autoFinish: false,
+  transition: {
+    speed: "0.1s",
+    opacity: "1s",
+    termination: 300
+  }
+});
+
+!window.webpackHotUpdate &&
+  Sentry.init({
+    dsn: "https://900117affb2c4742a2864410b864462f@sentry.io/1521086",
+    integrations: [new Integrations.Vue({ Vue, attachProps: true })]
+  });
+
 Vue.use(VueTour);
 
 Vue.component("vue-friendly-iframe", VueFriendlyIframe);

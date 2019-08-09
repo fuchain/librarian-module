@@ -6,11 +6,11 @@ export function createJWT(email, librarian = false) {
             email: email,
             roles: librarian ? "librarian" : "reader"
         },
-        "Capstone",
+        "capstone",
         { expiresIn: "24h" }
     );
 }
 
 export function verifyJWT(token) {
-    return jwt.verify(token, "Capstone");
+    return jwt.verify(token, "capstone");
 }

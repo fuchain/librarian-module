@@ -69,13 +69,16 @@
               <p>
                 <img
                   :src="tr.book_detail && tr.book_detail.thumbnail || '/images/book-thumbnail.jpg'"
-                  style="max-width: 65px;"
+                  @click="$store.dispatch('openDetailsPopup', tr.book_detail)"
+                  style="max-width: 65px; cursor: pointer"
                 />
               </p>
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.book_detail && tr.book_detail.name }}</p>
+              <p
+                @click="$store.dispatch('openDetailsPopup', tr.book_detail)"
+              >{{ tr.book_detail && tr.book_detail.name }}</p>
             </vs-td>
 
             <vs-td>

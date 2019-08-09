@@ -1,110 +1,56 @@
 import errorHandler from "@core/handlers/error.handler";
-import userService from "@services/user.service";
-import env from "@core/env";
+import userLogic from "@logics/user.logic";
+import bookLogic from "@logics/book.logic";
 
 async function getProfile(req, res) {
-    const body = req.body;
+    const user = await userLogic.getProfile(req.email);
 
-    if (body.public_key === env.publicKey) {
-        res.send({
-            email: "librarian@fptu.tech",
-            type: "librarian",
-            fullname: "Thủ Thư",
-            phone: "0123456789"
-        });
-        return;
-    }
+    const profile = {
+        email: user.email,
+        type: user.type,
+        fullname: user.fullname,
+        phone: user.phone
+    };
 
-    const user = await userService.getProfile(body.public_key);
-
-    if (user) {
-        const profile = {
-            email: user.email,
-            type: user.type,
-            fullname: user.fullname,
-            phone: user.phone
-        };
-
-        if (req.email !== profile.email) {
-            res.status(422).send({
-                message: "Your token and public key are not match"
-            });
-        }
-
-        res.send(profile);
-        return;
-    }
-
-    return res.status(422).send({
-        message: "Cannot find profile with your public key"
-    });
+    res.send(profile);
+    return;
 }
 
 async function updateProfile(req, res) {
     const body = req.body;
 
-    const user = await userService.getProfile(body.public_key);
+    const updatedUser = await userLogic.updateProfile(
+        req.email,
+        body.fullname,
+        body.phone
+    );
 
-    if (user) {
-        const profile = {
-            email: user.email,
-            type: user.type,
-            fullname: user.fullname,
-            phone: user.phone
-        };
-
-        if (req.email !== profile.email) {
-            res.status(422).send({
-                message: "Your token and public key are not match"
-            });
-        }
-
-        const updatedUser = await userService.updateProfile(
-            req.email,
-            body.fullname,
-            body.phone
-        );
-
-        res.send(updatedUser);
-        return;
-    }
-
-    res.status(422).send({
-        message: "Cannot find profile with your public key"
-    });
+    res.send(updatedUser);
     return;
 }
 
 async function getCurrentBook(req, res) {
-    const body = req.body;
-
-    const books = await userService.getCurrentBook(body.public_key);
+    const books = await userLogic.getCurrentBook(req.publicKey);
 
     res.send(books);
 }
 
 async function getReturningBook(req, res) {
-    const body = req.body;
-
-    const books = await userService.getInQueueBook(body.public_key, true);
+    const books = await userLogic.getInQueueBook(req.email, true);
 
     res.send(books);
 }
 
 async function getRequestingBook(req, res) {
-    const body = req.body;
-
-    const books = await userService.getInQueueBook(body.public_key, false);
+    const books = await userLogic.getInQueueBook(req.email, false);
 
     res.send(books);
 }
 
 async function getKeepingAmount(req, res) {
-    const body = req.body;
-
-    const keeping = await userService.getCurrentBook(body.public_key);
-    const returning = await userService.getInQueueBook(body.public_key, true);
-    const requesting = await userService.getInQueueBook(body.public_key, false);
+    const keeping = await userLogic.getCurrentBook(req.publicKey);
+    const returning = await userLogic.getInQueueBook(req.email, true);
+    const requesting = await userLogic.getInQueueBook(req.email, false);
 
     res.send({
         keeping: keeping.length,
@@ -114,19 +60,25 @@ async function getKeepingAmount(req, res) {
 }
 
 async function getTransferHistory(req, res) {
-    const body = req.body;
-
-    const books = await userService.getTransferHistory(body.public_key);
+    const books = await userLogic.getTransferHistory(req.publicKey);
 
     res.send(books);
 }
 
 async function getLastTransactionTime(req, res) {
     const body = req.body;
-
-    const time = await userService.getLastTransactionTime(body.asset_id);
+    const time = await userLogic.getLastTransactionTime(body.asset_id);
 
     res.send({ time });
+}
+
+async function getBookInformationOfAssetId(req, res) {
+    const data = await bookLogic.getBookDetailIdOfAssetId(req.body.asset_id);
+
+    res.send({
+        book_detail: data.bookDetail,
+        email: data.email
+    });
 }
 
 export default errorHandler({
@@ -137,5 +89,6 @@ export default errorHandler({
     getRequestingBook,
     getKeepingAmount,
     getTransferHistory,
-    getLastTransactionTime
+    getLastTransactionTime,
+    getBookInformationOfAssetId
 });

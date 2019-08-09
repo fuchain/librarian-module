@@ -26,6 +26,8 @@ export default {
   },
   mounted() {
     this.getList();
+
+    window.reloadList = this.getList;
   },
   methods: {
     async getList() {

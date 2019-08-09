@@ -31,6 +31,10 @@ const router = new Router({
           component: () => import("@/modules/qrscan/QRScan.vue")
         },
         {
+          path: "/coupon",
+          component: () => import("@/modules/reader/coupon/Coupon.vue")
+        },
+        {
           path: "profile",
           component: () => import("@/modules/profile/Profile.vue")
         },
