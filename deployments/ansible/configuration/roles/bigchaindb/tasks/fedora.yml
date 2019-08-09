@@ -1,0 +1,8 @@
+
+---
+- name: Install dependencies | dnf
+  dnf:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ dependencies_dnf }}"
+  tags: [bigchaindb]
