@@ -20,6 +20,8 @@
       </div>
     </div>
 
+    <h4 v-if="!loaded" style="text-align: center;">Đang tải dữ liệu, sắp hoàn thành</h4>
+
     <vs-table
       noDataText="Không có dữ liệu"
       ref="table"
@@ -27,6 +29,7 @@
       :max-items="itemsPerPage"
       search
       :data="dataList"
+      v-else
     >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
@@ -197,7 +200,11 @@
 
               <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
 
-              <vs-td><vs-chip :color="data[indextr].type === 'reject' ? 'danger' : 'primary'">{{data[indextr].type === "reject" ? "Từ chối" : "Xác nhận"}}</vs-chip></vs-td>
+              <vs-td>
+                <vs-chip
+                  :color="data[indextr].type === 'reject' ? 'danger' : 'primary'"
+                >{{data[indextr].type === "reject" ? "Từ chối" : "Xác nhận"}}</vs-chip>
+              </vs-td>
 
               <vs-td :data="data[indextr].returner">{{data[indextr].returner}}</vs-td>
 
@@ -236,11 +243,15 @@ export default {
     dataList: {
       default: [].concat([]),
       type: Array
+    },
+    loaded: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
     currentPage() {
-      if (this.isMounted) {
+      if (this.isMounted && this.$refs.table && this.$refs.table) {
         return this.$refs.table.currentx;
       }
       return 0;

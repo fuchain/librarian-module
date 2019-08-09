@@ -1,5 +1,5 @@
 <template>
-  <data-list :dataList="users" v-if="loaded" @doReload="getList"/>
+  <data-list :dataList="users" :loaded="loaded" @doReload="getList" />
 </template>
 
 <script>
@@ -29,9 +29,18 @@ export default {
   },
   methods: {
     async getList() {
-      this.$vs.loading();
+      if (this.users) {
+        this.$Progress.start();
+      } else {
+        this.$vs.loading();
+      }
       await this.$store.dispatch(`${STORE_KEY}/getUsers`);
-      this.$vs.loading.close();
+
+      if (this.users.length) {
+        this.$Progress.finish();
+      } else {
+        this.$vs.loading.close();
+      }
     }
   }
 };
