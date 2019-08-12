@@ -102,8 +102,8 @@ services:
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
       BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
-      PUBLIC_KEY: Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9
-      PRIVATE_KEY: CviuZeJhVuvtUc25BUuUDUmU8nARFqpxYKDGQP61s4is
+      PUBLIC_KEY: E9EtWPabGCn7zMyaVueWcHhjb1nQ3bnvwyr7j5z7ooA7
+      PRIVATE_KEY: CHaWdW6M2hyPeWdpiUpm2akVA2t6FrM3qBRo2t4t95vW
       IO_HOST: http://ioserver/api/v1
 
   ioserver:
