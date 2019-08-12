@@ -10,7 +10,7 @@ const Stats = (state = initialState, action) => {
   switch (action.type) {
     case "UPDATE_STATS":
       const connectionText = action.connected
-        ? "Connected to: " + bigchaindb.node_name + ".bigchain.fptu.tech"
+        ? "Connected to: " + bigchaindb.node_name + ".fuchain.fptu.tech"
         : "Disconnected";
       return Object.assign(
         {},
