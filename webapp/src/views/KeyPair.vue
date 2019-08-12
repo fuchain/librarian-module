@@ -248,6 +248,7 @@ export default {
 
     const generated = await generateKeyPair(this.seed);
     this.wallet = generated.publicKey;
+    console.log(generated);
   }
 };
 </script>

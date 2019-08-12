@@ -59,7 +59,7 @@ async function doJob(id) {
         ) {
             console.log(`Instance ${id} not found!`);
         } else {
-            console.log(`Something failed: ${err}`);
+            console.log(`Something failed: ${err.toString()}`);
         }
     }
 }

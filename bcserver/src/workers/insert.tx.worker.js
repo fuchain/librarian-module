@@ -30,7 +30,7 @@ async function addJob(id) {
     try {
         await insertTxQueue.add({ id });
     } catch (err) {
-        console.log(`Something failed when add job: ${err}`);
+        console.log(`Something failed when add job: ${err.toString()}`);
     }
 }
 
