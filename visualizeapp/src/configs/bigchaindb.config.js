@@ -54,8 +54,8 @@ function getNode() {
 export default {
   host:
     getNode().name === "testnet"
-      ? "testnet.bigchain.fptu.tech"
-      : "bigchain.fptu.tech",
+      ? "testnet.fuchain.fptu.tech"
+      : "fuchain.fptu.tech",
   ws_port: getNode().port,
   node_name: getNode().name,
   api: "/api/v1/",
