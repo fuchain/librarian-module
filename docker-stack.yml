@@ -115,7 +115,7 @@ services:
       DB_HOST: mongodbbc
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
-      BIGCHAIN_HOST: https://fuchain.fptu.tech/api/v1/
+      BIGCHAIN_HOST: https://testnet.fuchain.fptu.tech/api/v1/
       PUBLIC_KEY: CCth57e7618EfhcmWHyTAV4rvvk9fr1TVrwVmVmBkkqz
       PRIVATE_KEY: FFrKcgQfbhMWFgqgSSQkZPPNxwbbCMiJBTG3bk3a9xJA
       IO_HOST: https://api.fptu.tech/io/api/v1
