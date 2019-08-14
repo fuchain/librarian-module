@@ -24,8 +24,8 @@
           <div class="vx-col w-full mt-5">
             <p>Mã sách</p>
             <p
-              style="font-size: 2rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; direction: rtl;"
-            >{{ (book && book.id) || 'Invalid' }}</p>
+              style="font-size: 2rem; overflow: hidden;"
+            >{{ (book && "..." + book.id.slice(-10)) || '--' }}</p>
           </div>
         </vx-card>
       </div>
@@ -55,6 +55,7 @@
             noShadow
           >
             <QRScan v-if="!qrError" @printCode="handleQRCode" @onFail="handleQRFail" />
+
             <vs-input v-else class="w-full" label="Email người nhận" v-model="email" />
           </vx-card>
           <vx-card noShadow cardBorder v-else>{{ isLoading ? "Đang xử lí..." : resultText }}</vx-card>
@@ -62,6 +63,21 @@
       </div>
     </tab-content>
     <template slot="footer" slot-scope="props">
+      <div class="wizard-footer-left">
+        <button
+          v-if="props.activeTabIndex === 0"
+          @click="$router.go(-1)"
+          class="wizard-btn"
+          style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
+        >Hủy bỏ</button>
+
+        <button
+          v-if="props.activeTabIndex > 0 && !props.isLastStep"
+          @click="props.prevTab()"
+          class="wizard-btn"
+          style="background-color: rgba(var(--vs-primary), 1); border-color: rgba(var(--vs-primary), 1); color: white;"
+        >Quay lại</button>
+      </div>
       <div class="wizard-footer-right">
         <button
           v-if="!props.isLastStep"
@@ -102,7 +118,8 @@ export default {
       isLoading: false,
       resultText: "Đang tải",
       email: "",
-      qrError: false
+      qrError: false,
+      emailMode: false
     };
   },
   methods: {

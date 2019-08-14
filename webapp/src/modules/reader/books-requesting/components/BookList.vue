@@ -130,12 +130,12 @@ export default {
             book_detail_id: item.bookDetailId
           })
           .then(() => {
-            this.$vs.notify({
-              title: "Thành công",
-              text: "Đã gửi yêu cầu hủy bỏ việc mượn sách",
-              color: "primary",
-              position: "top-center"
-            });
+            // this.$vs.notify({
+            //   title: "Thành công",
+            //   text: "Đã gửi yêu cầu hủy bỏ việc mượn sách",
+            //   color: "primary",
+            //   position: "top-center"
+            // });
 
             this.$emit("doReload");
           })

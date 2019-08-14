@@ -13,7 +13,7 @@ export function parseBookItem(data) {
         (bookDetailField.subject_codes &&
           bookDetailField.subject_codes.length &&
           bookDetailField.subject_codes[0]) ||
-        "N/A",
+        null,
       status: "in use",
       matched: e.matched,
       user: e.matchWith || 0,
@@ -35,7 +35,7 @@ export function parseBookSearchItem(data) {
       code:
         e.subject_codes && e.subject_codes.length && e.subject_codes[0]
           ? e.subject_codes[0]
-          : "N/A",
+          : null,
       type: "info",
       details: e
     };
@@ -51,7 +51,7 @@ export function parseSingleItem(e) {
     code:
       e.subject_codes && e.subject_codes.length && e.subject_codes[0]
         ? e.subject_codes[0]
-        : "N/A",
+        : null,
     type: "info",
     details: e
   };

@@ -94,7 +94,7 @@
             @click="openBookDataList(tr)"
           >
             <vs-td>
-              <p>{{ tr.asset_id || "--" }}</p>
+              <p>{{ "..." + tr.asset_id.slice(-10) || "--" }}</p>
             </vs-td>
 
             <vs-td>
@@ -102,7 +102,7 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.current_keeper === "Fetching" ? "--" : tr.current_keeper || "--" }}</p>
+              <p>{{ tr.current_keeper === "Fetching" ? "--" : tr.current_keeper.includes('librarian') ? "Thư viện" : tr.current_keeper || "--" }}</p>
             </vs-td>
 
             <vs-td>
@@ -151,15 +151,15 @@
     </vs-popup>
 
     <vs-prompt
-      title="Gửi sách cho sinh viên"
-      accept-text="Xác nhận"
+      title="Chuyển sách"
+      accept-text="Chuyển"
       cancel-text="Hủy bỏ"
       @cancel="email=''"
       @accept="manuallyReturn(email)"
       :active.sync="emailPrompt"
     >
       <div>
-        <vs-input placeholder="Nhập email sinh viên nhận sách" class="w-full" v-model="email" />
+        <vs-input placeholder="Nhập email người nhận sách" class="w-full" v-model="email" />
       </div>
     </vs-prompt>
   </div>

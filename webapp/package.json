@@ -31,6 +31,7 @@
     "tailwindcss": "^0.7.4",
     "vue": "2.6.10",
     "vue-apexcharts": "^1.3.2",
+    "vue-debounce": "^2.0.0",
     "vue-feather-icons": "^4.7.1",
     "vue-form-wizard": "^0.8.4",
     "vue-friendly-iframe": "^0.13.0",

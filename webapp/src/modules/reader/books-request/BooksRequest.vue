@@ -6,13 +6,14 @@
           <vs-input
             class="w-full"
             v-model="searchText"
-            placeholder="Tìm JPD101 hoặc Nihongo Deiku 1"
+            placeholder="Tìm JPD101 hoặc Nihongo Deiku"
             v-on:keyup.enter="doSearch"
+            v-debounce:300ms="doSearch"
             autofocus
             id="book-search"
           />
         </div>
-        <div class="vx-col sm:w-1/3 w-full">
+        <!-- <div class="vx-col sm:w-1/3 w-full">
           <vs-button
             type="relief"
             color="primary"
@@ -20,7 +21,7 @@
             @click="doSearch"
             icon="search"
           >Tìm sách</vs-button>
-        </div>
+        </div>-->
       </div>
       <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
         <div
@@ -138,24 +139,26 @@ export default {
         return;
       }
 
-      this.$vs.loading();
+      // this.$vs.loading();
+      this.$Progress.start();
 
       this.$http
         .get(`${this.$http.baseUrl}/book/search?text=${this.searchText}`)
         .then(response => {
           const data = response.data;
 
-          this.$vs.loading.close();
+          // this.$vs.loading.close();
+          this.$Progress.finish();
 
           this.listBooks = [].concat(parseBookSearchItem(data, "info"));
 
           if (!data.length) {
-            this.$vs.notify({
-              title: "Lỗi",
-              text: "Không tìm thấy quyển sách nào, vui lòng đổi từ khóa",
-              color: "warning",
-              position: "top-center"
-            });
+            // this.$vs.notify({
+            //   title: "Lỗi",
+            //   text: "Không tìm thấy quyển sách nào, vui lòng đổi từ khóa",
+            //   color: "warning",
+            //   position: "top-center"
+            // });
           }
         });
     },
@@ -168,12 +171,12 @@ export default {
           book_detail_id: bookId
         })
         .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Yêu cầu của bạn đã được hệ thống tiếp nhận",
-            color: "primary",
-            position: "top-center"
-          });
+          // this.$vs.notify({
+          //   title: "Thành công",
+          //   text: "Yêu cầu của bạn đã được hệ thống tiếp nhận",
+          //   color: "primary",
+          //   position: "top-center"
+          // });
 
           this.$store.dispatch("getNumOfBooks");
         })
