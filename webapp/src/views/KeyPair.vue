@@ -103,7 +103,7 @@
                     icon="work"
                     class="mb-4"
                     @click="changeStyle()"
-                    v-if="mode === 'verify'"
+                    v-if="false && mode === 'verify'"
                   ></vs-button>
                   <vs-button
                     class="float-right mb-8"
@@ -248,7 +248,6 @@ export default {
 
     const generated = await generateKeyPair(this.seed);
     this.wallet = generated.publicKey;
-    console.log(generated);
   }
 };
 </script>

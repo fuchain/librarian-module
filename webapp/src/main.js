@@ -24,6 +24,8 @@ import "prismjs/themes/prism-tomorrow.css";
 // Time Ago
 import VueTimeago from "vue-timeago";
 
+import vueDebounce from "vue-debounce";
+
 // Form Wizard
 import VueFormWizard from "vue-form-wizard";
 
@@ -62,6 +64,8 @@ Vue.use(VueProgressBar, {
     termination: 300
   }
 });
+
+Vue.use(vueDebounce);
 
 !window.webpackHotUpdate &&
   Sentry.init({

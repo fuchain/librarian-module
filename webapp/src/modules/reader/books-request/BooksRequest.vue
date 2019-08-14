@@ -2,17 +2,18 @@
   <div>
     <vx-card title="Tìm mượn sách" noShadow>
       <div class="vx-row mb-6">
-        <div class="vx-col sm:w-2/3 w-full">
+        <div class="vx-col sm:w-1/3 w-full">
           <vs-input
             class="w-full"
             v-model="searchText"
             placeholder="Tìm JPD101 hoặc Nihongo Deiku 1"
             v-on:keyup.enter="doSearch"
+            v-debounce:300ms="doSearch"
             autofocus
             id="book-search"
           />
         </div>
-        <div class="vx-col sm:w-1/3 w-full">
+        <!-- <div class="vx-col sm:w-1/3 w-full">
           <vs-button
             type="relief"
             color="primary"
@@ -20,7 +21,7 @@
             @click="doSearch"
             icon="search"
           >Tìm sách</vs-button>
-        </div>
+        </div>-->
       </div>
       <div class="items-grid-view vx-row match-height" v-if="listBooks.length" appear>
         <div
@@ -138,24 +139,24 @@ export default {
         return;
       }
 
-      this.$vs.loading();
+      // this.$vs.loading();
 
       this.$http
         .get(`${this.$http.baseUrl}/book/search?text=${this.searchText}`)
         .then(response => {
           const data = response.data;
 
-          this.$vs.loading.close();
+          // this.$vs.loading.close();
 
           this.listBooks = [].concat(parseBookSearchItem(data, "info"));
 
           if (!data.length) {
-            this.$vs.notify({
-              title: "Lỗi",
-              text: "Không tìm thấy quyển sách nào, vui lòng đổi từ khóa",
-              color: "warning",
-              position: "top-center"
-            });
+            // this.$vs.notify({
+            //   title: "Lỗi",
+            //   text: "Không tìm thấy quyển sách nào, vui lòng đổi từ khóa",
+            //   color: "warning",
+            //   position: "top-center"
+            // });
           }
         });
     },
