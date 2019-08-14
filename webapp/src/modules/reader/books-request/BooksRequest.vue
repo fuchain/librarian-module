@@ -2,11 +2,11 @@
   <div>
     <vx-card title="Tìm mượn sách" noShadow>
       <div class="vx-row mb-6">
-        <div class="vx-col sm:w-1/3 w-full">
+        <div class="vx-col sm:w-2/3 w-full">
           <vs-input
             class="w-full"
             v-model="searchText"
-            placeholder="Tìm JPD101 hoặc Nihongo Deiku 1"
+            placeholder="Tìm JPD101 hoặc Nihongo Deiku"
             v-on:keyup.enter="doSearch"
             v-debounce:300ms="doSearch"
             autofocus
@@ -140,6 +140,7 @@ export default {
       }
 
       // this.$vs.loading();
+      this.$Progress.start();
 
       this.$http
         .get(`${this.$http.baseUrl}/book/search?text=${this.searchText}`)
@@ -147,6 +148,7 @@ export default {
           const data = response.data;
 
           // this.$vs.loading.close();
+          this.$Progress.finish();
 
           this.listBooks = [].concat(parseBookSearchItem(data, "info"));
 
@@ -169,12 +171,12 @@ export default {
           book_detail_id: bookId
         })
         .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Yêu cầu của bạn đã được hệ thống tiếp nhận",
-            color: "primary",
-            position: "top-center"
-          });
+          // this.$vs.notify({
+          //   title: "Thành công",
+          //   text: "Yêu cầu của bạn đã được hệ thống tiếp nhận",
+          //   color: "primary",
+          //   position: "top-center"
+          // });
 
           this.$store.dispatch("getNumOfBooks");
         })

@@ -68,6 +68,7 @@
           class="mb-2 w-full"
           icon="fingerprint"
           @click="openConfirm"
+          type="relief"
         >{{ tx.operation === 'TRANSFER' ? 'Kí chuyển sách' : 'Kí nhận sách' }}</vs-button>
       </div>
       <div class="vx-col sm:w-2/3 w-full ml-auto" v-if="tx.operation !== 'TRANSFER'">

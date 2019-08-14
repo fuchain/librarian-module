@@ -43,7 +43,14 @@
       <div class="vx-col sm:w-1/3 w-full">
         <span>Mô tả</span>
       </div>
-      <div class="vx-col sm:w-2/3 w-full">{{ details.description }}</div>
+      <div class="vx-col sm:w-2/3 w-full">
+        {{ details.description.length > 100 && !showFullDesc ? textTrim(details.description) : details.description }}
+        <span
+          v-if="details.description.length > 100 && !showFullDesc"
+          style="cursor: pointer; font-weight: bold;"
+          @click="showFullDesc = true"
+        >Xem thêm</span>
+      </div>
     </div>
     <div class="vx-row mb-6">
       <div class="vx-col sm:w-1/3 w-full">
@@ -79,7 +86,7 @@
           class="mr-3 mb-2 w-full"
           @click="goToLink(details.preview_link)"
           icon="pageview"
-          v-if="details.preview_link"
+          v-if="details.preview_link && details.preview_link !== 'DEFAULT_REVIEW_LINK'"
         >Xem chi tiết sách</vs-button>
       </div>
     </div>
@@ -87,7 +94,19 @@
 </template>
 
 <script>
+import textTrim from "@core/helper/string.helper";
+
 export default {
+  data() {
+    return {
+      showFullDesc: false
+    };
+  },
+  watch: {
+    isActive(val) {
+      this.showFullDesc = false;
+    }
+  },
   computed: {
     details: {
       get() {
@@ -119,6 +138,9 @@ export default {
     goToLink(url) {
       const newTab = window.open(url, "_blank");
       newTab.focus();
+    },
+    textTrim(str) {
+      return textTrim(str);
     }
   }
 };
