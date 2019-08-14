@@ -12,6 +12,7 @@
       <h1 class="mb-12 pl-4 pr-4 text-5xl d-theme-heading-color">Xảy ra lỗi trên ứng dụng!</h1>
       <p
         class="mb-16 d-theme-text-inverse ml-4 mr-8"
+        style="background: white; padding: 0.5rem; border-radius: 5px;"
       >Chúng tôi đã gửi mã lỗi này về cho nhóm phát triển, lỗi này sẽ được khắc phục sớm.</p>
       <vs-button size="large" type="relief" @click="doReload" icon="update">Tải lại ứng dụng</vs-button>
       <vs-button
