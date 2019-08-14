@@ -57,7 +57,7 @@
         <vs-th></vs-th>
         <vs-th>Tên sách</vs-th>
         <vs-th>Người trả</vs-th>
-        <vs-th>Sách ID</vs-th>
+        <vs-th>Mã sách</vs-th>
         <vs-th>Thời gian</vs-th>
         <vs-th></vs-th>
       </template>
