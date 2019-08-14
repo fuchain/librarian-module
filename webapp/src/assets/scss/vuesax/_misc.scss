@@ -22,14 +22,16 @@ ol {
 }
 
 .login-bg-img {
-  background-image: url("../images/pages/background.png");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)),
+    url("../images/pages/background.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
 }
 
 .bg-img {
-  background-image: url("../images/pages/background.png");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)),
+    url("../images/pages/background.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
