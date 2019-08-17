@@ -31,11 +31,11 @@ const cluster = [
   },
   {
     name: "node8",
-    port: 33030
+    port: 33174
   },
   {
     name: "testnet",
-    port: 33174
+    port: 9985
   }
 ];
 
