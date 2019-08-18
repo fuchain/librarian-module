@@ -29,7 +29,7 @@ router.get("/status", (_, res) =>
     })
 );
 
-router.use("/test", testRoutes);
+router.use("/test", authenMiddleware, librarianMiddleware, testRoutes);
 router.use("/auth", authenticationRoutes);
 router.use("/user", authenMiddleware, userRoutes);
 router.use(
