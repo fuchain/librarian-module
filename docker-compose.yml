@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 services:
   redisbc:
     image: redis
@@ -101,8 +101,8 @@ services:
       DB_HOST: mongodbbc
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
-      BIGCHAIN_HOST: http://localhost:9984/api/v1/
-      # BigchainDB Local is http://localhost:9984/api/v1/ - hosted is https://testnet.fuchain.fptu.tech/api/v1/
+      BIGCHAIN_HOST: http://host.docker.internal:9984/api/v1/
+      # BigchainDB Local is http://host.docker.internal:9984/api/v1/ - hosted is https://testnet.fuchain.fptu.tech/api/v1/
       PUBLIC_KEY: CCth57e7618EfhcmWHyTAV4rvvk9fr1TVrwVmVmBkkqz
       PRIVATE_KEY: FFrKcgQfbhMWFgqgSSQkZPPNxwbbCMiJBTG3bk3a9xJA
       IO_HOST: http://ioserver/api/v1
