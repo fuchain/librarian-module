@@ -5,6 +5,8 @@ const insertQueue = new Queue("insertBook", `redis://${env.redisHost}`);
 // Dependency to run this queue
 import { db } from "@core/db";
 import insertTxQueue from "@workers/insert.tx.worker";
+import asset from "@core/fuchain/asset";
+import concurrencyHandler from "@core/handlers/concurrency.handler";
 
 // Watch and Run job queue
 function run() {
@@ -12,19 +14,30 @@ function run() {
 }
 
 // Describe what to do in the job
-async function doJob() {
+export async function doJob() {
     try {
         // Run query
         const collection = db.collection("book_details");
 
         const bookDetails = await collection.find().toArray();
 
-        // Add book instance
-        bookDetails.forEach(e => {
-            const amount = e.amount;
-            for (let i = 0; i < amount; i++) {
-                insertTxQueue.addJob(e.id);
-            }
+        const result = await concurrencyHandler(bookDetails, 5, async e => {
+            const bookDetailIdSearch = await asset.searchAsset(e.id);
+            const bookList = bookDetailIdSearch.filter(e => e.data.book_detail);
+
+            const numOfJobs = e.amount - bookList.length;
+
+            return {
+                bookDetailId: e.id,
+                numOfJobs
+            };
+        });
+
+        result.forEach(e => {
+            if (e.numOfJobs)
+                for (let i = 0; i < e.numOfJobs; i++) {
+                    insertTxQueue.addJob(e.bookDetailId);
+                }
         });
     } catch (err) {
         console.log(`Something failed: ${err}`);

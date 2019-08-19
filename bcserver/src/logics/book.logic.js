@@ -76,7 +76,7 @@ async function getBookInstanceDetailList(bookDetailId) {
     const bookDetailIdSearch = await asset.searchAsset(bookDetailId);
     const bookList = bookDetailIdSearch.filter(e => e.data.book_detail);
 
-    const result = await concurrencyHandler(bookList, 3, async e => {
+    const result = await concurrencyHandler(bookList, 5, async e => {
         const { count, email } = await getDetailInformationOfABook(e.id);
         return {
             asset_id: e.id,
@@ -185,7 +185,7 @@ async function getBookInstanceTotal(type) {
 async function getBookAtLib(bookDetailId) {
     const bookList = await getBookInstanceList(bookDetailId);
 
-    const remainBookList = await concurrencyHandler(bookList, 1, async book => {
+    const remainBookList = await concurrencyHandler(bookList, 5, async book => {
         const transactionList = await asset.getAsset(book.asset_id);
 
         const firstPublicKey = transactionList[0].outputs[0].public_keys[0];
