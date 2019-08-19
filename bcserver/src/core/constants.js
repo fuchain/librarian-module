@@ -1,6 +1,7 @@
 export default {
-    LIBRARIAN_EMAIL: "librarian@fptu.tech"
+    LIBRARIAN_EMAIL: "librarian@fptu.tech",
+    REJECT_LIMIT: 2
 };
 
 // import constants from "@core/constants"
-// constants.librarian => "librarian"
+// constants.LIBRARIAN_EMAIL => "librarian@fptu.tech"
