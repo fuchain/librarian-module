@@ -20,7 +20,5 @@ export default async function concurrencyControlHandler(
         results = results.concat(batchResults);
     }
 
-    // Merge array of promise to one array; EG: [[item 1], [item2]] => [item1, item2]
-    const resultFinal = results.reduce((a, b) => a.concat(b));
-    return resultFinal;
+    return results;
 }
