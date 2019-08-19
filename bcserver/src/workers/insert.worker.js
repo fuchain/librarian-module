@@ -21,11 +21,20 @@ export async function doJob() {
 
         const bookDetails = await collection.find().toArray();
 
-        const result = await concurrencyHandler(bookDetails, 5, async e => {
+        const result = await concurrencyHandler(bookDetails, 3, async e => {
             const bookDetailIdSearch = await asset.searchAsset(e.id);
             const bookList = bookDetailIdSearch.filter(e => e.data.book_detail);
 
             const numOfJobs = e.amount - bookList.length;
+
+            if (numOfJobs && numOfJobs > 0) {
+                console.log(
+                    `Add ${numOfJobs || 0} books to bookDetail ${e.id}`
+                );
+                for (let i = 0; i < numOfJobs; i++) {
+                    insertTxQueue.addJob(e.id);
+                }
+            }
 
             return {
                 bookDetailId: e.id,
@@ -33,12 +42,7 @@ export async function doJob() {
             };
         });
 
-        result.forEach(e => {
-            if (e.numOfJobs)
-                for (let i = 0; i < e.numOfJobs; i++) {
-                    insertTxQueue.addJob(e.bookDetailId);
-                }
-        });
+        return result;
     } catch (err) {
         console.log(`Something failed: ${err}`);
     }
