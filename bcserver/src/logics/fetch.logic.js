@@ -1,6 +1,7 @@
 import asset from "@core/fuchain/asset";
 import { db } from "@core/db";
 import env from "@core/env";
+import constants from '@core/constants'
 
 async function getBookDetail(assetId) {
     const transactionList = await asset.getAsset(assetId);
@@ -28,7 +29,7 @@ async function getBookDetail(assetId) {
 
 async function getEmail(publicKey) {
     if (publicKey === env.publicKey) {
-        const librarianEmail = "librarian@fptu.tech";
+        const librarianEmail = constants.LIBRARIAN_EMAIL;
         return librarianEmail;
     }
 

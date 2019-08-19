@@ -5,12 +5,13 @@ import transaction from "@core/fuchain/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@core/db";
 import env from "@core/env";
+import constants from '@core/constants'
 
 async function getProfile(email) {
     // If librarian
-    if (email === "librarian@fptu.tech") {
+    if (email === constants.LIBRARIAN_EMAIL) {
         return {
-            email: "librarian@fptu.tech",
+            email: constants.LIBRARIAN_EMAIL,
             type: "librarian",
             fullname: "Thủ thư",
             phone: "0123456789"

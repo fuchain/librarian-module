@@ -77,7 +77,7 @@
         >
           <vx-auto-suggest
             :autoFocus="showFullSearch"
-            :data="navbarSearchAndPinList"
+            :data="data"
             @selected="selected"
             ref="navbarSearch"
             @closeSearchbar="showFullSearch = false"
@@ -217,6 +217,7 @@ import VxAutoSuggest from "@/views/components/vx-auto-suggest/VxAutoSuggest.vue"
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import draggable from "vuedraggable";
 import redirect from "@core/socket/redirect";
+import auth from "@core/auth";
 
 import { setTimeout } from "timers";
 
@@ -231,6 +232,7 @@ export default {
   data() {
     return {
       navbarSearchAndPinList: this.$store.state.navbarSearchAndPinList,
+      navbarSearchAndPinList_librarian: this.$store.state.navbarSearchAndPinList_librarian,
       searchQuery: "",
       showFullSearch: false,
       settings: {
@@ -267,7 +269,11 @@ export default {
 
     // BOOKMARK & SEARCH
     data() {
-      return this.$store.state.navbarSearchAndPinList;
+      if(this.$auth.isAdmin()){
+        return this.navbarSearchAndPinList_librarian;
+      }else{
+        return this.navbarSearchAndPinList;
+      }
     },
     starredPages() {
       return this.$store.state.starredPages;

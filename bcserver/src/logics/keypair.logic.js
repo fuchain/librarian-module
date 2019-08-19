@@ -6,6 +6,7 @@ import axios from "axios";
 import { createJWT } from "@core/jwt";
 import { db } from "@core/db";
 import uploadLogic from "@logics/upload.logic";
+import constants from '@core/constants'
 
 function generateRandomKeyPair() {
     return generateKey();
@@ -92,7 +93,7 @@ async function verifyKeyPairEmail(token, publicKey) {
 
     // Check if it is librarian
     if (publicKey === env.publicKey) {
-        if (email === "librarian@fptu.tech") {
+        if (email === constants.LIBRARIAN_EMAIL) {
             return {
                 token: createJWT(email, true),
                 status: "verified",
