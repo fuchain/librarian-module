@@ -7,7 +7,6 @@
             class="w-full"
             v-model="searchText"
             placeholder="Tìm JPD101 hoặc Nihongo Deiku"
-            v-on:keyup.enter="doSearch"
             v-debounce:300ms="doSearch"
             autofocus
             id="book-search"

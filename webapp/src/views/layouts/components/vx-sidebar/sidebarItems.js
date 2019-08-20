@@ -68,6 +68,14 @@ const adminMenu = [
     icon: "FileIcon",
     tag: "báo cáo",
     tagColor: "primary"
+  },
+  {
+    url: "/librarian/qrscan",
+    name: "Tra cứu sách",
+    slug: "qrscan",
+    icon: "CameraIcon",
+    tag: "QR",
+    tagColor: "primary"
   }
 ];
 

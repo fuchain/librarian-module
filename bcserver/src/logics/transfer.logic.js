@@ -230,7 +230,7 @@ async function postToDoneTransfer(confirmAssetSigned) {
             axios.post(`${env.ioHost}/notifications/push`, {
                 email: constants.LIBRARIAN_EMAIL,
                 type: "alert",
-                message: `Sách của dùng ${email} đã bị từ chối quá 5 lần, vui lòng kiểm tra và thu hồi`
+                message: `Sách của dùng ${email} đã bị từ chối quá ${constants.REJECT_LIMIT} lần, vui lòng kiểm tra và thu hồi`
             });
         }
     }

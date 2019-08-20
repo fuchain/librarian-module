@@ -289,14 +289,6 @@ export default {
           })
           .then(res => {
             this.book = res.data;
-
-            this.$http
-              .post(`${this.$http.baseUrl}/user/requesting`)
-              .then(response => {
-                const data = response.data;
-                const found = data.find(e => e.bookDetailId.id === res.data.id);
-                this.rejectable = found ? true : false;
-              });
           });
 
         this.$http
@@ -327,6 +319,14 @@ export default {
           })
           .then(res => {
             this.book = res.data;
+
+            this.$http
+              .post(`${this.$http.baseUrl}/user/requesting`)
+              .then(response => {
+                const data = response.data;
+                const found = data.find(e => e.bookDetailId.id === res.data.id);
+                this.rejectable = found ? true : false;
+              });
           });
 
         this.$http
