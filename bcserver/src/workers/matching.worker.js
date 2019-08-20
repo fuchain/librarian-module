@@ -33,6 +33,17 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
         );
 
         if (!isCancel) {
+            const isActive = await userLogic.isUserActive(email);
+            if (!isActive) {
+                axios.post(`${env.ioHost}/events/push`, {
+                    email,
+                    type: "fail",
+                    message:
+                        "Tài khoản của bạn đang bị tạm khóa, vui lòng liên hệ thư viện"
+                });
+                throw new Error("Not valid request for disabled account!");
+            }
+
             if (!bookId && currentKeepingBooks.length > 5) {
                 axios.post(`${env.ioHost}/events/push`, {
                     email,

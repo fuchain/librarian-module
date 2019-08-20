@@ -5,7 +5,7 @@ import transaction from "@core/fuchain/transaction";
 import { fillBookInfo } from "@core/parser/bookdetail";
 import { db } from "@core/db";
 import env from "@core/env";
-import constants from '@core/constants'
+import constants from "@core/constants";
 
 async function getProfile(email) {
     // If librarian
@@ -194,15 +194,6 @@ async function getAllUsers(type = "reader") {
     const usersCollection = db.collection("users");
 
     const listPromises = users.map(async user => {
-        if (user.data.email.includes("librarian")) {
-            return {
-                email: user.data.email,
-                public_key: null,
-                full_name: null,
-                phone: null
-            };
-        }
-
         const assetTxs = await asset.getAsset(user.id);
         const latestTx = assetTxs[assetTxs.length - 1];
         const publicKey = latestTx.metadata.public_key;
@@ -214,7 +205,8 @@ async function getAllUsers(type = "reader") {
         if (!localUser) {
             return {
                 email: user.data.email,
-                public_key: publicKey
+                public_key: publicKey,
+                inactive: false
             };
         }
 
@@ -222,7 +214,8 @@ async function getAllUsers(type = "reader") {
             email: user.data.email,
             public_key: publicKey,
             full_name: localUser.fullname,
-            phone: localUser.phone
+            phone: localUser.phone,
+            inactive: localUser.inactive || false
         };
     });
 
@@ -260,6 +253,43 @@ async function getLastTransactionTime(assetId) {
     return txs[txs.length - 1].metadata.transfer_date;
 }
 
+async function lockAccount(email) {
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({ email });
+    if (!user) {
+        throw new Error("Email not valid");
+    }
+
+    const currentStatus = user.inactive || false;
+
+    await usersCollection.updateOne(
+        {
+            email: email
+        },
+        {
+            $set: {
+                inactive: !currentStatus
+            }
+        }
+    );
+
+    return !currentStatus;
+}
+
+async function isUserActive(email) {
+    const usersCollection = db.collection("users");
+    const user = await usersCollection.findOne({ email });
+
+    if (!user) {
+        throw new Error("Email not valid");
+    }
+
+    const currentStatus = user.inactive || false;
+
+    return !currentStatus;
+}
+
 export default {
     getProfile,
     updateProfile,
@@ -269,5 +299,7 @@ export default {
     getAllUsers,
     getUserTotal,
     getPhoneFromEmail,
-    getLastTransactionTime
+    getLastTransactionTime,
+    lockAccount,
+    isUserActive
 };
