@@ -105,7 +105,8 @@ services:
       # BigchainDB Local is http://host.docker.internal:9984/api/v1/ - hosted is https://testnet.fuchain.fptu.tech/api/v1/
       PUBLIC_KEY: CCth57e7618EfhcmWHyTAV4rvvk9fr1TVrwVmVmBkkqz
       PRIVATE_KEY: FFrKcgQfbhMWFgqgSSQkZPPNxwbbCMiJBTG3bk3a9xJA
-      IO_HOST: http://ioserver/api/v1
+      IO_HOST: http://ioserver:5002/api/v1
+      PAIR_HOST: http://pairworker:5100
 
   ioserver:
     build:

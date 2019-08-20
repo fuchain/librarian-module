@@ -24,5 +24,6 @@ export default {
     bigchainHost: process.env.BIGCHAIN_HOST,
     publicKey: process.env.PUBLIC_KEY,
     privateKey: process.env.PRIVATE_KEY,
-    ioHost: process.env.IO_HOST
+    ioHost: process.env.IO_HOST,
+    pairHost: process.env.PAIR_HOST
 };

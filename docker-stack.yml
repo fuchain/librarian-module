@@ -118,7 +118,8 @@ services:
       BIGCHAIN_HOST: http://fuchain.fptu.tech/api/v1/
       PUBLIC_KEY: CCth57e7618EfhcmWHyTAV4rvvk9fr1TVrwVmVmBkkqz
       PRIVATE_KEY: FFrKcgQfbhMWFgqgSSQkZPPNxwbbCMiJBTG3bk3a9xJA
-      IO_HOST: https://api.fptu.tech/io/api/v1
+      IO_HOST: http://ioserver:5002/api/v1
+      PAIR_HOST: http://pairworker:5100
     deploy:
       replicas: 5
       update_config:
