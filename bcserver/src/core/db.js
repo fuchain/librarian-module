@@ -24,6 +24,11 @@ export async function initMongoDB() {
             console.log("MongoDB connected to:", env.dbHost);
             db = client.db(dbName);
 
+            db.ensureIndex("users", {
+                email: "text",
+                fullname: "text"
+            });
+
             resolve();
 
             // Not close the connect

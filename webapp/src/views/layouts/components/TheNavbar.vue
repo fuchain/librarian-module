@@ -191,6 +191,7 @@
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
                   @click="$router.push('/chat')"
+                  v-if="!$auth.isAdmin()"
                 >
                   <feather-icon icon="MessageSquareIcon" svgClasses="w-4 h-4"></feather-icon>
                   <span class="ml-2">Tin nhắn</span>
@@ -232,7 +233,8 @@ export default {
   data() {
     return {
       navbarSearchAndPinList: this.$store.state.navbarSearchAndPinList,
-      navbarSearchAndPinList_librarian: this.$store.state.navbarSearchAndPinList_librarian,
+      navbarSearchAndPinList_librarian: this.$store.state
+        .navbarSearchAndPinList_librarian,
       searchQuery: "",
       showFullSearch: false,
       settings: {
@@ -269,9 +271,9 @@ export default {
 
     // BOOKMARK & SEARCH
     data() {
-      if(this.$auth.isAdmin()){
+      if (this.$auth.isAdmin()) {
         return this.navbarSearchAndPinList_librarian;
-      }else{
+      } else {
         return this.navbarSearchAndPinList;
       }
     },

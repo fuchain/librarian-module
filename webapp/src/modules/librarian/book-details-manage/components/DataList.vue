@@ -167,6 +167,9 @@ export default {
       .finally(() => {
         this.$Progress.finish();
       });
+  },
+  beforeDestroy() {
+    this.$Progress.finish();
   }
 };
 </script>

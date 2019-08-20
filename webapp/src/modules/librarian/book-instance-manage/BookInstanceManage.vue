@@ -17,10 +17,17 @@
             <div
               class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               @click="verifyReturn(bookDetail.id)"
+              v-if="totalRemain || totalRemain > 0"
             >
               <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
               <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH (CÒN {{ totalRemain }})</span>
+            </div>
+            <div
+              class="item-view-secondary-action-btn bg-white p-3 flex flex-grow items-center justify-center text-primary"
+              v-else
+            >
+              <span class="text-sm font-semibold ml-2">ĐANG TẢI THÔNG TIN...</span>
             </div>
           </div>
         </template>
@@ -126,6 +133,7 @@
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>
           <vs-th>Mã giao dịch</vs-th>
+          <vs-th>Loại</vs-th>
           <vs-th>Người trả</vs-th>
           <vs-th>Người nhận</vs-th>
           <vs-th>Thời gian</vs-th>
@@ -136,6 +144,12 @@
             <vs-td :data="indextr">{{indextr + 1}}</vs-td>
 
             <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
+
+            <vs-td>
+              <vs-chip
+                :color="data[indextr].type === 'reject' ? 'danger' : 'primary'"
+              >{{data[indextr].type === "reject" ? "Từ chối" : "Xác nhận"}}</vs-chip>
+            </vs-td>
 
             <vs-td :data="data[indextr].returner">{{data[indextr].returner}}</vs-td>
 
@@ -213,6 +227,8 @@ export default {
         })
         .then(response => {
           const data = response.data;
+
+          data.sort((a, b) => a.transfer_date - b.transfer_date);
 
           this.historyList = data;
           this.historyPopup = true;
@@ -306,6 +322,9 @@ export default {
       .catch(() => {
         this.$router.push("/librarian/book-details-manage");
       });
+  },
+  beforeDestroy() {
+    this.$Progress.finish();
   }
 };
 </script>

@@ -34,14 +34,12 @@ const adminMenu = [
     slug: "users-manage",
     icon: "UsersIcon"
   },
-  // {
-  //   url: "/librarian/notification/send",
-  //   name: "Gửi thông báo",
-  //   slug: "notification-send",
-  //   icon: "SendIcon",
-  //   tag: "beta",
-  //   tagColor: "darkorange"
-  // },
+  {
+    url: "/librarian/notification/send",
+    name: "Gửi thông báo",
+    slug: "notification-send",
+    icon: "SendIcon"
+  },
   {
     url: null,
     name: "Theo dõi vận hành",

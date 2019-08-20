@@ -43,6 +43,7 @@
     "vue-qrcode-reader": "^2.0.2",
     "vue-router": "^3.0.3",
     "vue-select": "^2.6.3",
+    "vue-simple-suggest": "^1.9.5",
     "vue-star-rating": "^1.6.1",
     "vue-timeago": "^5.1.2",
     "vue-tour": "^1.1.0",

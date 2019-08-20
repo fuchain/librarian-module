@@ -1,5 +1,5 @@
 <template>
-  <vx-card>
+  <vx-card title="Quét mã QR">
     <QRScan v-if="!error" @printCode="notify" @onFail="handleFail" />
     <p v-else>Bạn phải cho phép ứng dụng sử dụng máy ảnh.</p>
   </vx-card>
