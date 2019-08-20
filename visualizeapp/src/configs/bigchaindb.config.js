@@ -3,35 +3,35 @@ import queryString from "query-string";
 const cluster = [
   {
     name: "node1",
-    port: 33276
+    port: 33564
   },
   {
     name: "node2",
-    port: 33282
+    port: 33570
   },
   {
     name: "node3",
-    port: 33288
+    port: 33576
   },
   {
     name: "node4",
-    port: 33294
+    port: 33582
   },
   {
     name: "node5",
-    port: 33300
+    port: 33588
   },
   {
     name: "node6",
-    port: 33306
+    port: 33594
   },
   {
     name: "node7",
-    port: 33312
+    port: 33600
   },
   {
     name: "node8",
-    port: 33318
+    port: 33606
   },
   {
     name: "testnet",

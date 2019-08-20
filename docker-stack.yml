@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 services:
   redisbc:
     image: redis:alpine
@@ -180,6 +180,7 @@ services:
 
 networks:
   node:
+    driver: overlay
 
 volumes:
   redisio-data:

@@ -51,13 +51,13 @@
         </div>
 
         <!-- ITEMS PER PAGE -->
-        <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
+        <!-- <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
           <div
             class="p-4 border border-solid border-grey-light rounded-full d-theme-dark-bg cursor-pointer flex items-center justify-between font-medium"
           >
             <span
               class="mr-2"
-            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} of {{ dataList.length }}</span>
+            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} trong {{ dataList.length }}</span>
             <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
           <vs-dropdown-menu>
@@ -71,7 +71,7 @@
               <span>20</span>
             </vs-dropdown-item>
           </vs-dropdown-menu>
-        </vs-dropdown>
+        </vs-dropdown>-->
       </div>
 
       <template slot="thead">
@@ -79,7 +79,7 @@
         <vs-th>Email</vs-th>
         <vs-th>Họ tên</vs-th>
         <vs-th>Số điện thoại</vs-th>
-        <vs-th>Vô hiệu hóa</vs-th>
+        <vs-th></vs-th>
         <vs-th></vs-th>
       </template>
 
@@ -108,17 +108,17 @@
             </vs-td>
 
             <vs-td>
-              <p>
-                <vs-switch value="tr.disabled" />
-              </p>
-            </vs-td>
-
-            <vs-td>
               <vs-button
                 icon="pageview"
                 @click="openKeepingBook(tr)"
                 v-if="!tr.email.includes('librarian')"
               >Xem</vs-button>
+            </vs-td>
+
+            <vs-td>
+              <p>
+                <vs-button icon="lock" type="relief" color="danger">Khóa</vs-button>
+              </p>
             </vs-td>
           </vs-tr>
         </tbody>
