@@ -13,8 +13,8 @@ async function getProfile(email) {
         return {
             email: constants.LIBRARIAN_EMAIL,
             type: "librarian",
-            fullname: "Thủ thư",
-            phone: "0123456789"
+            fullname: "Nhân viên thủ thư",
+            phone: "Phòng thư viện"
         };
     }
 
@@ -290,6 +290,22 @@ async function isUserActive(email) {
     return !currentStatus;
 }
 
+async function searchUser(text) {
+    if (!text) return [];
+
+    const result = await db
+        .collection("users")
+        .find({
+            $text: {
+                $search: text
+            }
+        })
+        .limit(10)
+        .toArray();
+
+    return result;
+}
+
 export default {
     getProfile,
     updateProfile,
@@ -301,5 +317,6 @@ export default {
     getPhoneFromEmail,
     getLastTransactionTime,
     lockAccount,
-    isUserActive
+    isUserActive,
+    searchUser
 };

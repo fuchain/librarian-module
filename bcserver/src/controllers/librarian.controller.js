@@ -129,6 +129,14 @@ async function lockAccount(req, res) {
     });
 }
 
+async function searchUser(req, res) {
+    const text = req.body.text;
+
+    const result = await userLogic.searchUser(text);
+
+    res.send(result);
+}
+
 export default errorHandler({
     getAllBookDetails,
     getAllUsers,
@@ -141,5 +149,6 @@ export default errorHandler({
     getBookTotalAtLib,
     giveBook,
     recoverAccount,
-    lockAccount
+    lockAccount,
+    searchUser
 });

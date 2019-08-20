@@ -304,6 +304,14 @@ export default {
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleWindowResize);
+  },
+  mounted() {
+    this.$vs.notify({
+      title: "Tính năng sẽ ra mắt sớm",
+      text: "Tin nhắn đang được phát triển và sẽ sớm ra mắt",
+      color: "warning",
+      position: "top-center"
+    });
   }
 };
 </script>

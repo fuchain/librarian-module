@@ -299,6 +299,8 @@ export default {
         .then(response => {
           const data = response.data;
 
+          data.sort((a, b) => a.transfer_date - b.transfer_date);
+
           this.historyList = data;
           this.historyPopup = true;
           this.historyId = assetId;
@@ -365,6 +367,9 @@ export default {
   },
   mounted() {
     this.isMounted = true;
+  },
+  beforeDestroy() {
+    this.$Progress.finish();
   }
 };
 </script>
