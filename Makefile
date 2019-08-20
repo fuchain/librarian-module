@@ -16,6 +16,10 @@ start: check-deps ## Run services from source and daemonize it (stop with `make 
 stop: check-deps ## Stop services
 	@$(DC) stop
 
+build: check-deps ## Stop and REMOVE all containers. WARNING: you will LOSE all data stored in BigchainDB.
+	@$(DC) stop
+	@$(DC) build
+
 reset: check-deps ## Stop and REMOVE all containers. WARNING: you will LOSE all data stored in BigchainDB.
 	@$(DC) down
 
