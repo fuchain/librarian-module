@@ -4,7 +4,6 @@ const pairQueue = new Queue("pair", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
 import axios from "axios";
-import env from "@core/env";
 
 // Watch and Run job queue
 function run() {
