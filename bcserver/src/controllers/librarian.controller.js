@@ -118,6 +118,17 @@ async function recoverAccount(req, res) {
     });
 }
 
+async function lockAccount(req, res) {
+    const email = req.body.email;
+
+    const status = await userLogic.lockAccount(email);
+
+    res.send({
+        message: "Done",
+        status: status ? "inactive" : "active"
+    });
+}
+
 export default errorHandler({
     getAllBookDetails,
     getAllUsers,
@@ -129,5 +140,6 @@ export default errorHandler({
     getBookTotalByBDID,
     getBookTotalAtLib,
     giveBook,
-    recoverAccount
+    recoverAccount,
+    lockAccount
 });

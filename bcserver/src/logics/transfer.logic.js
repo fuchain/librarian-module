@@ -169,6 +169,20 @@ async function createReceiverConfirmAsset(transferTxSigned, publicKey) {
     // send event to receiver to sign
     const email = await asset.getEmailFromPublicKey(publicKey);
 
+    if (email !== constants.LIBRARIAN_EMAIL) {
+        const status = await userLogic.isUserActive(email);
+
+        if (!status) {
+            axios.post(`${env.ioHost}/events/push`, {
+                email,
+                type: "fail",
+                message:
+                    "Bạn không thể nhận sách do tài khoản đã bị khóa, vui lòng liên hệ thư viện"
+            });
+            throw new Error("User is locked, cannot receive book");
+        }
+    }
+
     try {
         await axios.post(`${env.ioHost}/events/push`, {
             email,

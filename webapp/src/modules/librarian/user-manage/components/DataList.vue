@@ -117,7 +117,17 @@
 
             <vs-td>
               <p>
-                <vs-button icon="lock" type="relief" color="danger">Khóa</vs-button>
+                <!-- <vs-button
+                  @click="lockUser(tr)"
+                  :icon="tr.inactive ? 'lock_open' : 'lock'"
+                  type="relief"
+                  :color="tr.inactive ? 'warning' : 'danger'"
+                >{{ tr.inactive ? "Mở" : "Khóa" }}</vs-button>-->
+
+                <vs-switch v-model="tr.inactive" @click="lockUser(tr)">
+                  <span slot="on">Kích hoạt</span>
+                  <span slot="off">Ngưng kích hoạt</span>
+                </vs-switch>
               </p>
             </vs-td>
           </vs-tr>
@@ -292,6 +302,61 @@ export default {
           this.historyList = data;
           this.historyPopup = true;
           this.historyId = assetId;
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
+    },
+    openConfirm(user) {
+      const inactive = user.inactive || false;
+
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: `Xác nhận`,
+        text: `Bạn có chắc muốn ${
+          inactive ? "mở khóa" : "khóa"
+        } tài khoản ${user.email || null}`,
+        accept: this.lockUser(user),
+        acceptText: "Chắc chắn",
+        cancelText: "Hủy bỏ"
+      });
+    },
+    lockUser(user) {
+      const inactive = user.inactive || false;
+
+      this.$vs.loading();
+      this.$http
+        .post(`${this.$http.baseUrl}/librarian/lock_account`, {
+          email: user.email || null
+        })
+        .then(response => {
+          const data = response.data;
+
+          if (data.status === "inactive") {
+            this.$vs.notify({
+              title: "Thành công",
+              text: `Khóa tài khoản ${user.email} thành công`,
+              color: "primary",
+              position: "top-center"
+            });
+          } else {
+            this.$vs.notify({
+              title: "Thành công",
+              text: `Mở khóa tài khoản  ${user.email} thành công`,
+              color: "primary",
+              position: "top-center"
+            });
+          }
+        })
+        .catch(() => {
+          this.$emit("doReload");
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Lỗi bất ngờ xảy ra, vui lòng thử lại sau",
+            color: "warning",
+            position: "top-center"
+          });
         })
         .finally(() => {
           this.$vs.loading.close();

@@ -19,7 +19,8 @@ async function doJob() {
         const { data } = await axios.get(
             env.pairHost || "http://ssh.fptu.tech:5100"
         );
-        console.log("Pairworker: ", data);
+        console.log("Pair host: ", env.pairHost || "http://ssh.fptu.tech:5100");
+        console.log("Pair response: ", data);
 
         return true;
     } catch (err) {
