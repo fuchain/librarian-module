@@ -101,8 +101,7 @@ services:
       DB_HOST: mongodbbc
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
-      BIGCHAIN_HOST: http://host.docker.internal:9984/api/v1/
-      # BigchainDB Local is http://host.docker.internal:9984/api/v1/ - hosted is https://testnet.fuchain.fptu.tech/api/v1/
+      BIGCHAIN_HOST: http://dockerhost:9984/api/v1/
       PUBLIC_KEY: CCth57e7618EfhcmWHyTAV4rvvk9fr1TVrwVmVmBkkqz
       PRIVATE_KEY: FFrKcgQfbhMWFgqgSSQkZPPNxwbbCMiJBTG3bk3a9xJA
       IO_HOST: http://ioserver:5002/api/v1
@@ -127,6 +126,12 @@ services:
       DB_NAME: librariannode
       REDIS_HOST: redisio
       SENDGRID_API_KEY: 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
+
+  dockerhost:
+    image: qoomon/docker-host
+    networks:
+      - node
+    cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
 
 networks:
   node:
