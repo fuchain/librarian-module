@@ -4,6 +4,7 @@ const pairQueue = new Queue("pair", `redis://${env.redisHost}`);
 
 // Dependency to run this queue
 import axios from "axios";
+import env from "@core/env";
 
 // Watch and Run job queue
 function run() {
@@ -16,7 +17,9 @@ async function doJob() {
         // Node.js queue logic at: /Document/LegacyWorker/pair.js
 
         // Call Golang Pair Worker
-        const { data } = await axios.get("http://ssh.fptu.tech:5100");
+        const { data } = await axios.get(
+            env.pairHost || "http://ssh.fptu.tech:5100"
+        );
         console.log("Pairworker: ", data);
 
         return true;
