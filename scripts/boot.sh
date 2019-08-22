@@ -31,3 +31,12 @@ cd /home
 git clone https://git.fptu.tech/fuchain/librarian-module.git
 cd librarian-module
 sudo make start
+
+echo "Import data"
+cd /home
+apt install mongo-tools -y
+wget https://builder.fptu.tech/bookdetails.json
+mongoimport --db librarianblockchain --collection book_details --file bookdetails.json
+rm -rf bookdetails.json
+
+echo "Done deployment";
