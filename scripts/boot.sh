@@ -35,7 +35,7 @@ sudo make start
 echo "Import data"
 cd /home
 apt install mongo-tools -y
-wget https://builder.fptu.tech/bookdetails.json
+wget http://builder.fptu.tech/bookdetails.json
 mongoimport --db librarianblockchain --collection book_details --file bookdetails.json
 rm -rf bookdetails.json
 
