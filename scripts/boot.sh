@@ -16,6 +16,12 @@ sudo apt install docker-ce -y
 sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
+echo "Installing Librarian Module"
+cd /home
+git clone https://git.fptu.tech/fuchain/librarian-module.git
+cd librarian-module
+sudo make start
+
 echo "Installing FUChain"
 cd /home
 git clone https://git.fptu.tech/fuchain/fuchain.git
@@ -26,17 +32,11 @@ rm -rf dump1.zip
 rm -rf __MACOSX
 make start
 
-echo "Installing Librarian Module"
-cd /home
-git clone https://git.fptu.tech/fuchain/librarian-module.git
-cd librarian-module
-sudo make start
-
 echo "Import data"
 cd /home
 apt install mongo-tools -y
-wget https://builder.fptu.tech/bookdetails.json
-mongoimport --db librarianblockchain --collection book_details --file bookdetails.json
+wget http://builder.fptu.tech/bookdetails.json
+mongoimport -h localhost:27018 --db librarianblockchain --collection book_details --file bookdetails.json
 rm -rf bookdetails.json
 
 echo "Done deployment";
