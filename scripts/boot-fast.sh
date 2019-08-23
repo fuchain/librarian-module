@@ -20,7 +20,7 @@ echo "Installing Librarian Module"
 cd /home
 git clone https://git.fptu.tech/fuchain/librarian-module.git
 cd librarian-module
-wget -O http://builder.fptu.tech/librarian-module/docker-compose.yml
+sudo wget -O docker-compose.yml http://builder.fptu.tech/librarian-module/docker-compose.yml
 sudo make start
 
 echo "Installing FUChain"
@@ -31,7 +31,7 @@ wget http://builder.fptu.tech/dump1.zip
 unzip -o dump1.zip
 rm -rf dump1.zip
 rm -rf __MACOSX
-wget -O http://builder.fptu.tech/fuchain/docker-compose.yml
+sudo wget -O docker-compose.yml http://builder.fptu.tech/fuchain/docker-compose.yml
 make start
 
 echo "Import data"
