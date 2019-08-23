@@ -43,7 +43,7 @@
         <vs-th>Phân loại</vs-th>
         <vs-th>Tên đầu sách</vs-th>
         <vs-th>Mã môn</vs-th>
-        <vs-th>Số lượng sách</vs-th>
+        <vs-th>Số lượng</vs-th>
         <vs-th></vs-th>
       </template>
 
@@ -167,6 +167,9 @@ export default {
       .finally(() => {
         this.$Progress.finish();
       });
+  },
+  beforeDestroy() {
+    this.$Progress.finish();
   }
 };
 </script>

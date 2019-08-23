@@ -5,11 +5,9 @@ export default async function concurrencyControlHandler(
 ) {
     // Get total of batch need to run
     const batchesCount = Math.ceil(dataList.length / concurrencyLimit);
+    let results = [];
 
-    // Loop over the total batch number
-    const batchesArray = Array.from(Array(batchesCount));
-    const promises = batchesArray.map(async (_, i) => {
-        // This function will return an array of promises
+    for (let i = 0; i < batchesCount; i++) {
         const batchStart = i * concurrencyLimit;
         const batchArguments = dataList.slice(
             batchStart,
@@ -17,15 +15,10 @@ export default async function concurrencyControlHandler(
         );
         const batchPromises = batchArguments.map(asyncOperation);
 
+        // Harvesting
         const batchResults = await Promise.all(batchPromises);
+        results = results.concat(batchResults);
+    }
 
-        return batchResults;
-    });
-
-    // Resolve above array of promises
-    const arrayOfPromisesResult = await Promise.all(promises);
-
-    // Merge array of promise to one array; EG: [[item 1], [item2]] => [item1, item2]
-    const result = arrayOfPromisesResult.reduce((a, b) => a.concat(b));
-    return result;
+    return results;
 }

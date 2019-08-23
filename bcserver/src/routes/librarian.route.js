@@ -20,5 +20,7 @@ router.route("/library_book_total").post(controller.getBookTotalAtLib);
 router.route("/give_book").post(controller.giveBook);
 router.route("/matchings").get(matchingController.getMatchings);
 router.route("/recover_account").post(controller.recoverAccount);
+router.route("/lock_account").post(controller.lockAccount);
+router.route("/search_user").post(controller.searchUser);
 
 export default router;

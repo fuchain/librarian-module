@@ -10,8 +10,8 @@
               style="cursor: pointer;"
             >
               <img
-                src="@/assets/images/logo/logopng.png"
-                style="width: 120px; margin-top: 10px; margin-bottom: 10px;"
+                src="/blockchain.svg"
+                style="width: 220px; margin-top: 10px; margin-bottom: 10px;"
                 alt="login"
                 class="mx-auto"
               />
@@ -103,7 +103,7 @@
                     icon="work"
                     class="mb-4"
                     @click="changeStyle()"
-                    v-if="mode === 'verify'"
+                    v-if="false && mode === 'verify'"
                   ></vs-button>
                   <vs-button
                     class="float-right mb-8"

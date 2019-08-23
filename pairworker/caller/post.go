@@ -21,5 +21,6 @@ func PostPair(url string, requestBody []byte) {
 		log.Fatal(err)
 	}
 
+	log.Println("Calling API: ", url)
 	log.Println("Response from API: ", string(body))
 }

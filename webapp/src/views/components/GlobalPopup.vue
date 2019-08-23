@@ -68,6 +68,7 @@
           class="mb-2 w-full"
           icon="fingerprint"
           @click="openConfirm"
+          type="relief"
         >{{ tx.operation === 'TRANSFER' ? 'Kí chuyển sách' : 'Kí nhận sách' }}</vs-button>
       </div>
       <div class="vx-col sm:w-2/3 w-full ml-auto" v-if="tx.operation !== 'TRANSFER'">
@@ -288,14 +289,6 @@ export default {
           })
           .then(res => {
             this.book = res.data;
-
-            this.$http
-              .post(`${this.$http.baseUrl}/user/requesting`)
-              .then(response => {
-                const data = response.data;
-                const found = data.find(e => e.bookDetailId.id === res.data.id);
-                this.rejectable = found ? true : false;
-              });
           });
 
         this.$http
@@ -326,6 +319,14 @@ export default {
           })
           .then(res => {
             this.book = res.data;
+
+            this.$http
+              .post(`${this.$http.baseUrl}/user/requesting`)
+              .then(response => {
+                const data = response.data;
+                const found = data.find(e => e.bookDetailId.id === res.data.id);
+                this.rejectable = found ? true : false;
+              });
           });
 
         this.$http

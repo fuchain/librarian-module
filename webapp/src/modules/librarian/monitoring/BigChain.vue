@@ -1,7 +1,7 @@
 <template>
-  <vx-card title="Theo dõi mạng BigchainDB">
+  <vx-card title="Theo dõi mạng FUChain">
     <vue-friendly-iframe
-      src="https://cluster.bigchain.fptu.tech"
+      src="https://cluster.fuchain.fptu.tech"
       @load="onLoad"
       @document-load="onDocumentLoad"
     ></vue-friendly-iframe>

@@ -7,7 +7,7 @@ import transferLogic from "@logics/transfer.logic";
 
 // Watch and Run job queue
 function run() {
-    insertTxQueue.process(5, jobCallback);
+    insertTxQueue.process(3, jobCallback);
 }
 
 // Describe what to do in the job
@@ -30,7 +30,7 @@ async function addJob(id) {
     try {
         await insertTxQueue.add({ id });
     } catch (err) {
-        console.log(`Something failed when add job: ${err}`);
+        console.log(`Something failed when add job: ${err.toString()}`);
     }
 }
 

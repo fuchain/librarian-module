@@ -139,6 +139,10 @@ const router = new Router({
         {
           path: "librarian/queue",
           component: () => import("@/modules/librarian/queue/Queue.vue")
+        },
+        {
+          path: "librarian/qrscan",
+          component: () => import("@/modules/qrscan/QRScan.vue")
         }
       ]
     },

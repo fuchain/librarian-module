@@ -194,12 +194,12 @@ export default {
           book_id: item.id
         })
         .then(() => {
-          this.$vs.notify({
-            title: "Thành công",
-            text: "Đã gửi yêu cầu hủy bỏ việc trả sách thành công",
-            color: "primary",
-            position: "top-center"
-          });
+          // this.$vs.notify({
+          //   title: "Thành công",
+          //   text: "Đã gửi yêu cầu hủy bỏ việc trả sách thành công",
+          //   color: "primary",
+          //   position: "top-center"
+          // });
 
           this.$store.dispatch("getNumOfBooks");
 

@@ -1,4 +1,5 @@
 import navbarSearchAndPinList from "@/views/layouts/components/navbarSearchAndPinList";
+import navbarSearchAndPinListLibrarian from "@/views/layouts/components/navbarSearchAndPinList-librarian";
 import themeConfig, { colors } from "@/../themeConfig.js";
 
 const state = {
@@ -11,6 +12,7 @@ const state = {
   sidebarItemsMin: false,
   theme: themeConfig.theme || "light",
   navbarSearchAndPinList: navbarSearchAndPinList,
+  navbarSearchAndPinList_librarian: navbarSearchAndPinListLibrarian,
   themePrimaryColor: colors.primary,
   starredPages: navbarSearchAndPinList.data.filter(
     page => page.highlightAction

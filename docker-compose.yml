@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 services:
   redisbc:
     image: redis
@@ -25,7 +25,7 @@ services:
   mongodbbc:
     image: mongo
     ports:
-        - 27017:27017
+        - 27018:27017
     volumes:
       - mongodbbc-data:/data/db
     networks:
@@ -35,7 +35,7 @@ services:
   mongodbio:
     image: mongo
     ports:
-        - 27018:27017
+        - 27019:27017
     volumes:
       - mongodbio-data:/data/db
     networks:
@@ -52,7 +52,6 @@ services:
     volumes:
       - ./webapp/src:/root/src/app/src
       - ./webapp/public:/root/src/app/public
-      - ./webapp/.env:/root/src/app/.env
     environment:
       VUE_APP_API_BASE_URL: http://localhost:5000
       VUE_APP_API_BETA_URL: http://localhost:5002
@@ -82,6 +81,7 @@ services:
     image: librarian-pairworker-dev
     environment:
       MONGODB: mongodbbc
+      BCSERVER: http://bcserver:5000
 
   bcserver:
     build:
@@ -101,10 +101,11 @@ services:
       DB_HOST: mongodbbc
       DB_NAME: librarianblockchain
       REDIS_HOST: redisbc
-      BIGCHAIN_HOST: https://testnet.bigchain.fptu.tech/api/v1/
-      PUBLIC_KEY: Y95FVZsm25rvRhCgV4wZ5NMNE3A3SdJGeKk6KBqroD9
-      PRIVATE_KEY: CviuZeJhVuvtUc25BUuUDUmU8nARFqpxYKDGQP61s4is
-      IO_HOST: http://ioserver/api/v1
+      BIGCHAIN_HOST: http://dockerhost:9984/api/v1/
+      PUBLIC_KEY: CCth57e7618EfhcmWHyTAV4rvvk9fr1TVrwVmVmBkkqz
+      PRIVATE_KEY: FFrKcgQfbhMWFgqgSSQkZPPNxwbbCMiJBTG3bk3a9xJA
+      IO_HOST: http://ioserver:5002/api/v1
+      PAIR_HOST: http://pairworker:5100
 
   ioserver:
     build:
@@ -125,6 +126,12 @@ services:
       DB_NAME: librariannode
       REDIS_HOST: redisio
       SENDGRID_API_KEY: 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
+
+  dockerhost:
+    image: qoomon/docker-host
+    networks:
+      - node
+    cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
 
 networks:
   node:

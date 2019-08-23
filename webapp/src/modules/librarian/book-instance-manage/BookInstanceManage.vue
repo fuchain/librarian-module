@@ -17,10 +17,17 @@
             <div
               class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
               @click="verifyReturn(bookDetail.id)"
+              v-if="totalRemain || totalRemain > 0"
             >
               <feather-icon icon="CheckIcon" svgClasses="h-4 w-4" />
 
               <span class="text-sm font-semibold ml-2">CHUYỂN SÁCH (CÒN {{ totalRemain }})</span>
+            </div>
+            <div
+              class="item-view-secondary-action-btn bg-white p-3 flex flex-grow items-center justify-center text-primary"
+              v-else
+            >
+              <span class="text-sm font-semibold ml-2">ĐANG TẢI THÔNG TIN...</span>
             </div>
           </div>
         </template>
@@ -61,7 +68,7 @@
           >
             <span
               class="mr-2"
-            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} of {{ dataList.length }}</span>
+            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} trong {{ dataList.length }}</span>
             <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
           <vs-dropdown-menu>
@@ -94,7 +101,7 @@
             @click="openBookDataList(tr)"
           >
             <vs-td>
-              <p>{{ tr.asset_id || "--" }}</p>
+              <p>{{ "..." + tr.asset_id.slice(-10) || "--" }}</p>
             </vs-td>
 
             <vs-td>
@@ -102,7 +109,7 @@
             </vs-td>
 
             <vs-td>
-              <p>{{ tr.current_keeper === "Fetching" ? "--" : tr.current_keeper || "--" }}</p>
+              <p>{{ tr.current_keeper === "Fetching" ? "--" : tr.current_keeper.includes('librarian') ? "Thư viện" : tr.current_keeper || "--" }}</p>
             </vs-td>
 
             <vs-td>
@@ -126,6 +133,7 @@
         <template slot="thead">
           <vs-th>Thứ tự</vs-th>
           <vs-th>Mã giao dịch</vs-th>
+          <vs-th>Loại</vs-th>
           <vs-th>Người trả</vs-th>
           <vs-th>Người nhận</vs-th>
           <vs-th>Thời gian</vs-th>
@@ -136,6 +144,12 @@
             <vs-td :data="indextr">{{indextr + 1}}</vs-td>
 
             <vs-td :data="data[indextr].id">{{data[indextr].id}}</vs-td>
+
+            <vs-td>
+              <vs-chip
+                :color="data[indextr].type === 'reject' ? 'danger' : 'primary'"
+              >{{data[indextr].type === "reject" ? "Từ chối" : "Xác nhận"}}</vs-chip>
+            </vs-td>
 
             <vs-td :data="data[indextr].returner">{{data[indextr].returner}}</vs-td>
 
@@ -151,15 +165,15 @@
     </vs-popup>
 
     <vs-prompt
-      title="Gửi sách cho sinh viên"
-      accept-text="Xác nhận"
+      title="Chuyển sách"
+      accept-text="Chuyển"
       cancel-text="Hủy bỏ"
       @cancel="email=''"
       @accept="manuallyReturn(email)"
       :active.sync="emailPrompt"
     >
       <div>
-        <vs-input placeholder="Nhập email sinh viên nhận sách" class="w-full" v-model="email" />
+        <vs-input placeholder="Nhập email người nhận sách" class="w-full" v-model="email" />
       </div>
     </vs-prompt>
   </div>
@@ -213,6 +227,8 @@ export default {
         })
         .then(response => {
           const data = response.data;
+
+          data.sort((a, b) => a.transfer_date - b.transfer_date);
 
           this.historyList = data;
           this.historyPopup = true;
@@ -306,6 +322,9 @@ export default {
       .catch(() => {
         this.$router.push("/librarian/book-details-manage");
       });
+  },
+  beforeDestroy() {
+    this.$Progress.finish();
   }
 };
 </script>

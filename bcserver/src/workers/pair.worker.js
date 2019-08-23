@@ -16,8 +16,11 @@ async function doJob() {
         // Node.js queue logic at: /Document/LegacyWorker/pair.js
 
         // Call Golang Pair Worker
-        const { data } = await axios.get("http://ssh.fptu.tech:5100");
-        console.log("Pairworker: ", data);
+        const { data } = await axios.get(
+            env.pairHost || "http://ssh.fptu.tech:5100"
+        );
+        console.log("Pair host: ", env.pairHost || "http://ssh.fptu.tech:5100");
+        console.log("Pair response: ", data);
 
         return true;
     } catch (err) {

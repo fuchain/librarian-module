@@ -38,9 +38,7 @@ const adminMenu = [
     url: "/librarian/notification/send",
     name: "Gửi thông báo",
     slug: "notification-send",
-    icon: "SendIcon",
-    tag: "beta",
-    tagColor: "darkorange"
+    icon: "SendIcon"
   },
   {
     url: null,
@@ -67,6 +65,14 @@ const adminMenu = [
     slug: "review-ux",
     icon: "FileIcon",
     tag: "báo cáo",
+    tagColor: "primary"
+  },
+  {
+    url: "/librarian/qrscan",
+    name: "Tra cứu sách",
+    slug: "qrscan",
+    icon: "CameraIcon",
+    tag: "QR",
     tagColor: "primary"
   }
 ];

@@ -6,9 +6,28 @@ import axios from "axios";
 import { createJWT } from "@core/jwt";
 import { db } from "@core/db";
 import uploadLogic from "@logics/upload.logic";
+import constants from "@core/constants";
 
 function generateRandomKeyPair() {
     return generateKey();
+}
+
+async function createNewUserInDB(email, fullname = null) {
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({ email });
+    if (user) {
+        return;
+    }
+
+    // Create user row in DB
+    await usersCollection.insertMany([
+        {
+            email,
+            fullname,
+            phone: null
+        }
+    ]);
 }
 
 async function generateKeyPairEmail(email, publicKey, fullname) {
@@ -29,15 +48,7 @@ async function generateKeyPairEmail(email, publicKey, fullname) {
     const txSigned = transaction.sign(tx, env.privateKey);
     const txDone = await transaction.post(txSigned);
 
-    // Create user row in DB
-    const userCollection = db.collection("users");
-    await userCollection.insertMany([
-        {
-            email,
-            fullname,
-            phone: null
-        }
-    ]);
+    await createNewUserInDB(email, fullname);
 
     return txDone;
 }
@@ -90,9 +101,11 @@ async function verifyKeyPairEmail(token, publicKey) {
     const { name, picture } = data;
     const email = data.email.toLowerCase();
 
+    await createNewUserInDB(email, name);
+
     // Check if it is librarian
     if (publicKey === env.publicKey) {
-        if (email === "librarian@fptu.tech") {
+        if (email === constants.LIBRARIAN_EMAIL) {
             return {
                 token: createJWT(email, true),
                 status: "verified",

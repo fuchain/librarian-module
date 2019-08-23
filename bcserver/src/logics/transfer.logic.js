@@ -9,6 +9,7 @@ import env from "@core/env";
 import uuidv4 from "uuid/v4";
 import axios from "axios";
 import { db } from "@core/db";
+import constants from "core/constants";
 
 function signTx(tx, privateKey) {
     return transaction.sign(tx, privateKey);
@@ -168,6 +169,20 @@ async function createReceiverConfirmAsset(transferTxSigned, publicKey) {
     // send event to receiver to sign
     const email = await asset.getEmailFromPublicKey(publicKey);
 
+    if (email !== constants.LIBRARIAN_EMAIL) {
+        const status = await userLogic.isUserActive(email);
+
+        if (!status) {
+            axios.post(`${env.ioHost}/events/push`, {
+                email,
+                type: "fail",
+                message:
+                    "Bạn không thể nhận sách do tài khoản đã bị khóa, vui lòng liên hệ thư viện"
+            });
+            throw new Error("User is locked, cannot receive book");
+        }
+    }
+
     try {
         await axios.post(`${env.ioHost}/events/push`, {
             email,
@@ -220,16 +235,16 @@ async function postToDoneTransfer(confirmAssetSigned) {
     }
 
     if (type === "reject") {
-        // Check if reject > 5 alert
+        // Check if reject > reject limit alert
         const rejectCount = await rejectLogic.getRejectCount(
             confirmAssetSigned.asset.data.confirm_for_tx.asset.id
         );
 
-        if (rejectCount > 5) {
+        if (rejectCount > constants.REJECT_LIMIT) {
             axios.post(`${env.ioHost}/notifications/push`, {
-                email: "librarian@fptu.tech",
+                email: constants.LIBRARIAN_EMAIL,
                 type: "alert",
-                message: `Sách của dùng ${email} đã bị từ chối quá 5 lần, vui lòng kiểm tra và thu hồi`
+                message: `Sách của dùng ${email} đã bị từ chối quá ${constants.REJECT_LIMIT} lần, vui lòng kiểm tra và thu hồi`
             });
         }
     }

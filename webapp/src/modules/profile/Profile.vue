@@ -5,7 +5,7 @@
         <span>Họ tên</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" v-model="fullname" />
+        <vs-input :disabled="$auth.isAdmin()" class="w-full" v-model="fullname" />
       </div>
     </div>
     <div class="vx-row mb-6">
@@ -23,7 +23,7 @@
         <span>Số điện thoại</span>
       </div>
       <div class="vx-col sm:w-2/3 w-full">
-        <vs-input class="w-full" v-model="phone" />
+        <vs-input :disabled="$auth.isAdmin()" class="w-full" v-model="phone" />
       </div>
     </div>
     <div class="vx-row mb-6">

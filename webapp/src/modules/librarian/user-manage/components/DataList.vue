@@ -51,13 +51,13 @@
         </div>
 
         <!-- ITEMS PER PAGE -->
-        <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
+        <!-- <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
           <div
             class="p-4 border border-solid border-grey-light rounded-full d-theme-dark-bg cursor-pointer flex items-center justify-between font-medium"
           >
             <span
               class="mr-2"
-            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} of {{ dataList.length }}</span>
+            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ dataList.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : dataList.length }} trong {{ dataList.length }}</span>
             <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
           <vs-dropdown-menu>
@@ -71,7 +71,7 @@
               <span>20</span>
             </vs-dropdown-item>
           </vs-dropdown-menu>
-        </vs-dropdown>
+        </vs-dropdown>-->
       </div>
 
       <template slot="thead">
@@ -79,7 +79,7 @@
         <vs-th>Email</vs-th>
         <vs-th>Họ tên</vs-th>
         <vs-th>Số điện thoại</vs-th>
-        <vs-th>Vô hiệu hóa</vs-th>
+        <vs-th></vs-th>
         <vs-th></vs-th>
       </template>
 
@@ -108,17 +108,27 @@
             </vs-td>
 
             <vs-td>
-              <p>
-                <vs-switch value="tr.disabled" />
-              </p>
-            </vs-td>
-
-            <vs-td>
               <vs-button
                 icon="pageview"
                 @click="openKeepingBook(tr)"
                 v-if="!tr.email.includes('librarian')"
               >Xem</vs-button>
+            </vs-td>
+
+            <vs-td>
+              <p>
+                <!-- <vs-button
+                  @click="lockUser(tr)"
+                  :icon="tr.inactive ? 'lock_open' : 'lock'"
+                  type="relief"
+                  :color="tr.inactive ? 'warning' : 'danger'"
+                >{{ tr.inactive ? "Mở" : "Khóa" }}</vs-button>-->
+
+                <vs-switch v-model="tr.inactive" @click="lockUser(tr)">
+                  <span slot="on">Kích hoạt</span>
+                  <span slot="off">Ngưng kích hoạt</span>
+                </vs-switch>
+              </p>
             </vs-td>
           </vs-tr>
         </tbody>
@@ -289,9 +299,66 @@ export default {
         .then(response => {
           const data = response.data;
 
+          data.sort((a, b) => a.transfer_date - b.transfer_date);
+
           this.historyList = data;
           this.historyPopup = true;
           this.historyId = assetId;
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
+    },
+    openConfirm(user) {
+      const inactive = user.inactive || false;
+
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: `Xác nhận`,
+        text: `Bạn có chắc muốn ${
+          inactive ? "mở khóa" : "khóa"
+        } tài khoản ${user.email || null}`,
+        accept: this.lockUser(user),
+        acceptText: "Chắc chắn",
+        cancelText: "Hủy bỏ"
+      });
+    },
+    lockUser(user) {
+      const inactive = user.inactive || false;
+
+      this.$vs.loading();
+      this.$http
+        .post(`${this.$http.baseUrl}/librarian/lock_account`, {
+          email: user.email || null
+        })
+        .then(response => {
+          const data = response.data;
+
+          if (data.status === "inactive") {
+            this.$vs.notify({
+              title: "Thành công",
+              text: `Khóa tài khoản ${user.email} thành công`,
+              color: "primary",
+              position: "top-center"
+            });
+          } else {
+            this.$vs.notify({
+              title: "Thành công",
+              text: `Mở khóa tài khoản  ${user.email} thành công`,
+              color: "primary",
+              position: "top-center"
+            });
+          }
+        })
+        .catch(() => {
+          this.$emit("doReload");
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Lỗi bất ngờ xảy ra, vui lòng thử lại sau",
+            color: "warning",
+            position: "top-center"
+          });
         })
         .finally(() => {
           this.$vs.loading.close();
@@ -300,6 +367,9 @@ export default {
   },
   mounted() {
     this.isMounted = true;
+  },
+  beforeDestroy() {
+    this.$Progress.finish();
   }
 };
 </script>
