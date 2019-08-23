@@ -36,6 +36,10 @@ const cluster = [
   {
     name: "testnet",
     port: 9985
+  },
+  {
+    name: "localhost",
+    port: 9985
   }
 ];
 
@@ -52,13 +56,20 @@ function getNode() {
 }
 
 export default {
-  host:
-    getNode().name === "testnet"
-      ? "testnet.fuchain.fptu.tech"
-      : "fuchain.fptu.tech",
+  host: getHost(getNode().name),
   ws_port: getNode().port,
   node_name: getNode().name,
   api: "/api/v1/",
   validTx: "streams/valid_transactions",
   secure: false
 };
+
+function getHost(name) {
+  if (name === "testnet") {
+    return "testnet.fuchain.fptu.tech";
+  } else if (name === "localhost") {
+    return "localhost";
+  } else {
+    return "fuchain.fptu.tech";
+  }
+}
