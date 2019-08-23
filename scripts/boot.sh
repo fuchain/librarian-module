@@ -28,6 +28,7 @@ git clone https://git.fptu.tech/fuchain/fuchain.git
 cd fuchain
 wget http://builder.fptu.tech/dump1.zip
 unzip -o dump1.zip
+chmod -R 0777 tmdata/
 rm -rf dump1.zip
 rm -rf __MACOSX
 make start
