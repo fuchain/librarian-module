@@ -43,50 +43,35 @@ services:
     restart: always
 
   webapp:
-    build:
-      context: ./webapp
-      dockerfile: ./dev.Dockerfile
+    image: fptudev/webapp:latest
     ports:
       - 3000:3000
-    image: librarian-webapp-dev
     volumes:
       - ./webapp/src:/root/src/app/src
       - ./webapp/public:/root/src/app/public
       - ./webapp/.env:/root/src/app/.env
-    environment:
-      VUE_APP_API_BASE_URL: http://localhost:5000
-      VUE_APP_API_BETA_URL: http://localhost:5002
-      VUE_APP_SOCKET_URL: http://localhost:5002
 
   visualizeapp:
-    build:
-      context: ./visualizeapp
-      dockerfile: ./dev.Dockerfile
+    image: fptudev/visualizeapp:latest
     ports:
       - 3001:3000
-    image: librarian-visualizeapp-dev
     volumes:
       - ./visualizeapp/src:/root/src/app/src
       - ./visualizeapp/public:/root/src/app/public
 
   pairworker:
-    build:
-      context: ./pairworker
-      dockerfile: ./dev.Dockerfile
+    image: fptudev/pairworker:latest
     ports:
       - 5100:5100
     networks:
       - node
     depends_on:
       - mongodbbc
-    image: librarian-pairworker-dev
     environment:
       MONGODB: mongodbbc
 
   bcserver:
-    build:
-      context: ./bcserver
-      dockerfile: ./dev.Dockerfile
+    image: fptudev/bcserver:latest
     ports:
       - 5000:5000
     networks:
@@ -94,7 +79,6 @@ services:
     depends_on:
       - mongodbbc
       - redisbc
-    image: librarian-bcserver-dev
     volumes:
       - ./bcserver/src:/root/src/node/src
     environment:
@@ -108,9 +92,7 @@ services:
       PAIR_HOST: http://pairworker:5100
 
   ioserver:
-    build:
-      context: ./ioserver
-      dockerfile: ./dev.Dockerfile
+    image: fptudev/ioserver:latest
     ports:
       - 5002:5002
     networks:
@@ -118,7 +100,6 @@ services:
     depends_on:
       - mongodbio
       - redisio
-    image: librarian-ioserver-dev
     volumes:
       - ./ioserver/src:/root/src/node/src
     environment:
