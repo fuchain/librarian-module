@@ -3,6 +3,7 @@ package pair
 import (
 	"encoding/json"
 	"log"
+	"os"
 	"pairworker/caller"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -52,5 +53,12 @@ func HandleMatch(returnerRaw Matching, receiver Matching) {
 		log.Fatal("Mar erro:", err)
 	}
 
-	caller.PostPair("https://api.fptu.tech/bc/api/v1/remote/pair_update", requestBody)
+	var bcserverHostname string
+	if os.Getenv("BCSERVER") != "" {
+		bcserverHostname = os.Getenv("BCSERVER") + "/api/v1/remote/pair_update"
+	} else {
+		bcserverHostname = "https://api.fptu.tech/bc/api/v1/remote/pair_update"
+	}
+
+	caller.PostPair(bcserverHostname, requestBody)
 }

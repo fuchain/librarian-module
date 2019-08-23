@@ -52,7 +52,6 @@ services:
     volumes:
       - ./webapp/src:/root/src/app/src
       - ./webapp/public:/root/src/app/public
-      - ./webapp/.env:/root/src/app/.env
     environment:
       VUE_APP_API_BASE_URL: http://localhost:5000
       VUE_APP_API_BETA_URL: http://localhost:5002
@@ -82,6 +81,7 @@ services:
     image: librarian-pairworker-dev
     environment:
       MONGODB: mongodbbc
+      BCSERVER: http://bcserver:5000
 
   bcserver:
     build:
