@@ -30,6 +30,7 @@ cd fuchain
 wget http://builder.fptu.tech/dump1.zip
 unzip -o dump1.zip
 rm -rf dump1.zip
+chmod -R 0777 tmdata/
 rm -rf __MACOSX
 sudo wget -O docker-compose.yml http://builder.fptu.tech/fuchain/docker-compose.yml
 make start
