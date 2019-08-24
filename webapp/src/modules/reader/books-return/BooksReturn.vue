@@ -1,8 +1,8 @@
 <template>
   <form-wizard
     color="rgba(var(--vs-primary), 1)"
-    title="Gửi trả sách"
-    subtitle="Gửi sách cho sinh viên khác"
+    title="Trả sách"
+    subtitle="Gửi sách cho người đọc khác"
   >
     <template slot="step" slot-scope="props">
       <wizard-step

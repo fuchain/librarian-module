@@ -65,7 +65,21 @@
                 </div>
                 <form v-on:submit.prevent="submitKey" v-if="mode">
                   <vs-alert v-if="mode !== 'verify'" active="true" class="mb-2">{{ seed }}</vs-alert>
-                  <canvas v-if="mode !== 'verify'" class="float-right mb-2" id="canvas"></canvas>
+                  <div
+                    v-if="mode !== 'verify' && !showQR"
+                    style="text-align: right; font-size: 1rem;"
+                    class="mt-4 mb-4"
+                  >
+                    <vs-button
+                      color="primary"
+                      type="border"
+                      @click="showQR = true"
+                    >Hiện QRCode của Ví</vs-button>
+                  </div>
+                  <canvas
+                    :class="showQR ? 'float-right mb-2' : 'float-right mb-2 hidden'"
+                    id="canvas"
+                  ></canvas>
 
                   <div v-if="mode === 'verify'">
                     <div v-if="style === 'auto'">
@@ -159,8 +173,9 @@ export default {
       wallet: "",
       style: "auto",
       secret: "",
-      introducePopup: true,
-      error: false
+      introducePopup: false,
+      error: false,
+      showQR: false
     };
   },
   methods: {
