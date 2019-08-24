@@ -20,6 +20,7 @@
     "core-js": "^2.6.5",
     "date-fns": "^2.0.0-alpha.27",
     "fuchain-js": "^1.0.1",
+    "js2excel": "^1.0.1",
     "jwt-decode": "^2.2.0",
     "material-icons": "^0.3.0",
     "perfect-scrollbar": "^1.4.0",
