@@ -31,7 +31,7 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
 
             if (rejectCount > constants.REJECT_LIMIT) {
                 axios.post(`${env.ioHost}/events/push`, {
-                    email: constants.LIBRARIAN_EMAIL,
+                    email,
                     type: "fail",
                     message:
                         "Sách của bạn đã bị từ chối quá nhiều lẫn, vui lòng mang sách đến thư viện để kiểm tra"
