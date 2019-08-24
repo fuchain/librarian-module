@@ -136,7 +136,10 @@ async function createBookForBookDetailId(bookDetailID) {
 async function createTransferRequest(assetId, email) {
     // Check reject limit
     const rejectCount = await rejectLogic.getRejectCount(assetId);
-    if (rejectCount > constants.REJECT_LIMIT) {
+    if (
+        rejectCount > constants.REJECT_LIMIT &&
+        email !== constants.LIBRARIAN_EMAIL
+    ) {
         throw new Error(
             "This book has been rejected too many times, please contact the librarian"
         );
