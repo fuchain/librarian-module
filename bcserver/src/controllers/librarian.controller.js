@@ -90,7 +90,7 @@ async function getBookTotalAtLib(req, res) {
     const total = await bookLogic.getBookTotalAtLib(bookDetailId);
 
     res.send({
-        total: total
+        total
     });
 }
 
