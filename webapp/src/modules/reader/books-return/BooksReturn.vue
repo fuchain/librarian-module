@@ -208,6 +208,19 @@ export default {
               fixed: true,
               icon: "error"
             });
+          } else if (
+            message ===
+            "Error: This book has been rejected too many times, please contact the librarian"
+          ) {
+            this.$vs.notify({
+              title: "Thất bại",
+              text:
+                "Sách này đã bị từ chối quá nhiều lần, vui lòng liên hệ thư viện.",
+              color: "warning",
+              position: "top-center",
+              fixed: true,
+              icon: "error"
+            });
           } else {
             this.$vs.notify({
               title: "Thất bại",
