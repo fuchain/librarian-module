@@ -64,6 +64,10 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    environment:
+      VUE_APP_API_BASE_URL: https://api.fptu.tech/bc
+      VUE_APP_API_BETA_URL: https://api.fptu.tech/io
+      VUE_APP_SOCKET_URL: https://websocket.fptu.tech
 
   visualizeapp:
     image: fptu/visualizeapp:latest
