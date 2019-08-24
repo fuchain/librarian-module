@@ -133,6 +133,9 @@ const mutations = {
   CLOSE_DETAILS_POPUP(state) {
     state.detailsPopupOpen = false;
     state.detailsPopupData = null;
+  },
+  UPDATE_LOADING(state, data) {
+    state.loading = data;
   }
 };
 

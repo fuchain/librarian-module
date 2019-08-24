@@ -118,8 +118,7 @@ export default {
       isMounted: false,
       addNewDataSidebar: false,
       searchText: "",
-      totalBookDetails: 0,
-      loading: []
+      totalBookDetails: 0
     };
   },
   props: {
@@ -129,6 +128,9 @@ export default {
     }
   },
   computed: {
+    loading() {
+      return this.$store.state.loading;
+    },
     currentPage() {
       if (this.isMounted) {
         return this.$refs.table.currentx;
@@ -148,7 +150,7 @@ export default {
   methods: {
     exportReport(item) {
       const currentLoading = [].concat(this.loading);
-      this.loading = currentLoading.concat(item.id);
+      this.$store.commit("UPDATE_LOADING", currentLoading.concat(item.id));
 
       this.$http
         .get(
@@ -166,7 +168,8 @@ export default {
           if (index > -1) {
             const doneLoading = [].concat(this.loading);
             doneLoading.splice(index, 1);
-            this.loading = doneLoading;
+
+            this.$store.commit("UPDATE_LOADING", doneLoading);
           }
         });
     },
