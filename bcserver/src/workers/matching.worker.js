@@ -34,7 +34,7 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
 
         if (!isCancel) {
             const isActive = await userLogic.isUserActive(email);
-            if (!isActive) {
+            if (!isActive && !bookId) {
                 axios.post(`${env.ioHost}/events/push`, {
                     email,
                     type: "fail",
@@ -61,7 +61,7 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
                 axios.post(`${env.ioHost}/events/push`, {
                     email,
                     type: "fail",
-                    message: "Bạn đang giữ sách đó rồi"
+                    message: "Bạn đang giữ sách đó rồi, không thể yêu cầu thêm"
                 });
                 throw new Error("Not valid request!");
             }
@@ -70,7 +70,8 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
                 axios.post(`${env.ioHost}/events/push`, {
                     email,
                     type: "fail",
-                    message: "Bạn đã có yêu cầu mượn sách đó rồi"
+                    message:
+                        "Bạn đã có yêu cầu mượn sách đó rồi, không thể gửi thêm yêu cầu"
                 });
                 throw new Error("Duplicated!");
             }
