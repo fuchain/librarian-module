@@ -134,6 +134,14 @@ async function createBookForBookDetailId(bookDetailID) {
 }
 
 async function createTransferRequest(assetId, email) {
+    // Check reject limit
+    const rejectCount = await rejectLogic.getRejectCount(assetId);
+    if (rejectCount > constants.REJECT_LIMIT) {
+        throw new Error(
+            "This book has been rejected too many times, please contact the librarian"
+        );
+    }
+
     // email, public_key here is public key of the receiver
     const publicKey = await asset.getPublicKeyFromEmail(email);
 
