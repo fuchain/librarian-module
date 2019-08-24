@@ -132,6 +132,11 @@ const router = new Router({
             import("@/modules/librarian/monitoring/Infrastructure.vue")
         },
         {
+          path: "librarian/monitoring/transactions",
+          component: () =>
+            import("@/modules/librarian/monitoring/Transactions.vue")
+        },
+        {
           path: "librarian/notification/send",
           component: () =>
             import("@/modules/librarian/notification/SendNotification.vue")

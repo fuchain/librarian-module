@@ -46,9 +46,15 @@ const adminMenu = [
     icon: "CloudIcon",
     submenu: [
       {
+        url: "/librarian/monitoring/transactions",
+        name: "Giao dịch",
+        tag: "FUChain",
+        tagColor: "#7367F0"
+      },
+      {
         url: "/librarian/monitoring/infrastructure",
         name: "Hạ tầng Swarm",
-        tag: "4",
+        tag: "5",
         tagColor: "#254356"
       },
       {

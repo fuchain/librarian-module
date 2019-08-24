@@ -4,7 +4,7 @@
 
     <div class="knowledge-base-jumbotron">
       <div class="knowledge-base-jumbotron-content lg:p-32 md:p-24 sm:p-16 py-8 rounded-lg mb-base">
-        <h1 class="mb-1 text-white">Chữ kí số giúp việc chuyển sách an toàn tuyệt đối</h1>
+        <h1 class="mb-1 text-white">Blockchain giúp việc chuyển sách an toàn tuyệt đối</h1>
         <p
           class="text-white"
         >Nền tảng cơ sở dữ liệu phi tập trung sẽ cho phép truy xuất, kiểm tra các giao dịch liên quan và quyền sở hữu của các bên tham gia giao dịch</p>
@@ -148,7 +148,7 @@
           >Địa chỉ ví: {{ keepingPublicKey || "Không có" }}</div>
         </div>
         <div class="ml-4">
-          <vs-button>Đổi địa chỉ ví</vs-button>
+          <vs-button @click="changeWalletAddress">Đổi địa chỉ ví</vs-button>
         </div>
       </div>
       <vs-table
@@ -158,7 +158,6 @@
       >
         <template slot="thead">
           <vs-th>Mã sách</vs-th>
-          <vs-th>ID đầu sách</vs-th>
           <vs-th></vs-th>
           <vs-th>Tên sách</vs-th>
           <vs-th>Ngày nhận</vs-th>
@@ -169,7 +168,6 @@
         <template slot-scope="{data}">
           <vs-tr :key="indextr" v-for="(tr, indextr) in data">
             <vs-td :data="data[indextr].asset_id">{{data[indextr].asset_id}}</vs-td>
-            <vs-td :data="data[indextr].book_detail.id">{{data[indextr].book_detail.id}}</vs-td>
             <vs-td :data="data[indextr].book_detail.thumbnail">
               <img
                 :src="data[indextr].book_detail.thumbnail || '/images/book-thumbnail.jpg'"
@@ -268,6 +266,15 @@ export default {
     }
   },
   methods: {
+    changeWalletAddress() {
+      this.$vs.notify({
+        title: "Chưa hỗ trợ",
+        text:
+          "Tính năng đổi ví chưa hỗ trợ trên web admin, vui lòng liên hệ phòng IT để thực hiện",
+        color: "success",
+        position: "top-center"
+      });
+    },
     openKeepingBook(item) {
       this.$vs.loading();
 
