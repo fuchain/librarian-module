@@ -38,7 +38,10 @@ const state = {
 
   // Book Detail Popup
   detailsPopupOpen: false,
-  detailsPopupData: null
+  detailsPopupData: null,
+
+  // Loading list
+  loading: []
 };
 
 export default state;
