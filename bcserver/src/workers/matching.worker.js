@@ -7,6 +7,8 @@ import { db } from "@core/db";
 import axios from "axios";
 import asset from "@core/fuchain/asset";
 import userLogic from "@logics/user.logic";
+import rejectLogic from "@logics/reject.logic";
+import constants from "@core/constants";
 
 // Watch and Run job queue
 function run() {
@@ -22,6 +24,22 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
             bookDetailId,
             bookId: bookId || null
         };
+
+        // Check reject count is limited
+        if (bookId) {
+            const rejectCount = await rejectLogic.getRejectCount(bookId);
+
+            if (rejectCount > constants.REJECT_LIMIT) {
+                axios.post(`${env.ioHost}/events/push`, {
+                    email: constants.LIBRARIAN_EMAIL,
+                    type: "fail",
+                    message:
+                        "Sách của bạn đã bị từ chối quá nhiều lẫn, vui lòng mang sách đến thư viện để kiểm tra"
+                });
+
+                throw new Error("Reject limit, cannot create request!");
+            }
+        }
 
         // Check is request is existed
         const requested = await matchingCollection.findOne(requestObj);
