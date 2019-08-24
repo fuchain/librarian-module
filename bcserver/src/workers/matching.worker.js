@@ -9,6 +9,7 @@ import asset from "@core/fuchain/asset";
 import userLogic from "@logics/user.logic";
 import rejectLogic from "@logics/reject.logic";
 import constants from "@core/constants";
+import checkWorker from "@workers/check.worker";
 
 // Watch and Run job queue
 function run() {
@@ -106,6 +107,12 @@ async function doJob(email, bookDetailId, bookId, isCancel) {
                     requestObj.bookId ? "trả" : "mượn"
                 } sách thành công`
             });
+
+            // Check book is available
+            if (!bookId && !isCancel) {
+                console.log("Add job", email, bookDetailId);
+                checkWorker.addJob(email, bookDetailId);
+            }
 
             return { email, bookDetailId, bookId };
         } else {

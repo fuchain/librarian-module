@@ -68,6 +68,18 @@ function init() {
       });
     }
 
+    if (type === "notify") {
+      window.vue.$vs.notify({
+        title: "Thông báo",
+        text: message,
+        color: "success",
+        position: "top-center",
+        iconPack: "feather",
+        icon: "icon-info",
+        fixed: true
+      });
+    }
+
     if (type === "fail") {
       window.vue.$vs.notify({
         title: "Thất bại",
