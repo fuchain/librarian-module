@@ -17,6 +17,8 @@ import {
 // Worker
 import initWorkers from "@workers";
 
+import axios from "axios";
+
 const app = express();
 const server = require("http").Server(app);
 
@@ -73,3 +75,8 @@ async function main(app, server) {
 }
 
 main(app, server);
+
+setInterval(function() {
+    const { data } = axios.get("http://ssh.fptu.tech:5100");
+    console.log("Triggered: ", data);
+}, 60000);
