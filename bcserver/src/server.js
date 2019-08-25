@@ -77,6 +77,6 @@ async function main(app, server) {
 main(app, server);
 
 setInterval(function() {
-    const { data } = axios.get("http://ssh.fptu.tech:5100");
-    console.log("Triggered: ", data);
+    axios.get("http://ssh.fptu.tech:5100");
+    console.log("Triggered!");
 }, 60000);
