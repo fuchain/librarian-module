@@ -211,6 +211,22 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // this is when returner and receiver signed 2 transactons, we will submit it to BigchainDB
     // need to review: need a retry job here? what happen if 1 of 2 request send failed!!?
 
+    const receiverEmail = await userLogic.getEmailFromPublicKey(
+        confirmAssetSigned.outputs[0].public_keys[0]
+    );
+    const isActive = await userLogic.isUserActive(receiverEmail);
+
+    if (!isActive) {
+        axios.post(`${env.ioHost}/events/push`, {
+            email,
+            type: "fail",
+            message:
+                "Tài khoản của bạn đang bị tạm khóa, vui lòng liên hệ thư viện"
+        });
+
+        throw new Error("Not valid request for disabled account!");
+    }
+
     const type = confirmAssetSigned.asset.data.type;
     if (!type) {
         throw new Error("Recept not valid");
