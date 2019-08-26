@@ -305,6 +305,17 @@ export default {
       this.emailPrompt = true;
     },
     manuallyReturn() {
+      if (this.email.trim() === "librarian@fptu.tech") {
+        this.$vs.notify({
+          title: "Thất bại",
+          text: "Không thể chuyển sách cho chính bạn",
+          color: "danger",
+          position: "top-center"
+        });
+
+        return;
+      }
+
       this.$vs.loading();
 
       this.$http
