@@ -281,6 +281,21 @@ async function postToDoneTransfer(confirmAssetSigned) {
         }
     }
 
+    const {
+        bookDetail: bookDetailToDelete
+    } = await bookLogic.getBookDetailIdOfAssetId(
+        confirmAssetSigned.asset.data.confirm_for_tx.asset.id
+    );
+
+    const requestToDeleteObj = {
+        email: receiverEmail,
+        bookDetailId: bookDetailToDelete.id,
+        matched: false
+    };
+
+    const matchingCollection = db.collection("matchings");
+    matchingCollection.deleteMany(requestToDeleteObj);
+
     return {
         transferTxPosted,
         confirmAssetPosted
