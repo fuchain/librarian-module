@@ -28,14 +28,14 @@
 Cypress.Commands.add("login", () => {
   window.localStorage.setItem(
     "fptlibrarian_publicKey",
-    "KDeJKo7BhPRCsVwmBjnmuceeFwg1jE6zuLoRnkXy3bL"
+    "8bcb0d1b2218f92042c28b5713eb3bb3003cb9841505c92c900f4af786f1bca610c254f503eaa7fc18f6fb92ea8d59c0"
   );
   window.localStorage.setItem(
     "fptlibrarian_privateKey",
-    "DKDeMCSqxPQ6vgqddGPzpWPmVvnP61YkU1v77Wwkm8t9"
+    "404026ef05ac97587eef5b82bdd058322ee581e8c21c359e7cdd4569ecba20d34412e707c6670c9837f7db6dcdce1589"
   );
   window.localStorage.setItem(
     "fptlibrarian_access_token",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1aG1zZTYyNTMxQGZwdC5lZHUudm4iLCJyb2xlcyI6InJlYWRlciIsImlhdCI6MTU2NDQxMDMwMSwiZXhwIjoxNTY0NTk2NzAxfQ.6I0lyhnMJGw2hvrpAP6D4C8Ze6-i93N1wYUPIM578XI"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1aG1zZTYyNTMxQGZwdC5lZHUudm4iLCJyb2xlcyI6InJlYWRlciIsImlhdCI6MTU2Njg0NDA2OCwiZXhwIjoxNjY2OTMwNDY4fQ.OB9n206jQu5QZlGnuygVNdxgdSQsk7lOfN_6KnLXDg8"
   );
 });
