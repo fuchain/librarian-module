@@ -187,15 +187,21 @@
     </vs-popup>
 
     <vs-prompt
-      title="Chuyển sách"
+      title="Quét QRCode ví sách của người nhận"
       accept-text="Chuyển"
       cancel-text="Hủy bỏ"
       @cancel="email=''"
-      @accept="manuallyReturn(email)"
+      @accept="manuallyReturn()"
       :active.sync="emailPrompt"
     >
       <div>
-        <vs-input placeholder="Nhập email người nhận sách" class="w-full" v-model="email" />
+        <vs-input
+          v-if="qrError"
+          placeholder="Nhập email người nhận sách"
+          class="w-full"
+          v-model="email"
+        />
+        <QRScan v-if="!qrError" @printCode="handleQRCode" @onFail="handleQRFail" />
       </div>
     </vs-prompt>
   </div>
@@ -203,10 +209,12 @@
 
 <script>
 import BookCard from "@/views/components/BookCard.vue";
+import QRScan from "@/views/components/QRScan.vue";
 
 export default {
   components: {
-    BookCard
+    BookCard,
+    QRScan
   },
   data() {
     return {
@@ -222,7 +230,8 @@ export default {
       //
       emailPrompt: false,
       email: "",
-      returnBookId: ""
+      returnBookId: "",
+      qrError: false
     };
   },
   computed: {
@@ -342,6 +351,15 @@ export default {
         acceptText: "Chắc chắn",
         cancelText: "Hủy bỏ"
       });
+    },
+    handleQRCode(code) {
+      this.email = code;
+      this.manuallyReturn();
+    },
+    handleQRFail(val) {
+      if (val) {
+        this.qrError = true;
+      }
     }
   },
   mounted() {
