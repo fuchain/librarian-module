@@ -327,7 +327,9 @@ export default {
                 const found = data.find(e => e.bookDetailId.id === res.data.id);
                 this.rejectable = found ? true : false;
 
-                if (returner === "librarian@fptu.tech") {
+                if (
+                  returnerPub === "CCth57e7618EfhcmWHyTAV4rvvk9fr1TVrwVmVmBkkqz"
+                ) {
                   this.rejectable = false;
                 }
               });
