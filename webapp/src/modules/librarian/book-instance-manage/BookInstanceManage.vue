@@ -231,7 +231,8 @@ export default {
       emailPrompt: false,
       email: "",
       returnBookId: "",
-      qrError: false
+      qrError: false,
+      removeId: null
     };
   },
   computed: {
@@ -344,6 +345,7 @@ export default {
     },
     confirmRemoveBook(assetId, currentKeeper) {
       this.historyPopup = false;
+      this.removeId = assetId;
 
       if (currentKeeper !== "librarian@fptu.tech") {
         this.$vs.dialog({
@@ -367,12 +369,12 @@ export default {
         cancelText: "Hủy bỏ"
       });
     },
-    removeBook(assetId) {
+    removeBook() {
       this.$vs.loading();
 
       this.$http
         .post(`${this.$http.baseUrl}/librarian/remove_book`, {
-          asset_id: assetId
+          asset_id: this.removeId
         })
         .then(() => {
           this.$vs.notify({
