@@ -326,6 +326,10 @@ export default {
                 const data = response.data;
                 const found = data.find(e => e.bookDetailId.id === res.data.id);
                 this.rejectable = found ? true : false;
+
+                if (returner === "librarian@fptu.tech") {
+                  this.rejectable = false;
+                }
               });
           });
 

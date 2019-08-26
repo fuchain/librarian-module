@@ -140,7 +140,10 @@
         </p>
 
         <p class="mb-4" v-if="currentRejectCount && currentRejectCount > 2">
-          <vs-button @click="confirmRemoveBook(historyId)" color="danger">Hủy bỏ quyển sách này</vs-button>
+          <vs-button
+            @click="confirmRemoveBook(historyId, currentKeeperInHistory)"
+            color="danger"
+          >Hủy bỏ quyển sách này</vs-button>
         </p>
       </div>
 
@@ -314,8 +317,20 @@ export default {
           this.$vs.loading.close();
         });
     },
-    confirmRemoveBook(assetId) {
+    confirmRemoveBook(assetId, currentKeeper) {
       this.historyPopup = false;
+
+      if (currentKeeper !== "librarian@fptu.tech") {
+        this.$vs.dialog({
+          color: "warning",
+          title: "Không thể thực hiện",
+          text:
+            "Vui lòng yêu cầu người đọc chuyển sách về thư viện trước khi hủy sách",
+          acceptText: "Tôi biết rồi"
+        });
+
+        return;
+      }
 
       this.$vs.dialog({
         type: "confirm",
@@ -323,13 +338,10 @@ export default {
         title: `Xác nhận`,
         text: "Bạn chắc có muốn hủy bỏ quyển sách này?",
         accept: null,
-        cancel: this.restorePopup(),
+        cancel: null,
         acceptText: "Chắc chắn",
         cancelText: "Hủy bỏ"
       });
-    },
-    restorePopup() {
-      this.historyPopup = true;
     }
   },
   mounted() {
