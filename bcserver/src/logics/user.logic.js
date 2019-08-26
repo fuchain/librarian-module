@@ -278,6 +278,10 @@ async function lockAccount(email) {
 }
 
 async function isUserActive(email) {
+    if (email === constants.REMOVE_EMAIL) {
+        return true;
+    }
+
     const usersCollection = db.collection("users");
     const user = await usersCollection.findOne({ email });
 

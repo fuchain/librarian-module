@@ -362,11 +362,41 @@ export default {
         color: "danger",
         title: `Xác nhận`,
         text: "Bạn chắc có muốn hủy bỏ quyển sách này?",
-        accept: null,
-        cancel: null,
+        accept: this.removeBook,
         acceptText: "Chắc chắn",
         cancelText: "Hủy bỏ"
       });
+    },
+    removeBook(assetId) {
+      this.$vs.loading();
+
+      this.$http
+        .post(`${this.$http.baseUrl}/librarian/remove_book`, {
+          asset_id: assetId
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Hủy sách thành công",
+            color: "primary",
+            position: "top-center"
+          });
+
+          setTimeout(() => {
+            window.location.reload(1);
+          }, 1000);
+        })
+        .catch(err => {
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Xảy ra lỗi bất ngờ, vui lòng thử lại",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
     },
     handleQRCode(code) {
       this.email = code;
