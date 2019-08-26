@@ -125,6 +125,25 @@
     </vs-table>
 
     <vs-popup :title="historyId" :active.sync="historyPopup" :fullscreen="historyList.length">
+      <div
+        class="mb-4"
+        style="background: #7367F0; color: white; padding: 1rem 2rem 0.5rem 2rem; border-radius: 10px;"
+      >
+        <p class="mb-4">
+          Người đang giữ sách này:
+          <strong>{{ currentKeeperInHistory }}</strong>
+        </p>
+
+        <p class="mb-4">
+          Số lần bị từ chối:
+          <strong>{{ currentRejectCount || 0 }}</strong>
+        </p>
+
+        <p class="mb-4" v-if="currentRejectCount && currentRejectCount > 2">
+          <vs-button @click="confirmRemoveBook(historyId)" color="danger">Hủy bỏ quyển sách này</vs-button>
+        </p>
+      </div>
+
       <vs-table
         noDataText="Không có dữ liệu"
         :data="historyList"
@@ -215,6 +234,32 @@ export default {
         e => e.current_keeper === "librarian@fptu.tech"
       );
       return data.length;
+    },
+    currentKeeperInHistory() {
+      if (this.historyList && this.historyList.length) {
+        return this.historyList[this.historyList.length - 1].receiver || null;
+      }
+
+      return null;
+    },
+    currentRejectCount() {
+      if (this.historyList && this.historyList.length) {
+        const historyCopy = [].concat(this.historyList);
+        const reversed = historyCopy.reverse();
+
+        let rejectCount = 0;
+        for (const item of reversed) {
+          if (item.type !== "reject") {
+            break;
+          }
+
+          rejectCount++;
+        }
+
+        return rejectCount;
+      }
+
+      return 0;
     }
   },
   methods: {
@@ -268,6 +313,23 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+    },
+    confirmRemoveBook(assetId) {
+      this.historyPopup = false;
+
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: `Xác nhận`,
+        text: "Bạn chắc có muốn hủy bỏ quyển sách này?",
+        accept: null,
+        cancel: this.restorePopup(),
+        acceptText: "Chắc chắn",
+        cancelText: "Hủy bỏ"
+      });
+    },
+    restorePopup() {
+      this.historyPopup = true;
     }
   },
   mounted() {
