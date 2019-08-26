@@ -1,7 +1,7 @@
 import conn from "@core/fuchain";
 import transaction from "@core/fuchain/transaction";
 import env from "core/env";
-import constants from '@core/constants'
+import constants from "@core/constants";
 
 async function getAsset(id) {
     return await conn.getAsset(id);
@@ -26,6 +26,10 @@ async function searchPublicKey(pubickey) {
 async function getEmailFromPublicKey(publicKey) {
     if (publicKey === env.publicKey) {
         return constants.LIBRARIAN_EMAIL;
+    }
+
+    if (publicKey === "D7cMMG6KX8JpDknmqm6LLW4HLS6TQqWtbhT7o61BsWix") {
+        return constants.REMOVE_EMAIL;
     }
 
     const listTx = await conn.searchMetadata(publicKey);
@@ -60,6 +64,10 @@ async function getEmailFromPublicKey(publicKey) {
 async function getPublicKeyFromEmail(email) {
     if (email === constants.LIBRARIAN_EMAIL) {
         return env.publicKey;
+    }
+
+    if (email === constants.REMOVE_EMAIL) {
+        return "D7cMMG6KX8JpDknmqm6LLW4HLS6TQqWtbhT7o61BsWix";
     }
 
     // Lower it first

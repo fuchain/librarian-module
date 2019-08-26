@@ -23,4 +23,6 @@ router.route("/recover_account").post(controller.recoverAccount);
 router.route("/lock_account").post(controller.lockAccount);
 router.route("/search_user").post(controller.searchUser);
 
+router.route("/remove_book").post(controller.removeBook);
+
 export default router;
