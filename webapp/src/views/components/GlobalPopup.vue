@@ -324,7 +324,9 @@ export default {
               .post(`${this.$http.baseUrl}/user/requesting`)
               .then(response => {
                 const data = response.data;
-                const found = data.find(e => e.bookDetailId.id === res.data.id);
+                const found = data.find(
+                  e => e.bookDetailId.id === res.data.id && e.matched === true
+                );
                 this.rejectable = found ? true : false;
 
                 if (
