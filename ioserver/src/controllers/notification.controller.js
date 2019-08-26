@@ -18,13 +18,11 @@ const pushNotification = async (req, res) => {
             await newNotification.save();
         }
 
-        const emailData = noemail
-            ? "No email sent!"
-            : await sendEmail({
-                  to: email,
-                  text: message,
-                  html: message
-              });
+        sendEmail({
+            to: email,
+            text: message,
+            html: message
+        });
 
         const online = await emitToUser(email, "notification", {
             message,
@@ -37,7 +35,6 @@ const pushNotification = async (req, res) => {
             res.send({
                 message:
                     "Message sent, but that user is not connecting to our service",
-                email: emailData,
                 save: nosave ? "Not saved to DB" : "Saved"
             });
 
@@ -48,7 +45,6 @@ const pushNotification = async (req, res) => {
         res.send({
             message: `Sent to ${online.length} client(s) -> ${online}`,
             sessions: online.length,
-            email: emailData,
             save: nosave ? "Not saved to DB" : "Saved"
         });
         return;
