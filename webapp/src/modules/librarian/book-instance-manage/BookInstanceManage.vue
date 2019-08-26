@@ -261,11 +261,16 @@ export default {
 
         let rejectCount = 0;
         for (const item of reversed) {
-          if (item.type !== "reject") {
+          if (
+            item.type !== "reject" &&
+            item.receiver !== "librarian@fptu.tech"
+          ) {
             break;
           }
 
-          rejectCount++;
+          if (item.receiver !== "librarian@fptu.tech") {
+            rejectCount++;
+          }
         }
 
         return rejectCount;
