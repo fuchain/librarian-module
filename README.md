@@ -18,11 +18,25 @@ FPT University Summer 2019 - Capstone Project
 - Docker, Docker Compose, Docker Swarm
 - Ansible script
 
+# Fast development bootstrap (Ubuntu machine)
+
+Setup full development environment (from fresh Ubuntu machine)
+
+```bash
+$ curl -s http://git.fptu.tech/fuchain/librarian-module/raw/branch/develop/scripts/reset.sh | sudo bash /dev/stdin
+```
+
+Setup a 4-node FUChain network on Docker Engine
+
+```
+curl -s http://git.fptu.tech/fuchain/librarian-module/raw/branch/develop/scripts/stack.sh | sudo bash /dev/stdin
+```
+
 ## Development
 
 Running and testing the latest version of Librarian Module cannot be easier. Make sure you have a recent version of [Docker Compose](https://docs.docker.com/compose/install/) installed. When you are ready, fire up a terminal and run:
 
-```text
+```bash
 $ git clone git@github.com:huynhminhtufu/librarian-module.git
 $ cd librarian-module
 $ make run
