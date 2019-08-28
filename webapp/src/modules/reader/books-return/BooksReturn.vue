@@ -1,8 +1,8 @@
 <template>
   <form-wizard
     color="rgba(var(--vs-primary), 1)"
-    title="Gửi trả sách"
-    subtitle="Gửi sách cho sinh viên khác"
+    title="Trả sách"
+    subtitle="Gửi sách cho người đọc khác"
   >
     <template slot="step" slot-scope="props">
       <wizard-step
@@ -203,6 +203,19 @@ export default {
             this.$vs.notify({
               title: "Thất bại",
               text: "Người nhận không tồn tại",
+              color: "warning",
+              position: "top-center",
+              fixed: true,
+              icon: "error"
+            });
+          } else if (
+            message ===
+            "Error: This book has been rejected too many times, please contact the librarian"
+          ) {
+            this.$vs.notify({
+              title: "Thất bại",
+              text:
+                "Sách này đã bị từ chối quá nhiều lần, vui lòng liên hệ thư viện.",
               color: "warning",
               position: "top-center",
               fixed: true,

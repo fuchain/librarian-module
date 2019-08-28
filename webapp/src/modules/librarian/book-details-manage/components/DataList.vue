@@ -45,6 +45,7 @@
         <vs-th>Mã môn</vs-th>
         <vs-th>Số lượng</vs-th>
         <vs-th></vs-th>
+        <vs-th style="width: 20% !important;"></vs-th>
       </template>
 
       <template slot-scope="{data}">
@@ -91,6 +92,16 @@
                 v-if="tr.amount > 0"
               >Xem</vs-button>
             </vs-td>
+
+            <vs-td>
+              <vs-button
+                :color="loadingList[indextr] ? 'warning' : 'primary'"
+                icon="file_copy"
+                type="relief"
+                @click="exportReport(tr)"
+                v-if="tr.amount > 0"
+              >{{ loadingList[indextr] ? "Đang tải..." : "Xuất báo cáo" }}</vs-button>
+            </vs-td>
           </vs-tr>
         </tbody>
       </template>
@@ -99,6 +110,8 @@
 </template>
 
 <script>
+import { json2excel } from "js2excel";
+
 export default {
   data() {
     return {
@@ -115,14 +128,51 @@ export default {
     }
   },
   computed: {
+    loading() {
+      return this.$store.state.loading;
+    },
     currentPage() {
       if (this.isMounted) {
         return this.$refs.table.currentx;
       }
       return 0;
+    },
+    loadingList() {
+      return this.dataList.map(e => {
+        if (this.loading.includes(e.id)) {
+          return true;
+        }
+
+        return false;
+      });
     }
   },
   methods: {
+    exportReport(item) {
+      const currentLoading = [].concat(this.loading);
+      this.$store.commit("UPDATE_LOADING", currentLoading.concat(item.id));
+
+      this.$http
+        .get(
+          `${this.$http.baseUrl}/librarian/book_details/${item.id}/books/details`
+        )
+        .then(response => {
+          const data = response.data;
+
+          json2excel({
+            data,
+            name: `book-report-${item.id}`
+          });
+
+          const index = this.loading.indexOf(item.id);
+          if (index > -1) {
+            const doneLoading = [].concat(this.loading);
+            doneLoading.splice(index, 1);
+
+            this.$store.commit("UPDATE_LOADING", doneLoading);
+          }
+        });
+    },
     openBookDataList(item) {
       this.$router.push(`/librarian/book-details-manage/${item.id}`);
     },

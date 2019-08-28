@@ -125,6 +125,28 @@
     </vs-table>
 
     <vs-popup :title="historyId" :active.sync="historyPopup" :fullscreen="historyList.length">
+      <div
+        class="mb-4"
+        style="background: #7367F0; color: white; padding: 1rem 2rem 0.5rem 2rem; border-radius: 10px;"
+      >
+        <p class="mb-4">
+          Người đang giữ sách này:
+          <strong>{{ currentKeeperInHistory }}</strong>
+        </p>
+
+        <p class="mb-4">
+          Số lần bị từ chối:
+          <strong>{{ currentRejectCount || 0 }}</strong>
+        </p>
+
+        <p class="mb-4" v-if="currentRejectCount && currentRejectCount > 2">
+          <vs-button
+            @click="confirmRemoveBook(historyId, currentKeeperInHistory)"
+            color="danger"
+          >Hủy bỏ quyển sách này</vs-button>
+        </p>
+      </div>
+
       <vs-table
         noDataText="Không có dữ liệu"
         :data="historyList"
@@ -165,15 +187,21 @@
     </vs-popup>
 
     <vs-prompt
-      title="Chuyển sách"
+      title="Quét QRCode ví sách của người nhận"
       accept-text="Chuyển"
       cancel-text="Hủy bỏ"
       @cancel="email=''"
-      @accept="manuallyReturn(email)"
+      @accept="manuallyReturn()"
       :active.sync="emailPrompt"
     >
       <div>
-        <vs-input placeholder="Nhập email người nhận sách" class="w-full" v-model="email" />
+        <vs-input
+          v-if="qrError"
+          placeholder="Nhập email người nhận sách"
+          class="w-full"
+          v-model="email"
+        />
+        <QRScan v-if="!qrError" @printCode="handleQRCode" @onFail="handleQRFail" />
       </div>
     </vs-prompt>
   </div>
@@ -181,10 +209,12 @@
 
 <script>
 import BookCard from "@/views/components/BookCard.vue";
+import QRScan from "@/views/components/QRScan.vue";
 
 export default {
   components: {
-    BookCard
+    BookCard,
+    QRScan
   },
   data() {
     return {
@@ -200,7 +230,9 @@ export default {
       //
       emailPrompt: false,
       email: "",
-      returnBookId: ""
+      returnBookId: "",
+      qrError: false,
+      removeId: null
     };
   },
   computed: {
@@ -215,6 +247,37 @@ export default {
         e => e.current_keeper === "librarian@fptu.tech"
       );
       return data.length;
+    },
+    currentKeeperInHistory() {
+      if (this.historyList && this.historyList.length) {
+        return this.historyList[this.historyList.length - 1].receiver || null;
+      }
+
+      return null;
+    },
+    currentRejectCount() {
+      if (this.historyList && this.historyList.length) {
+        const historyCopy = [].concat(this.historyList);
+        const reversed = historyCopy.reverse();
+
+        let rejectCount = 0;
+        for (const item of reversed) {
+          if (
+            item.type !== "reject" &&
+            item.receiver !== "librarian@fptu.tech"
+          ) {
+            break;
+          }
+
+          if (item.receiver !== "librarian@fptu.tech") {
+            rejectCount++;
+          }
+        }
+
+        return rejectCount;
+      }
+
+      return 0;
     }
   },
   methods: {
@@ -243,6 +306,17 @@ export default {
       this.emailPrompt = true;
     },
     manuallyReturn() {
+      if (this.email.trim() === "librarian@fptu.tech") {
+        this.$vs.notify({
+          title: "Thất bại",
+          text: "Không thể chuyển sách cho chính bạn",
+          color: "danger",
+          position: "top-center"
+        });
+
+        return;
+      }
+
       this.$vs.loading();
 
       this.$http
@@ -268,6 +342,72 @@ export default {
         .finally(() => {
           this.$vs.loading.close();
         });
+    },
+    confirmRemoveBook(assetId, currentKeeper) {
+      this.historyPopup = false;
+      this.removeId = assetId;
+
+      if (currentKeeper !== "librarian@fptu.tech") {
+        this.$vs.dialog({
+          color: "warning",
+          title: "Không thể thực hiện",
+          text:
+            "Vui lòng yêu cầu người đọc chuyển sách về thư viện trước khi hủy sách",
+          acceptText: "Tôi biết rồi"
+        });
+
+        return;
+      }
+
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: `Xác nhận`,
+        text: "Bạn chắc có muốn hủy bỏ quyển sách này?",
+        accept: this.removeBook,
+        acceptText: "Chắc chắn",
+        cancelText: "Hủy bỏ"
+      });
+    },
+    removeBook() {
+      this.$vs.loading();
+
+      this.$http
+        .post(`${this.$http.baseUrl}/librarian/remove_book`, {
+          asset_id: this.removeId
+        })
+        .then(() => {
+          this.$vs.notify({
+            title: "Thành công",
+            text: "Hủy sách thành công",
+            color: "primary",
+            position: "top-center"
+          });
+
+          setTimeout(() => {
+            window.location.reload(1);
+          }, 1000);
+        })
+        .catch(err => {
+          this.$vs.notify({
+            title: "Lỗi",
+            text: "Xảy ra lỗi bất ngờ, vui lòng thử lại",
+            color: "warning",
+            position: "top-center"
+          });
+        })
+        .finally(() => {
+          this.$vs.loading.close();
+        });
+    },
+    handleQRCode(code) {
+      this.email = code;
+      this.manuallyReturn();
+    },
+    handleQRFail(val) {
+      if (val) {
+        this.qrError = true;
+      }
     }
   },
   mounted() {

@@ -17,6 +17,8 @@ import {
 // Worker
 import initWorkers from "@workers";
 
+import axios from "axios";
+
 const app = express();
 const server = require("http").Server(app);
 

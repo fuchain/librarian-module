@@ -31,6 +31,17 @@ import NotificationItem from "./NotificationItem.vue";
 export default {
   computed: {
     notifications() {
+      if (
+        this.$store.state.notifications &&
+        this.$store.state.notifications.length &&
+        this.searchText &&
+        this.searchText.trim()
+      ) {
+        return this.$store.state.notifications.filter(e =>
+          e.message.toLowerCase().includes(this.searchText.toLowerCase())
+        );
+      }
+
       return this.$store.state.notifications;
     }
   },

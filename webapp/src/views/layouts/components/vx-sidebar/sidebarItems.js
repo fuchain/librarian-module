@@ -1,10 +1,10 @@
 import auth from "@auth";
 
-export default function(numOfBooks) {
+export default function(numOfBooks, isDark = false) {
   if (auth.isAdmin()) {
     return adminMenu;
   }
-  return userMenu(numOfBooks);
+  return userMenu(numOfBooks, isDark);
 }
 
 const adminMenu = [
@@ -46,9 +46,15 @@ const adminMenu = [
     icon: "CloudIcon",
     submenu: [
       {
+        url: "/librarian/monitoring/transactions",
+        name: "Giao dịch",
+        tag: "FUChain",
+        tagColor: "#7367F0"
+      },
+      {
         url: "/librarian/monitoring/infrastructure",
         name: "Hạ tầng Swarm",
-        tag: "4",
+        tag: "5",
         tagColor: "#254356"
       },
       {
@@ -77,7 +83,7 @@ const adminMenu = [
   }
 ];
 
-function userMenu(numOfBooks) {
+function userMenu(numOfBooks, isDark) {
   const menu = [
     {
       url: "/",
@@ -123,12 +129,6 @@ function userMenu(numOfBooks) {
       icon: "BookOpenIcon"
     },
     {
-      url: "/coupon",
-      name: "Nhập mã nhận sách",
-      slug: "coupon",
-      icon: "BoxIcon"
-    },
-    {
       url: "/transfer-history",
       name: "Lịch sử nhận sách",
       slug: "transfer-history",
@@ -151,6 +151,15 @@ function userMenu(numOfBooks) {
       tagColor: "orangered"
     }
   ];
+
+  if (isDark) {
+    menu.splice(4, 0, {
+      url: "/coupon",
+      name: "Nhập mã nhận sách",
+      slug: "coupon",
+      icon: "BoxIcon"
+    });
+  }
 
   return menu;
 }

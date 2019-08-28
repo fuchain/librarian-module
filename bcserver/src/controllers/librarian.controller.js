@@ -90,7 +90,7 @@ async function getBookTotalAtLib(req, res) {
     const total = await bookLogic.getBookTotalAtLib(bookDetailId);
 
     res.send({
-        total: total
+        total
     });
 }
 
@@ -137,6 +137,16 @@ async function searchUser(req, res) {
     res.send(result);
 }
 
+async function removeBook(req, res) {
+    const assetId = req.body.asset_id;
+
+    transferLogic.submitRemoveBookTx(assetId);
+
+    res.send({
+        message: "Remove book success"
+    });
+}
+
 export default errorHandler({
     getAllBookDetails,
     getAllUsers,
@@ -150,5 +160,6 @@ export default errorHandler({
     giveBook,
     recoverAccount,
     lockAccount,
-    searchUser
+    searchUser,
+    removeBook
 });

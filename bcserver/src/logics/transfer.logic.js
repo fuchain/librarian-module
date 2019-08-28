@@ -133,7 +133,23 @@ async function createBookForBookDetailId(bookDetailID) {
     return txPosted;
 }
 
-async function createTransferRequest(assetId, email) {
+async function createTransferRequest(
+    assetId,
+    email,
+    byPassCheckReject = false
+) {
+    // Check reject limit
+    const rejectCount = await rejectLogic.getRejectCount(assetId);
+    if (
+        rejectCount > constants.REJECT_LIMIT &&
+        email !== constants.LIBRARIAN_EMAIL &&
+        !byPassCheckReject
+    ) {
+        throw new Error(
+            "This book has been rejected too many times, please contact the librarian"
+        );
+    }
+
     // email, public_key here is public key of the receiver
     const publicKey = await asset.getPublicKeyFromEmail(email);
 
@@ -200,6 +216,22 @@ async function postToDoneTransfer(confirmAssetSigned) {
     // this is when returner and receiver signed 2 transactons, we will submit it to BigchainDB
     // need to review: need a retry job here? what happen if 1 of 2 request send failed!!?
 
+    const receiverEmail = await asset.getEmailFromPublicKey(
+        confirmAssetSigned.outputs[0].public_keys[0]
+    );
+    const isActive = await userLogic.isUserActive(receiverEmail);
+
+    if (!isActive) {
+        axios.post(`${env.ioHost}/events/push`, {
+            email,
+            type: "fail",
+            message:
+                "Tài khoản của bạn đang bị tạm khóa, vui lòng liên hệ thư viện"
+        });
+
+        throw new Error("Not valid request for disabled account!");
+    }
+
     const type = confirmAssetSigned.asset.data.type;
     if (!type) {
         throw new Error("Recept not valid");
@@ -244,10 +276,25 @@ async function postToDoneTransfer(confirmAssetSigned) {
             axios.post(`${env.ioHost}/notifications/push`, {
                 email: constants.LIBRARIAN_EMAIL,
                 type: "alert",
-                message: `Sách của dùng ${email} đã bị từ chối quá ${constants.REJECT_LIMIT} lần, vui lòng kiểm tra và thu hồi`
+                message: `Sách của người đọc ${email} đã bị từ chối quá ${constants.REJECT_LIMIT} lần, vui lòng kiểm tra và thu hồi`
             });
         }
     }
+
+    const {
+        bookDetail: bookDetailToDelete
+    } = await bookLogic.getBookDetailIdOfAssetId(
+        confirmAssetSigned.asset.data.confirm_for_tx.asset.id
+    );
+
+    const requestToDeleteObj = {
+        email: receiverEmail,
+        bookDetailId: bookDetailToDelete.id,
+        matched: false
+    };
+
+    const matchingCollection = db.collection("matchings");
+    matchingCollection.deleteMany(requestToDeleteObj);
 
     return {
         transferTxPosted,
@@ -358,6 +405,29 @@ async function giveTestbook(publicKey, coupon = "null") {
     return await createReceiverConfirmAsset(signedTx, publicKey);
 }
 
+async function submitRemoveBookTx(assetId) {
+    const transferTx = await createTransferRequest(
+        assetId,
+        constants.REMOVE_EMAIL,
+        true
+    );
+    const transferTxSigned = transaction.sign(transferTx, env.privateKey);
+
+    const confirmAsset = {
+        confirm_for_tx: transferTxSigned,
+        confirm_for_id: transferTxSigned.id,
+        confirm_date: Math.floor(Date.now() / 1000),
+        type: "recept"
+    };
+    const receptTx = transaction.create(
+        confirmAsset,
+        null,
+        "D7cMMG6KX8JpDknmqm6LLW4HLS6TQqWtbhT7o61BsWix"
+    );
+
+    await postToDoneTransfer(receptTx);
+}
+
 export default {
     signTx,
     createTestBook,
@@ -371,5 +441,6 @@ export default {
     createReceiverConfirmAsset,
     postToDoneTransfer,
     recoverAccount,
-    giveTestbook
+    giveTestbook,
+    submitRemoveBookTx
 };

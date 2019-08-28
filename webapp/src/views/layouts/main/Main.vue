@@ -185,7 +185,7 @@ export default {
       };
     },
     sidebarItems() {
-      return sidebarItems(this.numOfBooks);
+      return sidebarItems(this.numOfBooks, this.isThemeDark);
     }
   },
   methods: {

@@ -19,7 +19,7 @@ RUN npm install
 
 COPY . .
 RUN npm run build
-# RUN npm run test
+RUN npm run test
 
 FROM nginx:alpine
 
